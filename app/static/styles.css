@@ -21,8 +21,8 @@ html[data-layout="desktop"] .main-container {
 }
 
 html[data-layout="mobile"] .corner-icons {
-  left: 1rem;
-  right: auto;
+  left: auto;
+  right: 1rem;
 }
 
 html[data-layout="mobile"] #controls {
