@@ -84,6 +84,24 @@ document.addEventListener('DOMContentLoaded', () => {
   loadRecipes();
   loadHistory();
 
+  document.querySelectorAll('[data-tab-target]').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('[data-tab-target]').forEach(t => t.classList.remove('tab-active'));
+      tab.classList.add('tab-active');
+      document.querySelectorAll('.tab-panel').forEach(panel => (panel.style.display = 'none'));
+      const targetId = tab.dataset.tabTarget;
+      const panel = document.getElementById(targetId);
+      if (panel) panel.style.display = 'block';
+      if (targetId === 'tab-products') {
+        loadProducts();
+      } else if (targetId === 'tab-recipes') {
+        loadRecipes();
+      } else if (targetId === 'tab-history') {
+        loadHistory();
+      }
+    });
+  });
+
   document.getElementById('add-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const form = e.target;
