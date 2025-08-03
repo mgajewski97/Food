@@ -257,18 +257,18 @@ function renderProducts(data) {
   );
   storOrder.forEach(stor => {
     const storageBlock = document.createElement('div');
-    storageBlock.className = 'storage-block border border-base-300 rounded-lg p-4 mb-6 text-lg';
+    storageBlock.className = 'storage-block border border-base-300 rounded-lg p-4 mb-6';
 
     const storageHeader = document.createElement('div');
     storageHeader.className = 'flex justify-between items-center mb-4 cursor-pointer md:cursor-default pl-4';
 
     const h3 = document.createElement('h3');
-    h3.className = 'text-2xl font-bold';
+    h3.className = 'text-xl font-semibold';
     h3.textContent = `${STORAGE_ICONS[stor] || ''} ${STORAGE_NAMES[stor] || stor}`;
 
     const storToggle = document.createElement('button');
-    storToggle.className = 'text-xl';
-    storToggle.innerHTML = '<i class="fa-solid fa-chevron-up"></i>';
+    storToggle.className = 'text-xl cursor-pointer';
+    storToggle.innerHTML = '<i class="fa-regular fa-caret-down"></i>';
 
     storageHeader.appendChild(h3);
     storageHeader.appendChild(storToggle);
@@ -282,7 +282,7 @@ function renderProducts(data) {
     const toggleStorage = () => {
       storOpen = !storOpen;
       storageContent.style.display = storOpen ? 'block' : 'none';
-      storToggle.innerHTML = `<i class="fa-solid fa-chevron-${storOpen ? 'up' : 'down'}"></i>`;
+      storToggle.innerHTML = `<i class="fa-regular fa-caret-${storOpen ? 'down' : 'up'}"></i>`;
     };
     if (window.innerWidth < 768) {
       storageHeader.addEventListener('click', toggleStorage);
@@ -301,12 +301,12 @@ function renderProducts(data) {
         catHeader.className = 'flex justify-between items-center mb-2 cursor-pointer md:cursor-default pl-4';
 
         const h4 = document.createElement('h4');
-        h4.className = 'text-lg font-semibold';
+        h4.className = 'text-lg font-medium';
         h4.textContent = CATEGORY_NAMES[cat] || cat;
 
         const catToggle = document.createElement('button');
-        catToggle.className = 'text-md';
-        catToggle.innerHTML = '<i class="fa-solid fa-chevron-up"></i>';
+        catToggle.className = 'text-md cursor-pointer';
+        catToggle.innerHTML = '<i class="fa-regular fa-caret-down"></i>';
 
         catHeader.appendChild(h4);
         catHeader.appendChild(catToggle);
@@ -366,7 +366,7 @@ function renderProducts(data) {
         const toggleCategory = () => {
           catOpen = !catOpen;
           table.style.display = catOpen ? 'table' : 'none';
-          catToggle.innerHTML = `<i class="fa-solid fa-chevron-${catOpen ? 'up' : 'down'}"></i>`;
+          catToggle.innerHTML = `<i class="fa-regular fa-caret-${catOpen ? 'down' : 'up'}"></i>`;
         };
         if (window.innerWidth < 768) {
           catHeader.addEventListener('click', toggleCategory);
