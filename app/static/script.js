@@ -58,7 +58,9 @@ async function loadProducts() {
   const data = await res.json();
   window.currentProducts = data;
   const container = document.getElementById('product-list');
-  container.innerHTML = '';
+  if (container) {
+    container.innerHTML = '';
+  }
 
   const groups = {};
   const tbody = document.querySelector('#product-table tbody');
@@ -88,52 +90,56 @@ async function loadProducts() {
     actionTd.appendChild(btn);
     tr.appendChild(actionTd);
     tbody.appendChild(tr);
-    const storage = p.storage || 'pantry';
-    if (!groups[storage]) groups[storage] = [];
-    groups[storage].push(p);
-  });
-
-  const order = ['fridge', 'pantry', 'freezer'];
-  const titles = {
-    fridge: '🧊 Lodówka',
-    pantry: '🏠 Spiżarnia',
-    freezer: '❄️ Zamrażarka'
-  };
-
-  order.forEach(stor => {
-    if (groups[stor] && groups[stor].length) {
-      const h = document.createElement('h3');
-      h.textContent = titles[stor] || stor;
-      container.appendChild(h);
-      const ul = document.createElement('ul');
-      groups[stor].sort((a, b) => a.category.localeCompare(b.category));
-      groups[stor].forEach(p => {
-        const li = document.createElement('li');
-        li.textContent = `${p.name} - ${p.quantity} (${p.category}) `;
-        const edit = document.createElement('button');
-        edit.textContent = 'Edytuj';
-        edit.addEventListener('click', () => {
-          const form = document.getElementById('add-form');
-          form.name.value = p.name;
-          form.quantity.value = p.quantity;
-          form.category.value = p.category;
-          form.storage.value = p.storage || 'pantry';
-          editingName = p.name;
-        });
-        const del = document.createElement('button');
-        del.textContent = 'Usuń';
-        del.addEventListener('click', async () => {
-          await fetch(`/api/products/${encodeURIComponent(p.name)}`, { method: 'DELETE' });
-          await loadProducts();
-          await loadRecipes();
-        });
-        li.appendChild(edit);
-        li.appendChild(del);
-        ul.appendChild(li);
-      });
-      container.appendChild(ul);
+    if (container) {
+      const storage = p.storage || 'pantry';
+      if (!groups[storage]) groups[storage] = [];
+      groups[storage].push(p);
     }
   });
+
+  if (container) {
+    const order = ['fridge', 'pantry', 'freezer'];
+    const titles = {
+      fridge: '🧊 Lodówka',
+      pantry: '🏠 Spiżarnia',
+      freezer: '❄️ Zamrażarka'
+    };
+
+    order.forEach(stor => {
+      if (groups[stor] && groups[stor].length) {
+        const h = document.createElement('h3');
+        h.textContent = titles[stor] || stor;
+        container.appendChild(h);
+        const ul = document.createElement('ul');
+        groups[stor].sort((a, b) => a.category.localeCompare(b.category));
+        groups[stor].forEach(p => {
+          const li = document.createElement('li');
+          li.textContent = `${p.name} - ${p.quantity} (${p.category}) `;
+          const edit = document.createElement('button');
+          edit.textContent = 'Edytuj';
+          edit.addEventListener('click', () => {
+            const form = document.getElementById('add-form');
+            form.name.value = p.name;
+            form.quantity.value = p.quantity;
+            form.category.value = p.category;
+            form.storage.value = p.storage || 'pantry';
+            editingName = p.name;
+          });
+          const del = document.createElement('button');
+          del.textContent = 'Usuń';
+          del.addEventListener('click', async () => {
+            await fetch(`/api/products/${encodeURIComponent(p.name)}`, { method: 'DELETE' });
+            await loadProducts();
+            await loadRecipes();
+          });
+          li.appendChild(edit);
+          li.appendChild(del);
+          ul.appendChild(li);
+        });
+        container.appendChild(ul);
+      }
+    });
+  }
 }
 
 async function loadRecipes() {
