@@ -1,4 +1,3 @@
-let editingName = null;
 let groupedView = false;
 
 const UNIT = 'szt.';
@@ -47,20 +46,14 @@ document.addEventListener('DOMContentLoaded', () => {
       storage: form.storage.value,
       unit: UNIT
     };
-    if (editingName) {
-      await fetch(`/api/products/${encodeURIComponent(editingName)}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(product)
-      });
-    } else {
-      await fetch('/api/products', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(product)
-      });
-    }
-    editingName = null;
+    const existing = (window.currentProducts || []).find(p => p.name === product.name);
+    const url = existing ? `/api/products/${encodeURIComponent(product.name)}` : '/api/products';
+    const method = existing ? 'PUT' : 'POST';
+    await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(product)
+    });
     form.reset();
     await loadProducts();
     await loadRecipes();
@@ -80,6 +73,30 @@ document.addEventListener('DOMContentLoaded', () => {
     form.style.display = 'none';
   });
   document.getElementById('add-ingredient').addEventListener('click', () => addIngredientRow());
+  document.getElementById('edit-any').addEventListener('click', async () => {
+    const name = prompt('Nazwa produktu:');
+    if (!name) return;
+    const product = (window.currentProducts || []).find(p => p.name === name);
+    if (!product) {
+      alert('Nie znaleziono produktu');
+      return;
+    }
+    const qtyStr = prompt('Nowa ilość:', product.quantity);
+    if (qtyStr === null) return;
+    const quantity = parseFloat(qtyStr);
+    if (isNaN(quantity)) {
+      alert('Nieprawidłowa ilość');
+      return;
+    }
+    const updated = { ...product, quantity };
+    await fetch(`/api/products/${encodeURIComponent(name)}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updated)
+    });
+    await loadProducts();
+    await loadRecipes();
+  });
   document.getElementById('view-toggle').addEventListener('click', () => {
     groupedView = !groupedView;
     document.getElementById('product-table').style.display = groupedView ? 'none' : 'table';
@@ -183,16 +200,6 @@ async function loadProducts() {
           unitTd.textContent = p.unit;
           tr.appendChild(unitTd);
           const actionTd = document.createElement('td');
-          const edit = document.createElement('button');
-          edit.textContent = 'Edytuj';
-          edit.addEventListener('click', () => {
-            const form = document.getElementById('add-form');
-            form.name.value = p.name;
-            form.quantity.value = p.quantity;
-            form.category.value = p.category;
-            form.storage.value = p.storage || 'pantry';
-            editingName = p.name;
-          });
           const del = document.createElement('button');
           del.textContent = 'Usuń';
           del.addEventListener('click', async () => {
@@ -200,7 +207,6 @@ async function loadProducts() {
             await loadProducts();
             await loadRecipes();
           });
-          actionTd.appendChild(edit);
           actionTd.appendChild(del);
           tr.appendChild(actionTd);
           tbodyCat.appendChild(tr);
