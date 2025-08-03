@@ -145,6 +145,7 @@
 
         <div id="tab-shopping" class="tab-panel" style="display:none;">
             <h1 class="text-2xl font-bold mb-6" data-i18n="heading_shopping">Lista zakupów</h1>
+            <button id="receipt-btn" class="btn btn-secondary btn-sm mb-4" data-i18n="receipt_import">Dodaj z paragonu</button>
             <div id="suggestions-section" class="mb-8">
                 <h2 class="text-xl font-semibold mb-4" data-i18n="heading_suggestions">Propozycje</h2>
                 <div class="overflow-x-auto">
@@ -183,6 +184,29 @@
                 </div>
                 <datalist id="product-datalist"></datalist>
             </div>
+            <dialog id="receipt-modal" class="modal">
+                <form method="dialog" class="modal-box w-11/12 max-w-3xl">
+                    <h3 class="font-bold text-lg" data-i18n="receipt_import">Dodaj z paragonu</h3>
+                    <input id="receipt-file" type="file" accept="image/png,image/jpeg" class="file-input file-input-bordered w-full my-4">
+                    <div class="overflow-x-auto">
+                        <table id="receipt-table" class="table w-full">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="table_header_name">Nazwa</th>
+                                    <th data-i18n="table_header_quantity">Ilość</th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="modal-action">
+                        <button id="receipt-confirm" class="btn btn-primary" data-i18n="confirm_import">Zatwierdź import</button>
+                        <button class="btn btn-outline" data-i18n="delete_cancel_button">Anuluj</button>
+                    </div>
+                </form>
+            </dialog>
             <dialog id="shopping-delete-modal" class="modal">
                 <form method="dialog" class="modal-box">
                     <h3 class="font-bold text-lg" data-i18n="delete_modal_title">Potwierdź usunięcie</h3>
@@ -196,6 +220,7 @@
         </div>
 
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.5/dist/tesseract.min.js"></script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

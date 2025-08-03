@@ -170,6 +170,29 @@ def modify_product(name):
     save_json(PRODUCTS_PATH, products)
     return jsonify(products)
 
+
+@app.route('/api/ocr-match', methods=['POST'])
+def ocr_match():
+    payload = request.json or {}
+    items = payload.get('items', [])
+    products = load_json(PRODUCTS_PATH)
+    results = []
+    for raw in items:
+        text = str(raw).strip().lower()
+        matches = [p for p in products if text and text in p.get('name', '').lower()]
+        results.append({
+            'original': raw,
+            'matches': [
+                {
+                    'name': m.get('name'),
+                    'category': m.get('category'),
+                    'storage': m.get('storage')
+                }
+                for m in matches
+            ]
+        })
+    return jsonify(results)
+
 @app.route('/api/recipes')
 def recipes():
     products = load_json(PRODUCTS_PATH)
