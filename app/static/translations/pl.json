@@ -146,4 +146,9 @@
   "unit.bottle": "butelka",
   "unit.jar": "słoik",
   "unit.x270g": "× 270 g"
+  "unit_piece": "szt.",
+  "accept": "dodaj",
+  "reject": "ukryj",
+  "in_cart": "w koszyku",
+  "owned": "Posiadane"
 }

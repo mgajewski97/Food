@@ -146,4 +146,9 @@
   "unit.bottle": "bottle",
   "unit.jar": "jar",
   "unit.x270g": "× 270 g"
+  "unit_piece": "pcs",
+  "accept": "accept",
+  "reject": "reject",
+  "in_cart": "in cart",
+  "owned": "Owned"
 }
