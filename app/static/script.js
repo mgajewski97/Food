@@ -8,18 +8,36 @@ const LOW_STOCK_CLASS = 'text-error bg-error/10';
 
 let shoppingList = JSON.parse(localStorage.getItem('shoppingList') || '[]');
 
-let translations = {};
+let uiTranslations = { pl: {}, en: {} };
+let translations = { products: {}, units: {} };
 let handledSuggestions = new Set();
 let currentSuggestions = [];
 
-async function loadTranslations(lang) {
+async function loadTranslations() {
   try {
-    const res = await fetch(`/static/translations/${lang}.json`);
-    if (!res.ok) throw new Error(`status ${res.status}`);
-    translations = await res.json();
+    const [plRes, enRes] = await Promise.all([
+      fetch('/static/translations/pl.json'),
+      fetch('/static/translations/en.json')
+    ]);
+    const pl = await plRes.json();
+    const en = await enRes.json();
+    uiTranslations.pl = pl;
+    uiTranslations.en = en;
+    translations.products = {};
+    translations.units = {};
+    Object.entries(pl).forEach(([k, v]) => {
+      if (k.startsWith('product.')) {
+        const key = k.slice('product.'.length);
+        translations.products[key] = { pl: v, en: en[k] || '(no translation)' };
+      } else if (k.startsWith('unit.')) {
+        const key = k.slice('unit.'.length);
+        translations.units[key] = { pl: v, en: en[k] || '(no translation)' };
+      }
+    });
   } catch (err) {
     console.error('Failed to load translations', err);
-    translations = {};
+    uiTranslations = { pl: {}, en: {} };
+    translations = { products: {}, units: {} };
   }
 }
 
@@ -56,9 +74,23 @@ const STORAGE_ICONS = {
   freezer: '❄️'
 };
 
-  function t(id) {
-    return translations[id] || id;
-  }
+function t(id) {
+  return uiTranslations[currentLang][id] || '(no translation)';
+}
+
+function productName(key) {
+  if (!key || !key.startsWith('product.')) return key;
+  const k = key.slice('product.'.length);
+  const entry = translations.products[k];
+  return entry ? entry[currentLang] || '(no translation)' : '(no translation)';
+}
+
+function unitName(key) {
+  if (!key || !key.startsWith('unit.')) return key;
+  const k = key.slice('unit.'.length);
+  const entry = translations.units[k];
+  return entry ? entry[currentLang] || '(no translation)' : '(no translation)';
+}
 
 function applyTranslations() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -86,9 +118,9 @@ function formatQuantity(p) {
   const packages = p.quantity;
   const units = packages * (p.package_size || 1);
   if ((p.package_size || 1) !== 1) {
-    return `${packages} op. (${units} ${t(p.unit)})`;
+    return `${packages} op. (${units} ${unitName(p.unit)})`;
   }
-  return `${units} ${t(p.unit)}`;
+  return `${units} ${unitName(p.unit)}`;
 }
 
 function formatPackQuantity(p) {
@@ -128,12 +160,12 @@ function sortProducts(list) {
     const catB = categoryName(b.category);
     const catCmp = catA.localeCompare(catB);
     if (catCmp !== 0) return catCmp;
-    return t(a.name).localeCompare(t(b.name));
+    return productName(a.name).localeCompare(productName(b.name));
   });
 }
 
   document.addEventListener('DOMContentLoaded', async () => {
-    await loadTranslations(currentLang);
+    await loadTranslations();
     document.documentElement.setAttribute('lang', currentLang);
     UNIT = t('unit_piece');
     applyTranslations();
@@ -153,7 +185,6 @@ function sortProducts(list) {
         langBtn.textContent = currentLang.toUpperCase();
         const active = document.querySelector('[data-tab-target].tab-active');
         const activeTarget = active ? active.dataset.tabTarget : null;
-        await loadTranslations(currentLang);
         document.documentElement.setAttribute('lang', currentLang);
         UNIT = t('unit_piece');
         applyTranslations();
@@ -227,7 +258,7 @@ function sortProducts(list) {
     const lines = [t('clipboard_header_products')];
     (window.currentProducts || []).forEach(p => {
       const units = p.quantity * (p.package_size || 1);
-      lines.push(`- ${t(p.name)}: ${units} ${t(p.unit)}`);
+      lines.push(`- ${productName(p.name)}: ${units} ${unitName(p.unit)}`);
     });
     navigator.clipboard.writeText(lines.join('\n'));
   });
@@ -278,7 +309,7 @@ function sortProducts(list) {
     });
     pendingDelete = names;
     const summary = document.getElementById('delete-summary');
-    summary.innerHTML = names.map(n => `<div>${t(n)}</div>`).join('');
+    summary.innerHTML = names.map(n => `<div>${productName(n)}</div>`).join('');
     document.getElementById('delete-modal').showModal();
   });
 
@@ -311,16 +342,25 @@ function sortProducts(list) {
         const newUnit = unitInput.value.trim();
         const newCat = catSelect.value;
         const newStor = storSelect.value;
-        if (
-          newName !== original.name ||
-          newQty !== original.quantity ||
-          newUnit !== original.unit ||
-          newCat !== original.category ||
-          newStor !== original.storage
-        ) {
+        const nameChanged = newName !== productName(original.name);
+        const unitChanged = newUnit !== unitName(original.unit);
+        const qtyChanged = newQty !== original.quantity;
+        const catChanged = newCat !== original.category;
+        const storChanged = newStor !== original.storage;
+        if (nameChanged) {
+          const key = original.name.slice('product.'.length);
+          if (!translations.products[key]) translations.products[key] = {};
+          translations.products[key][currentLang] = newName;
+        }
+        if (unitChanged) {
+          const key = original.unit.slice('unit.'.length);
+          if (!translations.units[key]) translations.units[key] = {};
+          translations.units[key][currentLang] = newUnit;
+        }
+        if (qtyChanged || catChanged || storChanged) {
           updates.push({
             originalName: original.name,
-            updated: { ...original, name: newName, quantity: newQty, unit: newUnit, category: newCat, storage: newStor }
+            updated: { ...original, name: original.name, quantity: newQty, unit: original.unit, category: newCat, storage: newStor }
           });
         }
       }
@@ -450,7 +490,7 @@ function getFilteredProducts() {
         if (p.quantity <= 0) return false;
         break;
     }
-    return t(p.name).toLowerCase().includes(query);
+    return productName(p.name).toLowerCase().includes(query);
   }));
 }
 
@@ -477,7 +517,8 @@ function renderProducts(data) {
       const nameTd = document.createElement('td');
       nameTd.className = 'px-4 py-2';
       const nameInput = document.createElement('input');
-      nameInput.value = p.name;
+      nameInput.value = productName(p.name);
+      nameInput.dataset.key = p.name;
       nameInput.className = 'edit-name input input-bordered w-full';
       nameTd.appendChild(nameInput);
       tr.appendChild(nameTd);
@@ -510,7 +551,8 @@ function renderProducts(data) {
       const unitTd = document.createElement('td');
       unitTd.className = 'px-4 py-2';
       const unitInput = document.createElement('input');
-      unitInput.value = p.unit;
+      unitInput.value = unitName(p.unit);
+      unitInput.dataset.key = p.unit;
       unitInput.className = 'edit-unit input input-bordered w-full';
       unitTd.appendChild(unitInput);
       tr.appendChild(unitTd);
@@ -554,7 +596,7 @@ function renderProducts(data) {
     } else {
       const nameTd = document.createElement('td');
       nameTd.className = 'px-4 py-2';
-      nameTd.textContent = t(p.name);
+      nameTd.textContent = productName(p.name);
       tr.appendChild(nameTd);
 
       const qtyTd = document.createElement('td');
@@ -567,7 +609,7 @@ function renderProducts(data) {
 
       const unitTd = document.createElement('td');
       unitTd.className = 'px-4 py-2';
-      unitTd.textContent = t(p.unit);
+      unitTd.textContent = unitName(p.unit);
       tr.appendChild(unitTd);
 
       const catTd = document.createElement('td');
@@ -691,7 +733,7 @@ function renderProducts(data) {
         table.appendChild(thead);
 
         const tbodyCat = document.createElement('tbody');
-        categories[cat].sort((a, b) => t(a.name).localeCompare(t(b.name)));
+        categories[cat].sort((a, b) => productName(a.name).localeCompare(productName(b.name)));
         categories[cat].forEach(p => {
           const tr = document.createElement('tr');
           tr.className = 'hover';
@@ -700,7 +742,7 @@ function renderProducts(data) {
           }
           const nameTd = document.createElement('td');
           nameTd.className = 'px-4 py-2';
-          nameTd.textContent = t(p.name);
+          nameTd.textContent = productName(p.name);
           tr.appendChild(nameTd);
 
           const qtyTd = document.createElement('td');
@@ -713,7 +755,7 @@ function renderProducts(data) {
 
           const unitTd = document.createElement('td');
           unitTd.className = 'px-4 py-2';
-          unitTd.textContent = t(p.unit);
+          unitTd.textContent = unitName(p.unit);
           tr.appendChild(unitTd);
 
           const statusTd = document.createElement('td');
@@ -876,8 +918,8 @@ function renderSuggestions() {
   currentSuggestions.forEach(p => {
     const row = document.createElement('div');
     row.className = 'flex items-center gap-2';
-    const nameSpan = document.createElement('span');
-    nameSpan.textContent = p.name;
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = productName(p.name);
     row.appendChild(nameSpan);
 
     const qtyWrap = document.createElement('div');
@@ -942,7 +984,7 @@ function renderShoppingList() {
   list.innerHTML = '';
   shoppingList.forEach(i => {
     const li = document.createElement('li');
-    li.textContent = `${i.name} (${i.quantity})`;
+    li.textContent = `${productName(i.name)} (${i.quantity})`;
     list.appendChild(li);
   });
 }
@@ -955,7 +997,7 @@ function handleManualAdd() {
   const name = nameInput.value.trim();
   const qty = parseInt(qtyInput.value) || 1;
   if (!name) return;
-  const matches = currentSuggestions.filter(p => p.name.toLowerCase() === name.toLowerCase());
+  const matches = currentSuggestions.filter(p => productName(p.name).toLowerCase() === name.toLowerCase());
   pendingManual = { name, qty, matches };
   const choice = document.getElementById('manual-choice');
   if (matches.length > 1) {
@@ -1043,7 +1085,7 @@ function updateDatalist() {
   datalist.innerHTML = '';
   (window.currentProducts || []).forEach(p => {
     const option = document.createElement('option');
-    option.value = t(p.name);
+    option.value = productName(p.name);
     option.dataset.key = p.name;
     datalist.appendChild(option);
   });
@@ -1070,8 +1112,8 @@ function renderSuggestions() {
     if (!needs || existing.has(p.name.toLowerCase())) return;
     const li = document.createElement('li');
     li.className = 'flex items-center justify-between';
-    const nameSpan = document.createElement('span');
-    nameSpan.textContent = p.name;
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = productName(p.name);
     li.appendChild(nameSpan);
     const actions = document.createElement('span');
     actions.className = 'flex gap-2';
@@ -1098,10 +1140,10 @@ function renderShoppingList() {
   if (!list) return;
   list.innerHTML = '';
   shoppingList.sort((a, b) => {
-    if (a.inCart && b.inCart) return (a.cartTime || 0) - (b.cartTime || 0);
-    if (a.inCart !== b.inCart) return a.inCart ? 1 : -1;
-    return a.name.localeCompare(b.name);
-  });
+      if (a.inCart && b.inCart) return (a.cartTime || 0) - (b.cartTime || 0);
+      if (a.inCart !== b.inCart) return a.inCart ? 1 : -1;
+      return productName(a.name).localeCompare(productName(b.name));
+    });
   shoppingList.forEach(item => {
     const li = document.createElement('li');
     li.className = 'flex items-center gap-2';
@@ -1125,7 +1167,7 @@ function renderShoppingList() {
     });
     li.appendChild(cb);
     const nameSpan = document.createElement('span');
-    nameSpan.textContent = item.name;
+    nameSpan.textContent = productName(item.name);
     nameSpan.className = 'flex-1';
     if (item.inCart) {
       nameSpan.classList.add('line-through');
