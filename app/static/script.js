@@ -130,8 +130,11 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify(u.updated)
       });
     }
+    editMode = false;
+    document.getElementById('edit-toggle').textContent = 'Edytuj';
+    document.getElementById('save-btn').style.display = 'none';
+    await loadProducts();
     if (updates.length) {
-      await loadProducts();
       await loadRecipes();
     }
   });
