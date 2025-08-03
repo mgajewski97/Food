@@ -3,6 +3,32 @@ let editingName = null;
 const UNIT = 'szt.';
 const LOW_STOCK_THRESHOLD = 1; // TODO: thresholds per category
 
+const CATEGORY_NAMES = {
+  fresh_veg: 'Świeże warzywa',
+  mushrooms: 'Grzyby',
+  dairy_eggs: 'Nabiał i jajka',
+  opened_preserves: 'Otwarte konserwy i przetwory',
+  ready_sauces: 'Gotowe sosy',
+  dry_veg: 'Warzywa suche',
+  bread: 'Pieczywo',
+  pasta: 'Makarony',
+  rice: 'Ryże',
+  grains: 'Kasze',
+  dried_legumes: 'Suche rośliny strączkowe',
+  sauces: 'Sosy i przyprawy płynne',
+  oils: 'Oleje',
+  spreads: 'Smarowidła i pasty',
+  frozen_veg: 'Mrożone warzywa',
+  frozen_sauces: 'Mrożone sosy',
+  frozen_meals: 'Mrożone dania / zupy'
+};
+
+const STORAGE_NAMES = {
+  fridge: 'Lodówka',
+  pantry: 'Szafka',
+  freezer: 'Zamrażarka'
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   loadProducts();
   loadRecipes();
@@ -95,9 +121,9 @@ async function loadProducts() {
 
   const order = ['fridge', 'pantry', 'freezer'];
   const titles = {
-    fridge: '🧊 Lodówka',
-    pantry: '🏠 Spiżarnia',
-    freezer: '❄️ Zamrażarka'
+    fridge: `🧊 ${STORAGE_NAMES.fridge}`,
+    pantry: `🏠 ${STORAGE_NAMES.pantry}`,
+    freezer: `❄️ ${STORAGE_NAMES.freezer}`
   };
 
   order.forEach(stor => {
@@ -109,7 +135,8 @@ async function loadProducts() {
       groups[stor].sort((a, b) => a.category.localeCompare(b.category));
       groups[stor].forEach(p => {
         const li = document.createElement('li');
-        li.textContent = `${p.name} - ${p.quantity} (${p.category}) `;
+        const catName = CATEGORY_NAMES[p.category] || p.category;
+        li.textContent = `${p.name} - ${p.quantity} (${catName}) `;
         const edit = document.createElement('button');
         edit.textContent = 'Edytuj';
         edit.addEventListener('click', () => {
