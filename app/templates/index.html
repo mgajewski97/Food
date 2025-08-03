@@ -36,24 +36,37 @@
                 <button id="view-toggle" class="btn btn-primary">Widok z podziałem</button>
                 <button id="edit-toggle" class="btn btn-warning">Edytuj</button>
                 <button id="save-btn" style="display:none;" class="btn btn-success">Zapisz</button>
+                <button id="delete-selected" style="display:none;" class="btn btn-error" disabled>Usuń zaznaczone</button>
             </div>
             <div class="overflow-x-auto">
                 <table id="product-table" class="table table-zebra w-full">
                     <thead>
                         <tr>
+                            <th id="select-header" style="display:none;"></th>
                             <th>Nazwa</th>
                             <th>Ilość</th>
                             <th>Jednostka</th>
                             <th>Kategoria</th>
                             <th>Miejsce</th>
                             <th>Status</th>
-                            <th></th>
                         </tr>
                     </thead>
                     <tbody></tbody>
                 </table>
                 <div id="product-list" style="display:none;"></div>
             </div>
+
+            <dialog id="delete-modal" class="modal">
+                <form method="dialog" class="modal-box">
+                    <h3 class="font-bold text-lg">Potwierdź usunięcie</h3>
+                    <p class="py-4">Czy na pewno chcesz usunąć zaznaczone produkty?</p>
+                    <div id="delete-summary" class="space-y-1"></div>
+                    <div class="modal-action">
+                        <button id="confirm-delete" class="btn btn-error">Usuń</button>
+                        <button id="cancel-delete" class="btn">Anuluj</button>
+                    </div>
+                </form>
+            </dialog>
 
             <hr class="border-t border-base-300 my-6">
 

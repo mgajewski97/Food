@@ -1,6 +1,7 @@
 let groupedView = false;
 let editMode = false;
 let currentFilter = 'available';
+let pendingDelete = [];
 
 const UNIT = 'szt.';
 const LOW_STOCK_CLASS = 'text-error bg-error/10';
@@ -159,34 +160,89 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.getElementById('add-ingredient').addEventListener('click', () => addIngredientRow());
   document.getElementById('view-toggle').addEventListener('click', () => {
+    if (editMode) {
+      editMode = false;
+      document.getElementById('edit-toggle').textContent = 'Edytuj';
+      document.getElementById('save-btn').style.display = 'none';
+      document.getElementById('delete-selected').style.display = 'none';
+      document.getElementById('select-header').style.display = 'none';
+    }
     groupedView = !groupedView;
     document.getElementById('product-table').style.display = groupedView ? 'none' : 'table';
     document.getElementById('product-list').style.display = groupedView ? 'block' : 'none';
     document.getElementById('view-toggle').textContent = groupedView ? 'Płaska lista' : 'Widok z podziałem';
+    renderProducts(getFilteredProducts());
   });
   document.getElementById('edit-toggle').addEventListener('click', async () => {
     editMode = !editMode;
     document.getElementById('edit-toggle').textContent = editMode ? 'Zakończ edycję' : 'Edytuj';
     document.getElementById('save-btn').style.display = editMode ? 'inline-block' : 'none';
+    document.getElementById('delete-selected').style.display = editMode ? 'inline-block' : 'none';
+    document.getElementById('select-header').style.display = editMode ? 'table-cell' : 'none';
     if (!editMode) {
       await loadProducts();
     } else {
       renderProducts(getFilteredProducts());
     }
+    updateDeleteButton();
+  });
+
+  document.getElementById('delete-selected').addEventListener('click', () => {
+    const data = getFilteredProducts();
+    const rows = Array.from(document.querySelectorAll('#product-table tbody tr'));
+    const names = [];
+    rows.forEach((tr, idx) => {
+      const cb = tr.querySelector('.row-select');
+      if (cb && cb.checked) {
+        names.push(data[idx].name);
+      }
+    });
+    pendingDelete = names;
+    const summary = document.getElementById('delete-summary');
+    summary.innerHTML = names.map(n => `<div>${n}</div>`).join('');
+    document.getElementById('delete-modal').showModal();
+  });
+
+  document.getElementById('confirm-delete').addEventListener('click', async () => {
+    for (const name of pendingDelete) {
+      await fetch(`/api/products/${encodeURIComponent(name)}`, { method: 'DELETE' });
+    }
+    document.getElementById('delete-modal').close();
+    await loadProducts();
+    updateDeleteButton();
+  });
+
+  document.getElementById('cancel-delete').addEventListener('click', () => {
+    document.getElementById('delete-modal').close();
   });
   document.getElementById('save-btn').addEventListener('click', async () => {
     const rows = document.querySelectorAll('#product-table tbody tr');
     const data = getFilteredProducts();
     const updates = [];
     rows.forEach((tr, idx) => {
-      const nameInput = tr.querySelector('td:nth-child(1) input');
-      const qtyInput = tr.querySelector('td:nth-child(2) input');
-      if (nameInput && qtyInput) {
+      const nameInput = tr.querySelector('.edit-name');
+      const qtyInput = tr.querySelector('.edit-qty');
+      const unitInput = tr.querySelector('.edit-unit');
+      const catSelect = tr.querySelector('.edit-category');
+      const storSelect = tr.querySelector('.edit-storage');
+      if (nameInput && qtyInput && unitInput && catSelect && storSelect) {
         const original = data[idx];
         const newName = nameInput.value.trim();
         const newQty = parseFloat(qtyInput.value) / (original.package_size || 1);
-        if (newName !== original.name || newQty !== original.quantity) {
-          updates.push({ originalName: original.name, updated: { ...original, name: newName, quantity: newQty } });
+        const newUnit = unitInput.value.trim();
+        const newCat = catSelect.value;
+        const newStor = storSelect.value;
+        if (
+          newName !== original.name ||
+          newQty !== original.quantity ||
+          newUnit !== original.unit ||
+          newCat !== original.category ||
+          newStor !== original.storage
+        ) {
+          updates.push({
+            originalName: original.name,
+            updated: { ...original, name: newName, quantity: newQty, unit: newUnit, category: newCat, storage: newStor }
+          });
         }
       }
     });
@@ -200,10 +256,13 @@ document.addEventListener('DOMContentLoaded', () => {
     editMode = false;
     document.getElementById('edit-toggle').textContent = 'Edytuj';
     document.getElementById('save-btn').style.display = 'none';
+    document.getElementById('delete-selected').style.display = 'none';
+    document.getElementById('select-header').style.display = 'none';
     await loadProducts();
     if (updates.length) {
       await loadRecipes();
     }
+    updateDeleteButton();
   });
   document.getElementById('product-search').addEventListener('input', () => {
     renderProducts(getFilteredProducts());
@@ -269,126 +328,95 @@ function getFilteredProducts() {
   }));
 }
 
-async function changeQuantity(product, delta, { qtySpan, decBtn, tr, statusTd }) {
-  const currentQty = parseFloat(product.quantity) || 0;
-  const newQty = Math.max(0, currentQty + delta);
-  if (newQty === currentQty) return;
-  const updated = {
-    name: product.name,
-    quantity: newQty,
-    category: product.category,
-    storage: product.storage,
-    threshold: product.threshold,
-    main: product.main,
-    unit: product.unit,
-    package_size: product.package_size,
-    pack_size: product.pack_size
-  };
-  await fetch('/api/products', {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(updated)
-  });
-  product.quantity = newQty;
-  product.low_stock = product.threshold !== null && product.quantity <= product.threshold;
-  if (qtySpan) {
-    qtySpan.textContent = formatPackQuantity(product);
-    if (product.pack_size) {
-      qtySpan.parentElement.title = 'Produkt w opakowaniach zbiorczych';
-    } else {
-      qtySpan.parentElement.removeAttribute('title');
-    }
-  }
-  if (decBtn) decBtn.disabled = newQty <= 0;
-  if (tr) {
-    if (product.low_stock) {
-      tr.classList.add(...LOW_STOCK_CLASS.split(' '));
-    } else {
-      tr.classList.remove(...LOW_STOCK_CLASS.split(' '));
-    }
-  }
-  if (statusTd) {
-    const status = getStatusIcon(product);
-    if (status) {
-      statusTd.innerHTML = status.html;
-      statusTd.title = status.title;
-    } else {
-      statusTd.innerHTML = '';
-      statusTd.removeAttribute('title');
-    }
-  }
-}
-
-  function addRowActions(tr, product) {
-    const actionTd = document.createElement('td');
-    actionTd.className = 'px-4 py-2';
-    const del = document.createElement('button');
-    del.textContent = 'Usuń';
-    del.className = 'px-2 py-1 text-white bg-red-600 rounded hover:bg-red-700';
-    del.addEventListener('click', async () => {
-      await fetch(`/api/products/${encodeURIComponent(product.name)}`, { method: 'DELETE' });
-      await loadProducts();
-      await loadRecipes();
-    });
-    actionTd.appendChild(del);
-    tr.appendChild(actionTd);
-  }
-
 function renderProducts(data) {
   const tbody = document.querySelector('#product-table tbody');
   tbody.innerHTML = '';
-    data.forEach(p => {
-      const tr = document.createElement('tr');
-      tr.className = 'bg-white border-b hover:bg-gray-50';
-      if (p.low_stock) {
-        tr.className += ` ${LOW_STOCK_CLASS}`;
-      }
+  document.getElementById('select-header').style.display = editMode ? 'table-cell' : 'none';
+  data.forEach(p => {
+    const tr = document.createElement('tr');
+    tr.className = 'bg-white border-b hover:bg-gray-50';
+    if (p.low_stock) {
+      tr.className += ` ${LOW_STOCK_CLASS}`;
+    }
+    if (editMode) {
+      const selectTd = document.createElement('td');
+      selectTd.className = 'px-4 py-2';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.className = 'row-select checkbox';
+      cb.addEventListener('change', updateDeleteButton);
+      selectTd.appendChild(cb);
+      tr.appendChild(selectTd);
+
       const nameTd = document.createElement('td');
       nameTd.className = 'px-4 py-2';
-      const qtyTd = document.createElement('td');
-      qtyTd.className = 'px-4 py-2';
-      let decBtn, qtySpan, incBtn;
-      if (editMode) {
-        const nameInput = document.createElement('input');
-        nameInput.value = p.name;
-        nameTd.appendChild(nameInput);
-        const qtyInput = document.createElement('input');
-        qtyInput.type = 'number';
-        qtyInput.value = p.quantity * (p.package_size || 1);
-        qtyTd.appendChild(qtyInput);
-      } else {
-        nameTd.textContent = p.name;
-        decBtn = document.createElement('button');
-        decBtn.textContent = '−';
-        decBtn.className = 'btn btn-xs';
-        decBtn.disabled = p.quantity <= 0;
-        qtySpan = document.createElement('span');
-        qtySpan.className = 'mx-2';
-        qtySpan.textContent = formatPackQuantity(p);
-        incBtn = document.createElement('button');
-        incBtn.textContent = '+';
-        incBtn.className = 'btn btn-xs';
-        qtyTd.appendChild(decBtn);
-        qtyTd.appendChild(qtySpan);
-        qtyTd.appendChild(incBtn);
-        if (p.pack_size) {
-          qtyTd.title = 'Produkt w opakowaniach zbiorczych';
-        }
-      }
+      const nameInput = document.createElement('input');
+      nameInput.value = p.name;
+      nameInput.className = 'edit-name input input-bordered w-full';
+      nameTd.appendChild(nameInput);
       tr.appendChild(nameTd);
+
+      const qtyTd = document.createElement('td');
+      qtyTd.className = 'px-4 py-2 flex items-center';
+      const decBtn = document.createElement('button');
+      decBtn.textContent = '−';
+      decBtn.className = 'btn btn-xs';
+      const qtyInput = document.createElement('input');
+      qtyInput.type = 'number';
+      qtyInput.value = p.quantity * (p.package_size || 1);
+      qtyInput.className = 'edit-qty input input-bordered w-20 text-center mx-2';
+      const incBtn = document.createElement('button');
+      incBtn.textContent = '+';
+      incBtn.className = 'btn btn-xs';
+      decBtn.addEventListener('click', () => {
+        const current = parseFloat(qtyInput.value) || 0;
+        qtyInput.value = Math.max(0, current - 1);
+      });
+      incBtn.addEventListener('click', () => {
+        const current = parseFloat(qtyInput.value) || 0;
+        qtyInput.value = current + 1;
+      });
+      qtyTd.appendChild(decBtn);
+      qtyTd.appendChild(qtyInput);
+      qtyTd.appendChild(incBtn);
       tr.appendChild(qtyTd);
+
       const unitTd = document.createElement('td');
       unitTd.className = 'px-4 py-2';
-      unitTd.textContent = p.unit;
+      const unitInput = document.createElement('input');
+      unitInput.value = p.unit;
+      unitInput.className = 'edit-unit input input-bordered w-full';
+      unitTd.appendChild(unitInput);
       tr.appendChild(unitTd);
+
       const catTd = document.createElement('td');
       catTd.className = 'px-4 py-2';
-      catTd.textContent = CATEGORY_NAMES[p.category] || p.category;
+      const catSelect = document.createElement('select');
+      catSelect.className = 'edit-category select select-bordered';
+      Object.entries(CATEGORY_NAMES).forEach(([val, label]) => {
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = label;
+        if (val === p.category) opt.selected = true;
+        catSelect.appendChild(opt);
+      });
+      catTd.appendChild(catSelect);
       tr.appendChild(catTd);
+
       const storTd = document.createElement('td');
       storTd.className = 'px-4 py-2';
-      storTd.textContent = STORAGE_NAMES[p.storage] || p.storage;
+      const storSelect = document.createElement('select');
+      storSelect.className = 'edit-storage select select-bordered';
+      Object.entries(STORAGE_NAMES).forEach(([val, label]) => {
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = label;
+        if (val === p.storage) opt.selected = true;
+        storSelect.appendChild(opt);
+      });
+      storTd.appendChild(storSelect);
       tr.appendChild(storTd);
+
       const statusTd = document.createElement('td');
       statusTd.className = 'px-4 py-2 text-center';
       const status = getStatusIcon(p);
@@ -397,17 +425,47 @@ function renderProducts(data) {
         statusTd.title = status.title;
       }
       tr.appendChild(statusTd);
-      if (!editMode) {
-        decBtn.addEventListener('click', () =>
-          changeQuantity(p, -1, { qtySpan, decBtn, tr, statusTd })
-        );
-        incBtn.addEventListener('click', () =>
-          changeQuantity(p, 1, { qtySpan, decBtn, tr, statusTd })
-        );
+    } else {
+      const nameTd = document.createElement('td');
+      nameTd.className = 'px-4 py-2';
+      nameTd.textContent = p.name;
+      tr.appendChild(nameTd);
+
+      const qtyTd = document.createElement('td');
+      qtyTd.className = 'px-4 py-2';
+      qtyTd.textContent = formatPackQuantity(p);
+      if (p.pack_size) {
+        qtyTd.title = 'Produkt w opakowaniach zbiorczych';
       }
-      addRowActions(tr, p);
-      tbody.appendChild(tr);
-    });
+      tr.appendChild(qtyTd);
+
+      const unitTd = document.createElement('td');
+      unitTd.className = 'px-4 py-2';
+      unitTd.textContent = p.unit;
+      tr.appendChild(unitTd);
+
+      const catTd = document.createElement('td');
+      catTd.className = 'px-4 py-2';
+      catTd.textContent = CATEGORY_NAMES[p.category] || p.category;
+      tr.appendChild(catTd);
+
+      const storTd = document.createElement('td');
+      storTd.className = 'px-4 py-2';
+      storTd.textContent = STORAGE_NAMES[p.storage] || p.storage;
+      tr.appendChild(storTd);
+
+      const statusTd = document.createElement('td');
+      statusTd.className = 'px-4 py-2 text-center';
+      const status = getStatusIcon(p);
+      if (status) {
+        statusTd.innerHTML = status.html;
+        statusTd.title = status.title;
+      }
+      tr.appendChild(statusTd);
+    }
+    tbody.appendChild(tr);
+  });
+  updateDeleteButton();
 
   const container = document.getElementById('product-list');
   container.innerHTML = '';
@@ -516,42 +574,22 @@ function renderProducts(data) {
           }
           const nameTd = document.createElement('td');
           nameTd.className = 'px-4 py-2';
+          nameTd.textContent = p.name;
+          tr.appendChild(nameTd);
+
           const qtyTd = document.createElement('td');
           qtyTd.className = 'px-4 py-2';
-          let decBtn, qtySpan, incBtn;
-          if (editMode) {
-            const nameInput = document.createElement('input');
-            nameInput.value = p.name;
-            nameTd.appendChild(nameInput);
-            const qtyInput = document.createElement('input');
-            qtyInput.type = 'number';
-            qtyInput.value = p.quantity * (p.package_size || 1);
-            qtyTd.appendChild(qtyInput);
-          } else {
-            nameTd.textContent = p.name;
-            decBtn = document.createElement('button');
-            decBtn.textContent = '−';
-            decBtn.className = 'btn btn-xs';
-            decBtn.disabled = p.quantity <= 0;
-            qtySpan = document.createElement('span');
-            qtySpan.className = 'mx-2';
-            qtySpan.textContent = formatPackQuantity(p);
-            incBtn = document.createElement('button');
-            incBtn.textContent = '+';
-            incBtn.className = 'btn btn-xs';
-            qtyTd.appendChild(decBtn);
-            qtyTd.appendChild(qtySpan);
-            qtyTd.appendChild(incBtn);
-            if (p.pack_size) {
-              qtyTd.title = 'Produkt w opakowaniach zbiorczych';
-            }
+          qtyTd.textContent = formatPackQuantity(p);
+          if (p.pack_size) {
+            qtyTd.title = 'Produkt w opakowaniach zbiorczych';
           }
-          tr.appendChild(nameTd);
           tr.appendChild(qtyTd);
+
           const unitTd = document.createElement('td');
           unitTd.className = 'px-4 py-2';
           unitTd.textContent = p.unit;
           tr.appendChild(unitTd);
+
           const statusTd = document.createElement('td');
           statusTd.className = 'px-4 py-2 text-center';
           const status = getStatusIcon(p);
@@ -560,15 +598,7 @@ function renderProducts(data) {
             statusTd.title = status.title;
           }
           tr.appendChild(statusTd);
-          if (!editMode) {
-            decBtn.addEventListener('click', () =>
-              changeQuantity(p, -1, { qtySpan, decBtn, tr, statusTd })
-            );
-            incBtn.addEventListener('click', () =>
-              changeQuantity(p, 1, { qtySpan, decBtn, tr, statusTd })
-            );
-          }
-          addRowActions(tr, p);
+
           tbodyCat.appendChild(tr);
         });
         table.appendChild(tbodyCat);
@@ -590,6 +620,13 @@ function renderProducts(data) {
       });
     container.appendChild(storageBlock);
   });
+}
+
+function updateDeleteButton() {
+  const btn = document.getElementById('delete-selected');
+  if (!btn) return;
+  const any = document.querySelectorAll('.row-select:checked').length > 0;
+  btn.disabled = !any;
 }
 
 async function loadRecipes() {
