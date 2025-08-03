@@ -11,7 +11,7 @@ const CATEGORY_NAMES = {
   mushrooms: 'Grzyby',
   dairy_eggs: 'Nabiał i jajka',
   opened_preserves: 'Otwarte konserwy i przetwory',
-  ready_sauces: 'Gotowe sosy',
+  ready_sauces: 'Sosy',
   dry_veg: 'Warzywa suche',
   bread: 'Pieczywo',
   pasta: 'Makarony',
