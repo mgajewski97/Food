@@ -80,30 +80,6 @@ document.addEventListener('DOMContentLoaded', () => {
     form.style.display = 'none';
   });
   document.getElementById('add-ingredient').addEventListener('click', () => addIngredientRow());
-  document.getElementById('edit-any').addEventListener('click', async () => {
-    const name = prompt('Nazwa produktu:');
-    if (!name) return;
-    const product = (window.currentProducts || []).find(p => p.name === name);
-    if (!product) {
-      alert('Nie znaleziono produktu');
-      return;
-    }
-    const qtyStr = prompt('Nowa ilość:', product.quantity);
-    if (qtyStr === null) return;
-    const quantity = parseFloat(qtyStr);
-    if (isNaN(quantity)) {
-      alert('Nieprawidłowa ilość');
-      return;
-    }
-    const updated = { ...product, quantity };
-    await fetch(`/api/products/${encodeURIComponent(name)}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updated)
-    });
-    await loadProducts();
-    await loadRecipes();
-  });
   document.getElementById('view-toggle').addEventListener('click', () => {
     groupedView = !groupedView;
     document.getElementById('product-table').style.display = groupedView ? 'none' : 'table';
@@ -203,16 +179,7 @@ function renderProducts(data) {
     const unitTd = document.createElement('td');
     unitTd.textContent = p.unit;
     tr.appendChild(unitTd);
-    const actionTd = document.createElement('td');
-    const btn = document.createElement('button');
-    btn.textContent = 'Usuń';
-    btn.addEventListener('click', async () => {
-      await fetch(`/api/products/${encodeURIComponent(p.name)}`, { method: 'DELETE' });
-      await loadProducts();
-      await loadRecipes();
-    });
-    actionTd.appendChild(btn);
-    tr.appendChild(actionTd);
+    addRowActions(tr, p);
     tbody.appendChild(tr);
   });
 
@@ -277,26 +244,6 @@ function renderProducts(data) {
           unitTd.textContent = p.unit;
           tr.appendChild(unitTd);
           addRowActions(tr, p);
-          const actionTd = document.createElement('td');
-          const edit = document.createElement('button');
-          edit.textContent = 'Edytuj';
-          edit.addEventListener('click', () => {
-            const form = document.getElementById('add-form');
-            form.name.value = p.name;
-            form.quantity.value = p.quantity;
-            form.category.value = p.category;
-            form.storage.value = p.storage || 'pantry';
-            editing = true;
-          });
-          const del = document.createElement('button');
-          del.textContent = 'Usuń';
-          del.addEventListener('click', async () => {
-            await fetch(`/api/products/${encodeURIComponent(p.name)}`, { method: 'DELETE' });
-            await loadProducts();
-            await loadRecipes();
-          });
-          actionTd.appendChild(del);
-          tr.appendChild(actionTd);
           tbodyCat.appendChild(tr);
         });
         table.appendChild(tbodyCat);
