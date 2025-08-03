@@ -6,14 +6,38 @@
 </head>
 <body>
     <h1>Produkty</h1>
-    <ul id="product-list"></ul>
+    <div id="product-list"></div>
 
-    <h2>Dodaj produkt</h2>
+    <h2>Dodaj / edytuj produkt</h2>
     <form id="add-form">
         <input name="name" placeholder="nazwa" required>
         <input name="quantity" placeholder="ilość" required>
-        <input name="category" placeholder="kategoria" required>
-        <button type="submit">Dodaj</button>
+        <select name="category" required>
+            <option value="uncategorized">uncategorized</option>
+            <option value="fresh_veg">fresh_veg</option>
+            <option value="mushrooms">mushrooms</option>
+            <option value="dairy_eggs">dairy_eggs</option>
+            <option value="opened_preserves">opened_preserves</option>
+            <option value="ready_sauces">ready_sauces</option>
+            <option value="dry_veg">dry_veg</option>
+            <option value="bread">bread</option>
+            <option value="pasta">pasta</option>
+            <option value="rice">rice</option>
+            <option value="grains">grains</option>
+            <option value="dried_legumes">dried_legumes</option>
+            <option value="sauces">sauces</option>
+            <option value="oils">oils</option>
+            <option value="spreads">spreads</option>
+            <option value="frozen_veg">frozen_veg</option>
+            <option value="frozen_sauces">frozen_sauces</option>
+            <option value="frozen_meals">frozen_meals</option>
+        </select>
+        <select name="storage" required>
+            <option value="fridge">fridge</option>
+            <option value="pantry" selected>pantry</option>
+            <option value="freezer">freezer</option>
+        </select>
+        <button type="submit">Zapisz</button>
     </form>
 
     <button id="copy-btn">Kopiuj jako prompt</button>

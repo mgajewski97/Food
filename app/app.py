@@ -8,6 +8,11 @@ BASE_DIR = os.path.dirname(__file__)
 PRODUCTS_PATH = os.path.join(BASE_DIR, 'data', 'products.json')
 RECIPES_PATH = os.path.join(BASE_DIR, 'data', 'recipes.json')
 
+def apply_defaults(product):
+    product.setdefault('category', 'uncategorized')
+    product.setdefault('storage', 'pantry')
+    return product
+
 def load_json(path):
     with open(path, 'r', encoding='utf-8') as f:
         return json.load(f)
@@ -23,19 +28,29 @@ def index():
 @app.route('/api/products', methods=['GET', 'POST'])
 def products():
     if request.method == 'POST':
-        new_product = request.json
+        new_product = apply_defaults(request.json)
         products = load_json(PRODUCTS_PATH)
         products.append(new_product)
         save_json(PRODUCTS_PATH, products)
         return jsonify(products)
-    return jsonify(load_json(PRODUCTS_PATH))
-
-@app.route('/api/products/<string:name>', methods=['DELETE'])
-def delete_product(name):
     products = load_json(PRODUCTS_PATH)
-    products = [p for p in products if p['name'] != name]
+    products = [apply_defaults(p) for p in products]
+    return jsonify(products)
+
+@app.route('/api/products/<string:name>', methods=['DELETE', 'PUT'])
+def modify_product(name):
+    products = load_json(PRODUCTS_PATH)
+    if request.method == 'DELETE':
+        products = [p for p in products if p['name'] != name]
+        save_json(PRODUCTS_PATH, products)
+        return '', 204
+    updated = apply_defaults(request.json)
+    for i, p in enumerate(products):
+        if p['name'] == name:
+            products[i] = updated
+            break
     save_json(PRODUCTS_PATH, products)
-    return '', 204
+    return jsonify(updated)
 
 @app.route('/api/recipes')
 def recipes():

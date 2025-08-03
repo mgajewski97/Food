@@ -1,3 +1,5 @@
+let editingName = null;
+
 document.addEventListener('DOMContentLoaded', () => {
   loadProducts();
   loadRecipes();
@@ -8,13 +10,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const product = {
       name: form.name.value,
       quantity: form.quantity.value,
-      category: form.category.value
+      category: form.category.value,
+      storage: form.storage.value
     };
-    await fetch('/api/products', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(product)
-    });
+    if (editingName) {
+      await fetch(`/api/products/${encodeURIComponent(editingName)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(product)
+      });
+    } else {
+      await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(product)
+      });
+    }
+    editingName = null;
     form.reset();
     await loadProducts();
     await loadRecipes();
@@ -33,20 +45,56 @@ async function loadProducts() {
   const res = await fetch('/api/products');
   const data = await res.json();
   window.currentProducts = data;
-  const list = document.getElementById('product-list');
-  list.innerHTML = '';
+  const container = document.getElementById('product-list');
+  container.innerHTML = '';
+
+  const groups = {};
   data.forEach(p => {
-    const li = document.createElement('li');
-    li.textContent = `${p.name} - ${p.quantity} (${p.category}) `;
-    const btn = document.createElement('button');
-    btn.textContent = 'Usuń';
-    btn.addEventListener('click', async () => {
-      await fetch(`/api/products/${encodeURIComponent(p.name)}`, { method: 'DELETE' });
-      await loadProducts();
-      await loadRecipes();
-    });
-    li.appendChild(btn);
-    list.appendChild(li);
+    const storage = p.storage || 'pantry';
+    if (!groups[storage]) groups[storage] = [];
+    groups[storage].push(p);
+  });
+
+  const order = ['fridge', 'pantry', 'freezer'];
+  const titles = {
+    fridge: '🧊 Lodówka',
+    pantry: '🏠 Spiżarnia',
+    freezer: '❄️ Zamrażarka'
+  };
+
+  order.forEach(stor => {
+    if (groups[stor] && groups[stor].length) {
+      const h = document.createElement('h3');
+      h.textContent = titles[stor] || stor;
+      container.appendChild(h);
+      const ul = document.createElement('ul');
+      groups[stor].sort((a, b) => a.category.localeCompare(b.category));
+      groups[stor].forEach(p => {
+        const li = document.createElement('li');
+        li.textContent = `${p.name} - ${p.quantity} (${p.category}) `;
+        const edit = document.createElement('button');
+        edit.textContent = 'Edytuj';
+        edit.addEventListener('click', () => {
+          const form = document.getElementById('add-form');
+          form.name.value = p.name;
+          form.quantity.value = p.quantity;
+          form.category.value = p.category;
+          form.storage.value = p.storage || 'pantry';
+          editingName = p.name;
+        });
+        const del = document.createElement('button');
+        del.textContent = 'Usuń';
+        del.addEventListener('click', async () => {
+          await fetch(`/api/products/${encodeURIComponent(p.name)}`, { method: 'DELETE' });
+          await loadProducts();
+          await loadRecipes();
+        });
+        li.appendChild(edit);
+        li.appendChild(del);
+        ul.appendChild(li);
+      });
+      container.appendChild(ul);
+    }
   });
 }
 
