@@ -43,6 +43,25 @@
     <h1>Przepisy</h1>
     <ul id="recipe-list"></ul>
 
+    <form id="history-form" style="display:none;">
+        <h2 id="history-title"></h2>
+        <input type="hidden" name="name" id="history-name">
+        <div id="used-ingredients"></div>
+        <button type="button" id="add-ingredient" style="display:none;">Dodaj składnik</button>
+        <div>
+            <label>Smak: <input type="number" name="taste" min="1" max="5"></label>
+            <label>Wysiłek: <input type="number" name="effort" min="1" max="5"></label>
+        </div>
+        <label><input type="checkbox" name="favorite"> Ulubione</label>
+        <div>
+            <button type="submit">Zapisz</button>
+            <button type="button" id="history-cancel">Anuluj</button>
+        </div>
+    </form>
+
+    <h1>Historia</h1>
+    <ul id="history-list"></ul>
+
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
