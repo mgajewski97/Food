@@ -208,19 +208,14 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('product-search').addEventListener('input', () => {
     renderProducts(getFilteredProducts());
   });
-  const desktopFilter = document.getElementById('state-filter');
-  const mobileFilter = document.getElementById('state-filter-mobile');
+  const stateFilter = document.getElementById('state-filter');
   function setFilter(value) {
     currentFilter = value;
-    if (desktopFilter) desktopFilter.value = value;
-    if (mobileFilter) mobileFilter.value = value;
+    if (stateFilter) stateFilter.value = value;
     renderProducts(getFilteredProducts());
   }
-  if (desktopFilter) {
-    desktopFilter.addEventListener('change', e => setFilter(e.target.value));
-  }
-  if (mobileFilter) {
-    mobileFilter.addEventListener('change', e => setFilter(e.target.value));
+  if (stateFilter) {
+    stateFilter.addEventListener('change', e => setFilter(e.target.value));
   }
   document.getElementById('edit-json-btn').addEventListener('click', async () => {
     const textarea = document.getElementById('edit-json');

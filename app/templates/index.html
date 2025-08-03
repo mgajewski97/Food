@@ -24,30 +24,14 @@
         <div id="tab-products" class="tab-panel">
             <h1 class="text-2xl font-bold mb-4">Produkty</h1>
             <div id="controls" class="flex flex-wrap items-center gap-4 mb-4">
-                <div class="flex flex-col md:flex-row gap-2 items-start flex-1">
+                <div class="flex flex-col md:flex-row gap-2 items-start md:items-center flex-1">
                     <input id="product-search" placeholder="Szukaj produktu" class="input input-bordered flex-1 min-w-[200px]" />
-                    <div class="hidden md:block">
-                        <select id="state-filter" class="select select-bordered">
-                            <option value="available">Dostępne</option>
-                            <option value="missing">Brakujące</option>
-                            <option value="low">Kończące się</option>
-                            <option value="all">Wszystkie</option>
-                        </select>
-                    </div>
-                    <div class="md:hidden w-full">
-                        <div tabindex="0" class="collapse collapse-arrow border border-base-300 bg-base-100 rounded-box w-full">
-                            <input type="checkbox" />
-                            <div class="collapse-title text-md font-medium">Filtr</div>
-                            <div class="collapse-content">
-                                <select id="state-filter-mobile" class="select select-bordered w-full mt-2">
-                                    <option value="available">Dostępne</option>
-                                    <option value="missing">Brakujące</option>
-                                    <option value="low">Kończące się</option>
-                                    <option value="all">Wszystkie</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+                    <select id="state-filter" class="select select-bordered w-full md:w-auto">
+                        <option value="available">Dostępne</option>
+                        <option value="missing">Brakujące</option>
+                        <option value="low">Kończące się</option>
+                        <option value="all">Wszystkie</option>
+                    </select>
                 </div>
                 <button id="view-toggle" class="btn btn-primary">Widok z podziałem</button>
                 <button id="edit-toggle" class="btn btn-warning">Edytuj</button>
