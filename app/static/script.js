@@ -128,6 +128,64 @@ function getFilteredProducts() {
   );
 }
 
+function enableEdit(tr, product) {
+  const nameTd = tr.children[0];
+  const qtyTd = tr.children[1];
+  const actionTd = tr.children[3];
+
+  const nameInput = document.createElement('input');
+  nameInput.value = product.name;
+  nameTd.innerHTML = '';
+  nameTd.appendChild(nameInput);
+
+  const qtyInput = document.createElement('input');
+  qtyInput.type = 'number';
+  qtyInput.value = product.quantity;
+  qtyTd.innerHTML = '';
+  qtyTd.appendChild(qtyInput);
+
+  actionTd.innerHTML = '';
+  const save = document.createElement('button');
+  save.textContent = 'Zapisz';
+  save.addEventListener('click', async () => {
+    const updated = { ...product, name: nameInput.value.trim(), quantity: parseFloat(qtyInput.value) };
+    await fetch(`/api/products/${encodeURIComponent(product.name)}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updated)
+    });
+    await loadProducts();
+    await loadRecipes();
+  });
+
+  const cancel = document.createElement('button');
+  cancel.textContent = 'Anuluj';
+  cancel.addEventListener('click', () => {
+    renderProducts(getFilteredProducts());
+  });
+
+  actionTd.appendChild(save);
+  actionTd.appendChild(cancel);
+}
+
+function addRowActions(tr, product) {
+  const actionTd = document.createElement('td');
+  const edit = document.createElement('button');
+  edit.textContent = 'Edytuj';
+  edit.addEventListener('click', () => enableEdit(tr, product));
+  actionTd.appendChild(edit);
+
+  const del = document.createElement('button');
+  del.textContent = 'Usuń';
+  del.addEventListener('click', async () => {
+    await fetch(`/api/products/${encodeURIComponent(product.name)}`, { method: 'DELETE' });
+    await loadProducts();
+    await loadRecipes();
+  });
+  actionTd.appendChild(del);
+  tr.appendChild(actionTd);
+}
+
 function renderProducts(data) {
   const tbody = document.querySelector('#product-table tbody');
   tbody.innerHTML = '';
@@ -218,6 +276,7 @@ function renderProducts(data) {
           const unitTd = document.createElement('td');
           unitTd.textContent = p.unit;
           tr.appendChild(unitTd);
+          addRowActions(tr, p);
           const actionTd = document.createElement('td');
           const edit = document.createElement('button');
           edit.textContent = 'Edytuj';
