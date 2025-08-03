@@ -39,6 +39,15 @@ const STORAGE_ICONS = {
   freezer: '❄️'
 };
 
+function formatQuantity(p) {
+  const packages = p.quantity;
+  const units = packages * (p.package_size || 1);
+  if ((p.package_size || 1) !== 1) {
+    return `${packages} op. (${units} ${p.unit})`;
+  }
+  return `${units} ${p.unit}`;
+}
+
 function getStatusIcon(p) {
   if (p.main) {
     if (p.quantity === 0) {
@@ -87,14 +96,16 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('add-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const form = e.target;
+    const pkgSize = parseFloat(form.package_size.value) || 1;
     const product = {
       name: form.name.value,
-      quantity: parseFloat(form.quantity.value),
+      quantity: parseFloat(form.quantity.value) / pkgSize,
       category: form.category.value,
       storage: form.storage.value,
       threshold: form.threshold.value ? parseFloat(form.threshold.value) : null,
       main: form.main.checked,
-      unit: UNIT
+      unit: UNIT,
+      package_size: pkgSize
     };
     await fetch('/api/products', {
       method: 'POST',
@@ -109,7 +120,8 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('copy-btn').addEventListener('click', () => {
     const lines = ['Produkty:'];
     (window.currentProducts || []).forEach(p => {
-      lines.push(`- ${p.name}: ${p.quantity} ${p.unit}`);
+      const units = p.quantity * (p.package_size || 1);
+      lines.push(`- ${p.name}: ${units} ${p.unit}`);
     });
     navigator.clipboard.writeText(lines.join('\n'));
   });
@@ -146,7 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (nameInput && qtyInput) {
         const original = data[idx];
         const newName = nameInput.value.trim();
-        const newQty = parseFloat(qtyInput.value);
+        const newQty = parseFloat(qtyInput.value) / (original.package_size || 1);
         if (newName !== original.name || newQty !== original.quantity) {
           updates.push({ originalName: original.name, updated: { ...original, name: newName, quantity: newQty } });
         }
@@ -201,6 +213,7 @@ async function loadProducts() {
   const data = await res.json();
   window.currentProducts = sortProducts(data.map(p => {
     p.low_stock = p.threshold !== null && p.quantity <= p.threshold;
+    p.package_size = p.package_size || 1;
     return p;
   }));
   renderProducts(getFilteredProducts());
@@ -262,11 +275,11 @@ function renderProducts(data) {
         nameTd.appendChild(nameInput);
         const qtyInput = document.createElement('input');
         qtyInput.type = 'number';
-        qtyInput.value = p.quantity;
+        qtyInput.value = p.quantity * (p.package_size || 1);
         qtyTd.appendChild(qtyInput);
       } else {
         nameTd.textContent = p.name;
-        qtyTd.textContent = p.quantity;
+        qtyTd.textContent = formatQuantity(p);
       }
       tr.appendChild(nameTd);
       tr.appendChild(qtyTd);
@@ -406,11 +419,11 @@ function renderProducts(data) {
             nameTd.appendChild(nameInput);
             const qtyInput = document.createElement('input');
             qtyInput.type = 'number';
-            qtyInput.value = p.quantity;
+            qtyInput.value = p.quantity * (p.package_size || 1);
             qtyTd.appendChild(qtyInput);
           } else {
             nameTd.textContent = p.name;
-            qtyTd.textContent = p.quantity;
+            qtyTd.textContent = formatQuantity(p);
           }
           tr.appendChild(nameTd);
           tr.appendChild(qtyTd);

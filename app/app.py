@@ -16,6 +16,7 @@ def apply_defaults(product):
     product.setdefault('storage', 'pantry')
     product.setdefault('main', False)
     product.setdefault('threshold', None)
+    product.setdefault('package_size', 1)
     return product
 
 def load_json(path):
@@ -45,6 +46,10 @@ def products():
             new_product['quantity'] = float(new_product.get('quantity', 0))
         except (TypeError, ValueError):
             new_product['quantity'] = 0
+        try:
+            new_product['package_size'] = float(new_product.get('package_size', 1)) or 1
+        except (TypeError, ValueError):
+            new_product['package_size'] = 1
         try:
             thresh = new_product.get('threshold')
             new_product['threshold'] = float(thresh) if thresh is not None else None
@@ -83,6 +88,10 @@ def products():
             except (TypeError, ValueError):
                 item['quantity'] = 0
             try:
+                item['package_size'] = float(item.get('package_size', 1)) or 1
+            except (TypeError, ValueError):
+                item['package_size'] = 1
+            try:
                 thresh = item.get('threshold')
                 item['threshold'] = float(thresh) if thresh is not None else None
             except (TypeError, ValueError):
@@ -100,6 +109,7 @@ def products():
                     p['unit'] = item['unit']
                     p['threshold'] = item['threshold']
                     p['main'] = item['main']
+                    p['package_size'] = item['package_size']
                     found = True
                     break
             if not found:
@@ -123,6 +133,10 @@ def modify_product(name):
         updated['quantity'] = float(updated.get('quantity', 0))
     except (TypeError, ValueError):
         updated['quantity'] = 0
+    try:
+        updated['package_size'] = float(updated.get('package_size', 1)) or 1
+    except (TypeError, ValueError):
+        updated['package_size'] = 1
     try:
         thresh = updated.get('threshold')
         updated['threshold'] = float(thresh) if thresh is not None else None
