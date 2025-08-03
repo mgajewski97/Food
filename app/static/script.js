@@ -263,7 +263,7 @@ function getFilteredProducts() {
   }));
 }
 
-async function changeQuantity(product, delta) {
+async function changeQuantity(product, delta, { qtySpan, decBtn, tr, statusTd }) {
   const newQty = Math.max(0, (product.quantity || 0) + delta);
   if (newQty === product.quantity) return;
   const updated = { ...product, quantity: newQty };
@@ -272,8 +272,27 @@ async function changeQuantity(product, delta) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(updated)
   });
-  await loadProducts();
-  await loadRecipes();
+  product.quantity = newQty;
+  product.low_stock = product.threshold !== null && product.quantity <= product.threshold;
+  if (qtySpan) qtySpan.textContent = newQty;
+  if (decBtn) decBtn.disabled = newQty <= 0;
+  if (tr) {
+    if (product.low_stock) {
+      tr.classList.add(...LOW_STOCK_CLASS.split(' '));
+    } else {
+      tr.classList.remove(...LOW_STOCK_CLASS.split(' '));
+    }
+  }
+  if (statusTd) {
+    const status = getStatusIcon(product);
+    if (status) {
+      statusTd.innerHTML = status.html;
+      statusTd.title = status.title;
+    } else {
+      statusTd.innerHTML = '';
+      statusTd.removeAttribute('title');
+    }
+  }
 }
 
   function addRowActions(tr, product) {
@@ -304,6 +323,7 @@ function renderProducts(data) {
       nameTd.className = 'px-4 py-2';
       const qtyTd = document.createElement('td');
       qtyTd.className = 'px-4 py-2';
+      let decBtn, qtySpan, incBtn;
       if (editMode) {
         const nameInput = document.createElement('input');
         nameInput.value = p.name;
@@ -314,18 +334,16 @@ function renderProducts(data) {
         qtyTd.appendChild(qtyInput);
       } else {
         nameTd.textContent = p.name;
-        const decBtn = document.createElement('button');
+        decBtn = document.createElement('button');
         decBtn.textContent = '−';
         decBtn.className = 'btn btn-xs';
         decBtn.disabled = p.quantity <= 0;
-        decBtn.addEventListener('click', () => changeQuantity(p, -1));
-        const qtySpan = document.createElement('span');
+        qtySpan = document.createElement('span');
         qtySpan.className = 'mx-2';
         qtySpan.textContent = p.quantity;
-        const incBtn = document.createElement('button');
+        incBtn = document.createElement('button');
         incBtn.textContent = '+';
         incBtn.className = 'btn btn-xs';
-        incBtn.addEventListener('click', () => changeQuantity(p, 1));
         qtyTd.appendChild(decBtn);
         qtyTd.appendChild(qtySpan);
         qtyTd.appendChild(incBtn);
@@ -352,6 +370,14 @@ function renderProducts(data) {
         statusTd.title = status.title;
       }
       tr.appendChild(statusTd);
+      if (!editMode) {
+        decBtn.addEventListener('click', () =>
+          changeQuantity(p, -1, { qtySpan, decBtn, tr, statusTd })
+        );
+        incBtn.addEventListener('click', () =>
+          changeQuantity(p, 1, { qtySpan, decBtn, tr, statusTd })
+        );
+      }
       addRowActions(tr, p);
       tbody.appendChild(tr);
     });
@@ -462,6 +488,7 @@ function renderProducts(data) {
           nameTd.className = 'px-4 py-2';
           const qtyTd = document.createElement('td');
           qtyTd.className = 'px-4 py-2';
+          let decBtn, qtySpan, incBtn;
           if (editMode) {
             const nameInput = document.createElement('input');
             nameInput.value = p.name;
@@ -472,18 +499,16 @@ function renderProducts(data) {
             qtyTd.appendChild(qtyInput);
           } else {
             nameTd.textContent = p.name;
-            const decBtn = document.createElement('button');
+            decBtn = document.createElement('button');
             decBtn.textContent = '−';
             decBtn.className = 'btn btn-xs';
             decBtn.disabled = p.quantity <= 0;
-            decBtn.addEventListener('click', () => changeQuantity(p, -1));
-            const qtySpan = document.createElement('span');
+            qtySpan = document.createElement('span');
             qtySpan.className = 'mx-2';
             qtySpan.textContent = p.quantity;
-            const incBtn = document.createElement('button');
+            incBtn = document.createElement('button');
             incBtn.textContent = '+';
             incBtn.className = 'btn btn-xs';
-            incBtn.addEventListener('click', () => changeQuantity(p, 1));
             qtyTd.appendChild(decBtn);
             qtyTd.appendChild(qtySpan);
             qtyTd.appendChild(incBtn);
@@ -502,6 +527,14 @@ function renderProducts(data) {
             statusTd.title = status.title;
           }
           tr.appendChild(statusTd);
+          if (!editMode) {
+            decBtn.addEventListener('click', () =>
+              changeQuantity(p, -1, { qtySpan, decBtn, tr, statusTd })
+            );
+            incBtn.addEventListener('click', () =>
+              changeQuantity(p, 1, { qtySpan, decBtn, tr, statusTd })
+            );
+          }
           addRowActions(tr, p);
           tbodyCat.appendChild(tr);
         });
