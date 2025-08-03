@@ -21,6 +21,7 @@ html[data-layout="desktop"] .main-container {
 }
 
 html[data-layout="mobile"] .corner-icons {
+  top: 0.5rem;
   left: auto;
   right: 1rem;
 }
