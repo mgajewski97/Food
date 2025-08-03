@@ -1,5 +1,23 @@
 [
-  {"name": "tofu", "quantity": 2, "unit": "szt.", "category": "nabiał"},
-  {"name": "cebula czerwona", "quantity": 1, "unit": "szt.", "category": "warzywa"},
-  {"name": "feta", "quantity": 0.5, "unit": "szt.", "category": "nabiał"}
+  {
+    "name": "tofu",
+    "quantity": "2 opakowania",
+    "category": "dairy_eggs",
+    "storage": "fridge",
+    "unit": "szt."
+  },
+  {
+    "name": "cebula czerwona",
+    "quantity": "1 sztuka",
+    "category": "fresh_veg",
+    "storage": "pantry",
+    "unit": "szt."
+  },
+  {
+    "name": "feta",
+    "quantity": "1/2 opakowania",
+    "category": "dairy_eggs",
+    "storage": "fridge",
+    "unit": "szt."
+  }
 ]
