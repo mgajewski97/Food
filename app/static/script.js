@@ -420,12 +420,13 @@ async function handleHistorySubmit(e) {
 
 // Theme toggle
 const themeToggle = document.getElementById('theme-toggle');
-if (themeToggle) {
+const themeIcon = document.getElementById('theme-icon');
+if (themeToggle && themeIcon) {
   themeToggle.addEventListener('click', () => {
     const html = document.documentElement;
     const current = html.getAttribute('data-theme');
     const next = current === 'dark' ? 'light' : 'dark';
     html.setAttribute('data-theme', next);
-    themeToggle.textContent = next === 'dark' ? '🌞' : '🌙';
+    themeIcon.className = next === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
   });
 }
