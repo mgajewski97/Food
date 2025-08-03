@@ -31,30 +31,6 @@ const STORAGE_NAMES = {
   freezer: 'Zamrażarka'
 };
 
-const CATEGORY_PART_NAMES = {
-  uncategorized: 'brak kategorii',
-  fresh: 'Świeże',
-  veg: 'Warzywa',
-  mushrooms: 'Grzyby',
-  dairy: 'Nabiał',
-  eggs: 'Jajka',
-  opened: 'Otwarte',
-  preserves: 'Konserwy i przetwory',
-  ready: 'Gotowe',
-  sauces: 'Sosy',
-  dry: 'Suche',
-  bread: 'Pieczywo',
-  pasta: 'Makarony',
-  rice: 'Ryże',
-  grains: 'Kasze',
-  dried: 'Suszone',
-  legumes: 'Rośliny strączkowe',
-  oils: 'Oleje',
-  spreads: 'Smarowidła i pasty',
-  frozen: 'Mrożone',
-  meals: 'Dania / zupy'
-};
-
 document.addEventListener('DOMContentLoaded', () => {
   loadProducts();
   loadRecipes();
@@ -150,11 +126,10 @@ async function loadProducts() {
   const storages = {};
   data.forEach(p => {
     const storage = p.storage || 'pantry';
-    const [cat, sub = ''] = (p.category || 'uncategorized').split('_');
+    const cat = p.category || 'uncategorized';
     storages[storage] ??= {};
-    storages[storage][cat] ??= {};
-    storages[storage][cat][sub] ??= [];
-    storages[storage][cat][sub].push(p);
+    storages[storage][cat] ??= [];
+    storages[storage][cat].push(p);
   });
 
   const order = ['fridge', 'pantry', 'freezer'];
@@ -172,45 +147,61 @@ async function loadProducts() {
     const categories = storages[stor];
     Object.keys(categories).sort().forEach(cat => {
       const h4 = document.createElement('h4');
-      h4.textContent = CATEGORY_PART_NAMES[cat] || CATEGORY_NAMES[cat] || cat;
+      h4.textContent = CATEGORY_NAMES[cat] || cat;
       container.appendChild(h4);
-      const subcats = categories[cat];
-      Object.keys(subcats).sort().forEach(sub => {
-        if (sub) {
-          const h5 = document.createElement('h5');
-          h5.textContent = CATEGORY_PART_NAMES[sub] || CATEGORY_NAMES[sub] || sub;
-          container.appendChild(h5);
-        }
-        const ul = document.createElement('ul');
-        subcats[sub].sort((a, b) => a.name.localeCompare(b.name));
-        subcats[sub].forEach(p => {
-          const li = document.createElement('li');
-          li.textContent = `${p.name} - ${p.quantity} ${p.unit}`;
-          const edit = document.createElement('button');
-          edit.textContent = 'Edytuj';
-          edit.addEventListener('click', () => {
-            const form = document.getElementById('add-form');
-            form.name.value = p.name;
-            form.quantity.value = p.quantity;
-            form.category.value = p.category;
-            form.storage.value = p.storage || 'pantry';
-            editingName = p.name;
-          });
-          const del = document.createElement('button');
-          del.textContent = 'Usuń';
-          del.addEventListener('click', async () => {
-            await fetch(`/api/products/${encodeURIComponent(p.name)}`, { method: 'DELETE' });
-            await loadProducts();
-            await loadRecipes();
-          });
-          li.appendChild(edit);
-          li.appendChild(del);
-          ul.appendChild(li);
-        });
-        container.appendChild(ul);
+      const table = document.createElement('table');
+      const thead = document.createElement('thead');
+      const headRow = document.createElement('tr');
+      ['Nazwa', 'Ilość', 'Jednostka', ''].forEach(text => {
+        const th = document.createElement('th');
+        th.textContent = text;
+        headRow.appendChild(th);
       });
+      thead.appendChild(headRow);
+      table.appendChild(thead);
+      const tbodyCat = document.createElement('tbody');
+      categories[cat].sort((a, b) => a.name.localeCompare(b.name));
+      categories[cat].forEach(p => {
+        const tr = document.createElement('tr');
+        if (p.quantity <= LOW_STOCK_THRESHOLD) {
+          tr.classList.add('low-stock');
+        }
+        const nameTd = document.createElement('td');
+        nameTd.textContent = p.name;
+        tr.appendChild(nameTd);
+        const qtyTd = document.createElement('td');
+        qtyTd.textContent = p.quantity;
+        tr.appendChild(qtyTd);
+        const unitTd = document.createElement('td');
+        unitTd.textContent = p.unit;
+        tr.appendChild(unitTd);
+        const actionTd = document.createElement('td');
+        const edit = document.createElement('button');
+        edit.textContent = 'Edytuj';
+        edit.addEventListener('click', () => {
+          const form = document.getElementById('add-form');
+          form.name.value = p.name;
+          form.quantity.value = p.quantity;
+          form.category.value = p.category;
+          form.storage.value = p.storage || 'pantry';
+          editingName = p.name;
+        });
+        const del = document.createElement('button');
+        del.textContent = 'Usuń';
+        del.addEventListener('click', async () => {
+          await fetch(`/api/products/${encodeURIComponent(p.name)}`, { method: 'DELETE' });
+          await loadProducts();
+          await loadRecipes();
+        });
+        actionTd.appendChild(edit);
+        actionTd.appendChild(del);
+        tr.appendChild(actionTd);
+        tbodyCat.appendChild(tr);
+      });
+      table.appendChild(tbodyCat);
+      container.appendChild(table);
     });
-  });
+  }
 }
 
 async function loadRecipes() {
