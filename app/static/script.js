@@ -430,3 +430,16 @@ if (themeToggle && themeIcon) {
     themeIcon.className = next === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
   });
 }
+
+// Layout toggle
+const layoutToggle = document.getElementById('layout-toggle');
+const layoutIcon = document.getElementById('layout-icon');
+if (layoutToggle && layoutIcon) {
+  layoutToggle.addEventListener('click', () => {
+    const html = document.documentElement;
+    const current = html.getAttribute('data-layout') || 'desktop';
+    const next = current === 'desktop' ? 'mobile' : 'desktop';
+    html.setAttribute('data-layout', next);
+    layoutIcon.className = next === 'desktop' ? 'fa-solid fa-mobile-screen-button' : 'fa-solid fa-desktop';
+  });
+}
