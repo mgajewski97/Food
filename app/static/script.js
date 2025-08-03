@@ -1,4 +1,4 @@
-let editingName = null;
+let editing = false;
 let groupedView = false;
 
 const UNIT = 'szt.';
@@ -47,8 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
       storage: form.storage.value,
       unit: UNIT
     };
-    if (editingName) {
-      await fetch(`/api/products/${encodeURIComponent(editingName)}`, {
+    if (editing) {
+      await fetch('/api/products', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(product)
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify(product)
       });
     }
-    editingName = null;
+    editing = false;
     form.reset();
     await loadProducts();
     await loadRecipes();
@@ -191,7 +191,7 @@ async function loadProducts() {
             form.quantity.value = p.quantity;
             form.category.value = p.category;
             form.storage.value = p.storage || 'pantry';
-            editingName = p.name;
+            editing = true;
           });
           const del = document.createElement('button');
           del.textContent = 'Usuń';
