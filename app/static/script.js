@@ -32,6 +32,26 @@ const STORAGE_NAMES = {
   freezer: 'Zamrażarka'
 };
 
+const STORAGE_ICONS = {
+  fridge: '🧊',
+  pantry: '🏠',
+  freezer: '❄️'
+};
+
+function sortProducts(list) {
+  return list.sort((a, b) => {
+    const storA = STORAGE_NAMES[a.storage] || a.storage;
+    const storB = STORAGE_NAMES[b.storage] || b.storage;
+    const storCmp = storA.localeCompare(storB);
+    if (storCmp !== 0) return storCmp;
+    const catA = CATEGORY_NAMES[a.category] || a.category;
+    const catB = CATEGORY_NAMES[b.category] || b.category;
+    const catCmp = catA.localeCompare(catB);
+    if (catCmp !== 0) return catCmp;
+    return a.name.localeCompare(b.name);
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   loadProducts();
   loadRecipes();
@@ -105,15 +125,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function loadProducts() {
   const res = await fetch('/api/products');
-  window.currentProducts = await res.json();
+  window.currentProducts = sortProducts(await res.json());
   renderProducts(getFilteredProducts());
 }
 
 function getFilteredProducts() {
   const query = document.getElementById('product-search').value.toLowerCase();
-  return (window.currentProducts || []).filter(p =>
+  return sortProducts((window.currentProducts || []).filter(p =>
     p.name.toLowerCase().includes(query)
-  );
+  ));
 }
 
   function addRowActions(tr, product, nameInput, qtyInput) {
@@ -122,6 +142,7 @@ function getFilteredProducts() {
     if (editMode) {
       const save = document.createElement('button');
       save.textContent = 'Zmień';
+      save.className = 'px-2 py-1 text-white bg-yellow-500 rounded hover:bg-yellow-600 mr-2';
       save.addEventListener('click', async () => {
         const updated = { ...product, name: nameInput.value.trim(), quantity: parseFloat(qtyInput.value) };
         await fetch(`/api/products/${encodeURIComponent(product.name)}`, {
@@ -137,6 +158,7 @@ function getFilteredProducts() {
 
     const del = document.createElement('button');
     del.textContent = 'Usuń';
+    del.className = 'px-2 py-1 text-white bg-red-600 rounded hover:bg-red-700';
     del.addEventListener('click', async () => {
       await fetch(`/api/products/${encodeURIComponent(product.name)}`, { method: 'DELETE' });
       await loadProducts();
@@ -205,75 +227,72 @@ function renderProducts(data) {
     storages[storage][cat].push(p);
   });
 
-  const order = ['fridge', 'pantry', 'freezer'];
-  const titles = {
-    fridge: `🧊 ${STORAGE_NAMES.fridge}`,
-    pantry: `🏠 ${STORAGE_NAMES.pantry}`,
-    freezer: `❄️ ${STORAGE_NAMES.freezer}`
-  };
-
-  order.forEach(stor => {
-    if (!storages[stor]) return;
+  const storOrder = Object.keys(storages).sort((a, b) =>
+    (STORAGE_NAMES[a] || a).localeCompare(STORAGE_NAMES[b] || b)
+  );
+  storOrder.forEach(stor => {
     const h3 = document.createElement('h3');
-    h3.textContent = titles[stor] || stor;
+    h3.className = 'text-xl font-bold mt-6 mb-2 bg-gray-200 p-2 rounded';
+    h3.textContent = `${STORAGE_ICONS[stor] || ''} ${STORAGE_NAMES[stor] || stor}`;
     container.appendChild(h3);
     const categories = storages[stor];
     Object.keys(categories)
       .sort((a, b) => (CATEGORY_NAMES[a] || a).localeCompare(CATEGORY_NAMES[b] || b))
       .forEach(cat => {
         const h4 = document.createElement('h4');
+        h4.className = 'text-lg font-semibold mt-4 mb-2 text-gray-700 pl-2';
         h4.textContent = CATEGORY_NAMES[cat] || cat;
         container.appendChild(h4);
-          const table = document.createElement('table');
-          table.className = 'w-full text-sm text-left text-gray-500 mb-4';
-          const thead = document.createElement('thead');
-          thead.className = 'text-xs text-gray-700 uppercase bg-gray-50';
-          const headRow = document.createElement('tr');
-          ['Nazwa', 'Ilość', 'Jednostka', ''].forEach(text => {
-            const th = document.createElement('th');
-            th.className = 'px-4 py-2';
-            th.textContent = text;
-            headRow.appendChild(th);
-          });
-          thead.appendChild(headRow);
-          table.appendChild(thead);
-          const tbodyCat = document.createElement('tbody');
-          categories[cat].sort((a, b) => a.name.localeCompare(b.name));
-            categories[cat].forEach(p => {
-              const tr = document.createElement('tr');
-              tr.className = 'bg-white border-b hover:bg-gray-50';
-              if (p.low_stock) {
-                tr.className += ` ${LOW_STOCK_CLASS}`;
-              }
-              const nameTd = document.createElement('td');
-              nameTd.className = 'px-4 py-2';
-              const qtyTd = document.createElement('td');
-              qtyTd.className = 'px-4 py-2';
-              let nameInput, qtyInput;
-              if (editMode) {
-                nameInput = document.createElement('input');
-                nameInput.value = p.name;
-                nameTd.appendChild(nameInput);
-                qtyInput = document.createElement('input');
-                qtyInput.type = 'number';
-                qtyInput.value = p.quantity;
-                qtyTd.appendChild(qtyInput);
-              } else {
-                nameTd.textContent = p.name;
-                qtyTd.textContent = p.quantity;
-              }
-              tr.appendChild(nameTd);
-              tr.appendChild(qtyTd);
-              const unitTd = document.createElement('td');
-              unitTd.className = 'px-4 py-2';
-              unitTd.textContent = p.unit;
-              tr.appendChild(unitTd);
-              addRowActions(tr, p, nameInput, qtyInput);
-              tbodyCat.appendChild(tr);
-            });
-          table.appendChild(tbodyCat);
-          container.appendChild(table);
+        const table = document.createElement('table');
+        table.className = 'w-full text-sm text-left text-gray-500 mb-4';
+        const thead = document.createElement('thead');
+        thead.className = 'text-xs text-gray-700 uppercase bg-gray-50';
+        const headRow = document.createElement('tr');
+        ['Nazwa', 'Ilość', 'Jednostka', ''].forEach(text => {
+          const th = document.createElement('th');
+          th.className = 'px-4 py-2';
+          th.textContent = text;
+          headRow.appendChild(th);
         });
+        thead.appendChild(headRow);
+        table.appendChild(thead);
+        const tbodyCat = document.createElement('tbody');
+        categories[cat].sort((a, b) => a.name.localeCompare(b.name));
+        categories[cat].forEach(p => {
+          const tr = document.createElement('tr');
+          tr.className = 'bg-white border-b hover:bg-gray-50';
+          if (p.low_stock) {
+            tr.className += ` ${LOW_STOCK_CLASS}`;
+          }
+          const nameTd = document.createElement('td');
+          nameTd.className = 'px-4 py-2';
+          const qtyTd = document.createElement('td');
+          qtyTd.className = 'px-4 py-2';
+          let nameInput, qtyInput;
+          if (editMode) {
+            nameInput = document.createElement('input');
+            nameInput.value = p.name;
+            nameTd.appendChild(nameInput);
+            qtyInput = document.createElement('input');
+            qtyInput.type = 'number';
+            qtyInput.value = p.quantity;
+            qtyTd.appendChild(qtyInput);
+          } else {
+            nameTd.textContent = p.name;
+            qtyTd.textContent = p.quantity;
+          }
+          tr.appendChild(nameTd);
+          tr.appendChild(qtyTd);
+          const unitTd = document.createElement('td');
+          unitTd.className = 'px-4 py-2';
+          unitTd.textContent = p.unit;
+          tr.appendChild(unitTd);
+          addRowActions(tr, p, nameInput, qtyInput);
+          tbodyCat.appendChild(tr);
+        });
+        table.appendChild(tbodyCat);
+        container.appendChild(table);
+      });
   });
 }
 
