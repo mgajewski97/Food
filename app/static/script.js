@@ -4,6 +4,7 @@ const UNIT = 'szt.';
 const LOW_STOCK_THRESHOLD = 1; // TODO: thresholds per category
 
 const CATEGORY_NAMES = {
+  uncategorized: 'brak kategorii',
   fresh_veg: 'Świeże warzywa',
   mushrooms: 'Grzyby',
   dairy_eggs: 'Nabiał i jajka',
@@ -126,16 +127,10 @@ async function loadProducts() {
   if (container) {
     const order = ['fridge', 'pantry', 'freezer'];
     const titles = {
-      fridge: '🧊 Lodówka',
-      pantry: '🏠 Spiżarnia',
-      freezer: '❄️ Zamrażarka'
+      fridge: `🧊 ${STORAGE_NAMES.fridge}`,
+      pantry: `🏠 ${STORAGE_NAMES.pantry}`,
+      freezer: `❄️ ${STORAGE_NAMES.freezer}`
     };
-  const order = ['fridge', 'pantry', 'freezer'];
-  const titles = {
-    fridge: `🧊 ${STORAGE_NAMES.fridge}`,
-    pantry: `🏠 ${STORAGE_NAMES.pantry}`,
-    freezer: `❄️ ${STORAGE_NAMES.freezer}`
-  };
 
     order.forEach(stor => {
       if (groups[stor] && groups[stor].length) {
