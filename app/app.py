@@ -14,8 +14,8 @@ HISTORY_PATH = os.path.join(BASE_DIR, 'data', 'history.json')
 def apply_defaults(product):
     product.setdefault('category', 'uncategorized')
     product.setdefault('storage', 'pantry')
-    product.setdefault('main', False)
-    product.setdefault('threshold', None)
+    product.setdefault('main', True)
+    product.setdefault('threshold', 1)
     product.setdefault('package_size', 1)
     return product
 
@@ -52,10 +52,10 @@ def products():
             new_product['package_size'] = 1
         try:
             thresh = new_product.get('threshold')
-            new_product['threshold'] = float(thresh) if thresh is not None else None
+            new_product['threshold'] = float(thresh) if thresh is not None else 1
         except (TypeError, ValueError):
-            new_product['threshold'] = None
-        new_product['main'] = bool(new_product.get('main', False))
+            new_product['threshold'] = 1
+        new_product['main'] = bool(new_product.get('main', True))
         new_product = apply_defaults(new_product)
         products = load_json(PRODUCTS_PATH)
         found = False
@@ -93,10 +93,10 @@ def products():
                 item['package_size'] = 1
             try:
                 thresh = item.get('threshold')
-                item['threshold'] = float(thresh) if thresh is not None else None
+                item['threshold'] = float(thresh) if thresh is not None else 1
             except (TypeError, ValueError):
-                item['threshold'] = None
-            item['main'] = bool(item.get('main', False))
+                item['threshold'] = 1
+            item['main'] = bool(item.get('main', True))
             item = apply_defaults(item)
             found = False
             for p in products:
@@ -139,10 +139,10 @@ def modify_product(name):
         updated['package_size'] = 1
     try:
         thresh = updated.get('threshold')
-        updated['threshold'] = float(thresh) if thresh is not None else None
+        updated['threshold'] = float(thresh) if thresh is not None else 1
     except (TypeError, ValueError):
-        updated['threshold'] = None
-    updated['main'] = bool(updated.get('main', False))
+        updated['threshold'] = 1
+    updated['main'] = bool(updated.get('main', True))
     updated = apply_defaults(updated)
     for p in products:
         if p.get('name') == name:

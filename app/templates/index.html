@@ -95,7 +95,7 @@
             <form id="add-form" class="grid grid-cols-1 sm:grid-cols-7 gap-2 mb-6">
                 <input name="name" placeholder="nazwa" required class="input input-bordered">
                 <input name="quantity" placeholder="ilość" required class="input input-bordered">
-                <input name="threshold" placeholder="próg" class="input input-bordered" type="number">
+                <input name="threshold" placeholder="próg" class="input input-bordered" type="number" value="1">
                 <select name="category" required class="select select-bordered">
                     <option value="uncategorized">brak kategorii</option>
                     <option value="fresh_veg">Świeże warzywa</option>
@@ -121,7 +121,7 @@
                     <option value="pantry" selected>Szafka</option>
                     <option value="freezer">Zamrażarka</option>
                 </select>
-                <label class="flex items-center gap-2"><input type="checkbox" name="main" class="checkbox"> Podstawowy</label>
+                <label class="flex items-center gap-2"><input type="checkbox" name="main" class="checkbox" checked> Podstawowy</label>
                 <button type="submit" class="btn btn-success">Zapisz</button>
             </form>
         <h2 class="text-xl font-semibold mt-8 mb-4">Dodaj / edytuj produkt</h2>
@@ -129,7 +129,7 @@
             <input name="name" placeholder="nazwa" required class="input input-bordered">
             <input name="quantity" placeholder="ilość" required class="input input-bordered">
             <input name="package_size" placeholder="w opak." class="input input-bordered" type="number" value="1">
-            <input name="threshold" placeholder="próg" class="input input-bordered" type="number">
+            <input name="threshold" placeholder="próg" class="input input-bordered" type="number" value="1">
             <select name="category" required class="select select-bordered">
                 <option value="uncategorized">brak kategorii</option>
                 <option value="fresh_veg">Świeże warzywa</option>
@@ -155,7 +155,7 @@
                 <option value="pantry" selected>Szafka</option>
                 <option value="freezer">Zamrażarka</option>
             </select>
-            <label class="flex items-center gap-2"><input type="checkbox" name="main" class="checkbox"> Podstawowy</label>
+            <label class="flex items-center gap-2"><input type="checkbox" name="main" class="checkbox" checked> Podstawowy</label>
             <button type="submit" class="btn btn-success">Zapisz</button>
         </form>
 

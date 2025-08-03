@@ -54,15 +54,12 @@ function getStatusIcon(p) {
     if (p.quantity === 0) {
       return { html: '<i class="fa-regular fa-circle-exclamation text-red-600"></i>', title: 'Brak produktu' };
     }
-    if (p.threshold !== null && p.quantity <= p.threshold) {
+    if (p.quantity <= p.threshold) {
       return { html: '<i class="fa-regular fa-triangle-exclamation text-yellow-500"></i>', title: 'Produkt się kończy' };
     }
   } else {
-    if (p.quantity === 0) {
-      return { html: '<i class="fa-regular fa-circle-exclamation text-red-600"></i>', title: 'Brak produktu' };
-    }
-    if (p.threshold !== null && p.quantity <= p.threshold) {
-      return { html: '<i class="fa-regular fa-triangle-exclamation text-yellow-300"></i>', title: 'Produkt się kończy' };
+    if (p.quantity <= p.threshold) {
+      return { html: '<i class="fa-regular fa-triangle-exclamation text-yellow-300 opacity-50 text-xs"></i>', title: 'Produkt się kończy' };
     }
   }
   return null;
@@ -119,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
       quantity: parseFloat(form.quantity.value) / pkgSize,
       category: form.category.value,
       storage: form.storage.value,
-      threshold: form.threshold.value ? parseFloat(form.threshold.value) : null,
+      threshold: parseFloat(form.threshold.value) || 1,
       main: form.main.checked,
       unit: UNIT,
       package_size: pkgSize
@@ -296,7 +293,7 @@ async function loadProducts() {
   const res = await fetch('/api/products');
   const data = await res.json();
   window.currentProducts = sortProducts(data.map(p => {
-    p.low_stock = p.threshold !== null && p.quantity <= p.threshold;
+    p.low_stock = p.quantity <= p.threshold;
     p.package_size = p.package_size || 1;
     return p;
   }));
@@ -307,13 +304,13 @@ async function loadProducts() {
 function getFilteredProducts() {
   const query = document.getElementById('product-search').value.toLowerCase();
   return sortProducts((window.currentProducts || []).filter(p => {
-    if (!p.main && p.quantity === 0 && currentFilter !== 'all_zero') return false;
+    if (!p.main && p.quantity === 0) return false;
     switch (currentFilter) {
       case 'missing':
         if (!(p.main && p.quantity === 0)) return false;
         break;
       case 'missing_low':
-        if (!(p.main && (p.quantity === 0 || (p.threshold !== null && p.quantity <= p.threshold)))) return false;
+        if (!(p.main && (p.quantity === 0 || p.quantity <= p.threshold))) return false;
         break;
       case 'all_zero':
         if (p.quantity !== 0) return false;
@@ -732,7 +729,7 @@ function updateDatalist() {
 
 function initShoppingTab() {
   shoppingList = (window.currentProducts || []).filter(p =>
-    p.main && (p.quantity === 0 || (p.threshold !== null && p.quantity <= p.threshold))
+    p.main && (p.quantity === 0 || p.quantity <= p.threshold)
   ).map(p => ({ name: p.name, quantity: 1, inCart: false }));
   renderShoppingList();
 }
