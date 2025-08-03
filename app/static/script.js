@@ -97,10 +97,43 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('product-list').style.display = groupedView ? 'block' : 'none';
     document.getElementById('view-toggle').textContent = groupedView ? 'Płaska lista' : 'Widok z podziałem';
   });
-  document.getElementById('edit-toggle').addEventListener('click', () => {
+  document.getElementById('edit-toggle').addEventListener('click', async () => {
     editMode = !editMode;
     document.getElementById('edit-toggle').textContent = editMode ? 'Zakończ edycję' : 'Edytuj';
-    renderProducts(getFilteredProducts());
+    document.getElementById('save-btn').style.display = editMode ? 'inline-block' : 'none';
+    if (!editMode) {
+      await loadProducts();
+    } else {
+      renderProducts(getFilteredProducts());
+    }
+  });
+  document.getElementById('save-btn').addEventListener('click', async () => {
+    const rows = document.querySelectorAll('#product-table tbody tr');
+    const data = getFilteredProducts();
+    const updates = [];
+    rows.forEach((tr, idx) => {
+      const nameInput = tr.querySelector('td:nth-child(1) input');
+      const qtyInput = tr.querySelector('td:nth-child(2) input');
+      if (nameInput && qtyInput) {
+        const original = data[idx];
+        const newName = nameInput.value.trim();
+        const newQty = parseFloat(qtyInput.value);
+        if (newName !== original.name || newQty !== original.quantity) {
+          updates.push({ originalName: original.name, updated: { ...original, name: newName, quantity: newQty } });
+        }
+      }
+    });
+    for (const u of updates) {
+      await fetch(`/api/products/${encodeURIComponent(u.originalName)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(u.updated)
+      });
+    }
+    if (updates.length) {
+      await loadProducts();
+      await loadRecipes();
+    }
   });
   document.getElementById('product-search').addEventListener('input', () => {
     renderProducts(getFilteredProducts());
@@ -136,26 +169,9 @@ function getFilteredProducts() {
   ));
 }
 
-  function addRowActions(tr, product, nameInput, qtyInput) {
+  function addRowActions(tr, product) {
     const actionTd = document.createElement('td');
     actionTd.className = 'px-4 py-2';
-    if (editMode) {
-      const save = document.createElement('button');
-      save.textContent = 'Zmień';
-      save.className = 'px-2 py-1 text-white bg-yellow-500 rounded hover:bg-yellow-600 mr-2';
-      save.addEventListener('click', async () => {
-        const updated = { ...product, name: nameInput.value.trim(), quantity: parseFloat(qtyInput.value) };
-        await fetch(`/api/products/${encodeURIComponent(product.name)}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updated)
-        });
-        await loadProducts();
-        await loadRecipes();
-      });
-      actionTd.appendChild(save);
-    }
-
     const del = document.createElement('button');
     del.textContent = 'Usuń';
     del.className = 'px-2 py-1 text-white bg-red-600 rounded hover:bg-red-700';
@@ -181,12 +197,11 @@ function renderProducts(data) {
       nameTd.className = 'px-4 py-2';
       const qtyTd = document.createElement('td');
       qtyTd.className = 'px-4 py-2';
-      let nameInput, qtyInput;
       if (editMode) {
-        nameInput = document.createElement('input');
+        const nameInput = document.createElement('input');
         nameInput.value = p.name;
         nameTd.appendChild(nameInput);
-        qtyInput = document.createElement('input');
+        const qtyInput = document.createElement('input');
         qtyInput.type = 'number';
         qtyInput.value = p.quantity;
         qtyTd.appendChild(qtyInput);
@@ -208,7 +223,7 @@ function renderProducts(data) {
       storTd.className = 'px-4 py-2';
       storTd.textContent = STORAGE_NAMES[p.storage] || p.storage;
       tr.appendChild(storTd);
-      addRowActions(tr, p, nameInput, qtyInput);
+      addRowActions(tr, p);
       tbody.appendChild(tr);
     });
 
@@ -268,12 +283,11 @@ function renderProducts(data) {
           nameTd.className = 'px-4 py-2';
           const qtyTd = document.createElement('td');
           qtyTd.className = 'px-4 py-2';
-          let nameInput, qtyInput;
           if (editMode) {
-            nameInput = document.createElement('input');
+            const nameInput = document.createElement('input');
             nameInput.value = p.name;
             nameTd.appendChild(nameInput);
-            qtyInput = document.createElement('input');
+            const qtyInput = document.createElement('input');
             qtyInput.type = 'number';
             qtyInput.value = p.quantity;
             qtyTd.appendChild(qtyInput);
@@ -287,7 +301,7 @@ function renderProducts(data) {
           unitTd.className = 'px-4 py-2';
           unitTd.textContent = p.unit;
           tr.appendChild(unitTd);
-          addRowActions(tr, p, nameInput, qtyInput);
+          addRowActions(tr, p);
           tbodyCat.appendChild(tr);
         });
         table.appendChild(tbodyCat);
