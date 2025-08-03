@@ -145,7 +145,30 @@
 
         <div id="tab-shopping" class="tab-panel" style="display:none;">
             <h1 class="text-2xl font-bold mb-4" data-i18n="heading_shopping">Lista zakupów</h1>
-            <p data-i18n="under_construction">W budowie...</p>
+            <div id="suggestions-section" class="mb-6">
+                <h2 class="text-xl font-semibold mb-2" data-i18n="heading_suggestions">Propozycje</h2>
+                <div id="suggestions-list" class="space-y-2"></div>
+            </div>
+            <div id="manual-add-section" class="mb-6">
+                <div class="flex items-center gap-2 mb-2">
+                    <input id="manual-name" class="input input-bordered flex-1" placeholder="nazwa" data-i18n="add_form_name_placeholder">
+                    <div class="flex items-center">
+                        <button id="manual-dec" class="btn btn-outline btn-xs">−</button>
+                        <input id="manual-qty" type="number" min="1" value="1" class="input input-bordered w-16 text-center mx-2" placeholder="1" data-i18n="add_form_quantity_placeholder">
+                        <button id="manual-inc" class="btn btn-outline btn-xs">+</button>
+                    </div>
+                    <button id="manual-add-btn" class="btn btn-primary btn-sm" data-i18n="save_button">Zapisz</button>
+                </div>
+                <div id="manual-choice" class="mt-2" style="display:none;">
+                    <select id="manual-match-select" class="select select-bordered w-full mb-2"></select>
+                    <div id="new-options" class="flex gap-2 mb-2" style="display:none;">
+                        <select id="manual-storage-select" class="select select-bordered flex-1"></select>
+                        <select id="manual-category-select" class="select select-bordered flex-1"></select>
+                    </div>
+                    <button id="manual-confirm" class="btn btn-primary btn-sm" data-i18n="save_button">Zapisz</button>
+                </div>
+            </div>
+            <ul id="shopping-list" class="list-disc pl-4"></ul>
         </div>
 
     </div>
