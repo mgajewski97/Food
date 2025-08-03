@@ -1,5 +1,6 @@
 let editing = false;
 let groupedView = false;
+let editMode = false;
 
 const UNIT = 'szt.';
 const LOW_STOCK_THRESHOLD = 1; // TODO: thresholds per category
@@ -86,10 +87,15 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('product-list').style.display = groupedView ? 'block' : 'none';
     document.getElementById('view-toggle').textContent = groupedView ? 'Płaska lista' : 'Widok z podziałem';
   });
+  document.getElementById('edit-toggle').addEventListener('click', () => {
+    editMode = !editMode;
+    document.getElementById('edit-toggle').textContent = editMode ? 'Zakończ edycję' : 'Edytuj';
+    renderProducts(getFilteredProducts());
+  });
   document.getElementById('product-search').addEventListener('input', () => {
     renderProducts(getFilteredProducts());
   });
-});
+  });
 
 async function loadProducts() {
   const res = await fetch('/api/products');
@@ -104,84 +110,66 @@ function getFilteredProducts() {
   );
 }
 
-function enableEdit(tr, product) {
-  const nameTd = tr.children[0];
-  const qtyTd = tr.children[1];
-  const actionTd = tr.children[3];
+  function addRowActions(tr, product, nameInput, qtyInput) {
+    const actionTd = document.createElement('td');
+    if (editMode) {
+      const save = document.createElement('button');
+      save.textContent = 'Zapisz';
+      save.addEventListener('click', async () => {
+        const updated = { ...product, name: nameInput.value.trim(), quantity: parseFloat(qtyInput.value) };
+        await fetch(`/api/products/${encodeURIComponent(product.name)}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updated)
+        });
+        await loadProducts();
+        await loadRecipes();
+      });
+      actionTd.appendChild(save);
+    }
 
-  const nameInput = document.createElement('input');
-  nameInput.value = product.name;
-  nameTd.innerHTML = '';
-  nameTd.appendChild(nameInput);
-
-  const qtyInput = document.createElement('input');
-  qtyInput.type = 'number';
-  qtyInput.value = product.quantity;
-  qtyTd.innerHTML = '';
-  qtyTd.appendChild(qtyInput);
-
-  actionTd.innerHTML = '';
-  const save = document.createElement('button');
-  save.textContent = 'Zapisz';
-  save.addEventListener('click', async () => {
-    const updated = { ...product, name: nameInput.value.trim(), quantity: parseFloat(qtyInput.value) };
-    await fetch(`/api/products/${encodeURIComponent(product.name)}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updated)
+    const del = document.createElement('button');
+    del.textContent = 'Usuń';
+    del.addEventListener('click', async () => {
+      await fetch(`/api/products/${encodeURIComponent(product.name)}`, { method: 'DELETE' });
+      await loadProducts();
+      await loadRecipes();
     });
-    await loadProducts();
-    await loadRecipes();
-  });
-
-  const cancel = document.createElement('button');
-  cancel.textContent = 'Anuluj';
-  cancel.addEventListener('click', () => {
-    renderProducts(getFilteredProducts());
-  });
-
-  actionTd.appendChild(save);
-  actionTd.appendChild(cancel);
-}
-
-function addRowActions(tr, product) {
-  const actionTd = document.createElement('td');
-  const edit = document.createElement('button');
-  edit.textContent = 'Edytuj';
-  edit.addEventListener('click', () => enableEdit(tr, product));
-  actionTd.appendChild(edit);
-
-  const del = document.createElement('button');
-  del.textContent = 'Usuń';
-  del.addEventListener('click', async () => {
-    await fetch(`/api/products/${encodeURIComponent(product.name)}`, { method: 'DELETE' });
-    await loadProducts();
-    await loadRecipes();
-  });
-  actionTd.appendChild(del);
-  tr.appendChild(actionTd);
-}
+    actionTd.appendChild(del);
+    tr.appendChild(actionTd);
+  }
 
 function renderProducts(data) {
   const tbody = document.querySelector('#product-table tbody');
   tbody.innerHTML = '';
-  data.forEach(p => {
-    const tr = document.createElement('tr');
-    if (p.quantity <= LOW_STOCK_THRESHOLD) {
-      tr.classList.add('low-stock');
-    }
-    const nameTd = document.createElement('td');
-    nameTd.textContent = p.name;
-    tr.appendChild(nameTd);
-    const qtyTd = document.createElement('td');
-    qtyTd.textContent = p.quantity;
-    tr.appendChild(qtyTd);
-    const unitTd = document.createElement('td');
-    unitTd.textContent = p.unit;
-    tr.appendChild(unitTd);
-    addRowActions(tr, p);
-    tbody.appendChild(tr);
-  });
+    data.forEach(p => {
+      const tr = document.createElement('tr');
+      if (p.quantity <= LOW_STOCK_THRESHOLD) {
+        tr.classList.add('low-stock');
+      }
+      const nameTd = document.createElement('td');
+      const qtyTd = document.createElement('td');
+      let nameInput, qtyInput;
+      if (editMode) {
+        nameInput = document.createElement('input');
+        nameInput.value = p.name;
+        nameTd.appendChild(nameInput);
+        qtyInput = document.createElement('input');
+        qtyInput.type = 'number';
+        qtyInput.value = p.quantity;
+        qtyTd.appendChild(qtyInput);
+      } else {
+        nameTd.textContent = p.name;
+        qtyTd.textContent = p.quantity;
+      }
+      tr.appendChild(nameTd);
+      tr.appendChild(qtyTd);
+      const unitTd = document.createElement('td');
+      unitTd.textContent = p.unit;
+      tr.appendChild(unitTd);
+      addRowActions(tr, p, nameInput, qtyInput);
+      tbody.appendChild(tr);
+    });
 
   const container = document.getElementById('product-list');
   container.innerHTML = '';
@@ -229,23 +217,34 @@ function renderProducts(data) {
         table.appendChild(thead);
         const tbodyCat = document.createElement('tbody');
         categories[cat].sort((a, b) => a.name.localeCompare(b.name));
-        categories[cat].forEach(p => {
-          const tr = document.createElement('tr');
-          if (p.quantity <= LOW_STOCK_THRESHOLD) {
-            tr.classList.add('low-stock');
-          }
-          const nameTd = document.createElement('td');
-          nameTd.textContent = p.name;
-          tr.appendChild(nameTd);
-          const qtyTd = document.createElement('td');
-          qtyTd.textContent = p.quantity;
-          tr.appendChild(qtyTd);
-          const unitTd = document.createElement('td');
-          unitTd.textContent = p.unit;
-          tr.appendChild(unitTd);
-          addRowActions(tr, p);
-          tbodyCat.appendChild(tr);
-        });
+          categories[cat].forEach(p => {
+            const tr = document.createElement('tr');
+            if (p.quantity <= LOW_STOCK_THRESHOLD) {
+              tr.classList.add('low-stock');
+            }
+            const nameTd = document.createElement('td');
+            const qtyTd = document.createElement('td');
+            let nameInput, qtyInput;
+            if (editMode) {
+              nameInput = document.createElement('input');
+              nameInput.value = p.name;
+              nameTd.appendChild(nameInput);
+              qtyInput = document.createElement('input');
+              qtyInput.type = 'number';
+              qtyInput.value = p.quantity;
+              qtyTd.appendChild(qtyInput);
+            } else {
+              nameTd.textContent = p.name;
+              qtyTd.textContent = p.quantity;
+            }
+            tr.appendChild(nameTd);
+            tr.appendChild(qtyTd);
+            const unitTd = document.createElement('td');
+            unitTd.textContent = p.unit;
+            tr.appendChild(unitTd);
+            addRowActions(tr, p, nameInput, qtyInput);
+            tbodyCat.appendChild(tr);
+          });
         table.appendChild(tbodyCat);
         container.appendChild(table);
       });
