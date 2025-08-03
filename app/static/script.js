@@ -422,15 +422,16 @@ function renderProducts(data) {
     storageBlock.id = `storage-${storIndex}`;
 
     const storageHeader = document.createElement('div');
-    storageHeader.className = 'flex justify-between items-center mb-4 hover:bg-neutral/20 cursor-pointer md:cursor-default rounded px-2';
+    storageHeader.className =
+      'flex justify-between items-center mb-4 rounded px-2 cursor-pointer md:cursor-default hover:bg-neutral/20 md:hover:bg-transparent';
     storageHeader.id = `storage-header-${storIndex}`;
 
     const h3 = document.createElement('h3');
-    h3.className = 'text-lg font-bold';
+    h3.className = 'text-2xl font-bold';
     h3.textContent = `${STORAGE_ICONS[stor] || ''} ${STORAGE_NAMES[stor] || stor}`;
 
     const storToggle = document.createElement('button');
-    storToggle.className = 'text-xl cursor-pointer';
+    storToggle.className = 'text-xl cursor-pointer bg-transparent border-0 p-0';
     storToggle.innerHTML = '<i class="fa-regular fa-caret-down"></i>';
     storToggle.id = `storage-toggle-${storIndex}`;
 
@@ -448,22 +449,24 @@ function renderProducts(data) {
       storageContent.classList.toggle('hidden', !storOpen);
       storToggle.innerHTML = `<i class="fa-regular fa-caret-${storOpen ? 'down' : 'up'}"></i>`;
     };
-    if (window.innerWidth < 768) {
-      storageHeader.addEventListener('click', toggleStorage);
-    } else {
-      storToggle.addEventListener('click', toggleStorage);
-    }
+    storageHeader.addEventListener('click', e => {
+      const isMobile = document.documentElement.getAttribute('data-layout') === 'mobile';
+      if (isMobile || e.target.closest('button') === storToggle) {
+        toggleStorage();
+      }
+    });
 
     const categories = storages[stor];
     Object.keys(categories)
       .sort((a, b) => (CATEGORY_NAMES[a] || a).localeCompare(CATEGORY_NAMES[b] || b))
       .forEach((cat, catIndex) => {
-        const categoryBlock = document.createElement('div');
-        categoryBlock.className = 'category-block mb-8';
-        categoryBlock.id = `category-${storIndex}-${catIndex}`;
+          const categoryBlock = document.createElement('div');
+          categoryBlock.className = 'category-block';
+          categoryBlock.id = `category-${storIndex}-${catIndex}`;
 
         const catHeader = document.createElement('div');
-        catHeader.className = 'flex justify-between items-center mb-2 hover:bg-neutral/20 cursor-pointer md:cursor-default rounded px-2';
+        catHeader.className =
+          'flex justify-between items-center mb-2 rounded px-2 cursor-pointer md:cursor-default hover:bg-neutral/20 md:hover:bg-transparent';
         catHeader.id = `category-header-${storIndex}-${catIndex}`;
 
         const h4 = document.createElement('h4');
@@ -471,7 +474,7 @@ function renderProducts(data) {
         h4.textContent = CATEGORY_NAMES[cat] || cat;
 
         const catToggle = document.createElement('button');
-        catToggle.className = 'text-md cursor-pointer';
+        catToggle.className = 'text-md cursor-pointer bg-transparent border-0 p-0';
         catToggle.innerHTML = '<i class="fa-regular fa-caret-down"></i>';
         catToggle.id = `category-toggle-${storIndex}-${catIndex}`;
 
@@ -479,8 +482,8 @@ function renderProducts(data) {
         catHeader.appendChild(catToggle);
         categoryBlock.appendChild(catHeader);
 
-        const table = document.createElement('table');
-        table.className = 'table table-zebra w-full mb-6';
+          const table = document.createElement('table');
+          table.className = 'table table-zebra w-full';
         const thead = document.createElement('thead');
         const headRow = document.createElement('tr');
         ['Nazwa', 'Ilość', 'Jednostka', 'Status', 'Usuń'].forEach(text => {
@@ -567,11 +570,12 @@ function renderProducts(data) {
           table.classList.toggle('hidden', !catOpen);
           catToggle.innerHTML = `<i class="fa-regular fa-caret-${catOpen ? 'down' : 'up'}"></i>`;
         };
-        if (window.innerWidth < 768) {
-          catHeader.addEventListener('click', toggleCategory);
-        } else {
-          catToggle.addEventListener('click', toggleCategory);
-        }
+        catHeader.addEventListener('click', e => {
+          const isMobile = document.documentElement.getAttribute('data-layout') === 'mobile';
+          if (isMobile || e.target.closest('button') === catToggle) {
+            toggleCategory();
+          }
+        });
       });
     container.appendChild(storageBlock);
   });

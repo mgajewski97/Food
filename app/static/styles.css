@@ -65,7 +65,7 @@ html[data-layout="mobile"] button {
 
 /* Product view spacing adjustments */
 #product-list .storage-block h3 {
-  font-size: 1.25rem;
+  font-size: 1.75rem;
   margin-bottom: 0.5rem;
 }
 
@@ -74,10 +74,10 @@ html[data-layout="mobile"] button {
 }
 
 #product-list .category-block {
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 
 #product-list .category-block table {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2.5rem;
   margin-top: 1rem;
 }
