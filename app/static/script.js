@@ -1,4 +1,3 @@
-let editing = false;
 let groupedView = false;
 let editMode = false;
 
@@ -48,20 +47,11 @@ document.addEventListener('DOMContentLoaded', () => {
       storage: form.storage.value,
       unit: UNIT
     };
-    if (editing) {
-      await fetch('/api/products', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(product)
-      });
-    } else {
-      await fetch('/api/products', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(product)
-      });
-    }
-    editing = false;
+    await fetch('/api/products', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(product)
+    });
     form.reset();
     await loadProducts();
     await loadRecipes();
@@ -94,6 +84,22 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.getElementById('product-search').addEventListener('input', () => {
     renderProducts(getFilteredProducts());
+  });
+  document.getElementById('edit-json-btn').addEventListener('click', async () => {
+    const textarea = document.getElementById('edit-json');
+    try {
+      const payload = JSON.parse(textarea.value);
+      await fetch('/api/products', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      textarea.value = '';
+      await loadProducts();
+      await loadRecipes();
+    } catch (err) {
+      alert('Nieprawidłowy JSON');
+    }
   });
   });
 
