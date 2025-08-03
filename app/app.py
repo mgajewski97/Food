@@ -38,7 +38,7 @@ def index():
 def products():
     if request.method == 'POST':
         new_product = request.json or {}
-        new_product['unit'] = UNIT
+        new_product['unit'] = new_product.get('unit', UNIT)
         try:
             new_product['quantity'] = float(new_product.get('quantity', 0))
         except (TypeError, ValueError):
@@ -69,7 +69,7 @@ def products():
             payload = [payload]
         products = load_json(PRODUCTS_PATH)
         for item in payload:
-            item['unit'] = UNIT
+            item['unit'] = item.get('unit', UNIT)
             try:
                 item['quantity'] = float(item.get('quantity', 0))
             except (TypeError, ValueError):
