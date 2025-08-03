@@ -71,14 +71,16 @@
                 <div id="product-list" style="display:none;"></div>
             </div>
 
-            <h2 class="text-xl font-semibold mt-8 mb-4">Dodaj / edytuj produkt</h2>
-            <form id="add-form" class="grid grid-cols-1 sm:grid-cols-8 gap-2 mb-6">
-                <input name="name" placeholder="nazwa" required class="input input-bordered">
-                <input name="quantity" placeholder="ilość" required class="input input-bordered">
-                <input name="package_size" placeholder="w opak." class="input input-bordered" type="number" value="1">
-                <input name="pack_size" placeholder="paczka" class="input input-bordered" type="number">
-                <input name="threshold" placeholder="próg" class="input input-bordered" type="number">
-                <select name="category" required class="select select-bordered">
+            <hr class="border-t border-base-300 my-6">
+
+            <h2 class="text-xl font-semibold mt-6 mb-4">Dodaj / edytuj produkt</h2>
+            <form id="add-form" class="grid grid-cols-1 sm:grid-cols-8 gap-2 mb-8">
+                <input name="name" placeholder="nazwa" required class="input input-bordered w-full">
+                <input name="quantity" placeholder="ilość" required class="input input-bordered w-full">
+                <input name="package_size" placeholder="w opak." class="input input-bordered w-full" type="number" value="1">
+                <input name="pack_size" placeholder="paczka" class="input input-bordered w-full" type="number">
+                <input name="threshold" placeholder="próg" class="input input-bordered w-full" type="number">
+                <select name="category" required class="select select-bordered w-full">
                     <option value="uncategorized">brak kategorii</option>
                     <option value="fresh_veg">Świeże warzywa</option>
                     <option value="mushrooms">Grzyby</option>
@@ -98,20 +100,22 @@
                     <option value="frozen_sauces">Mrożone sosy</option>
                     <option value="frozen_meals">Mrożone dania / zupy</option>
                 </select>
-                <select name="storage" required class="select select-bordered">
+                <select name="storage" required class="select select-bordered w-full">
                     <option value="fridge">Lodówka</option>
                     <option value="pantry" selected>Szafka</option>
                     <option value="freezer">Zamrażarka</option>
                 </select>
                 <label class="flex items-center gap-2"><input type="checkbox" name="main" class="checkbox"> Podstawowy</label>
-                <button type="submit" class="btn btn-success">Zapisz</button>
+                <button type="submit" class="btn btn-success w-full sm:col-span-2">Zapisz</button>
             </form>
 
-            <h3 class="text-lg font-semibold mb-2">Edytuj produkty (JSON)</h3>
-            <textarea id="edit-json" rows="5" cols="50" placeholder='JSON' class="textarea textarea-bordered w-full mb-2"></textarea>
-            <div class="flex gap-2 mb-8">
-                <button id="edit-json-btn" class="btn btn-primary">Wyślij JSON</button>
-                <button id="copy-btn" class="btn">Pobierz strukturę</button>
+            <hr class="border-t border-base-300 my-6">
+
+            <h3 class="text-lg font-semibold mt-6 mb-2">Edytuj produkty (JSON)</h3>
+            <textarea id="edit-json" rows="5" cols="50" placeholder='JSON' class="textarea textarea-bordered w-full mb-4"></textarea>
+            <div class="flex flex-col sm:flex-row gap-2 mb-8">
+                <button id="edit-json-btn" class="btn btn-primary w-full sm:w-auto">Wyślij JSON</button>
+                <button id="copy-btn" class="btn w-full sm:w-auto">Pobierz strukturę</button>
             </div>
         </div>
 
