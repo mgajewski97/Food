@@ -1,31 +1,32 @@
 <!doctype html>
-<html lang="pl">
+<html lang="pl" data-theme="dark">
 <head>
     <meta charset="utf-8">
     <title>Food App</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet">
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.10.2/dist/full.min.css" rel="stylesheet" type="text/css" />
 </head>
-<body class="bg-gray-50">
+<body class="min-h-screen bg-base-100">
+    <div class="flex justify-end p-4">
+        <button id="theme-toggle" class="btn btn-circle btn-ghost">🌞</button>
+    </div>
     <div class="max-w-screen-lg mx-auto px-4 py-6">
         <h1 class="text-2xl font-bold mb-4">Produkty</h1>
         <div class="flex flex-wrap items-center gap-4 mb-4">
-            <input id="product-search" placeholder="Szukaj produktu" class="flex-1 min-w-[200px] border rounded-lg px-3 py-2">
-            <button id="view-toggle" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">Widok z podziałem</button>
-            <button id="edit-toggle" class="px-4 py-2 text-sm font-medium text-white bg-yellow-500 rounded-lg hover:bg-yellow-600">Edytuj</button>
-            <button id="save-btn" style="display:none;" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">Zapisz</button>
+            <input id="product-search" placeholder="Szukaj produktu" class="input input-bordered flex-1 min-w-[200px]" />
+            <button id="view-toggle" class="btn btn-primary">Widok z podziałem</button>
+            <button id="edit-toggle" class="btn btn-warning">Edytuj</button>
+            <button id="save-btn" style="display:none;" class="btn btn-success">Zapisz</button>
         </div>
-        <div class="overflow-x-auto shadow-sm sm:rounded-lg">
-            <table id="product-table" class="w-full text-sm text-left text-gray-500">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+        <div class="overflow-x-auto">
+            <table id="product-table" class="table table-zebra w-full">
+                <thead>
                     <tr>
-                        <th scope="col" class="px-4 py-2">Nazwa</th>
-                        <th scope="col" class="px-4 py-2">Ilość</th>
-                        <th scope="col" class="px-4 py-2">Jednostka</th>
-                        <th scope="col" class="px-4 py-2">Kategoria</th>
-                        <th scope="col" class="px-4 py-2">Miejsce</th>
-                        <th scope="col" class="px-4 py-2"></th>
+                        <th>Nazwa</th>
+                        <th>Ilość</th>
+                        <th>Jednostka</th>
+                        <th>Kategoria</th>
+                        <th>Miejsce</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -35,9 +36,9 @@
 
         <h2 class="text-xl font-semibold mt-8 mb-4">Dodaj / edytuj produkt</h2>
         <form id="add-form" class="grid grid-cols-1 sm:grid-cols-5 gap-2 mb-6">
-            <input name="name" placeholder="nazwa" required class="border rounded-lg px-2 py-1">
-            <input name="quantity" placeholder="ilość" required class="border rounded-lg px-2 py-1">
-            <select name="category" required class="border rounded-lg px-2 py-1">
+            <input name="name" placeholder="nazwa" required class="input input-bordered">
+            <input name="quantity" placeholder="ilość" required class="input input-bordered">
+            <select name="category" required class="select select-bordered">
                 <option value="uncategorized">brak kategorii</option>
                 <option value="fresh_veg">Świeże warzywa</option>
                 <option value="mushrooms">Grzyby</option>
@@ -57,19 +58,19 @@
                 <option value="frozen_sauces">Mrożone sosy</option>
                 <option value="frozen_meals">Mrożone dania / zupy</option>
             </select>
-            <select name="storage" required class="border rounded-lg px-2 py-1">
+            <select name="storage" required class="select select-bordered">
                 <option value="fridge">Lodówka</option>
                 <option value="pantry" selected>Szafka</option>
                 <option value="freezer">Zamrażarka</option>
             </select>
-            <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">Zapisz</button>
+            <button type="submit" class="btn btn-success">Zapisz</button>
         </form>
 
         <h3 class="text-lg font-semibold mb-2">Edytuj produkty (JSON)</h3>
-        <textarea id="edit-json" rows="5" cols="50" placeholder='JSON' class="w-full border rounded-lg p-2 mb-2"></textarea>
-        <button id="edit-json-btn" class="px-4 py-2 mb-6 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">Wyślij JSON</button>
+        <textarea id="edit-json" rows="5" cols="50" placeholder='JSON' class="textarea textarea-bordered w-full mb-2"></textarea>
+        <button id="edit-json-btn" class="btn btn-primary mb-6">Wyślij JSON</button>
 
-        <button id="copy-btn" class="px-4 py-2 mb-8 text-sm font-medium text-white bg-gray-600 rounded-lg hover:bg-gray-700">Pobierz strukturę</button>
+        <button id="copy-btn" class="btn mb-8">Pobierz strukturę</button>
 
         <h1 class="text-2xl font-bold mb-4">Przepisy</h1>
         <ul id="recipe-list" class="list-disc pl-4 mb-8"></ul>
@@ -78,15 +79,15 @@
             <h2 id="history-title" class="text-xl font-semibold"></h2>
             <input type="hidden" name="name" id="history-name">
             <div id="used-ingredients"></div>
-            <button type="button" id="add-ingredient" style="display:none;" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">Dodaj składnik</button>
+            <button type="button" id="add-ingredient" style="display:none;" class="btn btn-primary">Dodaj składnik</button>
             <div class="flex gap-4">
-                <label>Smak: <input type="number" name="taste" min="1" max="5" class="border rounded-lg w-16 px-2"></label>
-                <label>Wysiłek: <input type="number" name="effort" min="1" max="5" class="border rounded-lg w-16 px-2"></label>
+                <label>Smak: <input type="number" name="taste" min="1" max="5" class="input input-bordered w-16"></label>
+                <label>Wysiłek: <input type="number" name="effort" min="1" max="5" class="input input-bordered w-16"></label>
             </div>
-            <label class="flex items-center gap-2"><input type="checkbox" name="favorite"> Ulubione</label>
+            <label class="flex items-center gap-2"><input type="checkbox" name="favorite" class="checkbox"> Ulubione</label>
             <div class="flex gap-4">
-                <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">Zapisz</button>
-                <button type="button" id="history-cancel" class="px-4 py-2 text-sm font-medium text-white bg-gray-600 rounded-lg hover:bg-gray-700">Anuluj</button>
+                <button type="submit" class="btn btn-success">Zapisz</button>
+                <button type="button" id="history-cancel" class="btn">Anuluj</button>
             </div>
         </form>
 
