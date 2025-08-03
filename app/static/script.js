@@ -436,15 +436,15 @@ function renderProducts(data) {
   );
   storOrder.forEach((stor, storIndex) => {
     const storageBlock = document.createElement('div');
-    storageBlock.className = 'storage-block border border-base-300 rounded-lg p-4 mb-6';
+    storageBlock.className = 'storage-block border border-base-300 rounded-lg p-4 mb-10';
     storageBlock.id = `storage-${storIndex}`;
 
     const storageHeader = document.createElement('div');
-    storageHeader.className = 'flex justify-between items-center mb-4 hover:bg-neutral/20 cursor-pointer md:cursor-default rounded px-2';
+    storageHeader.className = 'flex justify-between items-center mb-8 hover:bg-neutral/20 cursor-pointer md:cursor-default rounded px-2';
     storageHeader.id = `storage-header-${storIndex}`;
 
     const h3 = document.createElement('h3');
-    h3.className = 'text-lg font-bold';
+    h3.className = 'text-xl font-bold';
     h3.textContent = `${STORAGE_ICONS[stor] || ''} ${STORAGE_NAMES[stor] || stor}`;
 
     const storToggle = document.createElement('button');
@@ -457,7 +457,6 @@ function renderProducts(data) {
     storageBlock.appendChild(storageHeader);
 
     const storageContent = document.createElement('div');
-    storageContent.className = 'space-y-4';
     storageBlock.appendChild(storageContent);
 
     let storOpen = true;
@@ -477,7 +476,7 @@ function renderProducts(data) {
       .sort((a, b) => (CATEGORY_NAMES[a] || a).localeCompare(CATEGORY_NAMES[b] || b))
       .forEach((cat, catIndex) => {
         const categoryBlock = document.createElement('div');
-        categoryBlock.className = 'category-block mb-4';
+        categoryBlock.className = 'category-block mb-8';
         categoryBlock.id = `category-${storIndex}-${catIndex}`;
 
         const catHeader = document.createElement('div');
@@ -498,7 +497,7 @@ function renderProducts(data) {
         categoryBlock.appendChild(catHeader);
 
         const table = document.createElement('table');
-        table.className = 'table table-zebra w-full mb-4';
+        table.className = 'table table-zebra w-full mb-6';
         const thead = document.createElement('thead');
         const headRow = document.createElement('tr');
         ['Nazwa', 'Ilość', 'Jednostka', 'Status', 'Usuń'].forEach(text => {
