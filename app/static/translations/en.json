@@ -154,5 +154,8 @@
   "in_cart": "in cart",
   "owned": "Owned",
   "expand": "Expand",
-  "collapse": "Collapse"
+  "collapse": "Collapse",
+  "owned_units": "Owned unit(s)",
+  "remove": "Remove",
+  "delete_item_question": "Are you sure you want to remove this item?"
 }

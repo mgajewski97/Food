@@ -81,3 +81,26 @@ html[data-layout="mobile"] button {
   margin-bottom: 2.5rem;
   margin-top: 1rem;
 }
+
+/* Remove number input arrows */
+.no-spinner::-webkit-outer-spin-button,
+.no-spinner::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.no-spinner {
+  -moz-appearance: textfield;
+}
+
+/* Table alignment for shopping sections */
+.suggestion-table th,
+.suggestion-table td,
+.shopping-table th,
+.shopping-table td {
+  vertical-align: middle;
+}
+
+.suggestion-table,
+.shopping-table {
+  border-radius: 0.5rem;
+}

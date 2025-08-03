@@ -7,6 +7,7 @@ let UNIT = '';
 const LOW_STOCK_CLASS = 'text-error bg-error/10';
 
 let shoppingList = JSON.parse(localStorage.getItem('shoppingList') || '[]');
+let pendingRemoveIndex = null;
 
 let uiTranslations = { pl: {}, en: {} };
 let translations = { products: {}, units: {} };
@@ -421,8 +422,25 @@ function sortProducts(list) {
       manualQty.value = (parseInt(manualQty.value) || 1) + 1;
     });
   }
-    const manualAddBtn = document.getElementById('manual-add-btn');
-    if (manualAddBtn) manualAddBtn.addEventListener('click', handleManualAdd);
+  const manualAddBtn = document.getElementById('manual-add-btn');
+  if (manualAddBtn) manualAddBtn.addEventListener('click', handleManualAdd);
+
+  const confirmRemove = document.getElementById('confirm-remove-item');
+  const deleteModal = document.getElementById('shopping-delete-modal');
+  if (confirmRemove && deleteModal) {
+    confirmRemove.addEventListener('click', () => {
+      if (pendingRemoveIndex !== null) {
+        shoppingList.splice(pendingRemoveIndex, 1);
+        pendingRemoveIndex = null;
+        saveShoppingList();
+        renderShoppingList();
+        renderSuggestions();
+      }
+    });
+    deleteModal.addEventListener('close', () => {
+      pendingRemoveIndex = null;
+    });
+  }
 });
 
 async function loadProducts() {
@@ -950,89 +968,107 @@ function addToShoppingList(name, quantity = 1) {
 function handleManualAdd() {
   const nameInput = document.getElementById('manual-name');
   const qtyInput = document.getElementById('manual-qty');
-  const name = nameInput.value.trim();
+  let name = nameInput.value.trim();
   const qty = parseInt(qtyInput.value) || 1;
   if (!name) return;
+  const opt = Array.from(document.querySelectorAll('#product-datalist option')).find(o => o.value.toLowerCase() === name.toLowerCase());
+  if (opt) name = opt.dataset.key;
   addToShoppingList(name, qty);
   nameInput.value = '';
   qtyInput.value = '1';
   renderSuggestions();
+  renderShoppingList();
 }
 
 function renderSuggestions() {
-  const list = document.getElementById('suggestion-list');
-  if (!list) return;
-  list.innerHTML = '';
+  const table = document.getElementById('suggestion-table');
+  if (!table) return;
+  const tbody = table.querySelector('tbody');
+  tbody.innerHTML = '';
   const existing = new Set(shoppingList.map(i => i.name.toLowerCase()));
   (window.currentProducts || []).forEach(p => {
     const needs = p.quantity === 0 || (p.threshold !== null && p.quantity <= p.threshold);
     if (!needs || existing.has(p.name.toLowerCase())) return;
-    const li = document.createElement('li');
-    li.className = 'flex items-center justify-between';
-      const nameSpan = document.createElement('span');
-      nameSpan.textContent = productName(p.name);
-    li.appendChild(nameSpan);
-    const actions = document.createElement('span');
-    actions.className = 'flex gap-2';
-    const accept = document.createElement('i');
-    accept.className = 'fa-regular fa-circle-check cursor-pointer text-success';
-    accept.title = t('accept');
-    accept.addEventListener('click', () => {
-      addToShoppingList(p.name);
-      li.remove();
+    const tr = document.createElement('tr');
+    const nameTd = document.createElement('td');
+    nameTd.textContent = productName(p.name);
+    tr.appendChild(nameTd);
+
+    const qtyTd = document.createElement('td');
+    const qtyWrap = document.createElement('div');
+    qtyWrap.className = 'flex items-center justify-center';
+    const dec = document.createElement('button');
+    dec.type = 'button';
+    dec.textContent = '−';
+    dec.className = 'btn btn-outline btn-xs';
+    const qtyInput = document.createElement('input');
+    qtyInput.type = 'number';
+    qtyInput.min = '1';
+    qtyInput.value = '1';
+    qtyInput.className = 'input input-bordered w-16 text-center mx-2 no-spinner';
+    const inc = document.createElement('button');
+    inc.type = 'button';
+    inc.textContent = '+';
+    inc.className = 'btn btn-outline btn-xs';
+    dec.addEventListener('click', () => {
+      qtyInput.value = Math.max(1, (parseInt(qtyInput.value) || 1) - 1);
     });
-    const reject = document.createElement('i');
-    reject.className = 'fa-regular fa-circle-xmark cursor-pointer text-error';
-    reject.title = t('reject');
-    reject.addEventListener('click', () => li.remove());
-    actions.appendChild(accept);
-    actions.appendChild(reject);
-    li.appendChild(actions);
-    list.appendChild(li);
+    inc.addEventListener('click', () => {
+      qtyInput.value = (parseInt(qtyInput.value) || 1) + 1;
+    });
+    qtyWrap.append(dec, qtyInput, inc);
+    qtyTd.appendChild(qtyWrap);
+    tr.appendChild(qtyTd);
+
+    const acceptTd = document.createElement('td');
+    const acceptBtn = document.createElement('button');
+    acceptBtn.className = 'text-success';
+    acceptBtn.innerHTML = '<i class="fa-regular fa-circle-check"></i>';
+    acceptBtn.setAttribute('aria-label', t('accept'));
+    acceptBtn.addEventListener('click', () => {
+      addToShoppingList(p.name, parseInt(qtyInput.value) || 1);
+      renderSuggestions();
+    });
+    acceptTd.appendChild(acceptBtn);
+    tr.appendChild(acceptTd);
+
+    const rejectTd = document.createElement('td');
+    const rejectBtn = document.createElement('button');
+    rejectBtn.className = 'text-error';
+    rejectBtn.innerHTML = '<i class="fa-regular fa-circle-xmark"></i>';
+    rejectBtn.setAttribute('aria-label', t('reject'));
+    rejectBtn.addEventListener('click', () => tr.remove());
+    rejectTd.appendChild(rejectBtn);
+    tr.appendChild(rejectTd);
+
+    tbody.appendChild(tr);
   });
 }
 
 function renderShoppingList() {
-  const list = document.getElementById('shopping-list');
-  if (!list) return;
-  list.innerHTML = '';
+  const table = document.getElementById('shopping-list');
+  if (!table) return;
+  const tbody = table.querySelector('tbody');
+  tbody.innerHTML = '';
   shoppingList.sort((a, b) => {
-      if (a.inCart && b.inCart) return (a.cartTime || 0) - (b.cartTime || 0);
-      if (a.inCart !== b.inCart) return a.inCart ? 1 : -1;
-      return productName(a.name).localeCompare(productName(b.name));
-    });
-  shoppingList.forEach(item => {
-    const li = document.createElement('li');
-    li.className = 'flex items-center gap-2';
-    if (item.inCart) {
-      li.classList.add('opacity-50', 'italic');
-    }
-    const cb = document.createElement('input');
-    cb.type = 'checkbox';
-    cb.className = 'checkbox';
-    cb.title = t('in_cart');
-    cb.checked = item.inCart;
-    cb.addEventListener('change', () => {
-      item.inCart = cb.checked;
-      if (cb.checked) {
-        item.cartTime = Date.now();
-      } else {
-        delete item.cartTime;
-      }
-      saveShoppingList();
-      renderShoppingList();
-    });
-    li.appendChild(cb);
-    const nameSpan = document.createElement('span');
-    nameSpan.textContent = productName(item.name);
-    nameSpan.className = 'flex-1';
-    if (item.inCart) {
-      nameSpan.classList.add('line-through');
-    }
-    li.appendChild(nameSpan);
+    if (a.inCart && b.inCart) return (a.cartTime || 0) - (b.cartTime || 0);
+    if (a.inCart !== b.inCart) return a.inCart ? 1 : -1;
+    return productName(a.name).localeCompare(productName(b.name));
+  });
+  shoppingList.forEach((item, idx) => {
+    const tr = document.createElement('tr');
+    if (item.inCart) tr.classList.add('opacity-50', 'italic');
+
+    const nameTd = document.createElement('td');
+    nameTd.textContent = productName(item.name);
+    if (item.inCart) nameTd.classList.add('line-through');
+    tr.appendChild(nameTd);
+
+    const qtyTd = document.createElement('td');
     const qtyWrap = document.createElement('div');
-    qtyWrap.className = 'flex items-center';
+    qtyWrap.className = 'flex items-center justify-center';
     const dec = document.createElement('button');
+    dec.type = 'button';
     dec.textContent = '−';
     dec.className = 'btn btn-outline btn-xs';
     dec.disabled = item.inCart;
@@ -1040,9 +1076,10 @@ function renderShoppingList() {
     qtyInput.type = 'number';
     qtyInput.min = '1';
     qtyInput.value = item.quantity;
-    qtyInput.className = 'input input-bordered w-16 text-center mx-2 appearance-none';
+    qtyInput.className = 'input input-bordered w-16 text-center mx-2 no-spinner';
     qtyInput.disabled = item.inCart;
     const inc = document.createElement('button');
+    inc.type = 'button';
     inc.textContent = '+';
     inc.className = 'btn btn-outline btn-xs';
     inc.disabled = item.inCart;
@@ -1066,18 +1103,49 @@ function renderShoppingList() {
       item.quantity = v;
       saveShoppingList();
     });
-    qtyWrap.appendChild(dec);
-    qtyWrap.appendChild(qtyInput);
-    qtyWrap.appendChild(inc);
-    li.appendChild(qtyWrap);
+    qtyWrap.append(dec, qtyInput, inc);
+    qtyTd.appendChild(qtyWrap);
+    tr.appendChild(qtyTd);
+
+    const ownedTd = document.createElement('td');
     const product = (window.currentProducts || []).find(p => p.name === item.name && p.quantity > 0);
-    if (product) {
-      const owned = document.createElement('span');
-      owned.className = 'text-xs text-gray-500';
-      owned.textContent = `${formatQuantity(product)} ${t('owned')}`;
-      li.appendChild(owned);
-    }
-    list.appendChild(li);
+    ownedTd.textContent = product ? `${formatQuantity(product)} ${t('owned')}` : '';
+    tr.appendChild(ownedTd);
+
+    const cartTd = document.createElement('td');
+    const cartBtn = document.createElement('button');
+    cartBtn.type = 'button';
+    cartBtn.innerHTML = '<i class="fa-solid fa-cart-shopping"></i>';
+    cartBtn.className = item.inCart ? 'text-success' : 'text-gray-400';
+    cartBtn.setAttribute('aria-label', t('in_cart'));
+    cartBtn.addEventListener('click', () => {
+      item.inCart = !item.inCart;
+      if (item.inCart) {
+        item.cartTime = Date.now();
+      } else {
+        delete item.cartTime;
+      }
+      saveShoppingList();
+      renderShoppingList();
+    });
+    cartTd.appendChild(cartBtn);
+    tr.appendChild(cartTd);
+
+    const removeTd = document.createElement('td');
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'text-error';
+    removeBtn.innerHTML = '<i class="fa-regular fa-circle-minus"></i>';
+    removeBtn.setAttribute('aria-label', t('remove'));
+    removeBtn.addEventListener('click', () => {
+      pendingRemoveIndex = idx;
+      const modal = document.getElementById('shopping-delete-modal');
+      if (modal) modal.showModal();
+    });
+    removeTd.appendChild(removeBtn);
+    tr.appendChild(removeTd);
+
+    tbody.appendChild(tr);
   });
 }
 
