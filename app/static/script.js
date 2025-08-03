@@ -1,6 +1,6 @@
 let groupedView = false;
 let editMode = false;
-let currentFilter = 'missing_low';
+let currentFilter = 'all';
 
 const UNIT = 'szt.';
 const LOW_STOCK_CLASS = 'text-error bg-error/10';
@@ -58,19 +58,6 @@ function getStatusIcon(p) {
   return null;
 }
 
-function updateFilterVisibility() {
-  const layout = document.documentElement.getAttribute('data-layout');
-  const radios = document.getElementById('filter-radios');
-  const selectWrapper = document.getElementById('filter-select-wrapper');
-  if (layout === 'mobile') {
-    if (radios) radios.style.display = 'none';
-    if (selectWrapper) selectWrapper.style.display = 'block';
-  } else {
-    if (radios) radios.style.display = 'flex';
-    if (selectWrapper) selectWrapper.style.display = 'none';
-  }
-}
-
 function sortProducts(list) {
   return list.sort((a, b) => {
     const storA = STORAGE_NAMES[a.storage] || a.storage;
@@ -92,7 +79,6 @@ document.addEventListener('DOMContentLoaded', () => {
     html.setAttribute('data-layout', 'mobile');
     if (icon) icon.className = 'fa-solid fa-desktop';
   }
-  updateFilterVisibility();
 
   loadProducts();
   loadRecipes();
@@ -184,19 +170,13 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('product-search').addEventListener('input', () => {
     renderProducts(getFilteredProducts());
   });
-  document.querySelectorAll('#filter-radios input[name="product-filter"]').forEach(r => {
-    r.addEventListener('change', (e) => {
-      currentFilter = e.target.value;
-      const select = document.getElementById('filter-select');
-      if (select) select.value = currentFilter;
+  document.querySelectorAll('#product-filter button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentFilter = btn.dataset.filter;
+      document.querySelectorAll('#product-filter button').forEach(b => b.classList.remove('btn-active'));
+      btn.classList.add('btn-active');
       renderProducts(getFilteredProducts());
     });
-  });
-  document.getElementById('filter-select').addEventListener('change', (e) => {
-    currentFilter = e.target.value;
-    const radio = document.querySelector(`#filter-radios input[value="${currentFilter}"]`);
-    if (radio) radio.checked = true;
-    renderProducts(getFilteredProducts());
   });
   document.getElementById('edit-json-btn').addEventListener('click', async () => {
     const textarea = document.getElementById('edit-json');
@@ -229,6 +209,7 @@ async function loadProducts() {
 function getFilteredProducts() {
   const query = document.getElementById('product-search').value.toLowerCase();
   return sortProducts((window.currentProducts || []).filter(p => {
+    if (!p.main && p.quantity === 0 && currentFilter !== 'all_zero') return false;
     switch (currentFilter) {
       case 'missing':
         if (!(p.main && p.quantity === 0)) return false;
@@ -240,10 +221,8 @@ function getFilteredProducts() {
         if (p.quantity !== 0) return false;
         break;
       case 'all':
+      default:
         break;
-    }
-    if (currentFilter !== 'all' && currentFilter !== 'all_zero') {
-      if (!p.main && p.quantity === 0) return false;
     }
     return p.name.toLowerCase().includes(query);
   }));
@@ -592,6 +571,5 @@ if (layoutToggle && layoutIcon) {
     const next = current === 'desktop' ? 'mobile' : 'desktop';
     html.setAttribute('data-layout', next);
     layoutIcon.className = next === 'desktop' ? 'fa-regular fa-mobile' : 'fa-solid fa-desktop';
-    updateFilterVisibility();
   });
 }

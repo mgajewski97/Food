@@ -16,24 +16,18 @@
     <div class="max-w-screen-lg mx-auto px-4 py-6 main-container">
         <h1 class="text-2xl font-bold mb-4">Produkty</h1>
         <div id="controls" class="flex flex-wrap items-center gap-4 mb-4">
-            <input id="product-search" placeholder="Szukaj produktu" class="input input-bordered flex-1 min-w-[200px]" />
+            <div class="flex flex-col md:flex-row gap-2 items-start flex-1">
+                <input id="product-search" placeholder="Szukaj produktu" class="input input-bordered flex-1 min-w-[200px]" />
+                <div id="product-filter" class="flex gap-2">
+                    <button data-filter="missing" class="btn btn-sm btn-outline btn-neutral">Braki (main, ilość = 0)</button>
+                    <button data-filter="missing_low" class="btn btn-sm btn-outline btn-neutral">Braki + końcówki (main, ilość ≤ próg)</button>
+                    <button data-filter="all_zero" class="btn btn-sm btn-outline btn-neutral">Braki wszystkich (ilość = 0)</button>
+                    <button data-filter="all" class="btn btn-sm btn-outline btn-neutral btn-active">Wszystko</button>
+                </div>
+            </div>
             <button id="view-toggle" class="btn btn-primary">Widok z podziałem</button>
             <button id="edit-toggle" class="btn btn-warning">Edytuj</button>
             <button id="save-btn" style="display:none;" class="btn btn-success">Zapisz</button>
-        </div>
-        <div id="filter-radios" class="mb-4 gap-4">
-            <label class="flex items-center gap-2"><input type="radio" name="product-filter" value="missing" class="radio"><span>Tylko braki</span></label>
-            <label class="flex items-center gap-2"><input type="radio" name="product-filter" value="missing_low" class="radio" checked><span>Braki + końcówki</span></label>
-            <label class="flex items-center gap-2"><input type="radio" name="product-filter" value="all_zero" class="radio"><span>Wszystkie 0</span></label>
-            <label class="flex items-center gap-2"><input type="radio" name="product-filter" value="all" class="radio"><span>Wszystkie</span></label>
-        </div>
-        <div id="filter-select-wrapper" class="mb-4">
-            <select id="filter-select" class="select select-bordered w-full">
-                <option value="missing">Tylko braki</option>
-                <option value="missing_low" selected>Braki + końcówki</option>
-                <option value="all_zero">Wszystkie 0</option>
-                <option value="all">Wszystkie</option>
-            </select>
         </div>
         <div class="overflow-x-auto">
             <table id="product-table" class="table table-zebra w-full">
