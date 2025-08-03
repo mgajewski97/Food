@@ -1,6 +1,6 @@
 let groupedView = false;
 let editMode = false;
-let currentFilter = 'all';
+let currentFilter = 'available';
 
 const UNIT = 'szt.';
 const LOW_STOCK_CLASS = 'text-error bg-error/10';
@@ -198,14 +198,20 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('product-search').addEventListener('input', () => {
     renderProducts(getFilteredProducts());
   });
-  document.querySelectorAll('#product-filter button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      currentFilter = btn.dataset.filter;
-      document.querySelectorAll('#product-filter button').forEach(b => b.classList.remove('btn-active'));
-      btn.classList.add('btn-active');
-      renderProducts(getFilteredProducts());
-    });
-  });
+  const desktopFilter = document.getElementById('state-filter');
+  const mobileFilter = document.getElementById('state-filter-mobile');
+  function setFilter(value) {
+    currentFilter = value;
+    if (desktopFilter) desktopFilter.value = value;
+    if (mobileFilter) mobileFilter.value = value;
+    renderProducts(getFilteredProducts());
+  }
+  if (desktopFilter) {
+    desktopFilter.addEventListener('change', e => setFilter(e.target.value));
+  }
+  if (mobileFilter) {
+    mobileFilter.addEventListener('change', e => setFilter(e.target.value));
+  }
   document.getElementById('edit-json-btn').addEventListener('click', async () => {
     const textarea = document.getElementById('edit-json');
     try {
@@ -239,19 +245,18 @@ async function loadProducts() {
 function getFilteredProducts() {
   const query = document.getElementById('product-search').value.toLowerCase();
   return sortProducts((window.currentProducts || []).filter(p => {
-    if (!p.main && p.quantity === 0 && currentFilter !== 'all_zero') return false;
     switch (currentFilter) {
       case 'missing':
-        if (!(p.main && p.quantity === 0)) return false;
-        break;
-      case 'missing_low':
-        if (!(p.main && (p.quantity === 0 || (p.threshold !== null && p.quantity <= p.threshold)))) return false;
-        break;
-      case 'all_zero':
         if (p.quantity !== 0) return false;
         break;
+      case 'low':
+        if (!(p.threshold !== null && p.quantity <= p.threshold)) return false;
+        break;
       case 'all':
+        break;
+      case 'available':
       default:
+        if (p.quantity <= 0) return false;
         break;
     }
     return p.name.toLowerCase().includes(query);
