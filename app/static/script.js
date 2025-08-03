@@ -103,13 +103,25 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('product-list').style.display = groupedView ? 'block' : 'none';
     document.getElementById('view-toggle').textContent = groupedView ? 'Płaska lista' : 'Widok z podziałem';
   });
+  document.getElementById('product-search').addEventListener('input', () => {
+    renderProducts(getFilteredProducts());
+  });
 });
 
 async function loadProducts() {
   const res = await fetch('/api/products');
-  const data = await res.json();
-  window.currentProducts = data;
+  window.currentProducts = await res.json();
+  renderProducts(getFilteredProducts());
+}
 
+function getFilteredProducts() {
+  const query = document.getElementById('product-search').value.toLowerCase();
+  return (window.currentProducts || []).filter(p =>
+    p.name.toLowerCase().includes(query)
+  );
+}
+
+function renderProducts(data) {
   const tbody = document.querySelector('#product-table tbody');
   tbody.innerHTML = '';
   data.forEach(p => {
