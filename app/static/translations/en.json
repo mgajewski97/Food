@@ -65,6 +65,8 @@
   "heading_history": "History",
   "heading_shopping": "Shopping list",
   "heading_suggestions": "Suggestions",
+  "heading_add_product": "Add product",
+  "heading_shopping_list": "Shopping List",
   "accept_action": "Accept",
   "reject_action": "Reject",
   "new_product_option": "New product",
@@ -145,7 +147,7 @@
   "unit.package_350g": "package (350 g)",
   "unit.bottle": "bottle",
   "unit.jar": "jar",
-  "unit.x270g": "× 270 g"
+  "unit.x270g": "× 270 g",
   "unit_piece": "pcs",
   "accept": "accept",
   "reject": "reject",

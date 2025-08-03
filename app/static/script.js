@@ -10,8 +10,6 @@ let shoppingList = JSON.parse(localStorage.getItem('shoppingList') || '[]');
 
 let uiTranslations = { pl: {}, en: {} };
 let translations = { products: {}, units: {} };
-let handledSuggestions = new Set();
-let currentSuggestions = [];
 
 async function loadTranslations() {
   try {
@@ -423,39 +421,8 @@ function sortProducts(list) {
       manualQty.value = (parseInt(manualQty.value) || 1) + 1;
     });
   }
-  const manualAddBtn = document.getElementById('manual-add-btn');
-  if (manualAddBtn) manualAddBtn.addEventListener('click', handleManualAdd);
-  const manualConfirmBtn = document.getElementById('manual-confirm');
-  if (manualConfirmBtn) manualConfirmBtn.addEventListener('click', handleManualConfirm);
-  const manualSelect = document.getElementById('manual-match-select');
-  if (manualSelect) {
-    manualSelect.addEventListener('change', e => {
-      const newOpts = document.getElementById('new-options');
-      if (e.target.value === 'new') {
-        newOpts.style.display = 'flex';
-        const storSel = document.getElementById('manual-storage-select');
-        const catSel = document.getElementById('manual-category-select');
-        if (storSel.options.length === 0) {
-          Object.entries(STORAGE_KEYS).forEach(([val, key]) => {
-            const opt = document.createElement('option');
-            opt.value = val;
-            opt.textContent = t(key);
-            storSel.appendChild(opt);
-          });
-        }
-        if (catSel.options.length === 0) {
-          Object.entries(CATEGORY_KEYS).forEach(([val, key]) => {
-            const opt = document.createElement('option');
-            opt.value = val;
-            opt.textContent = t(key);
-            catSel.appendChild(opt);
-          });
-        }
-      } else {
-        newOpts.style.display = 'none';
-      }
-    });
-  }
+    const manualAddBtn = document.getElementById('manual-add-btn');
+    if (manualAddBtn) manualAddBtn.addEventListener('click', handleManualAdd);
 });
 
 async function loadProducts() {
@@ -531,7 +498,7 @@ function renderProducts(data) {
       const qtyInput = document.createElement('input');
       qtyInput.type = 'number';
       qtyInput.value = p.quantity * (p.package_size || 1);
-      qtyInput.className = 'edit-qty input input-bordered w-20 text-center mx-2';
+      qtyInput.className = 'edit-qty input input-bordered w-20 text-center mx-2 appearance-none';
       const incBtn = document.createElement('button');
       incBtn.textContent = '+';
       incBtn.className = 'btn btn-outline btn-xs';
@@ -902,157 +869,6 @@ async function handleHistorySubmit(e) {
   await loadHistory();
 }
 
-function suggestionKey(p) {
-  return `${p.name}|${p.storage}|${p.category}`;
-}
-
-function updateSuggestions() {
-  currentSuggestions = (window.currentProducts || []).filter(p => p.main && p.threshold !== null && p.quantity <= p.threshold && !handledSuggestions.has(suggestionKey(p)));
-}
-
-function renderSuggestions() {
-  updateSuggestions();
-  const container = document.getElementById('suggestions-list');
-  if (!container) return;
-  container.innerHTML = '';
-  currentSuggestions.forEach(p => {
-    const row = document.createElement('div');
-    row.className = 'flex items-center gap-2';
-      const nameSpan = document.createElement('span');
-      nameSpan.textContent = productName(p.name);
-    row.appendChild(nameSpan);
-
-    const qtyWrap = document.createElement('div');
-    qtyWrap.className = 'flex items-center';
-    const dec = document.createElement('button');
-    dec.textContent = '−';
-    dec.className = 'btn btn-outline btn-xs';
-    const qtyInput = document.createElement('input');
-    qtyInput.type = 'number';
-    qtyInput.min = '1';
-    qtyInput.value = p.threshold || 1;
-    qtyInput.className = 'input input-bordered w-16 text-center mx-2';
-    const inc = document.createElement('button');
-    inc.textContent = '+';
-    inc.className = 'btn btn-outline btn-xs';
-    dec.addEventListener('click', () => {
-      const v = parseInt(qtyInput.value) || 1;
-      qtyInput.value = Math.max(1, v - 1);
-    });
-    inc.addEventListener('click', () => {
-      const v = parseInt(qtyInput.value) || 1;
-      qtyInput.value = v + 1;
-    });
-    qtyWrap.appendChild(dec);
-    qtyWrap.appendChild(qtyInput);
-    qtyWrap.appendChild(inc);
-    row.appendChild(qtyWrap);
-
-    const accept = document.createElement('button');
-    accept.innerHTML = '<i class="fa-regular fa-circle-check"></i>';
-    accept.title = t('accept_action');
-    accept.className = 'btn btn-ghost btn-xs';
-    accept.addEventListener('click', () => {
-      addToShoppingList({ name: p.name, quantity: parseFloat(qtyInput.value) || 1, storage: p.storage, category: p.category });
-      handledSuggestions.add(suggestionKey(p));
-      renderSuggestions();
-      renderShoppingList();
-    });
-
-    const reject = document.createElement('button');
-    reject.innerHTML = '<i class="fa-regular fa-circle-xmark"></i>';
-    reject.title = t('reject_action');
-    reject.className = 'btn btn-ghost btn-xs';
-    reject.addEventListener('click', () => {
-      handledSuggestions.add(suggestionKey(p));
-      renderSuggestions();
-    });
-
-    row.appendChild(accept);
-    row.appendChild(reject);
-    container.appendChild(row);
-  });
-}
-
-function addToShoppingList(item) {
-  shoppingList.push(item);
-}
-
-function renderShoppingList() {
-  const list = document.getElementById('shopping-list');
-  if (!list) return;
-  list.innerHTML = '';
-  shoppingList.forEach(i => {
-    const li = document.createElement('li');
-    li.textContent = `${productName(i.name)} (${i.quantity})`;
-    list.appendChild(li);
-  });
-}
-
-let pendingManual = null;
-
-function handleManualAdd() {
-  const nameInput = document.getElementById('manual-name');
-  const qtyInput = document.getElementById('manual-qty');
-  const name = nameInput.value.trim();
-  const qty = parseInt(qtyInput.value) || 1;
-  if (!name) return;
-  const matches = currentSuggestions.filter(p => productName(p.name).toLowerCase() === name.toLowerCase());
-  pendingManual = { name, qty, matches };
-  const choice = document.getElementById('manual-choice');
-  if (matches.length > 1) {
-    const select = document.getElementById('manual-match-select');
-    select.innerHTML = '';
-    matches.forEach((p, idx) => {
-      const opt = document.createElement('option');
-      opt.value = idx;
-      opt.textContent = `${storageName(p.storage)} / ${categoryName(p.category)}`;
-      select.appendChild(opt);
-    });
-    const optNew = document.createElement('option');
-    optNew.value = 'new';
-    optNew.textContent = t('new_product_option');
-    select.appendChild(optNew);
-    document.getElementById('new-options').style.display = 'none';
-    choice.style.display = 'block';
-  } else if (matches.length === 1) {
-    const p = matches[0];
-    handledSuggestions.add(suggestionKey(p));
-    addToShoppingList({ name: p.name, quantity: qty, storage: p.storage, category: p.category });
-    nameInput.value = '';
-    qtyInput.value = '1';
-    renderSuggestions();
-    renderShoppingList();
-  } else {
-    addToShoppingList({ name, quantity: qty });
-    nameInput.value = '';
-    qtyInput.value = '1';
-    renderShoppingList();
-  }
-}
-
-function handleManualConfirm() {
-  if (!pendingManual) return;
-  const select = document.getElementById('manual-match-select');
-  const choice = select.value;
-  const { name, qty, matches } = pendingManual;
-  if (choice === 'new') {
-    const stor = document.getElementById('manual-storage-select').value;
-    const cat = document.getElementById('manual-category-select').value;
-    addToShoppingList({ name, quantity: qty, storage: stor, category: cat });
-  } else {
-    const p = matches[parseInt(choice, 10)];
-    handledSuggestions.add(suggestionKey(p));
-    addToShoppingList({ name: p.name, quantity: qty, storage: p.storage, category: p.category });
-  }
-  document.getElementById('manual-choice').style.display = 'none';
-  pendingManual = null;
-  document.getElementById('manual-name').value = '';
-  document.getElementById('manual-qty').value = '1';
-  renderSuggestions();
-  renderShoppingList();
-}
-
 // Theme toggle
 const themeToggle = document.getElementById('theme-toggle');
 const themeIcon = document.getElementById('theme-icon');
@@ -1100,6 +916,18 @@ function addToShoppingList(name, quantity = 1) {
   shoppingList.push({ name, quantity, inCart: false });
   saveShoppingList();
   renderShoppingList();
+}
+
+function handleManualAdd() {
+  const nameInput = document.getElementById('manual-name');
+  const qtyInput = document.getElementById('manual-qty');
+  const name = nameInput.value.trim();
+  const qty = parseInt(qtyInput.value) || 1;
+  if (!name) return;
+  addToShoppingList(name, qty);
+  nameInput.value = '';
+  qtyInput.value = '1';
+  renderSuggestions();
 }
 
 function renderSuggestions() {
@@ -1173,16 +1001,46 @@ function renderShoppingList() {
       nameSpan.classList.add('line-through');
     }
     li.appendChild(nameSpan);
+    const qtyWrap = document.createElement('div');
+    qtyWrap.className = 'flex items-center';
+    const dec = document.createElement('button');
+    dec.textContent = '−';
+    dec.className = 'btn btn-outline btn-xs';
+    dec.disabled = item.inCart;
     const qtyInput = document.createElement('input');
     qtyInput.type = 'number';
+    qtyInput.min = '1';
     qtyInput.value = item.quantity;
-    qtyInput.className = 'input input-bordered w-20 text-right';
+    qtyInput.className = 'input input-bordered w-16 text-center mx-2 appearance-none';
     qtyInput.disabled = item.inCart;
-    qtyInput.addEventListener('change', () => {
-      item.quantity = parseFloat(qtyInput.value) || 0;
+    const inc = document.createElement('button');
+    inc.textContent = '+';
+    inc.className = 'btn btn-outline btn-xs';
+    inc.disabled = item.inCart;
+    dec.addEventListener('click', () => {
+      const v = parseInt(qtyInput.value) || 1;
+      const newVal = Math.max(1, v - 1);
+      qtyInput.value = newVal;
+      item.quantity = newVal;
       saveShoppingList();
     });
-    li.appendChild(qtyInput);
+    inc.addEventListener('click', () => {
+      const v = parseInt(qtyInput.value) || 1;
+      const newVal = v + 1;
+      qtyInput.value = newVal;
+      item.quantity = newVal;
+      saveShoppingList();
+    });
+    qtyInput.addEventListener('change', () => {
+      const v = Math.max(1, parseInt(qtyInput.value) || 1);
+      qtyInput.value = v;
+      item.quantity = v;
+      saveShoppingList();
+    });
+    qtyWrap.appendChild(dec);
+    qtyWrap.appendChild(qtyInput);
+    qtyWrap.appendChild(inc);
+    li.appendChild(qtyWrap);
     const product = (window.currentProducts || []).find(p => p.name === item.name && p.quantity > 0);
     if (product) {
       const owned = document.createElement('span');
