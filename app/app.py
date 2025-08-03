@@ -17,6 +17,7 @@ def apply_defaults(product):
     product.setdefault('main', True)
     product.setdefault('threshold', 1)
     product.setdefault('package_size', 1)
+    product.setdefault('pack_size', None)
     return product
 
 def load_json(path):
@@ -50,6 +51,11 @@ def products():
             new_product['package_size'] = float(new_product.get('package_size', 1)) or 1
         except (TypeError, ValueError):
             new_product['package_size'] = 1
+        try:
+            ps = new_product.get('pack_size')
+            new_product['pack_size'] = int(ps) if ps is not None else None
+        except (TypeError, ValueError):
+            new_product['pack_size'] = None
         try:
             thresh = new_product.get('threshold')
             new_product['threshold'] = float(thresh) if thresh is not None else 1
@@ -92,6 +98,11 @@ def products():
             except (TypeError, ValueError):
                 item['package_size'] = 1
             try:
+                ps = item.get('pack_size')
+                item['pack_size'] = int(ps) if ps is not None else None
+            except (TypeError, ValueError):
+                item['pack_size'] = None
+            try:
                 thresh = item.get('threshold')
                 item['threshold'] = float(thresh) if thresh is not None else 1
             except (TypeError, ValueError):
@@ -110,6 +121,7 @@ def products():
                     p['threshold'] = item['threshold']
                     p['main'] = item['main']
                     p['package_size'] = item['package_size']
+                    p['pack_size'] = item['pack_size']
                     found = True
                     break
             if not found:
@@ -137,6 +149,11 @@ def modify_product(name):
         updated['package_size'] = float(updated.get('package_size', 1)) or 1
     except (TypeError, ValueError):
         updated['package_size'] = 1
+    try:
+        ps = updated.get('pack_size')
+        updated['pack_size'] = int(ps) if ps is not None else None
+    except (TypeError, ValueError):
+        updated['pack_size'] = None
     try:
         thresh = updated.get('threshold')
         updated['threshold'] = float(thresh) if thresh is not None else 1

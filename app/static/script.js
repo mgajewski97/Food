@@ -48,6 +48,14 @@ function formatQuantity(p) {
   return `${units} ${p.unit}`;
 }
 
+function formatPackQuantity(p) {
+  if (p.pack_size) {
+    const total = Math.ceil(p.quantity / p.pack_size) * p.pack_size;
+    return `${p.quantity} z ${total}`;
+  }
+  return p.quantity;
+}
+
 function getStatusIcon(p) {
   if (p.main) {
     if (p.quantity === 0) {
@@ -113,6 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     const form = e.target;
     const pkgSize = parseFloat(form.package_size.value) || 1;
+    const packSize = form.pack_size.value ? parseInt(form.pack_size.value, 10) : null;
     const product = {
       name: form.name.value,
       quantity: parseFloat(form.quantity.value) / pkgSize,
@@ -121,7 +130,8 @@ document.addEventListener('DOMContentLoaded', () => {
       threshold: form.threshold.value ? parseFloat(form.threshold.value) : null,
       main: form.main.checked,
       unit: UNIT,
-      package_size: pkgSize
+      package_size: pkgSize,
+      pack_size: packSize
     };
     await fetch('/api/products', {
       method: 'POST',
@@ -236,6 +246,7 @@ async function loadProducts() {
   window.currentProducts = sortProducts(data.map(p => {
     p.low_stock = p.threshold !== null && p.quantity <= p.threshold;
     p.package_size = p.package_size || 1;
+    p.pack_size = p.pack_size || null;
     return p;
   }));
   renderProducts(getFilteredProducts());
@@ -274,7 +285,14 @@ async function changeQuantity(product, delta, { qtySpan, decBtn, tr, statusTd })
   });
   product.quantity = newQty;
   product.low_stock = product.threshold !== null && product.quantity <= product.threshold;
-  if (qtySpan) qtySpan.textContent = newQty;
+  if (qtySpan) {
+    qtySpan.textContent = formatPackQuantity(product);
+    if (product.pack_size) {
+      qtySpan.parentElement.title = 'Produkt w opakowaniach zbiorczych';
+    } else {
+      qtySpan.parentElement.removeAttribute('title');
+    }
+  }
   if (decBtn) decBtn.disabled = newQty <= 0;
   if (tr) {
     if (product.low_stock) {
@@ -340,13 +358,16 @@ function renderProducts(data) {
         decBtn.disabled = p.quantity <= 0;
         qtySpan = document.createElement('span');
         qtySpan.className = 'mx-2';
-        qtySpan.textContent = p.quantity;
+        qtySpan.textContent = formatPackQuantity(p);
         incBtn = document.createElement('button');
         incBtn.textContent = '+';
         incBtn.className = 'btn btn-xs';
         qtyTd.appendChild(decBtn);
         qtyTd.appendChild(qtySpan);
         qtyTd.appendChild(incBtn);
+        if (p.pack_size) {
+          qtyTd.title = 'Produkt w opakowaniach zbiorczych';
+        }
       }
       tr.appendChild(nameTd);
       tr.appendChild(qtyTd);
@@ -505,13 +526,16 @@ function renderProducts(data) {
             decBtn.disabled = p.quantity <= 0;
             qtySpan = document.createElement('span');
             qtySpan.className = 'mx-2';
-            qtySpan.textContent = p.quantity;
+            qtySpan.textContent = formatPackQuantity(p);
             incBtn = document.createElement('button');
             incBtn.textContent = '+';
             incBtn.className = 'btn btn-xs';
             qtyTd.appendChild(decBtn);
             qtyTd.appendChild(qtySpan);
             qtyTd.appendChild(incBtn);
+            if (p.pack_size) {
+              qtyTd.title = 'Produkt w opakowaniach zbiorczych';
+            }
           }
           tr.appendChild(nameTd);
           tr.appendChild(qtyTd);
