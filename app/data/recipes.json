@@ -1,0 +1,12 @@
+[
+  {
+    "name": "Sałatka z tofu",
+    "ingredients": ["tofu", "cebula czerwona", "feta"],
+    "tags": ["wegetariańskie"]
+  },
+  {
+    "name": "Omlet",
+    "ingredients": ["jajka", "ser"],
+    "tags": ["śniadanie"]
+  }
+]
