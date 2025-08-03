@@ -65,6 +65,8 @@
   "heading_history": "Historia",
   "heading_shopping": "Lista zakupów",
   "heading_suggestions": "Propozycje",
+  "heading_add_product": "Dodaj produkt",
+  "heading_shopping_list": "Lista zakupów",
   "accept_action": "Akceptuj",
   "reject_action": "Odrzuć",
   "new_product_option": "Nowy produkt",
@@ -145,7 +147,7 @@
   "unit.package_350g": "opakowanie (350 g)",
   "unit.bottle": "butelka",
   "unit.jar": "słoik",
-  "unit.x270g": "× 270 g"
+  "unit.x270g": "× 270 g",
   "unit_piece": "szt.",
   "accept": "dodaj",
   "reject": "ukryj",
