@@ -1,7 +1,6 @@
 let groupedView = false;
 let editMode = false;
 let currentFilter = 'all';
-let shoppingList = [];
 
 const UNIT = 'szt.';
 const LOW_STOCK_CLASS = 'text-error bg-error/10';
@@ -54,12 +53,15 @@ function getStatusIcon(p) {
     if (p.quantity === 0) {
       return { html: '<i class="fa-regular fa-circle-exclamation text-red-600"></i>', title: 'Brak produktu' };
     }
-    if (p.quantity <= p.threshold) {
+    if (p.threshold !== null && p.quantity <= p.threshold) {
       return { html: '<i class="fa-regular fa-triangle-exclamation text-yellow-500"></i>', title: 'Produkt się kończy' };
     }
   } else {
-    if (p.quantity <= p.threshold) {
-      return { html: '<i class="fa-regular fa-triangle-exclamation text-yellow-300 opacity-50 text-xs"></i>', title: 'Produkt się kończy' };
+    if (p.quantity === 0) {
+      return { html: '<i class="fa-regular fa-circle-exclamation text-red-600"></i>', title: 'Brak produktu' };
+    }
+    if (p.threshold !== null && p.quantity <= p.threshold) {
+      return { html: '<i class="fa-regular fa-triangle-exclamation text-yellow-300"></i>', title: 'Produkt się kończy' };
     }
   }
   return null;
@@ -89,23 +91,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loadProducts();
 
-  document.querySelectorAll('[data-tab-target]').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('[data-tab-target]').forEach(t => t.classList.remove('tab-active'));
-      tab.classList.add('tab-active');
-      document.querySelectorAll('.tab-panel').forEach(panel => (panel.style.display = 'none'));
-      const targetId = tab.dataset.tabTarget;
-      const panel = document.getElementById(targetId);
-      if (panel) panel.style.display = 'block';
-      if (targetId === 'tab-products') {
-        loadProducts();
-      } else if (targetId === 'tab-recipes') {
-        loadRecipes();
-      } else if (targetId === 'tab-history') {
-        loadHistory();
-      }
+    document.querySelectorAll('[data-tab-target]').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('[data-tab-target]').forEach(t => t.classList.remove('tab-active', 'font-bold'));
+        tab.classList.add('tab-active', 'font-bold');
+        document.querySelectorAll('.tab-panel').forEach(panel => (panel.style.display = 'none'));
+        const targetId = tab.dataset.tabTarget;
+        const panel = document.getElementById(targetId);
+        if (panel) panel.style.display = 'block';
+        if (targetId === 'tab-products') {
+          loadProducts();
+        } else if (targetId === 'tab-recipes') {
+          loadRecipes();
+        } else if (targetId === 'tab-history') {
+          loadHistory();
+        }
+      });
     });
-  });
 
   document.getElementById('add-form').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -116,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
       quantity: parseFloat(form.quantity.value) / pkgSize,
       category: form.category.value,
       storage: form.storage.value,
-      threshold: parseFloat(form.threshold.value) || 1,
+      threshold: form.threshold.value ? parseFloat(form.threshold.value) : null,
       main: form.main.checked,
       unit: UNIT,
       package_size: pkgSize
@@ -220,80 +222,13 @@ document.addEventListener('DOMContentLoaded', () => {
       alert('Nieprawidłowy JSON');
     }
   });
-  // Shopping list tab
-  const tabProducts = document.getElementById('tab-products');
-  const tabShopping = document.getElementById('tab-shopping');
-  const productsTab = document.getElementById('products-tab');
-  const shoppingTab = document.getElementById('shopping-tab');
-  const manualInput = document.getElementById('manual-product');
-  const confirmSection = document.getElementById('confirm-section');
-
-  tabShopping.addEventListener('click', () => {
-    tabProducts.classList.remove('tab-active');
-    tabShopping.classList.add('tab-active');
-    productsTab.style.display = 'none';
-    shoppingTab.style.display = 'block';
-    initShoppingTab();
-  });
-
-  tabProducts.addEventListener('click', () => {
-    tabShopping.classList.remove('tab-active');
-    tabProducts.classList.add('tab-active');
-    shoppingTab.style.display = 'none';
-    productsTab.style.display = 'block';
-  });
-
-  document.getElementById('add-manual').addEventListener('click', () => {
-    const name = manualInput.value.trim();
-    if (!name) return;
-    shoppingList.push({ name, quantity: 1, inCart: false });
-    manualInput.value = '';
-    renderShoppingList();
-  });
-
-  document.getElementById('confirm-shopping').addEventListener('click', () => {
-    const selected = shoppingList.filter(i => i.inCart);
-    const tbody = document.querySelector('#confirm-table tbody');
-    tbody.innerHTML = '';
-    selected.forEach(item => addConfirmRow(tbody, item));
-    confirmSection.style.display = 'block';
-  });
-
-  document.getElementById('add-row').addEventListener('click', () => {
-    const tbody = document.querySelector('#confirm-table tbody');
-    addConfirmRow(tbody, { name: '', quantity: 1 });
-  });
-
-  document.getElementById('cancel-shopping').addEventListener('click', () => {
-    confirmSection.style.display = 'none';
-  });
-
-  document.getElementById('save-shopping').addEventListener('click', async () => {
-    const rows = document.querySelectorAll('#confirm-table tbody tr');
-    for (const tr of rows) {
-      const name = tr.querySelector('td:nth-child(1) input').value.trim();
-      const qty = parseFloat(tr.querySelector('td:nth-child(2) input').value);
-      const unit = tr.querySelector('td:nth-child(3) input').value.trim() || UNIT;
-      if (name && !isNaN(qty)) {
-        await fetch('/api/products', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, quantity: qty, unit })
-        });
-      }
-    }
-    confirmSection.style.display = 'none';
-    shoppingList = [];
-    await loadProducts();
-    initShoppingTab();
-  });
 });
 
 async function loadProducts() {
   const res = await fetch('/api/products');
   const data = await res.json();
   window.currentProducts = sortProducts(data.map(p => {
-    p.low_stock = p.quantity <= p.threshold;
+    p.low_stock = p.threshold !== null && p.quantity <= p.threshold;
     p.package_size = p.package_size || 1;
     return p;
   }));
@@ -304,13 +239,13 @@ async function loadProducts() {
 function getFilteredProducts() {
   const query = document.getElementById('product-search').value.toLowerCase();
   return sortProducts((window.currentProducts || []).filter(p => {
-    if (!p.main && p.quantity === 0) return false;
+    if (!p.main && p.quantity === 0 && currentFilter !== 'all_zero') return false;
     switch (currentFilter) {
       case 'missing':
         if (!(p.main && p.quantity === 0)) return false;
         break;
       case 'missing_low':
-        if (!(p.main && (p.quantity === 0 || p.quantity <= p.threshold))) return false;
+        if (!(p.main && (p.quantity === 0 || (p.threshold !== null && p.quantity <= p.threshold)))) return false;
         break;
       case 'all_zero':
         if (p.quantity !== 0) return false;
@@ -436,15 +371,15 @@ function renderProducts(data) {
   );
   storOrder.forEach((stor, storIndex) => {
     const storageBlock = document.createElement('div');
-    storageBlock.className = 'storage-block border border-base-300 rounded-lg p-4 mb-10';
+    storageBlock.className = 'storage-block border border-base-300 rounded-lg p-4 mb-6';
     storageBlock.id = `storage-${storIndex}`;
 
     const storageHeader = document.createElement('div');
-    storageHeader.className = 'flex justify-between items-center mb-8 hover:bg-neutral/20 cursor-pointer md:cursor-default rounded px-2';
+    storageHeader.className = 'flex justify-between items-center mb-4 hover:bg-neutral/20 cursor-pointer md:cursor-default rounded px-2';
     storageHeader.id = `storage-header-${storIndex}`;
 
     const h3 = document.createElement('h3');
-    h3.className = 'text-xl font-bold';
+    h3.className = 'text-lg font-bold';
     h3.textContent = `${STORAGE_ICONS[stor] || ''} ${STORAGE_NAMES[stor] || stor}`;
 
     const storToggle = document.createElement('button');
@@ -457,6 +392,7 @@ function renderProducts(data) {
     storageBlock.appendChild(storageHeader);
 
     const storageContent = document.createElement('div');
+    storageContent.className = 'space-y-4';
     storageBlock.appendChild(storageContent);
 
     let storOpen = true;
@@ -726,60 +662,3 @@ function updateDatalist() {
   });
 }
 
-function initShoppingTab() {
-  shoppingList = (window.currentProducts || []).filter(p =>
-    p.main && (p.quantity === 0 || p.quantity <= p.threshold)
-  ).map(p => ({ name: p.name, quantity: 1, inCart: false }));
-  renderShoppingList();
-}
-
-function renderShoppingList() {
-  const container = document.getElementById('shopping-items');
-  if (!container) return;
-  container.innerHTML = '';
-  shoppingList.forEach((item, idx) => {
-    const row = document.createElement('div');
-    row.className = 'flex items-center gap-2 mb-2';
-    const check = document.createElement('input');
-    check.type = 'checkbox';
-    check.checked = item.inCart;
-    check.addEventListener('change', () => { item.inCart = check.checked; });
-    const nameSpan = document.createElement('span');
-    nameSpan.textContent = item.name;
-    const minus = document.createElement('button');
-    minus.textContent = '-';
-    minus.className = 'btn btn-xs';
-    const qtySpan = document.createElement('span');
-    qtySpan.textContent = item.quantity;
-    minus.addEventListener('click', () => {
-      if (item.quantity > 1) item.quantity--;
-      qtySpan.textContent = item.quantity;
-    });
-    const plus = document.createElement('button');
-    plus.textContent = '+';
-    plus.className = 'btn btn-xs';
-    plus.addEventListener('click', () => {
-      item.quantity++;
-      qtySpan.textContent = item.quantity;
-    });
-    const remove = document.createElement('button');
-    remove.textContent = 'Usuń';
-    remove.className = 'btn btn-xs';
-    remove.addEventListener('click', () => {
-      shoppingList.splice(idx, 1);
-      renderShoppingList();
-    });
-    row.append(check, nameSpan, minus, qtySpan, plus, remove);
-    container.appendChild(row);
-  });
-}
-
-function addConfirmRow(tbody, item) {
-  const tr = document.createElement('tr');
-  tr.innerHTML = `<td><input value="${item.name || ''}" class="input input-bordered"></td>
-                  <td><input type="number" value="${item.quantity || 1}" class="input input-bordered w-24"></td>
-                  <td><input value="${UNIT}" class="input input-bordered w-24"></td>
-                  <td><button class="btn btn-xs remove-row">Usuń</button></td>`;
-  tr.querySelector('.remove-row').addEventListener('click', () => tr.remove());
-  tbody.appendChild(tr);
-}
