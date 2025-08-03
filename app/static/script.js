@@ -1,6 +1,7 @@
 let groupedView = false;
 let editMode = false;
 let currentFilter = 'all';
+let shoppingList = [];
 
 const UNIT = 'szt.';
 const LOW_STOCK_CLASS = 'text-error bg-error/10';
@@ -206,7 +207,74 @@ document.addEventListener('DOMContentLoaded', () => {
       alert('Nieprawidłowy JSON');
     }
   });
+  // Shopping list tab
+  const tabProducts = document.getElementById('tab-products');
+  const tabShopping = document.getElementById('tab-shopping');
+  const productsTab = document.getElementById('products-tab');
+  const shoppingTab = document.getElementById('shopping-tab');
+  const manualInput = document.getElementById('manual-product');
+  const confirmSection = document.getElementById('confirm-section');
+
+  tabShopping.addEventListener('click', () => {
+    tabProducts.classList.remove('tab-active');
+    tabShopping.classList.add('tab-active');
+    productsTab.style.display = 'none';
+    shoppingTab.style.display = 'block';
+    initShoppingTab();
   });
+
+  tabProducts.addEventListener('click', () => {
+    tabShopping.classList.remove('tab-active');
+    tabProducts.classList.add('tab-active');
+    shoppingTab.style.display = 'none';
+    productsTab.style.display = 'block';
+  });
+
+  document.getElementById('add-manual').addEventListener('click', () => {
+    const name = manualInput.value.trim();
+    if (!name) return;
+    shoppingList.push({ name, quantity: 1, inCart: false });
+    manualInput.value = '';
+    renderShoppingList();
+  });
+
+  document.getElementById('confirm-shopping').addEventListener('click', () => {
+    const selected = shoppingList.filter(i => i.inCart);
+    const tbody = document.querySelector('#confirm-table tbody');
+    tbody.innerHTML = '';
+    selected.forEach(item => addConfirmRow(tbody, item));
+    confirmSection.style.display = 'block';
+  });
+
+  document.getElementById('add-row').addEventListener('click', () => {
+    const tbody = document.querySelector('#confirm-table tbody');
+    addConfirmRow(tbody, { name: '', quantity: 1 });
+  });
+
+  document.getElementById('cancel-shopping').addEventListener('click', () => {
+    confirmSection.style.display = 'none';
+  });
+
+  document.getElementById('save-shopping').addEventListener('click', async () => {
+    const rows = document.querySelectorAll('#confirm-table tbody tr');
+    for (const tr of rows) {
+      const name = tr.querySelector('td:nth-child(1) input').value.trim();
+      const qty = parseFloat(tr.querySelector('td:nth-child(2) input').value);
+      const unit = tr.querySelector('td:nth-child(3) input').value.trim() || UNIT;
+      if (name && !isNaN(qty)) {
+        await fetch('/api/products', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, quantity: qty, unit })
+        });
+      }
+    }
+    confirmSection.style.display = 'none';
+    shoppingList = [];
+    await loadProducts();
+    initShoppingTab();
+  });
+});
 
 async function loadProducts() {
   const res = await fetch('/api/products');
@@ -217,6 +285,7 @@ async function loadProducts() {
     return p;
   }));
   renderProducts(getFilteredProducts());
+  updateDatalist();
 }
 
 function getFilteredProducts() {
@@ -591,4 +660,73 @@ if (layoutToggle && layoutIcon) {
     html.setAttribute('data-layout', next);
     layoutIcon.className = next === 'desktop' ? 'fa-regular fa-mobile' : 'fa-solid fa-desktop';
   });
+}
+
+function updateDatalist() {
+  const datalist = document.getElementById('product-datalist');
+  if (!datalist) return;
+  datalist.innerHTML = '';
+  (window.currentProducts || []).forEach(p => {
+    const option = document.createElement('option');
+    option.value = p.name;
+    datalist.appendChild(option);
+  });
+}
+
+function initShoppingTab() {
+  shoppingList = (window.currentProducts || []).filter(p =>
+    p.main && (p.quantity === 0 || (p.threshold !== null && p.quantity <= p.threshold))
+  ).map(p => ({ name: p.name, quantity: 1, inCart: false }));
+  renderShoppingList();
+}
+
+function renderShoppingList() {
+  const container = document.getElementById('shopping-items');
+  if (!container) return;
+  container.innerHTML = '';
+  shoppingList.forEach((item, idx) => {
+    const row = document.createElement('div');
+    row.className = 'flex items-center gap-2 mb-2';
+    const check = document.createElement('input');
+    check.type = 'checkbox';
+    check.checked = item.inCart;
+    check.addEventListener('change', () => { item.inCart = check.checked; });
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = item.name;
+    const minus = document.createElement('button');
+    minus.textContent = '-';
+    minus.className = 'btn btn-xs';
+    const qtySpan = document.createElement('span');
+    qtySpan.textContent = item.quantity;
+    minus.addEventListener('click', () => {
+      if (item.quantity > 1) item.quantity--;
+      qtySpan.textContent = item.quantity;
+    });
+    const plus = document.createElement('button');
+    plus.textContent = '+';
+    plus.className = 'btn btn-xs';
+    plus.addEventListener('click', () => {
+      item.quantity++;
+      qtySpan.textContent = item.quantity;
+    });
+    const remove = document.createElement('button');
+    remove.textContent = 'Usuń';
+    remove.className = 'btn btn-xs';
+    remove.addEventListener('click', () => {
+      shoppingList.splice(idx, 1);
+      renderShoppingList();
+    });
+    row.append(check, nameSpan, minus, qtySpan, plus, remove);
+    container.appendChild(row);
+  });
+}
+
+function addConfirmRow(tbody, item) {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td><input value="${item.name || ''}" class="input input-bordered"></td>
+                  <td><input type="number" value="${item.quantity || 1}" class="input input-bordered w-24"></td>
+                  <td><input value="${UNIT}" class="input input-bordered w-24"></td>
+                  <td><button class="btn btn-xs remove-row">Usuń</button></td>`;
+  tr.querySelector('.remove-row').addEventListener('click', () => tr.remove());
+  tbody.appendChild(tr);
 }

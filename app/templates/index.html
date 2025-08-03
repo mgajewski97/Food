@@ -14,6 +14,11 @@
         <button id="theme-toggle" class="text-xl p-2 bg-transparent border-0"><i id="theme-icon" class="fa-solid fa-circle-half-stroke"></i></button>
     </div>
     <div class="max-w-screen-lg mx-auto px-4 py-6 main-container">
+        <div class="tabs mb-4">
+            <a id="tab-products" class="tab tab-bordered tab-active">Produkty</a>
+            <a id="tab-shopping" class="tab tab-bordered">Lista zakupów</a>
+        </div>
+        <div id="products-tab">
         <h1 class="text-2xl font-bold mb-4">Produkty</h1>
         <div id="controls" class="flex flex-wrap items-center gap-4 mb-4">
             <div class="flex flex-col md:flex-row gap-2 items-start flex-1">
@@ -110,6 +115,31 @@
 
         <h1 class="text-2xl font-bold mb-4">Historia</h1>
         <ul id="history-list" class="list-disc pl-4"></ul>
+        </div>
+        <div id="shopping-tab" style="display:none;">
+            <h1 class="text-2xl font-bold mb-4">Lista zakupów</h1>
+            <h2 class="text-xl font-semibold mb-2">Sugestie zakupowe</h2>
+            <div id="shopping-items" class="mb-4"></div>
+            <h2 class="text-xl font-semibold mb-2">Dodaj ręcznie</h2>
+            <div class="flex gap-2 mb-4">
+                <input id="manual-product" list="product-datalist" class="input input-bordered flex-1" placeholder="produkt">
+                <datalist id="product-datalist"></datalist>
+                <button id="add-manual" class="btn btn-primary">Dodaj</button>
+            </div>
+            <button id="confirm-shopping" class="btn btn-success mt-4">Zatwierdź</button>
+            <div id="confirm-section" style="display:none;" class="mt-4">
+                <h3 class="text-xl font-semibold mb-2">Potwierdź zakupy</h3>
+                <table id="confirm-table" class="table w-full mb-2">
+                    <thead><tr><th>Nazwa</th><th>Ilość</th><th>Jednostka</th><th></th></tr></thead>
+                    <tbody></tbody>
+                </table>
+                <button id="add-row" class="btn mb-2">Dodaj produkt</button>
+                <div class="flex gap-2">
+                    <button id="save-shopping" class="btn btn-success">Zapisz</button>
+                    <button id="cancel-shopping" class="btn">Anuluj</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
