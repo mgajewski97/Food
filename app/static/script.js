@@ -2,36 +2,197 @@ let groupedView = false;
 let editMode = false;
 let currentFilter = 'available';
 let pendingDelete = [];
+let currentLang = localStorage.getItem('lang') || 'pl';
+let UNIT = '';
 
-const UNIT = 'szt.';
 const LOW_STOCK_CLASS = 'text-error bg-error/10';
 
-// Translations for full category names
-const CATEGORY_NAMES = {
-  uncategorized: 'brak kategorii',
-  fresh_veg: 'Świeże warzywa',
-  mushrooms: 'Grzyby',
-  dairy_eggs: 'Nabiał i jajka',
-  opened_preserves: 'Otwarte konserwy i przetwory',
-  ready_sauces: 'Sosy',
-  dry_veg: 'Warzywa suche',
-  bread: 'Pieczywo',
-  pasta: 'Makarony',
-  rice: 'Ryże',
-  grains: 'Kasze',
-  dried_legumes: 'Suche rośliny strączkowe',
-  sauces: 'Sosy i przyprawy płynne',
-  oils: 'Oleje',
-  spreads: 'Smarowidła i pasty',
-  frozen_veg: 'Mrożone warzywa',
-  frozen_sauces: 'Mrożone sosy',
-  frozen_meals: 'Mrożone dania / zupy'
+const lang = {
+  pl: {
+    tab_products: 'Produkty',
+    tab_recipes: 'Przepisy',
+    tab_history: 'Historia',
+    tab_shopping: 'Lista zakupów',
+    heading_products: 'Produkty',
+    search_placeholder: 'Szukaj produktu',
+    state_filter_available: 'Dostępne',
+    state_filter_missing: 'Brakujące',
+    state_filter_low: 'Kończące się',
+    state_filter_all: 'Wszystkie',
+    change_view_toggle_grouped: 'Widok z podziałem',
+    change_view_toggle_flat: 'Płaska lista',
+    edit_mode_button_on: 'Edytuj',
+    edit_mode_button_off: 'Zakończ edycję',
+    save_button: 'Zapisz',
+    delete_selected_button: 'Usuń zaznaczone',
+    table_header_name: 'Nazwa',
+    table_header_quantity: 'Ilość',
+    table_header_unit: 'Jednostka',
+    table_header_category: 'Kategoria',
+    table_header_storage: 'Miejsce',
+    table_header_status: 'Status',
+    delete_modal_title: 'Potwierdź usunięcie',
+    delete_modal_question: 'Czy na pewno chcesz usunąć zaznaczone produkty?',
+    delete_confirm_button: 'Usuń',
+    delete_cancel_button: 'Anuluj',
+    heading_add_edit_product: 'Dodaj / edytuj produkt',
+    add_form_name_placeholder: 'nazwa',
+    add_form_quantity_placeholder: 'ilość',
+    add_form_package_size_placeholder: 'w opak.',
+    add_form_pack_size_placeholder: 'paczka',
+    add_form_threshold_placeholder: 'próg',
+    category_uncategorized: 'brak kategorii',
+    category_fresh_veg: 'Świeże warzywa',
+    category_mushrooms: 'Grzyby',
+    category_dairy_eggs: 'Nabiał i jajka',
+    category_opened_preserves: 'Otwarte konserwy i przetwory',
+    category_ready_sauces: 'Sosy',
+    category_dry_veg: 'Warzywa suche',
+    category_bread: 'Pieczywo',
+    category_pasta: 'Makarony',
+    category_rice: 'Ryże',
+    category_grains: 'Kasze',
+    category_dried_legumes: 'Suche rośliny strączkowe',
+    category_sauces: 'Sosy i przyprawy płynne',
+    category_oils: 'Oleje',
+    category_spreads: 'Smarowidła i pasty',
+    category_frozen_veg: 'Mrożone warzywa',
+    category_frozen_sauces: 'Mrożone sosy',
+    category_frozen_meals: 'Mrożone dania / zupy',
+    storage_fridge: 'Lodówka',
+    storage_pantry: 'Szafka',
+    storage_freezer: 'Zamrażarka',
+    checkbox_main_label: 'Podstawowy',
+    heading_edit_json: 'Edytuj produkty (JSON)',
+    edit_json_placeholder: 'JSON',
+    edit_json_submit_button: 'Wyślij JSON',
+    copy_structure_button: 'Pobierz strukturę',
+    heading_recipes: 'Przepisy',
+    add_ingredient_button: 'Dodaj składnik',
+    label_taste: 'Smak:',
+    label_effort: 'Wysiłek:',
+    checkbox_favorite_label: 'Ulubione',
+    heading_history: 'Historia',
+    heading_shopping: 'Lista zakupów',
+    under_construction: 'W budowie...',
+    status_missing: 'Brak produktu',
+    status_low: 'Produkt się kończy',
+    clipboard_header_products: 'Produkty:',
+    invalid_json_alert: 'Nieprawidłowy JSON',
+    pack_title: 'Produkt w opakowaniach zbiorczych',
+    grouped_table_delete_header: 'Usuń',
+    recipe_done_button: 'Zrobione',
+    recipe_done_mod_button: 'Zrobione (ze zmianami)',
+    ingredient_placeholder: 'składnik',
+    quantity_placeholder_ing: 'ilość',
+    unit_piece: 'szt.'
+  },
+  en: {
+    tab_products: 'Products',
+    tab_recipes: 'Recipes',
+    tab_history: 'History',
+    tab_shopping: 'Shopping list',
+    heading_products: 'Products',
+    search_placeholder: 'Search product',
+    state_filter_available: 'Available',
+    state_filter_missing: 'Missing',
+    state_filter_low: 'Low stock',
+    state_filter_all: 'All',
+    change_view_toggle_grouped: 'Categories view',
+    change_view_toggle_flat: 'Flat list',
+    edit_mode_button_on: 'Edit',
+    edit_mode_button_off: 'Finish editing',
+    save_button: 'Save',
+    delete_selected_button: 'Delete selected',
+    table_header_name: 'Name',
+    table_header_quantity: 'Quantity',
+    table_header_unit: 'Unit',
+    table_header_category: 'Category',
+    table_header_storage: 'Storage',
+    table_header_status: 'Status',
+    delete_modal_title: 'Confirm deletion',
+    delete_modal_question: 'Are you sure you want to delete selected products?',
+    delete_confirm_button: 'Delete',
+    delete_cancel_button: 'Cancel',
+    heading_add_edit_product: 'Add / edit product',
+    add_form_name_placeholder: 'name',
+    add_form_quantity_placeholder: 'quantity',
+    add_form_package_size_placeholder: 'in package',
+    add_form_pack_size_placeholder: 'pack',
+    add_form_threshold_placeholder: 'threshold',
+    category_uncategorized: 'no category',
+    category_fresh_veg: 'Fresh vegetables',
+    category_mushrooms: 'Mushrooms',
+    category_dairy_eggs: 'Dairy and eggs',
+    category_opened_preserves: 'Opened preserves and jars',
+    category_ready_sauces: 'Sauces',
+    category_dry_veg: 'Dry vegetables',
+    category_bread: 'Bread',
+    category_pasta: 'Pasta',
+    category_rice: 'Rice',
+    category_grains: 'Grains',
+    category_dried_legumes: 'Dried legumes',
+    category_sauces: 'Liquid sauces and seasonings',
+    category_oils: 'Oils',
+    category_spreads: 'Spreads and pastes',
+    category_frozen_veg: 'Frozen vegetables',
+    category_frozen_sauces: 'Frozen sauces',
+    category_frozen_meals: 'Frozen meals / soups',
+    storage_fridge: 'Fridge',
+    storage_pantry: 'Pantry',
+    storage_freezer: 'Freezer',
+    checkbox_main_label: 'Main',
+    heading_edit_json: 'Edit products (JSON)',
+    edit_json_placeholder: 'JSON',
+    edit_json_submit_button: 'Submit JSON',
+    copy_structure_button: 'Copy structure',
+    heading_recipes: 'Recipes',
+    add_ingredient_button: 'Add ingredient',
+    label_taste: 'Taste:',
+    label_effort: 'Effort:',
+    checkbox_favorite_label: 'Favorite',
+    heading_history: 'History',
+    heading_shopping: 'Shopping list',
+    under_construction: 'Under construction...',
+    status_missing: 'Product missing',
+    status_low: 'Product running low',
+    clipboard_header_products: 'Products:',
+    invalid_json_alert: 'Invalid JSON',
+    pack_title: 'Product in bulk packages',
+    grouped_table_delete_header: 'Delete',
+    recipe_done_button: 'Done',
+    recipe_done_mod_button: 'Done (modified)',
+    ingredient_placeholder: 'ingredient',
+    quantity_placeholder_ing: 'quantity',
+    unit_piece: 'pcs'
+  }
 };
 
-const STORAGE_NAMES = {
-  fridge: 'Lodówka',
-  pantry: 'Szafka',
-  freezer: 'Zamrażarka'
+const CATEGORY_KEYS = {
+  uncategorized: 'category_uncategorized',
+  fresh_veg: 'category_fresh_veg',
+  mushrooms: 'category_mushrooms',
+  dairy_eggs: 'category_dairy_eggs',
+  opened_preserves: 'category_opened_preserves',
+  ready_sauces: 'category_ready_sauces',
+  dry_veg: 'category_dry_veg',
+  bread: 'category_bread',
+  pasta: 'category_pasta',
+  rice: 'category_rice',
+  grains: 'category_grains',
+  dried_legumes: 'category_dried_legumes',
+  sauces: 'category_sauces',
+  oils: 'category_oils',
+  spreads: 'category_spreads',
+  frozen_veg: 'category_frozen_veg',
+  frozen_sauces: 'category_frozen_sauces',
+  frozen_meals: 'category_frozen_meals'
+};
+
+const STORAGE_KEYS = {
+  fridge: 'storage_fridge',
+  pantry: 'storage_pantry',
+  freezer: 'storage_freezer'
 };
 
 const STORAGE_ICONS = {
@@ -39,6 +200,32 @@ const STORAGE_ICONS = {
   pantry: '🏠',
   freezer: '❄️'
 };
+
+function t(id) {
+  return (lang[currentLang] && lang[currentLang][id]) || id;
+}
+
+function applyTranslations() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const text = t(key);
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+      el.placeholder = text;
+    } else if (el.tagName === 'OPTION') {
+      el.textContent = text;
+    } else {
+      el.textContent = text;
+    }
+  });
+}
+
+function categoryName(key) {
+  return t(CATEGORY_KEYS[key]) || key;
+}
+
+function storageName(key) {
+  return t(STORAGE_KEYS[key]) || key;
+}
 
 function formatQuantity(p) {
   const packages = p.quantity;
@@ -60,17 +247,17 @@ function formatPackQuantity(p) {
 function getStatusIcon(p) {
   if (p.main) {
     if (p.quantity === 0) {
-      return { html: '<i class="fa-regular fa-circle-exclamation text-red-600"></i>', title: 'Brak produktu' };
+      return { html: '<i class="fa-regular fa-circle-exclamation text-red-600"></i>', title: t('status_missing') };
     }
     if (p.threshold !== null && p.quantity <= p.threshold) {
-      return { html: '<i class="fa-regular fa-triangle-exclamation text-yellow-500"></i>', title: 'Produkt się kończy' };
+      return { html: '<i class="fa-regular fa-triangle-exclamation text-yellow-500"></i>', title: t('status_low') };
     }
   } else {
     if (p.quantity === 0) {
-      return { html: '<i class="fa-regular fa-circle-exclamation text-red-600"></i>', title: 'Brak produktu' };
+      return { html: '<i class="fa-regular fa-circle-exclamation text-red-600"></i>', title: t('status_missing') };
     }
     if (p.threshold !== null && p.quantity <= p.threshold) {
-      return { html: '<i class="fa-regular fa-triangle-exclamation text-yellow-300"></i>', title: 'Produkt się kończy' };
+      return { html: '<i class="fa-regular fa-triangle-exclamation text-yellow-300"></i>', title: t('status_low') };
     }
   }
   return null;
@@ -78,12 +265,12 @@ function getStatusIcon(p) {
 
 function sortProducts(list) {
   return list.sort((a, b) => {
-    const storA = STORAGE_NAMES[a.storage] || a.storage;
-    const storB = STORAGE_NAMES[b.storage] || b.storage;
+    const storA = storageName(a.storage);
+    const storB = storageName(b.storage);
     const storCmp = storA.localeCompare(storB);
     if (storCmp !== 0) return storCmp;
-    const catA = CATEGORY_NAMES[a.category] || a.category;
-    const catB = CATEGORY_NAMES[b.category] || b.category;
+    const catA = categoryName(a.category);
+    const catB = categoryName(b.category);
     const catCmp = catA.localeCompare(catB);
     if (catCmp !== 0) return catCmp;
     return a.name.localeCompare(b.name);
@@ -91,6 +278,8 @@ function sortProducts(list) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  UNIT = t('unit_piece');
+  applyTranslations();
   const html = document.documentElement;
   const icon = document.getElementById('layout-icon');
   if (window.innerWidth < 768) {
@@ -98,25 +287,40 @@ document.addEventListener('DOMContentLoaded', () => {
     if (icon) icon.className = 'fa-solid fa-desktop';
   }
 
+  const langBtn = document.getElementById('lang-toggle');
+  if (langBtn) {
+    langBtn.textContent = currentLang.toUpperCase();
+    langBtn.addEventListener('click', () => {
+      currentLang = currentLang === 'pl' ? 'en' : 'pl';
+      localStorage.setItem('lang', currentLang);
+      langBtn.textContent = currentLang.toUpperCase();
+      UNIT = t('unit_piece');
+      applyTranslations();
+      renderProducts(getFilteredProducts());
+      loadRecipes();
+      loadHistory();
+    });
+  }
+
   loadProducts();
 
-    document.querySelectorAll('[data-tab-target]').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('[data-tab-target]').forEach(t => t.classList.remove('tab-active', 'font-bold'));
-        tab.classList.add('tab-active', 'font-bold');
-        document.querySelectorAll('.tab-panel').forEach(panel => (panel.style.display = 'none'));
-        const targetId = tab.dataset.tabTarget;
-        const panel = document.getElementById(targetId);
-        if (panel) panel.style.display = 'block';
-        if (targetId === 'tab-products') {
-          loadProducts();
-        } else if (targetId === 'tab-recipes') {
-          loadRecipes();
-        } else if (targetId === 'tab-history') {
-          loadHistory();
-        }
-      });
+  document.querySelectorAll('[data-tab-target]').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('[data-tab-target]').forEach(t => t.classList.remove('tab-active', 'font-bold'));
+      tab.classList.add('tab-active', 'font-bold');
+      document.querySelectorAll('.tab-panel').forEach(panel => (panel.style.display = 'none'));
+      const targetId = tab.dataset.tabTarget;
+      const panel = document.getElementById(targetId);
+      if (panel) panel.style.display = 'block';
+      if (targetId === 'tab-products') {
+        loadProducts();
+      } else if (targetId === 'tab-recipes') {
+        loadRecipes();
+      } else if (targetId === 'tab-history') {
+        loadHistory();
+      }
     });
+  });
 
   document.getElementById('add-form').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -145,7 +349,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('copy-btn').addEventListener('click', () => {
-    const lines = ['Produkty:'];
+    const lines = [t('clipboard_header_products')];
     (window.currentProducts || []).forEach(p => {
       const units = p.quantity * (p.package_size || 1);
       lines.push(`- ${p.name}: ${units} ${p.unit}`);
@@ -162,7 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('view-toggle').addEventListener('click', () => {
     if (editMode) {
       editMode = false;
-      document.getElementById('edit-toggle').textContent = 'Edytuj';
+      document.getElementById('edit-toggle').textContent = t('edit_mode_button_on');
       document.getElementById('save-btn').style.display = 'none';
       document.getElementById('delete-selected').style.display = 'none';
       document.getElementById('select-header').style.display = 'none';
@@ -170,12 +374,12 @@ document.addEventListener('DOMContentLoaded', () => {
     groupedView = !groupedView;
     document.getElementById('product-table').style.display = groupedView ? 'none' : 'table';
     document.getElementById('product-list').style.display = groupedView ? 'block' : 'none';
-    document.getElementById('view-toggle').textContent = groupedView ? 'Płaska lista' : 'Widok z podziałem';
+    document.getElementById('view-toggle').textContent = groupedView ? t('change_view_toggle_flat') : t('change_view_toggle_grouped');
     renderProducts(getFilteredProducts());
   });
   document.getElementById('edit-toggle').addEventListener('click', async () => {
     editMode = !editMode;
-    document.getElementById('edit-toggle').textContent = editMode ? 'Zakończ edycję' : 'Edytuj';
+    document.getElementById('edit-toggle').textContent = editMode ? t('edit_mode_button_off') : t('edit_mode_button_on');
     document.getElementById('save-btn').style.display = editMode ? 'inline-block' : 'none';
     document.getElementById('delete-selected').style.display = editMode ? 'inline-block' : 'none';
     document.getElementById('select-header').style.display = editMode ? 'table-cell' : 'none';
@@ -254,7 +458,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
     editMode = false;
-    document.getElementById('edit-toggle').textContent = 'Edytuj';
+    document.getElementById('edit-toggle').textContent = t('edit_mode_button_on');
     document.getElementById('save-btn').style.display = 'none';
     document.getElementById('delete-selected').style.display = 'none';
     document.getElementById('select-header').style.display = 'none';
@@ -289,7 +493,7 @@ document.addEventListener('DOMContentLoaded', () => {
       await loadProducts();
       await loadRecipes();
     } catch (err) {
-      alert('Nieprawidłowy JSON');
+      alert(t('invalid_json_alert'));
     }
   });
 });
@@ -393,10 +597,10 @@ function renderProducts(data) {
       catTd.className = 'px-4 py-2';
       const catSelect = document.createElement('select');
       catSelect.className = 'edit-category select select-bordered';
-      Object.entries(CATEGORY_NAMES).forEach(([val, label]) => {
+      Object.entries(CATEGORY_KEYS).forEach(([val, key]) => {
         const opt = document.createElement('option');
         opt.value = val;
-        opt.textContent = label;
+        opt.textContent = t(key);
         if (val === p.category) opt.selected = true;
         catSelect.appendChild(opt);
       });
@@ -407,10 +611,10 @@ function renderProducts(data) {
       storTd.className = 'px-4 py-2';
       const storSelect = document.createElement('select');
       storSelect.className = 'edit-storage select select-bordered';
-      Object.entries(STORAGE_NAMES).forEach(([val, label]) => {
+      Object.entries(STORAGE_KEYS).forEach(([val, key]) => {
         const opt = document.createElement('option');
         opt.value = val;
-        opt.textContent = label;
+        opt.textContent = t(key);
         if (val === p.storage) opt.selected = true;
         storSelect.appendChild(opt);
       });
@@ -435,7 +639,7 @@ function renderProducts(data) {
       qtyTd.className = 'px-4 py-2';
       qtyTd.textContent = formatPackQuantity(p);
       if (p.pack_size) {
-        qtyTd.title = 'Produkt w opakowaniach zbiorczych';
+        qtyTd.title = t('pack_title');
       }
       tr.appendChild(qtyTd);
 
@@ -446,12 +650,12 @@ function renderProducts(data) {
 
       const catTd = document.createElement('td');
       catTd.className = 'px-4 py-2';
-      catTd.textContent = CATEGORY_NAMES[p.category] || p.category;
+      catTd.textContent = categoryName(p.category);
       tr.appendChild(catTd);
 
       const storTd = document.createElement('td');
       storTd.className = 'px-4 py-2';
-      storTd.textContent = STORAGE_NAMES[p.storage] || p.storage;
+      storTd.textContent = storageName(p.storage);
       tr.appendChild(storTd);
 
       const statusTd = document.createElement('td');
@@ -483,7 +687,7 @@ function renderProducts(data) {
   });
 
   const storOrder = Object.keys(storages).sort((a, b) =>
-    (STORAGE_NAMES[a] || a).localeCompare(STORAGE_NAMES[b] || b)
+    storageName(a).localeCompare(storageName(b))
   );
   storOrder.forEach((stor, storIndex) => {
     const storageBlock = document.createElement('div');
@@ -497,7 +701,7 @@ function renderProducts(data) {
 
     const h3 = document.createElement('h3');
     h3.className = 'text-2xl font-bold';
-    h3.textContent = `${STORAGE_ICONS[stor] || ''} ${STORAGE_NAMES[stor] || stor}`;
+    h3.textContent = `${STORAGE_ICONS[stor] || ''} ${storageName(stor)}`;
 
     const storToggle = document.createElement('button');
     storToggle.className = 'text-xl cursor-pointer bg-transparent border-0 p-0';
@@ -527,7 +731,7 @@ function renderProducts(data) {
 
     const categories = storages[stor];
     Object.keys(categories)
-      .sort((a, b) => (CATEGORY_NAMES[a] || a).localeCompare(CATEGORY_NAMES[b] || b))
+      .sort((a, b) => categoryName(a).localeCompare(categoryName(b)))
       .forEach((cat, catIndex) => {
           const categoryBlock = document.createElement('div');
           categoryBlock.className = 'category-block';
@@ -540,7 +744,7 @@ function renderProducts(data) {
 
         const h4 = document.createElement('h4');
         h4.className = 'text-md font-semibold';
-        h4.textContent = CATEGORY_NAMES[cat] || cat;
+        h4.textContent = categoryName(cat);
 
         const catToggle = document.createElement('button');
         catToggle.className = 'text-md cursor-pointer bg-transparent border-0 p-0';
@@ -555,7 +759,7 @@ function renderProducts(data) {
           table.className = 'table table-zebra w-full';
         const thead = document.createElement('thead');
         const headRow = document.createElement('tr');
-        ['Nazwa', 'Ilość', 'Jednostka', 'Status', 'Usuń'].forEach(text => {
+        [t('table_header_name'), t('table_header_quantity'), t('table_header_unit'), t('table_header_status'), t('grouped_table_delete_header')].forEach(text => {
           const th = document.createElement('th');
           th.className = 'px-4 py-2';
           th.textContent = text;
@@ -580,9 +784,9 @@ function renderProducts(data) {
           const qtyTd = document.createElement('td');
           qtyTd.className = 'px-4 py-2';
           qtyTd.textContent = formatPackQuantity(p);
-          if (p.pack_size) {
-            qtyTd.title = 'Produkt w opakowaniach zbiorczych';
-          }
+        if (p.pack_size) {
+          qtyTd.title = t('pack_title');
+        }
           tr.appendChild(qtyTd);
 
           const unitTd = document.createElement('td');
@@ -638,10 +842,10 @@ async function loadRecipes() {
     const li = document.createElement('li');
     li.textContent = `${r.name} (${r.ingredients.join(', ')})`;
     const doneBtn = document.createElement('button');
-    doneBtn.textContent = 'Zrobione';
+    doneBtn.textContent = t('recipe_done_button');
     doneBtn.addEventListener('click', () => showHistoryForm(r, false));
     const modBtn = document.createElement('button');
-    modBtn.textContent = 'Zrobione (ze zmianami)';
+    modBtn.textContent = t('recipe_done_mod_button');
     modBtn.addEventListener('click', () => showHistoryForm(r, true));
     li.appendChild(doneBtn);
     li.appendChild(modBtn);
@@ -657,7 +861,7 @@ async function loadHistory() {
   data.forEach(h => {
     const li = document.createElement('li');
     const star = h.favorite ? ' ★' : '';
-    li.textContent = `${h.date} - ${h.name} (smak: ${h.rating.taste}, wysiłek: ${h.rating.effort})${star}`;
+    li.textContent = `${h.date} - ${h.name} (${t('label_taste')} ${h.rating.taste}, ${t('label_effort')} ${h.rating.effort})${star}`;
     list.appendChild(li);
   });
 }
@@ -668,11 +872,11 @@ function addIngredientRow(name = '', qty = '') {
   div.className = 'ingredient';
   const nameInput = document.createElement('input');
   nameInput.className = 'ing-name';
-  nameInput.placeholder = 'składnik';
+  nameInput.placeholder = t('ingredient_placeholder');
   nameInput.value = name;
   const qtyInput = document.createElement('input');
   qtyInput.className = 'ing-qty';
-  qtyInput.placeholder = 'ilość';
+  qtyInput.placeholder = t('quantity_placeholder_ing');
   qtyInput.value = qty;
   div.appendChild(nameInput);
   div.appendChild(qtyInput);
@@ -693,7 +897,7 @@ function showHistoryForm(recipe, allowExtra) {
     label.textContent = ing;
     const qtyInput = document.createElement('input');
     qtyInput.className = 'ing-qty';
-    qtyInput.placeholder = 'ilość';
+    qtyInput.placeholder = t('quantity_placeholder_ing');
     div.appendChild(label);
     div.appendChild(qtyInput);
     container.appendChild(div);

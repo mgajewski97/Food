@@ -11,44 +11,45 @@
 <body class="min-h-screen bg-base-100">
     <div class="corner-icons">
         <button id="layout-toggle" class="text-xl p-2 bg-transparent border-0"><i id="layout-icon" class="fa-solid fa-mobile-screen-button"></i></button>
+        <button id="lang-toggle" class="text-xl p-2 bg-transparent border-0">PL</button>
         <button id="theme-toggle" class="text-xl p-2 bg-transparent border-0"><i id="theme-icon" class="fa-solid fa-circle-half-stroke"></i></button>
     </div>
     <div class="max-w-screen-lg mx-auto px-4 py-6 main-container">
         <div class="tabs tabs-bordered flex-nowrap overflow-x-auto whitespace-nowrap mb-6">
-            <a class="tab tab-active font-bold" data-tab-target="tab-products">Produkty</a>
-            <a class="tab" data-tab-target="tab-recipes">Przepisy</a>
-            <a class="tab" data-tab-target="tab-history">Historia</a>
-            <a class="tab" data-tab-target="tab-shopping">Lista zakupów</a>
+            <a class="tab tab-active font-bold" data-tab-target="tab-products" data-i18n="tab_products">Produkty</a>
+            <a class="tab" data-tab-target="tab-recipes" data-i18n="tab_recipes">Przepisy</a>
+            <a class="tab" data-tab-target="tab-history" data-i18n="tab_history">Historia</a>
+            <a class="tab" data-tab-target="tab-shopping" data-i18n="tab_shopping">Lista zakupów</a>
         </div>
 
         <div id="tab-products" class="tab-panel">
-            <h1 class="text-2xl font-bold mb-4">Produkty</h1>
+            <h1 class="text-2xl font-bold mb-4" data-i18n="heading_products">Produkty</h1>
             <div id="controls" class="flex flex-wrap items-center gap-4 mb-4">
                 <div class="flex flex-col md:flex-row gap-2 items-start md:items-center flex-1">
-                    <input id="product-search" placeholder="Szukaj produktu" class="input input-bordered flex-1 min-w-[200px]" />
+                    <input id="product-search" placeholder="Szukaj produktu" data-i18n="search_placeholder" class="input input-bordered flex-1 min-w-[200px]" />
                     <select id="state-filter" class="select select-bordered w-full md:w-auto">
-                        <option value="available">Dostępne</option>
-                        <option value="missing">Brakujące</option>
-                        <option value="low">Kończące się</option>
-                        <option value="all">Wszystkie</option>
+                        <option value="available" data-i18n="state_filter_available">Dostępne</option>
+                        <option value="missing" data-i18n="state_filter_missing">Brakujące</option>
+                        <option value="low" data-i18n="state_filter_low">Kończące się</option>
+                        <option value="all" data-i18n="state_filter_all">Wszystkie</option>
                     </select>
                 </div>
-                <button id="view-toggle" class="btn btn-primary">Widok z podziałem</button>
-                <button id="edit-toggle" class="btn btn-warning">Edytuj</button>
-                <button id="save-btn" style="display:none;" class="btn btn-success">Zapisz</button>
-                <button id="delete-selected" style="display:none;" class="btn btn-error" disabled>Usuń zaznaczone</button>
+                <button id="view-toggle" class="btn btn-primary" data-i18n="change_view_toggle_grouped">Widok z podziałem</button>
+                <button id="edit-toggle" class="btn btn-warning" data-i18n="edit_mode_button_on">Edytuj</button>
+                <button id="save-btn" style="display:none;" class="btn btn-success" data-i18n="save_button">Zapisz</button>
+                <button id="delete-selected" style="display:none;" class="btn btn-error" disabled data-i18n="delete_selected_button">Usuń zaznaczone</button>
             </div>
             <div class="overflow-x-auto">
                 <table id="product-table" class="table table-zebra w-full">
                     <thead>
                         <tr>
                             <th id="select-header" style="display:none;"></th>
-                            <th>Nazwa</th>
-                            <th>Ilość</th>
-                            <th>Jednostka</th>
-                            <th>Kategoria</th>
-                            <th>Miejsce</th>
-                            <th>Status</th>
+                            <th data-i18n="table_header_name">Nazwa</th>
+                            <th data-i18n="table_header_quantity">Ilość</th>
+                            <th data-i18n="table_header_unit">Jednostka</th>
+                            <th data-i18n="table_header_category">Kategoria</th>
+                            <th data-i18n="table_header_storage">Miejsce</th>
+                            <th data-i18n="table_header_status">Status</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -58,93 +59,93 @@
 
             <dialog id="delete-modal" class="modal">
                 <form method="dialog" class="modal-box">
-                    <h3 class="font-bold text-lg">Potwierdź usunięcie</h3>
-                    <p class="py-4">Czy na pewno chcesz usunąć zaznaczone produkty?</p>
+                    <h3 class="font-bold text-lg" data-i18n="delete_modal_title">Potwierdź usunięcie</h3>
+                    <p class="py-4" data-i18n="delete_modal_question">Czy na pewno chcesz usunąć zaznaczone produkty?</p>
                     <div id="delete-summary" class="space-y-1"></div>
                     <div class="modal-action">
-                        <button id="confirm-delete" class="btn btn-error">Usuń</button>
-                        <button id="cancel-delete" class="btn">Anuluj</button>
+                        <button id="confirm-delete" class="btn btn-error" data-i18n="delete_confirm_button">Usuń</button>
+                        <button id="cancel-delete" class="btn" data-i18n="delete_cancel_button">Anuluj</button>
                     </div>
                 </form>
             </dialog>
 
             <hr class="border-t border-base-300 my-6">
 
-            <h2 class="text-xl font-semibold mt-6 mb-4">Dodaj / edytuj produkt</h2>
+            <h2 class="text-xl font-semibold mt-6 mb-4" data-i18n="heading_add_edit_product">Dodaj / edytuj produkt</h2>
             <form id="add-form" class="grid grid-cols-1 sm:grid-cols-8 gap-2 mb-8">
-                <input name="name" placeholder="nazwa" required class="input input-bordered w-full">
-                <input name="quantity" placeholder="ilość" required class="input input-bordered w-full">
-                <input name="package_size" placeholder="w opak." class="input input-bordered w-full" type="number" value="1">
-                <input name="pack_size" placeholder="paczka" class="input input-bordered w-full" type="number">
-                <input name="threshold" placeholder="próg" class="input input-bordered w-full" type="number">
+                <input name="name" placeholder="nazwa" data-i18n="add_form_name_placeholder" required class="input input-bordered w-full">
+                <input name="quantity" placeholder="ilość" data-i18n="add_form_quantity_placeholder" required class="input input-bordered w-full">
+                <input name="package_size" placeholder="w opak." data-i18n="add_form_package_size_placeholder" class="input input-bordered w-full" type="number" value="1">
+                <input name="pack_size" placeholder="paczka" data-i18n="add_form_pack_size_placeholder" class="input input-bordered w-full" type="number">
+                <input name="threshold" placeholder="próg" data-i18n="add_form_threshold_placeholder" class="input input-bordered w-full" type="number">
                 <select name="category" required class="select select-bordered w-full">
-                    <option value="uncategorized">brak kategorii</option>
-                    <option value="fresh_veg">Świeże warzywa</option>
-                    <option value="mushrooms">Grzyby</option>
-                    <option value="dairy_eggs">Nabiał i jajka</option>
-                    <option value="opened_preserves">Otwarte konserwy i przetwory</option>
-                    <option value="ready_sauces">Sosy</option>
-                    <option value="dry_veg">Warzywa suche</option>
-                    <option value="bread">Pieczywo</option>
-                    <option value="pasta">Makarony</option>
-                    <option value="rice">Ryże</option>
-                    <option value="grains">Kasze</option>
-                    <option value="dried_legumes">Suche rośliny strączkowe</option>
-                    <option value="sauces">Sosy i przyprawy płynne</option>
-                    <option value="oils">Oleje</option>
-                    <option value="spreads">Smarowidła i pasty</option>
-                    <option value="frozen_veg">Mrożone warzywa</option>
-                    <option value="frozen_sauces">Mrożone sosy</option>
-                    <option value="frozen_meals">Mrożone dania / zupy</option>
+                    <option value="uncategorized" data-i18n="category_uncategorized">brak kategorii</option>
+                    <option value="fresh_veg" data-i18n="category_fresh_veg">Świeże warzywa</option>
+                    <option value="mushrooms" data-i18n="category_mushrooms">Grzyby</option>
+                    <option value="dairy_eggs" data-i18n="category_dairy_eggs">Nabiał i jajka</option>
+                    <option value="opened_preserves" data-i18n="category_opened_preserves">Otwarte konserwy i przetwory</option>
+                    <option value="ready_sauces" data-i18n="category_ready_sauces">Sosy</option>
+                    <option value="dry_veg" data-i18n="category_dry_veg">Warzywa suche</option>
+                    <option value="bread" data-i18n="category_bread">Pieczywo</option>
+                    <option value="pasta" data-i18n="category_pasta">Makarony</option>
+                    <option value="rice" data-i18n="category_rice">Ryże</option>
+                    <option value="grains" data-i18n="category_grains">Kasze</option>
+                    <option value="dried_legumes" data-i18n="category_dried_legumes">Suche rośliny strączkowe</option>
+                    <option value="sauces" data-i18n="category_sauces">Sosy i przyprawy płynne</option>
+                    <option value="oils" data-i18n="category_oils">Oleje</option>
+                    <option value="spreads" data-i18n="category_spreads">Smarowidła i pasty</option>
+                    <option value="frozen_veg" data-i18n="category_frozen_veg">Mrożone warzywa</option>
+                    <option value="frozen_sauces" data-i18n="category_frozen_sauces">Mrożone sosy</option>
+                    <option value="frozen_meals" data-i18n="category_frozen_meals">Mrożone dania / zupy</option>
                 </select>
                 <select name="storage" required class="select select-bordered w-full">
-                    <option value="fridge">Lodówka</option>
-                    <option value="pantry" selected>Szafka</option>
-                    <option value="freezer">Zamrażarka</option>
+                    <option value="fridge" data-i18n="storage_fridge">Lodówka</option>
+                    <option value="pantry" selected data-i18n="storage_pantry">Szafka</option>
+                    <option value="freezer" data-i18n="storage_freezer">Zamrażarka</option>
                 </select>
-                <label class="flex items-center gap-2"><input type="checkbox" name="main" class="checkbox"> Podstawowy</label>
-                <button type="submit" class="btn btn-success w-full sm:col-span-2">Zapisz</button>
+                <label class="flex items-center gap-2"><input type="checkbox" name="main" class="checkbox"> <span data-i18n="checkbox_main_label">Podstawowy</span></label>
+                <button type="submit" class="btn btn-success w-full sm:col-span-2" data-i18n="save_button">Zapisz</button>
             </form>
 
             <hr class="border-t border-base-300 my-6">
 
-            <h3 class="text-lg font-semibold mt-6 mb-2">Edytuj produkty (JSON)</h3>
-            <textarea id="edit-json" rows="5" cols="50" placeholder='JSON' class="textarea textarea-bordered w-full mb-4"></textarea>
+            <h3 class="text-lg font-semibold mt-6 mb-2" data-i18n="heading_edit_json">Edytuj produkty (JSON)</h3>
+            <textarea id="edit-json" rows="5" cols="50" placeholder='JSON' data-i18n="edit_json_placeholder" class="textarea textarea-bordered w-full mb-4"></textarea>
             <div class="flex flex-col sm:flex-row gap-2 mb-8">
-                <button id="edit-json-btn" class="btn btn-primary w-full sm:w-auto">Wyślij JSON</button>
-                <button id="copy-btn" class="btn w-full sm:w-auto">Pobierz strukturę</button>
+                <button id="edit-json-btn" class="btn btn-primary w-full sm:w-auto" data-i18n="edit_json_submit_button">Wyślij JSON</button>
+                <button id="copy-btn" class="btn w-full sm:w-auto" data-i18n="copy_structure_button">Pobierz strukturę</button>
             </div>
         </div>
 
         <div id="tab-recipes" class="tab-panel" style="display:none;">
-            <h1 class="text-2xl font-bold mb-4">Przepisy</h1>
+            <h1 class="text-2xl font-bold mb-4" data-i18n="heading_recipes">Przepisy</h1>
             <ul id="recipe-list" class="list-disc pl-4 mb-8"></ul>
 
             <form id="history-form" style="display:none;" class="space-y-2">
                 <h2 id="history-title" class="text-xl font-semibold"></h2>
                 <input type="hidden" name="name" id="history-name">
                 <div id="used-ingredients"></div>
-                <button type="button" id="add-ingredient" style="display:none;" class="btn btn-primary">Dodaj składnik</button>
+                <button type="button" id="add-ingredient" style="display:none;" class="btn btn-primary" data-i18n="add_ingredient_button">Dodaj składnik</button>
                 <div class="flex gap-4">
-                    <label>Smak: <input type="number" name="taste" min="1" max="5" class="input input-bordered w-16"></label>
-                    <label>Wysiłek: <input type="number" name="effort" min="1" max="5" class="input input-bordered w-16"></label>
+                    <label><span data-i18n="label_taste">Smak:</span> <input type="number" name="taste" min="1" max="5" class="input input-bordered w-16"></label>
+                    <label><span data-i18n="label_effort">Wysiłek:</span> <input type="number" name="effort" min="1" max="5" class="input input-bordered w-16"></label>
                 </div>
-                <label class="flex items-center gap-2"><input type="checkbox" name="favorite" class="checkbox"> Ulubione</label>
+                <label class="flex items-center gap-2"><input type="checkbox" name="favorite" class="checkbox"> <span data-i18n="checkbox_favorite_label">Ulubione</span></label>
                 <div class="flex gap-4">
-                    <button type="submit" class="btn btn-success">Zapisz</button>
-                    <button type="button" id="history-cancel" class="btn">Anuluj</button>
+                    <button type="submit" class="btn btn-success" data-i18n="save_button">Zapisz</button>
+                    <button type="button" id="history-cancel" class="btn" data-i18n="delete_cancel_button">Anuluj</button>
                 </div>
             </form>
         </div>
 
         <div id="tab-history" class="tab-panel" style="display:none;">
-            <h1 class="text-2xl font-bold mb-4">Historia</h1>
+            <h1 class="text-2xl font-bold mb-4" data-i18n="heading_history">Historia</h1>
             <ul id="history-list" class="list-disc pl-4"></ul>
         </div>
 
         <div id="tab-shopping" class="tab-panel" style="display:none;">
-            <h1 class="text-2xl font-bold mb-4">Lista zakupów</h1>
-            <p>W budowie...</p>
+            <h1 class="text-2xl font-bold mb-4" data-i18n="heading_shopping">Lista zakupów</h1>
+            <p data-i18n="under_construction">W budowie...</p>
         </div>
 
     </div>
