@@ -275,9 +275,20 @@ function getFilteredProducts() {
 }
 
 async function changeQuantity(product, delta, { qtySpan, decBtn, tr, statusTd }) {
-  const newQty = Math.max(0, (product.quantity || 0) + delta);
-  if (newQty === product.quantity) return;
-  const updated = { ...product, quantity: newQty };
+  const currentQty = parseFloat(product.quantity) || 0;
+  const newQty = Math.max(0, currentQty + delta);
+  if (newQty === currentQty) return;
+  const updated = {
+    name: product.name,
+    quantity: newQty,
+    category: product.category,
+    storage: product.storage,
+    threshold: product.threshold,
+    main: product.main,
+    unit: product.unit,
+    package_size: product.package_size,
+    pack_size: product.pack_size
+  };
   await fetch('/api/products', {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
