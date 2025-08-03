@@ -14,6 +14,7 @@
             <input id="product-search" placeholder="Szukaj produktu" class="flex-1 min-w-[200px] border rounded-lg px-3 py-2">
             <button id="view-toggle" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">Widok z podziałem</button>
             <button id="edit-toggle" class="px-4 py-2 text-sm font-medium text-white bg-yellow-500 rounded-lg hover:bg-yellow-600">Edytuj</button>
+            <button id="save-btn" style="display:none;" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">Zapisz</button>
         </div>
         <div class="overflow-x-auto shadow-sm sm:rounded-lg">
             <table id="product-table" class="w-full text-sm text-left text-gray-500">
@@ -68,7 +69,7 @@
         <textarea id="edit-json" rows="5" cols="50" placeholder='JSON' class="w-full border rounded-lg p-2 mb-2"></textarea>
         <button id="edit-json-btn" class="px-4 py-2 mb-6 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">Wyślij JSON</button>
 
-        <button id="copy-btn" class="px-4 py-2 mb-8 text-sm font-medium text-white bg-gray-600 rounded-lg hover:bg-gray-700">Kopiuj jako prompt</button>
+        <button id="copy-btn" class="px-4 py-2 mb-8 text-sm font-medium text-white bg-gray-600 rounded-lg hover:bg-gray-700">Pobierz strukturę</button>
 
         <h1 class="text-2xl font-bold mb-4">Przepisy</h1>
         <ul id="recipe-list" class="list-disc pl-4 mb-8"></ul>
