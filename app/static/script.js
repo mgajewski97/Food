@@ -81,8 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   loadProducts();
-  loadRecipes();
-  loadHistory();
 
   document.querySelectorAll('[data-tab-target]').forEach(tab => {
     tab.addEventListener('click', () => {
