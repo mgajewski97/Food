@@ -34,10 +34,10 @@
                         <option value="all" data-i18n="state_filter_all">Wszystkie</option>
                     </select>
                 </div>
-                <button id="view-toggle" class="btn btn-primary" data-i18n="change_view_toggle_grouped">Widok z podziałem</button>
-                <button id="edit-toggle" class="btn btn-warning" data-i18n="edit_mode_button_on">Edytuj</button>
-                <button id="save-btn" style="display:none;" class="btn btn-success" data-i18n="save_button">Zapisz</button>
-                <button id="delete-selected" style="display:none;" class="btn btn-error" disabled data-i18n="delete_selected_button">Usuń zaznaczone</button>
+                <button id="view-toggle" class="btn btn-outline btn-primary btn-sm" data-i18n="change_view_toggle_grouped">Widok z podziałem</button>
+                <button id="edit-toggle" class="btn btn-outline btn-warning btn-sm" data-i18n="edit_mode_button_on">Edytuj</button>
+                <button id="save-btn" style="display:none;" class="btn btn-success btn-sm" data-i18n="save_button">Zapisz</button>
+                <button id="delete-selected" style="display:none;" class="btn btn-error btn-sm" disabled data-i18n="delete_selected_button">Usuń zaznaczone</button>
             </div>
             <div class="overflow-x-auto">
                 <table id="product-table" class="table table-zebra w-full">
@@ -63,8 +63,8 @@
                     <p class="py-4" data-i18n="delete_modal_question">Czy na pewno chcesz usunąć zaznaczone produkty?</p>
                     <div id="delete-summary" class="space-y-1"></div>
                     <div class="modal-action">
-                        <button id="confirm-delete" class="btn btn-error" data-i18n="delete_confirm_button">Usuń</button>
-                        <button id="cancel-delete" class="btn" data-i18n="delete_cancel_button">Anuluj</button>
+                        <button id="confirm-delete" class="btn btn-error btn-sm" data-i18n="delete_confirm_button">Usuń</button>
+                        <button id="cancel-delete" class="btn btn-outline btn-sm" data-i18n="delete_cancel_button">Anuluj</button>
                     </div>
                 </form>
             </dialog>
@@ -104,7 +104,7 @@
                     <option value="freezer" data-i18n="storage_freezer">Zamrażarka</option>
                 </select>
                 <label class="flex items-center gap-2"><input type="checkbox" name="main" class="checkbox"> <span data-i18n="checkbox_main_label">Podstawowy</span></label>
-                <button type="submit" class="btn btn-success w-full sm:col-span-2" data-i18n="save_button">Zapisz</button>
+                <button type="submit" class="btn btn-success btn-sm w-full sm:col-span-2" data-i18n="save_button">Zapisz</button>
             </form>
 
             <hr class="border-t border-base-300 my-6">
@@ -112,8 +112,8 @@
             <h3 class="text-lg font-semibold mt-6 mb-2" data-i18n="heading_edit_json">Edytuj produkty (JSON)</h3>
             <textarea id="edit-json" rows="5" cols="50" placeholder='JSON' data-i18n="edit_json_placeholder" class="textarea textarea-bordered w-full mb-4"></textarea>
             <div class="flex flex-col sm:flex-row gap-2 mb-8">
-                <button id="edit-json-btn" class="btn btn-primary w-full sm:w-auto" data-i18n="edit_json_submit_button">Wyślij JSON</button>
-                <button id="copy-btn" class="btn w-full sm:w-auto" data-i18n="copy_structure_button">Pobierz strukturę</button>
+                <button id="edit-json-btn" class="btn btn-outline btn-primary btn-sm w-full sm:w-auto" data-i18n="edit_json_submit_button">Wyślij JSON</button>
+                <button id="copy-btn" class="btn btn-outline btn-sm w-full sm:w-auto" data-i18n="copy_structure_button">Pobierz strukturę</button>
             </div>
         </div>
 
@@ -125,15 +125,15 @@
                 <h2 id="history-title" class="text-xl font-semibold"></h2>
                 <input type="hidden" name="name" id="history-name">
                 <div id="used-ingredients"></div>
-                <button type="button" id="add-ingredient" style="display:none;" class="btn btn-primary" data-i18n="add_ingredient_button">Dodaj składnik</button>
+                <button type="button" id="add-ingredient" style="display:none;" class="btn btn-outline btn-primary btn-sm" data-i18n="add_ingredient_button">Dodaj składnik</button>
                 <div class="flex gap-4">
                     <label><span data-i18n="label_taste">Smak:</span> <input type="number" name="taste" min="1" max="5" class="input input-bordered w-16"></label>
                     <label><span data-i18n="label_effort">Wysiłek:</span> <input type="number" name="effort" min="1" max="5" class="input input-bordered w-16"></label>
                 </div>
                 <label class="flex items-center gap-2"><input type="checkbox" name="favorite" class="checkbox"> <span data-i18n="checkbox_favorite_label">Ulubione</span></label>
                 <div class="flex gap-4">
-                    <button type="submit" class="btn btn-success" data-i18n="save_button">Zapisz</button>
-                    <button type="button" id="history-cancel" class="btn" data-i18n="delete_cancel_button">Anuluj</button>
+                    <button type="submit" class="btn btn-success btn-sm" data-i18n="save_button">Zapisz</button>
+                    <button type="button" id="history-cancel" class="btn btn-outline btn-sm" data-i18n="delete_cancel_button">Anuluj</button>
                 </div>
             </form>
         </div>

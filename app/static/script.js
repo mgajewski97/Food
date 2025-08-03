@@ -420,14 +420,14 @@ function renderProducts(data) {
       qtyTd.className = 'px-4 py-2 flex items-center';
       const decBtn = document.createElement('button');
       decBtn.textContent = '−';
-      decBtn.className = 'btn btn-xs';
+      decBtn.className = 'btn btn-outline btn-xs';
       const qtyInput = document.createElement('input');
       qtyInput.type = 'number';
       qtyInput.value = p.quantity * (p.package_size || 1);
       qtyInput.className = 'edit-qty input input-bordered w-20 text-center mx-2';
       const incBtn = document.createElement('button');
       incBtn.textContent = '+';
-      incBtn.className = 'btn btn-xs';
+      incBtn.className = 'btn btn-outline btn-xs';
       decBtn.addEventListener('click', () => {
         const current = parseFloat(qtyInput.value) || 0;
         qtyInput.value = Math.max(0, current - 1);
