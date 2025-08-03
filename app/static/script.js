@@ -13,8 +13,14 @@ let handledSuggestions = new Set();
 let currentSuggestions = [];
 
 async function loadTranslations(lang) {
-  const res = await fetch(`/static/translations/${lang}.json`);
-  translations = await res.json();
+  try {
+    const res = await fetch(`/static/translations/${lang}.json`);
+    if (!res.ok) throw new Error(`status ${res.status}`);
+    translations = await res.json();
+  } catch (err) {
+    console.error('Failed to load translations', err);
+    translations = {};
+  }
 }
 
 const CATEGORY_KEYS = {
