@@ -1,8 +1,10 @@
 let editingName = null;
+let groupedView = false;
 
 const UNIT = 'szt.';
 const LOW_STOCK_THRESHOLD = 1; // TODO: thresholds per category
 
+// Translations for full category names
 const CATEGORY_NAMES = {
   uncategorized: 'brak kategorii',
   fresh_veg: 'Świeże warzywa',
@@ -78,18 +80,19 @@ document.addEventListener('DOMContentLoaded', () => {
     form.style.display = 'none';
   });
   document.getElementById('add-ingredient').addEventListener('click', () => addIngredientRow());
+  document.getElementById('view-toggle').addEventListener('click', () => {
+    groupedView = !groupedView;
+    document.getElementById('product-table').style.display = groupedView ? 'none' : 'table';
+    document.getElementById('product-list').style.display = groupedView ? 'block' : 'none';
+    document.getElementById('view-toggle').textContent = groupedView ? 'Płaska lista' : 'Widok z podziałem';
+  });
 });
 
 async function loadProducts() {
   const res = await fetch('/api/products');
   const data = await res.json();
   window.currentProducts = data;
-  const container = document.getElementById('product-list');
-  if (container) {
-    container.innerHTML = '';
-  }
 
-  const groups = {};
   const tbody = document.querySelector('#product-table tbody');
   tbody.innerHTML = '';
   data.forEach(p => {
@@ -117,32 +120,65 @@ async function loadProducts() {
     actionTd.appendChild(btn);
     tr.appendChild(actionTd);
     tbody.appendChild(tr);
-    if (container) {
-      const storage = p.storage || 'pantry';
-      if (!groups[storage]) groups[storage] = [];
-      groups[storage].push(p);
-    }
   });
 
-  if (container) {
-    const order = ['fridge', 'pantry', 'freezer'];
-    const titles = {
-      fridge: `🧊 ${STORAGE_NAMES.fridge}`,
-      pantry: `🏠 ${STORAGE_NAMES.pantry}`,
-      freezer: `❄️ ${STORAGE_NAMES.freezer}`
-    };
+  const container = document.getElementById('product-list');
+  container.innerHTML = '';
+  const storages = {};
+  data.forEach(p => {
+    const storage = p.storage || 'pantry';
+    const cat = p.category || 'uncategorized';
+    storages[storage] ??= {};
+    storages[storage][cat] ??= [];
+    storages[storage][cat].push(p);
+  });
 
-    order.forEach(stor => {
-      if (groups[stor] && groups[stor].length) {
-        const h = document.createElement('h3');
-        h.textContent = titles[stor] || stor;
-        container.appendChild(h);
-        const ul = document.createElement('ul');
-        groups[stor].sort((a, b) => a.category.localeCompare(b.category));
-        groups[stor].forEach(p => {
-          const li = document.createElement('li');
-            const catName = CATEGORY_NAMES[p.category] || p.category;
-            li.textContent = `${p.name} - ${p.quantity} (${catName}) `;
+  const order = ['fridge', 'pantry', 'freezer'];
+  const titles = {
+    fridge: `🧊 ${STORAGE_NAMES.fridge}`,
+    pantry: `🏠 ${STORAGE_NAMES.pantry}`,
+    freezer: `❄️ ${STORAGE_NAMES.freezer}`
+  };
+
+  order.forEach(stor => {
+    if (!storages[stor]) return;
+    const h3 = document.createElement('h3');
+    h3.textContent = titles[stor] || stor;
+    container.appendChild(h3);
+    const categories = storages[stor];
+    Object.keys(categories)
+      .sort((a, b) => (CATEGORY_NAMES[a] || a).localeCompare(CATEGORY_NAMES[b] || b))
+      .forEach(cat => {
+        const h4 = document.createElement('h4');
+        h4.textContent = CATEGORY_NAMES[cat] || cat;
+        container.appendChild(h4);
+        const table = document.createElement('table');
+        const thead = document.createElement('thead');
+        const headRow = document.createElement('tr');
+        ['Nazwa', 'Ilość', 'Jednostka', ''].forEach(text => {
+          const th = document.createElement('th');
+          th.textContent = text;
+          headRow.appendChild(th);
+        });
+        thead.appendChild(headRow);
+        table.appendChild(thead);
+        const tbodyCat = document.createElement('tbody');
+        categories[cat].sort((a, b) => a.name.localeCompare(b.name));
+        categories[cat].forEach(p => {
+          const tr = document.createElement('tr');
+          if (p.quantity <= LOW_STOCK_THRESHOLD) {
+            tr.classList.add('low-stock');
+          }
+          const nameTd = document.createElement('td');
+          nameTd.textContent = p.name;
+          tr.appendChild(nameTd);
+          const qtyTd = document.createElement('td');
+          qtyTd.textContent = p.quantity;
+          tr.appendChild(qtyTd);
+          const unitTd = document.createElement('td');
+          unitTd.textContent = p.unit;
+          tr.appendChild(unitTd);
+          const actionTd = document.createElement('td');
           const edit = document.createElement('button');
           edit.textContent = 'Edytuj';
           edit.addEventListener('click', () => {
@@ -160,14 +196,15 @@ async function loadProducts() {
             await loadProducts();
             await loadRecipes();
           });
-          li.appendChild(edit);
-          li.appendChild(del);
-          ul.appendChild(li);
+          actionTd.appendChild(edit);
+          actionTd.appendChild(del);
+          tr.appendChild(actionTd);
+          tbodyCat.appendChild(tr);
         });
-        container.appendChild(ul);
-      }
-    });
-  }
+        table.appendChild(tbodyCat);
+        container.appendChild(table);
+      });
+  });
 }
 
 async function loadRecipes() {
