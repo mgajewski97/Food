@@ -21,6 +21,20 @@
             <button id="edit-toggle" class="btn btn-warning">Edytuj</button>
             <button id="save-btn" style="display:none;" class="btn btn-success">Zapisz</button>
         </div>
+        <div id="filter-radios" class="mb-4 gap-4">
+            <label class="flex items-center gap-2"><input type="radio" name="product-filter" value="missing" class="radio"><span>Tylko braki</span></label>
+            <label class="flex items-center gap-2"><input type="radio" name="product-filter" value="missing_low" class="radio" checked><span>Braki + końcówki</span></label>
+            <label class="flex items-center gap-2"><input type="radio" name="product-filter" value="all_zero" class="radio"><span>Wszystkie 0</span></label>
+            <label class="flex items-center gap-2"><input type="radio" name="product-filter" value="all" class="radio"><span>Wszystkie</span></label>
+        </div>
+        <div id="filter-select-wrapper" class="mb-4">
+            <select id="filter-select" class="select select-bordered w-full">
+                <option value="missing">Tylko braki</option>
+                <option value="missing_low" selected>Braki + końcówki</option>
+                <option value="all_zero">Wszystkie 0</option>
+                <option value="all">Wszystkie</option>
+            </select>
+        </div>
         <div class="overflow-x-auto">
             <table id="product-table" class="table table-zebra w-full">
                 <thead>
@@ -30,6 +44,7 @@
                         <th>Jednostka</th>
                         <th>Kategoria</th>
                         <th>Miejsce</th>
+                        <th>Status</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -39,9 +54,10 @@
         </div>
 
         <h2 class="text-xl font-semibold mt-8 mb-4">Dodaj / edytuj produkt</h2>
-        <form id="add-form" class="grid grid-cols-1 sm:grid-cols-5 gap-2 mb-6">
+        <form id="add-form" class="grid grid-cols-1 sm:grid-cols-7 gap-2 mb-6">
             <input name="name" placeholder="nazwa" required class="input input-bordered">
             <input name="quantity" placeholder="ilość" required class="input input-bordered">
+            <input name="threshold" placeholder="próg" class="input input-bordered" type="number">
             <select name="category" required class="select select-bordered">
                 <option value="uncategorized">brak kategorii</option>
                 <option value="fresh_veg">Świeże warzywa</option>
@@ -67,6 +83,7 @@
                 <option value="pantry" selected>Szafka</option>
                 <option value="freezer">Zamrażarka</option>
             </select>
+            <label class="flex items-center gap-2"><input type="checkbox" name="main" class="checkbox"> Podstawowy</label>
             <button type="submit" class="btn btn-success">Zapisz</button>
         </form>
 
