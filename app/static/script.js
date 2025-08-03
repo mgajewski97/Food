@@ -4,169 +4,14 @@ let currentFilter = 'available';
 let pendingDelete = [];
 let currentLang = localStorage.getItem('lang') || 'pl';
 let UNIT = '';
-
 const LOW_STOCK_CLASS = 'text-error bg-error/10';
 
-const lang = {
-  pl: {
-    tab_products: 'Produkty',
-    tab_recipes: 'Przepisy',
-    tab_history: 'Historia',
-    tab_shopping: 'Lista zakupów',
-    heading_products: 'Produkty',
-    search_placeholder: 'Szukaj produktu',
-    state_filter_available: 'Dostępne',
-    state_filter_missing: 'Brakujące',
-    state_filter_low: 'Kończące się',
-    state_filter_all: 'Wszystkie',
-    change_view_toggle_grouped: 'Widok z podziałem',
-    change_view_toggle_flat: 'Płaska lista',
-    edit_mode_button_on: 'Edytuj',
-    edit_mode_button_off: 'Zakończ edycję',
-    save_button: 'Zapisz',
-    delete_selected_button: 'Usuń zaznaczone',
-    table_header_name: 'Nazwa',
-    table_header_quantity: 'Ilość',
-    table_header_unit: 'Jednostka',
-    table_header_category: 'Kategoria',
-    table_header_storage: 'Miejsce',
-    table_header_status: 'Status',
-    delete_modal_title: 'Potwierdź usunięcie',
-    delete_modal_question: 'Czy na pewno chcesz usunąć zaznaczone produkty?',
-    delete_confirm_button: 'Usuń',
-    delete_cancel_button: 'Anuluj',
-    heading_add_edit_product: 'Dodaj / edytuj produkt',
-    add_form_name_placeholder: 'nazwa',
-    add_form_quantity_placeholder: 'ilość',
-    add_form_package_size_placeholder: 'w opak.',
-    add_form_pack_size_placeholder: 'paczka',
-    add_form_threshold_placeholder: 'próg',
-    category_uncategorized: 'brak kategorii',
-    category_fresh_veg: 'Świeże warzywa',
-    category_mushrooms: 'Grzyby',
-    category_dairy_eggs: 'Nabiał i jajka',
-    category_opened_preserves: 'Otwarte konserwy i przetwory',
-    category_ready_sauces: 'Sosy',
-    category_dry_veg: 'Warzywa suche',
-    category_bread: 'Pieczywo',
-    category_pasta: 'Makarony',
-    category_rice: 'Ryże',
-    category_grains: 'Kasze',
-    category_dried_legumes: 'Suche rośliny strączkowe',
-    category_sauces: 'Sosy i przyprawy płynne',
-    category_oils: 'Oleje',
-    category_spreads: 'Smarowidła i pasty',
-    category_frozen_veg: 'Mrożone warzywa',
-    category_frozen_sauces: 'Mrożone sosy',
-    category_frozen_meals: 'Mrożone dania / zupy',
-    storage_fridge: 'Lodówka',
-    storage_pantry: 'Szafka',
-    storage_freezer: 'Zamrażarka',
-    checkbox_main_label: 'Podstawowy',
-    heading_edit_json: 'Edytuj produkty (JSON)',
-    edit_json_placeholder: 'JSON',
-    edit_json_submit_button: 'Wyślij JSON',
-    copy_structure_button: 'Pobierz strukturę',
-    heading_recipes: 'Przepisy',
-    add_ingredient_button: 'Dodaj składnik',
-    label_taste: 'Smak:',
-    label_effort: 'Wysiłek:',
-    checkbox_favorite_label: 'Ulubione',
-    heading_history: 'Historia',
-    heading_shopping: 'Lista zakupów',
-    under_construction: 'W budowie...',
-    status_missing: 'Brak produktu',
-    status_low: 'Produkt się kończy',
-    clipboard_header_products: 'Produkty:',
-    invalid_json_alert: 'Nieprawidłowy JSON',
-    pack_title: 'Produkt w opakowaniach zbiorczych',
-    grouped_table_delete_header: 'Usuń',
-    recipe_done_button: 'Zrobione',
-    recipe_done_mod_button: 'Zrobione (ze zmianami)',
-    ingredient_placeholder: 'składnik',
-    quantity_placeholder_ing: 'ilość',
-    unit_piece: 'szt.'
-  },
-  en: {
-    tab_products: 'Products',
-    tab_recipes: 'Recipes',
-    tab_history: 'History',
-    tab_shopping: 'Shopping list',
-    heading_products: 'Products',
-    search_placeholder: 'Search product',
-    state_filter_available: 'Available',
-    state_filter_missing: 'Missing',
-    state_filter_low: 'Low stock',
-    state_filter_all: 'All',
-    change_view_toggle_grouped: 'Categories view',
-    change_view_toggle_flat: 'Flat list',
-    edit_mode_button_on: 'Edit',
-    edit_mode_button_off: 'Finish editing',
-    save_button: 'Save',
-    delete_selected_button: 'Delete selected',
-    table_header_name: 'Name',
-    table_header_quantity: 'Quantity',
-    table_header_unit: 'Unit',
-    table_header_category: 'Category',
-    table_header_storage: 'Storage',
-    table_header_status: 'Status',
-    delete_modal_title: 'Confirm deletion',
-    delete_modal_question: 'Are you sure you want to delete selected products?',
-    delete_confirm_button: 'Delete',
-    delete_cancel_button: 'Cancel',
-    heading_add_edit_product: 'Add / edit product',
-    add_form_name_placeholder: 'name',
-    add_form_quantity_placeholder: 'quantity',
-    add_form_package_size_placeholder: 'in package',
-    add_form_pack_size_placeholder: 'pack',
-    add_form_threshold_placeholder: 'threshold',
-    category_uncategorized: 'no category',
-    category_fresh_veg: 'Fresh vegetables',
-    category_mushrooms: 'Mushrooms',
-    category_dairy_eggs: 'Dairy and eggs',
-    category_opened_preserves: 'Opened preserves and jars',
-    category_ready_sauces: 'Sauces',
-    category_dry_veg: 'Dry vegetables',
-    category_bread: 'Bread',
-    category_pasta: 'Pasta',
-    category_rice: 'Rice',
-    category_grains: 'Grains',
-    category_dried_legumes: 'Dried legumes',
-    category_sauces: 'Liquid sauces and seasonings',
-    category_oils: 'Oils',
-    category_spreads: 'Spreads and pastes',
-    category_frozen_veg: 'Frozen vegetables',
-    category_frozen_sauces: 'Frozen sauces',
-    category_frozen_meals: 'Frozen meals / soups',
-    storage_fridge: 'Fridge',
-    storage_pantry: 'Pantry',
-    storage_freezer: 'Freezer',
-    checkbox_main_label: 'Main',
-    heading_edit_json: 'Edit products (JSON)',
-    edit_json_placeholder: 'JSON',
-    edit_json_submit_button: 'Submit JSON',
-    copy_structure_button: 'Copy structure',
-    heading_recipes: 'Recipes',
-    add_ingredient_button: 'Add ingredient',
-    label_taste: 'Taste:',
-    label_effort: 'Effort:',
-    checkbox_favorite_label: 'Favorite',
-    heading_history: 'History',
-    heading_shopping: 'Shopping list',
-    under_construction: 'Under construction...',
-    status_missing: 'Product missing',
-    status_low: 'Product running low',
-    clipboard_header_products: 'Products:',
-    invalid_json_alert: 'Invalid JSON',
-    pack_title: 'Product in bulk packages',
-    grouped_table_delete_header: 'Delete',
-    recipe_done_button: 'Done',
-    recipe_done_mod_button: 'Done (modified)',
-    ingredient_placeholder: 'ingredient',
-    quantity_placeholder_ing: 'quantity',
-    unit_piece: 'pcs'
-  }
-};
+let translations = {};
+
+async function loadTranslations(lang) {
+  const res = await fetch(`/static/translations/${lang}.json`);
+  translations = await res.json();
+}
 
 const CATEGORY_KEYS = {
   uncategorized: 'category_uncategorized',
@@ -201,9 +46,9 @@ const STORAGE_ICONS = {
   freezer: '❄️'
 };
 
-function t(id) {
-  return (lang[currentLang] && lang[currentLang][id]) || id;
-}
+  function t(id) {
+    return translations[id] || id;
+  }
 
 function applyTranslations() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -277,9 +122,11 @@ function sortProducts(list) {
   });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  UNIT = t('unit_piece');
-  applyTranslations();
+  document.addEventListener('DOMContentLoaded', async () => {
+    await loadTranslations(currentLang);
+    document.documentElement.setAttribute('lang', currentLang);
+    UNIT = t('unit_piece');
+    applyTranslations();
   const html = document.documentElement;
   const icon = document.getElementById('layout-icon');
   if (window.innerWidth < 768) {
@@ -288,19 +135,28 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const langBtn = document.getElementById('lang-toggle');
-  if (langBtn) {
-    langBtn.textContent = currentLang.toUpperCase();
-    langBtn.addEventListener('click', () => {
-      currentLang = currentLang === 'pl' ? 'en' : 'pl';
-      localStorage.setItem('lang', currentLang);
+    if (langBtn) {
       langBtn.textContent = currentLang.toUpperCase();
-      UNIT = t('unit_piece');
-      applyTranslations();
-      renderProducts(getFilteredProducts());
-      loadRecipes();
-      loadHistory();
-    });
-  }
+      langBtn.addEventListener('click', async () => {
+        currentLang = currentLang === 'pl' ? 'en' : 'pl';
+        localStorage.setItem('lang', currentLang);
+        langBtn.textContent = currentLang.toUpperCase();
+        const active = document.querySelector('[data-tab-target].tab-active');
+        const activeTarget = active ? active.dataset.tabTarget : null;
+        await loadTranslations(currentLang);
+        document.documentElement.setAttribute('lang', currentLang);
+        UNIT = t('unit_piece');
+        applyTranslations();
+        if (activeTarget) {
+          document.querySelectorAll('.tab-panel').forEach(panel => (panel.style.display = 'none'));
+          const panel = document.getElementById(activeTarget);
+          if (panel) panel.style.display = 'block';
+        }
+        renderProducts(getFilteredProducts());
+        loadRecipes();
+        loadHistory();
+      });
+    }
 
   loadProducts();
 
