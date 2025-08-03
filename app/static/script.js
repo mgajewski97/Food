@@ -128,8 +128,12 @@ async function loadProducts() {
   data.forEach(p => {
     const storage = p.storage || 'pantry';
     const cat = p.category || 'uncategorized';
-    storages[storage] ??= {};
-    storages[storage][cat] ??= [];
+    if (!storages[storage]) {
+      storages[storage] = {};
+    }
+    if (!storages[storage][cat]) {
+      storages[storage][cat] = [];
+    }
     storages[storage][cat].push(p);
   });
 
