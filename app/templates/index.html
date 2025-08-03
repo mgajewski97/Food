@@ -3,96 +3,95 @@
 <head>
     <meta charset="utf-8">
     <title>Food App</title>
-    <style>
-        .low-stock {
-            background-color: #ffcccc;
-        }
-        table {
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 4px 8px;
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet">
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
 </head>
-<body>
-    <h1>Produkty</h1>
-    <input id="product-search" placeholder="Szukaj produktu">
-    <button id="view-toggle">Widok z podziałem</button>
-    <button id="edit-toggle">Edytuj</button>
-    <table id="product-table">
-        <thead>
-            <tr>
-                <th>Nazwa</th>
-                <th>Ilość</th>
-                <th>Jednostka</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-    <div id="product-list" style="display:none;"></div>
-
-    <h2>Dodaj / edytuj produkt</h2>
-    <form id="add-form">
-        <input name="name" placeholder="nazwa" required>
-        <input name="quantity" placeholder="ilość" required>
-        <select name="category" required>
-            <option value="uncategorized">brak kategorii</option>
-            <option value="fresh_veg">Świeże warzywa</option>
-            <option value="mushrooms">Grzyby</option>
-            <option value="dairy_eggs">Nabiał i jajka</option>
-            <option value="opened_preserves">Otwarte konserwy i przetwory</option>
-            <option value="ready_sauces">Gotowe sosy</option>
-            <option value="dry_veg">Warzywa suche</option>
-            <option value="bread">Pieczywo</option>
-            <option value="pasta">Makarony</option>
-            <option value="rice">Ryże</option>
-            <option value="grains">Kasze</option>
-            <option value="dried_legumes">Suche rośliny strączkowe</option>
-            <option value="sauces">Sosy i przyprawy płynne</option>
-            <option value="oils">Oleje</option>
-            <option value="spreads">Smarowidła i pasty</option>
-            <option value="frozen_veg">Mrożone warzywa</option>
-            <option value="frozen_sauces">Mrożone sosy</option>
-            <option value="frozen_meals">Mrożone dania / zupy</option>
-        </select>
-        <select name="storage" required>
-            <option value="fridge">Lodówka</option>
-            <option value="pantry" selected>Szafka</option>
-            <option value="freezer">Zamrażarka</option>
-        </select>
-        <button type="submit">Zapisz</button>
-    </form>
-
-    <h3>Edytuj produkty (JSON)</h3>
-    <textarea id="edit-json" rows="5" cols="50" placeholder='JSON'></textarea>
-    <button id="edit-json-btn">Wyślij JSON</button>
-
-    <button id="copy-btn">Kopiuj jako prompt</button>
-
-    <h1>Przepisy</h1>
-    <ul id="recipe-list"></ul>
-
-    <form id="history-form" style="display:none;">
-        <h2 id="history-title"></h2>
-        <input type="hidden" name="name" id="history-name">
-        <div id="used-ingredients"></div>
-        <button type="button" id="add-ingredient" style="display:none;">Dodaj składnik</button>
-        <div>
-            <label>Smak: <input type="number" name="taste" min="1" max="5"></label>
-            <label>Wysiłek: <input type="number" name="effort" min="1" max="5"></label>
+<body class="bg-gray-50">
+    <div class="max-w-screen-lg mx-auto px-4 py-6">
+        <h1 class="text-2xl font-bold mb-4">Produkty</h1>
+        <div class="flex flex-wrap items-center gap-4 mb-4">
+            <input id="product-search" placeholder="Szukaj produktu" class="flex-1 min-w-[200px] border rounded-lg px-3 py-2">
+            <button id="view-toggle" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">Widok z podziałem</button>
+            <button id="edit-toggle" class="px-4 py-2 text-sm font-medium text-white bg-gray-600 rounded-lg hover:bg-gray-700">Edytuj</button>
         </div>
-        <label><input type="checkbox" name="favorite"> Ulubione</label>
-        <div>
-            <button type="submit">Zapisz</button>
-            <button type="button" id="history-cancel">Anuluj</button>
+        <div class="overflow-x-auto shadow-sm sm:rounded-lg">
+            <table id="product-table" class="w-full text-sm text-left text-gray-500">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-4 py-2">Nazwa</th>
+                        <th scope="col" class="px-4 py-2">Ilość</th>
+                        <th scope="col" class="px-4 py-2">Jednostka</th>
+                        <th scope="col" class="px-4 py-2">Kategoria</th>
+                        <th scope="col" class="px-4 py-2">Miejsce</th>
+                        <th scope="col" class="px-4 py-2"></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <div id="product-list" style="display:none;"></div>
         </div>
-    </form>
 
-    <h1>Historia</h1>
-    <ul id="history-list"></ul>
+        <h2 class="text-xl font-semibold mt-8 mb-4">Dodaj / edytuj produkt</h2>
+        <form id="add-form" class="grid grid-cols-1 sm:grid-cols-5 gap-2 mb-6">
+            <input name="name" placeholder="nazwa" required class="border rounded-lg px-2 py-1">
+            <input name="quantity" placeholder="ilość" required class="border rounded-lg px-2 py-1">
+            <select name="category" required class="border rounded-lg px-2 py-1">
+                <option value="uncategorized">brak kategorii</option>
+                <option value="fresh_veg">Świeże warzywa</option>
+                <option value="mushrooms">Grzyby</option>
+                <option value="dairy_eggs">Nabiał i jajka</option>
+                <option value="opened_preserves">Otwarte konserwy i przetwory</option>
+                <option value="ready_sauces">Gotowe sosy</option>
+                <option value="dry_veg">Warzywa suche</option>
+                <option value="bread">Pieczywo</option>
+                <option value="pasta">Makarony</option>
+                <option value="rice">Ryże</option>
+                <option value="grains">Kasze</option>
+                <option value="dried_legumes">Suche rośliny strączkowe</option>
+                <option value="sauces">Sosy i przyprawy płynne</option>
+                <option value="oils">Oleje</option>
+                <option value="spreads">Smarowidła i pasty</option>
+                <option value="frozen_veg">Mrożone warzywa</option>
+                <option value="frozen_sauces">Mrożone sosy</option>
+                <option value="frozen_meals">Mrożone dania / zupy</option>
+            </select>
+            <select name="storage" required class="border rounded-lg px-2 py-1">
+                <option value="fridge">Lodówka</option>
+                <option value="pantry" selected>Szafka</option>
+                <option value="freezer">Zamrażarka</option>
+            </select>
+            <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">Zapisz</button>
+        </form>
+
+        <h3 class="text-lg font-semibold mb-2">Edytuj produkty (JSON)</h3>
+        <textarea id="edit-json" rows="5" cols="50" placeholder='JSON' class="w-full border rounded-lg p-2 mb-2"></textarea>
+        <button id="edit-json-btn" class="px-4 py-2 mb-6 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">Wyślij JSON</button>
+
+        <button id="copy-btn" class="px-4 py-2 mb-8 text-sm font-medium text-white bg-gray-600 rounded-lg hover:bg-gray-700">Kopiuj jako prompt</button>
+
+        <h1 class="text-2xl font-bold mb-4">Przepisy</h1>
+        <ul id="recipe-list" class="list-disc pl-4 mb-8"></ul>
+
+        <form id="history-form" style="display:none;" class="space-y-2">
+            <h2 id="history-title" class="text-xl font-semibold"></h2>
+            <input type="hidden" name="name" id="history-name">
+            <div id="used-ingredients"></div>
+            <button type="button" id="add-ingredient" style="display:none;" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">Dodaj składnik</button>
+            <div class="flex gap-4">
+                <label>Smak: <input type="number" name="taste" min="1" max="5" class="border rounded-lg w-16 px-2"></label>
+                <label>Wysiłek: <input type="number" name="effort" min="1" max="5" class="border rounded-lg w-16 px-2"></label>
+            </div>
+            <label class="flex items-center gap-2"><input type="checkbox" name="favorite"> Ulubione</label>
+            <div class="flex gap-4">
+                <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">Zapisz</button>
+                <button type="button" id="history-cancel" class="px-4 py-2 text-sm font-medium text-white bg-gray-600 rounded-lg hover:bg-gray-700">Anuluj</button>
+            </div>
+        </form>
+
+        <h1 class="text-2xl font-bold mb-4">Historia</h1>
+        <ul id="history-list" class="list-disc pl-4"></ul>
+    </div>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
