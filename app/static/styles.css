@@ -1,0 +1,14 @@
+html[data-layout="mobile"] .main-container {
+  max-width: 100%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+html[data-layout="mobile"] #controls {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout="mobile"] #controls > * {
+  width: 100%;
+}

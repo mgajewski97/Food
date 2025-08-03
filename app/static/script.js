@@ -440,6 +440,6 @@ if (layoutToggle && layoutIcon) {
     const current = html.getAttribute('data-layout') || 'desktop';
     const next = current === 'desktop' ? 'mobile' : 'desktop';
     html.setAttribute('data-layout', next);
-    layoutIcon.className = next === 'desktop' ? 'fa-solid fa-mobile-screen-button' : 'fa-solid fa-desktop';
+    layoutIcon.className = next === 'desktop' ? 'fa-regular fa-mobile' : 'fa-solid fa-desktop';
   });
 }
