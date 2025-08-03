@@ -1,23 +1,422 @@
 [
   {
-    "name": "tofu",
-    "quantity": "2 opakowania",
-    "category": "dairy_eggs",
-    "storage": "fridge",
-    "unit": "szt."
+    "name": "Pieczywo tostowe",
+    "quantity": "1",
+    "unit": "szt",
+    "category": "bread",
+    "storage": "pantry"
   },
   {
-    "name": "cebula czerwona",
-    "quantity": "1 sztuka",
+    "name": "Jajka",
+    "quantity": "10",
+    "unit": "szt",
+    "category": "dairy_eggs",
+    "storage": "fridge"
+  },
+  {
+    "name": "Tofu naturalne",
+    "quantity": "2",
+    "unit": "szt",
+    "category": "dairy_eggs",
+    "storage": "fridge"
+  },
+  {
+    "name": "Tofu panierowane Hot & Spicy",
+    "quantity": "1",
+    "unit": "szt",
+    "category": "dairy_eggs",
+    "storage": "fridge"
+  },
+  {
+    "name": "Śmietana 18%",
+    "quantity": "2",
+    "unit": "250 g",
+    "category": "dairy_eggs",
+    "storage": "fridge"
+  },
+  {
+    "name": "Fasola Piękny Jaś",
+    "quantity": "400",
+    "unit": "g",
+    "category": "dried_legumes",
+    "storage": "pantry"
+  },
+  {
+    "name": "Soczewica czerwona",
+    "quantity": "1",
+    "unit": "opakowanie (350 g)",
+    "category": "dried_legumes",
+    "storage": "pantry"
+  },
+  {
+    "name": "Soczewica zielona",
+    "quantity": "1",
+    "unit": "opakowanie (350 g)",
+    "category": "dried_legumes",
+    "storage": "pantry"
+  },
+  {
+    "name": "Cebula dymka",
+    "quantity": "1",
+    "unit": "szt",
+    "category": "dry_veg",
+    "storage": "fridge"
+  },
+  {
+    "name": "Czerwona cebula",
+    "quantity": "1000",
+    "unit": "g",
+    "category": "dry_veg",
+    "storage": "pantry"
+  },
+  {
+    "name": "Czosnek",
+    "quantity": "3",
+    "unit": "szt",
+    "category": "dry_veg",
+    "storage": "pantry"
+  },
+  {
+    "name": "Limonka",
+    "quantity": "2",
+    "unit": "szt",
+    "category": "dry_veg",
+    "storage": "pantry"
+  },
+  {
+    "name": "Bakłażan",
+    "quantity": "1",
+    "unit": "szt",
     "category": "fresh_veg",
-    "storage": "pantry",
-    "unit": "szt."
+    "storage": "fridge"
   },
   {
-    "name": "feta",
-    "quantity": "1/2 opakowania",
-    "category": "dairy_eggs",
-    "storage": "fridge",
-    "unit": "szt."
+    "name": "Cukinia",
+    "quantity": "2",
+    "unit": "szt",
+    "category": "fresh_veg",
+    "storage": "fridge"
+  },
+  {
+    "name": "Frytki",
+    "quantity": "1",
+    "unit": "szt",
+    "category": "fresh_veg",
+    "storage": "fridge"
+  },
+  {
+    "name": "Kapusta pekińska",
+    "quantity": "1",
+    "unit": "szt",
+    "category": "fresh_veg",
+    "storage": "fridge"
+  },
+  {
+    "name": "Marchew",
+    "quantity": "500",
+    "unit": "g",
+    "category": "fresh_veg",
+    "storage": "fridge"
+  },
+  {
+    "name": "Natka pietruszki",
+    "quantity": "1",
+    "unit": "szt",
+    "category": "fresh_veg",
+    "storage": "fridge"
+  },
+  {
+    "name": "Papryki",
+    "quantity": "2",
+    "unit": "szt",
+    "category": "fresh_veg",
+    "storage": "fridge"
+  },
+  {
+    "name": "Pomidory malinowe",
+    "quantity": "3",
+    "unit": "szt",
+    "category": "fresh_veg",
+    "storage": "fridge"
+  },
+  {
+    "name": "Przecier pomidorowy",
+    "quantity": "500",
+    "unit": "g",
+    "category": "fresh_veg",
+    "storage": "fridge"
+  },
+  {
+    "name": "Ziemniaki młode",
+    "quantity": "1000",
+    "unit": "g",
+    "category": "fresh_veg",
+    "storage": "fridge"
+  },
+  {
+    "name": "Barszcz",
+    "quantity": "1",
+    "unit": "słoik",
+    "category": "frozen_meals",
+    "storage": "freezer"
+  },
+  {
+    "name": "Sos do chińszczyzny",
+    "quantity": "1",
+    "unit": "szt",
+    "category": "frozen_meals",
+    "storage": "freezer"
+  },
+  {
+    "name": "Sos pieczeniowy",
+    "quantity": "1",
+    "unit": "szt",
+    "category": "frozen_meals",
+    "storage": "freezer"
+  },
+  {
+    "name": "Szpinak",
+    "quantity": "1",
+    "unit": "szt",
+    "category": "frozen_meals",
+    "storage": "freezer"
+  },
+  {
+    "name": "Warzywa na patelnię",
+    "quantity": "2",
+    "unit": "szt",
+    "category": "frozen_meals",
+    "storage": "freezer"
+  },
+  {
+    "name": "Zupa kalafiorowa",
+    "quantity": "1",
+    "unit": "szt",
+    "category": "frozen_meals",
+    "storage": "freezer"
+  },
+  {
+    "name": "Kasza bulgur",
+    "quantity": "3",
+    "unit": "szt",
+    "category": "grains",
+    "storage": "pantry"
+  },
+  {
+    "name": "Kasza gryczana",
+    "quantity": "1",
+    "unit": "szt",
+    "category": "grains",
+    "storage": "pantry"
+  },
+  {
+    "name": "Kasza pęczak",
+    "quantity": "8",
+    "unit": "szt",
+    "category": "grains",
+    "storage": "pantry"
+  },
+  {
+    "name": "Ryż arborio",
+    "quantity": "500",
+    "unit": "g",
+    "category": "grains",
+    "storage": "pantry"
+  },
+  {
+    "name": "Ryż basmati",
+    "quantity": "5",
+    "unit": "szt",
+    "category": "grains",
+    "storage": "pantry"
+  },
+  {
+    "name": "Ryż jaśminowy",
+    "quantity": "4",
+    "unit": "szt",
+    "category": "grains",
+    "storage": "pantry"
+  },
+  {
+    "name": "Boczniaki",
+    "quantity": "250",
+    "unit": "g",
+    "category": "mushrooms",
+    "storage": "fridge"
+  },
+  {
+    "name": "Pieczarki",
+    "quantity": "500",
+    "unit": "g",
+    "category": "mushrooms",
+    "storage": "fridge"
+  },
+  {
+    "name": "Olej sezamowy",
+    "quantity": "1",
+    "unit": "butelka",
+    "category": "oils",
+    "storage": "pantry"
+  },
+  {
+    "name": "Suszone pomidory w oleju",
+    "quantity": "3",
+    "unit": "× 270 g",
+    "category": "oils",
+    "storage": "pantry"
+  },
+  {
+    "name": "Ciecierzyca",
+    "quantity": "1",
+    "unit": "szt",
+    "category": "opened_preserves",
+    "storage": "fridge"
+  },
+  {
+    "name": "Czosnek w oleju",
+    "quantity": "1",
+    "unit": "słoik",
+    "category": "opened_preserves",
+    "storage": "fridge"
+  },
+  {
+    "name": "Fasola czerwona",
+    "quantity": "1",
+    "unit": "szt",
+    "category": "opened_preserves",
+    "storage": "fridge"
+  },
+  {
+    "name": "Kukurydza",
+    "quantity": "1",
+    "unit": "szt",
+    "category": "opened_preserves",
+    "storage": "fridge"
+  },
+  {
+    "name": "Marynowana cebula perłowa",
+    "quantity": "1",
+    "unit": "szt",
+    "category": "opened_preserves",
+    "storage": "fridge"
+  },
+  {
+    "name": "Musztarda dijon",
+    "quantity": "1",
+    "unit": "szt",
+    "category": "opened_preserves",
+    "storage": "fridge"
+  },
+  {
+    "name": "Musztarda francuska",
+    "quantity": "1",
+    "unit": "szt",
+    "category": "opened_preserves",
+    "storage": "fridge"
+  },
+  {
+    "name": "Zielone oliwki duże",
+    "quantity": "500",
+    "unit": "g",
+    "category": "opened_preserves",
+    "storage": "fridge"
+  },
+  {
+    "name": "Zielony groszek",
+    "quantity": "1",
+    "unit": "szt",
+    "category": "opened_preserves",
+    "storage": "fridge"
+  },
+  {
+    "name": "Makaron ditalini rigati",
+    "quantity": "500",
+    "unit": "g",
+    "category": "pasta",
+    "storage": "pantry"
+  },
+  {
+    "name": "Makaron penne",
+    "quantity": "1000",
+    "unit": "g",
+    "category": "pasta",
+    "storage": "pantry"
+  },
+  {
+    "name": "Makaron sciatelli al limone",
+    "quantity": "500",
+    "unit": "g",
+    "category": "pasta",
+    "storage": "pantry"
+  },
+  {
+    "name": "Sos alla norma",
+    "quantity": "400",
+    "unit": "g",
+    "category": "ready_sauces",
+    "storage": "fridge"
+  },
+  {
+    "name": "Sos alla puttanesca",
+    "quantity": "400",
+    "unit": "g",
+    "category": "ready_sauces",
+    "storage": "fridge"
+  },
+  {
+    "name": "Sos basilico",
+    "quantity": "400",
+    "unit": "g",
+    "category": "ready_sauces",
+    "storage": "fridge"
+  },
+  {
+    "name": "Sos berneński",
+    "quantity": "125",
+    "unit": "g",
+    "category": "ready_sauces",
+    "storage": "fridge"
+  },
+  {
+    "name": "Sos cacio e pepe",
+    "quantity": "350",
+    "unit": "g",
+    "category": "ready_sauces",
+    "storage": "fridge"
+  },
+  {
+    "name": "Sos napoletana",
+    "quantity": "400",
+    "unit": "g",
+    "category": "ready_sauces",
+    "storage": "fridge"
+  },
+  {
+    "name": "Krem pistacjowy",
+    "quantity": "1",
+    "unit": "szt",
+    "category": "spreads",
+    "storage": "pantry"
+  },
+  {
+    "name": "Masło orzechowe",
+    "quantity": "1",
+    "unit": "szt",
+    "category": "spreads",
+    "storage": "pantry"
+  },
+  {
+    "name": "Mieszanka przypraw tajska",
+    "quantity": "15",
+    "unit": "g",
+    "category": "spreads",
+    "storage": "pantry"
+  },
+  {
+    "name": "Orzechy nerkowca",
+    "quantity": "35",
+    "unit": "g",
+    "category": "spreads",
+    "storage": "pantry"
   }
 ]
