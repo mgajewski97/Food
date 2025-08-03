@@ -1,13 +1,14 @@
 <!doctype html>
-<html lang="pl" data-theme="dark">
+<html lang="pl" data-theme="dark" data-layout="desktop">
 <head>
     <meta charset="utf-8">
     <title>Food App</title>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.10.2/dist/full.min.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body class="min-h-screen bg-base-100">
-    <div class="flex justify-end max-w-screen-lg mx-auto p-4">
+<body class="min-h-screen bg-base-100 pr-4">
+    <div class="fixed top-4 right-4 flex gap-4">
+        <button id="layout-toggle" class="text-xl p-2 bg-transparent border-0"><i id="layout-icon" class="fa-solid fa-mobile-screen-button"></i></button>
         <button id="theme-toggle" class="text-xl p-2 bg-transparent border-0"><i id="theme-icon" class="fa-solid fa-sun"></i></button>
     </div>
     <div class="max-w-screen-lg mx-auto px-4 py-6">
