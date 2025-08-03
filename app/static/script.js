@@ -228,6 +228,19 @@ function getFilteredProducts() {
   }));
 }
 
+async function changeQuantity(product, delta) {
+  const newQty = Math.max(0, (product.quantity || 0) + delta);
+  if (newQty === product.quantity) return;
+  const updated = { ...product, quantity: newQty };
+  await fetch('/api/products', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(updated)
+  });
+  await loadProducts();
+  await loadRecipes();
+}
+
   function addRowActions(tr, product) {
     const actionTd = document.createElement('td');
     actionTd.className = 'px-4 py-2';
@@ -266,7 +279,21 @@ function renderProducts(data) {
         qtyTd.appendChild(qtyInput);
       } else {
         nameTd.textContent = p.name;
-        qtyTd.textContent = p.quantity;
+        const decBtn = document.createElement('button');
+        decBtn.textContent = '−';
+        decBtn.className = 'btn btn-xs';
+        decBtn.disabled = p.quantity <= 0;
+        decBtn.addEventListener('click', () => changeQuantity(p, -1));
+        const qtySpan = document.createElement('span');
+        qtySpan.className = 'mx-2';
+        qtySpan.textContent = p.quantity;
+        const incBtn = document.createElement('button');
+        incBtn.textContent = '+';
+        incBtn.className = 'btn btn-xs';
+        incBtn.addEventListener('click', () => changeQuantity(p, 1));
+        qtyTd.appendChild(decBtn);
+        qtyTd.appendChild(qtySpan);
+        qtyTd.appendChild(incBtn);
       }
       tr.appendChild(nameTd);
       tr.appendChild(qtyTd);
@@ -410,7 +437,21 @@ function renderProducts(data) {
             qtyTd.appendChild(qtyInput);
           } else {
             nameTd.textContent = p.name;
-            qtyTd.textContent = p.quantity;
+            const decBtn = document.createElement('button');
+            decBtn.textContent = '−';
+            decBtn.className = 'btn btn-xs';
+            decBtn.disabled = p.quantity <= 0;
+            decBtn.addEventListener('click', () => changeQuantity(p, -1));
+            const qtySpan = document.createElement('span');
+            qtySpan.className = 'mx-2';
+            qtySpan.textContent = p.quantity;
+            const incBtn = document.createElement('button');
+            incBtn.textContent = '+';
+            incBtn.className = 'btn btn-xs';
+            incBtn.addEventListener('click', () => changeQuantity(p, 1));
+            qtyTd.appendChild(decBtn);
+            qtyTd.appendChild(qtySpan);
+            qtyTd.appendChild(incBtn);
           }
           tr.appendChild(nameTd);
           tr.appendChild(qtyTd);
