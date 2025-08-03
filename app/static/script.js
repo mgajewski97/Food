@@ -249,22 +249,29 @@ function renderProducts(data) {
     (STORAGE_NAMES[a] || a).localeCompare(STORAGE_NAMES[b] || b)
   );
   storOrder.forEach(stor => {
+    const storageBlock = document.createElement('div');
+    storageBlock.className = 'storage-block border border-base-300 rounded-lg p-4 mb-6';
+
     const h3 = document.createElement('h3');
-    h3.className = 'text-xl font-bold mt-6 mb-2 bg-gray-200 p-2 rounded';
+    h3.className = 'text-xl font-bold mb-4';
     h3.textContent = `${STORAGE_ICONS[stor] || ''} ${STORAGE_NAMES[stor] || stor}`;
-    container.appendChild(h3);
+    storageBlock.appendChild(h3);
+
     const categories = storages[stor];
     Object.keys(categories)
       .sort((a, b) => (CATEGORY_NAMES[a] || a).localeCompare(CATEGORY_NAMES[b] || b))
       .forEach(cat => {
+        const categoryBlock = document.createElement('div');
+        categoryBlock.className = 'category-block mb-4';
+
         const h4 = document.createElement('h4');
-        h4.className = 'text-lg font-semibold mt-4 mb-2 text-gray-700 pl-2';
+        h4.className = 'text-lg font-semibold mb-2 pl-2';
         h4.textContent = CATEGORY_NAMES[cat] || cat;
-        container.appendChild(h4);
+        categoryBlock.appendChild(h4);
+
         const table = document.createElement('table');
-        table.className = 'w-full text-sm text-left text-gray-500 mb-4';
+        table.className = 'table table-zebra w-full';
         const thead = document.createElement('thead');
-        thead.className = 'text-xs text-gray-700 uppercase bg-gray-50';
         const headRow = document.createElement('tr');
         ['Nazwa', 'Ilość', 'Jednostka', ''].forEach(text => {
           const th = document.createElement('th');
@@ -274,13 +281,14 @@ function renderProducts(data) {
         });
         thead.appendChild(headRow);
         table.appendChild(thead);
+
         const tbodyCat = document.createElement('tbody');
         categories[cat].sort((a, b) => a.name.localeCompare(b.name));
         categories[cat].forEach(p => {
           const tr = document.createElement('tr');
-          tr.className = 'bg-white border-b hover:bg-gray-50';
+          tr.className = 'hover';
           if (p.low_stock) {
-            tr.className += ` ${LOW_STOCK_CLASS}`;
+            tr.classList.add(...LOW_STOCK_CLASS.split(' '));
           }
           const nameTd = document.createElement('td');
           nameTd.className = 'px-4 py-2';
@@ -308,8 +316,10 @@ function renderProducts(data) {
           tbodyCat.appendChild(tr);
         });
         table.appendChild(tbodyCat);
-        container.appendChild(table);
+        categoryBlock.appendChild(table);
+        storageBlock.appendChild(categoryBlock);
       });
+    container.appendChild(storageBlock);
   });
 }
 
