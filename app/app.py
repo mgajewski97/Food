@@ -8,7 +8,7 @@ app = Flask(__name__, static_folder='static', template_folder='templates')
 BASE_DIR = os.path.dirname(__file__)
 PRODUCTS_PATH = os.path.join(BASE_DIR, 'data', 'products.json')
 RECIPES_PATH = os.path.join(BASE_DIR, 'data', 'recipes.json')
-UNIT = "szt."
+UNIT = "unit.pieces"
 HISTORY_PATH = os.path.join(BASE_DIR, 'data', 'history.json')
 
 def apply_defaults(product):
