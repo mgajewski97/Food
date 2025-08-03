@@ -4,6 +4,27 @@ html[data-layout="mobile"] .main-container {
   padding-right: 1rem;
 }
 
+html[data-layout="desktop"] .main-container {
+  max-width: 1024px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.corner-icons {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 1rem;
+}
+
+html[data-layout="mobile"] .corner-icons {
+  left: 1rem;
+  right: auto;
+}
+
 html[data-layout="mobile"] #controls {
   flex-direction: column;
   align-items: stretch;
