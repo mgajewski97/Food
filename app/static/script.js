@@ -7,6 +7,9 @@ let UNIT = '';
 const LOW_STOCK_CLASS = 'text-error bg-error/10';
 
 let translations = {};
+let shoppingList = [];
+let handledSuggestions = new Set();
+let currentSuggestions = [];
 
 async function loadTranslations(lang) {
   const res = await fetch(`/static/translations/${lang}.json`);
@@ -174,6 +177,9 @@ function sortProducts(list) {
         loadRecipes();
       } else if (targetId === 'tab-history') {
         loadHistory();
+      } else if (targetId === 'tab-shopping') {
+        renderSuggestions();
+        renderShoppingList();
       }
     });
   });
@@ -352,6 +358,51 @@ function sortProducts(list) {
       alert(t('invalid_json_alert'));
     }
   });
+
+  const manualQty = document.getElementById('manual-qty');
+  const manualDec = document.getElementById('manual-dec');
+  const manualInc = document.getElementById('manual-inc');
+  if (manualDec && manualInc && manualQty) {
+    manualDec.addEventListener('click', () => {
+      manualQty.value = Math.max(1, (parseInt(manualQty.value) || 1) - 1);
+    });
+    manualInc.addEventListener('click', () => {
+      manualQty.value = (parseInt(manualQty.value) || 1) + 1;
+    });
+  }
+  const manualAddBtn = document.getElementById('manual-add-btn');
+  if (manualAddBtn) manualAddBtn.addEventListener('click', handleManualAdd);
+  const manualConfirmBtn = document.getElementById('manual-confirm');
+  if (manualConfirmBtn) manualConfirmBtn.addEventListener('click', handleManualConfirm);
+  const manualSelect = document.getElementById('manual-match-select');
+  if (manualSelect) {
+    manualSelect.addEventListener('change', e => {
+      const newOpts = document.getElementById('new-options');
+      if (e.target.value === 'new') {
+        newOpts.style.display = 'flex';
+        const storSel = document.getElementById('manual-storage-select');
+        const catSel = document.getElementById('manual-category-select');
+        if (storSel.options.length === 0) {
+          Object.entries(STORAGE_KEYS).forEach(([val, key]) => {
+            const opt = document.createElement('option');
+            opt.value = val;
+            opt.textContent = t(key);
+            storSel.appendChild(opt);
+          });
+        }
+        if (catSel.options.length === 0) {
+          Object.entries(CATEGORY_KEYS).forEach(([val, key]) => {
+            const opt = document.createElement('option');
+            opt.value = val;
+            opt.textContent = t(key);
+            catSel.appendChild(opt);
+          });
+        }
+      } else {
+        newOpts.style.display = 'none';
+      }
+    });
+  }
 });
 
 async function loadProducts() {
@@ -365,6 +416,7 @@ async function loadProducts() {
   }));
   renderProducts(getFilteredProducts());
   updateDatalist();
+  renderSuggestions();
 }
 
 function getFilteredProducts() {
@@ -792,6 +844,157 @@ async function handleHistorySubmit(e) {
   await loadProducts();
   await loadRecipes();
   await loadHistory();
+}
+
+function suggestionKey(p) {
+  return `${p.name}|${p.storage}|${p.category}`;
+}
+
+function updateSuggestions() {
+  currentSuggestions = (window.currentProducts || []).filter(p => p.main && p.threshold !== null && p.quantity <= p.threshold && !handledSuggestions.has(suggestionKey(p)));
+}
+
+function renderSuggestions() {
+  updateSuggestions();
+  const container = document.getElementById('suggestions-list');
+  if (!container) return;
+  container.innerHTML = '';
+  currentSuggestions.forEach(p => {
+    const row = document.createElement('div');
+    row.className = 'flex items-center gap-2';
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = p.name;
+    row.appendChild(nameSpan);
+
+    const qtyWrap = document.createElement('div');
+    qtyWrap.className = 'flex items-center';
+    const dec = document.createElement('button');
+    dec.textContent = '−';
+    dec.className = 'btn btn-outline btn-xs';
+    const qtyInput = document.createElement('input');
+    qtyInput.type = 'number';
+    qtyInput.min = '1';
+    qtyInput.value = p.threshold || 1;
+    qtyInput.className = 'input input-bordered w-16 text-center mx-2';
+    const inc = document.createElement('button');
+    inc.textContent = '+';
+    inc.className = 'btn btn-outline btn-xs';
+    dec.addEventListener('click', () => {
+      const v = parseInt(qtyInput.value) || 1;
+      qtyInput.value = Math.max(1, v - 1);
+    });
+    inc.addEventListener('click', () => {
+      const v = parseInt(qtyInput.value) || 1;
+      qtyInput.value = v + 1;
+    });
+    qtyWrap.appendChild(dec);
+    qtyWrap.appendChild(qtyInput);
+    qtyWrap.appendChild(inc);
+    row.appendChild(qtyWrap);
+
+    const accept = document.createElement('button');
+    accept.innerHTML = '<i class="fa-regular fa-circle-check"></i>';
+    accept.title = t('accept_action');
+    accept.className = 'btn btn-ghost btn-xs';
+    accept.addEventListener('click', () => {
+      addToShoppingList({ name: p.name, quantity: parseFloat(qtyInput.value) || 1, storage: p.storage, category: p.category });
+      handledSuggestions.add(suggestionKey(p));
+      renderSuggestions();
+      renderShoppingList();
+    });
+
+    const reject = document.createElement('button');
+    reject.innerHTML = '<i class="fa-regular fa-circle-xmark"></i>';
+    reject.title = t('reject_action');
+    reject.className = 'btn btn-ghost btn-xs';
+    reject.addEventListener('click', () => {
+      handledSuggestions.add(suggestionKey(p));
+      renderSuggestions();
+    });
+
+    row.appendChild(accept);
+    row.appendChild(reject);
+    container.appendChild(row);
+  });
+}
+
+function addToShoppingList(item) {
+  shoppingList.push(item);
+}
+
+function renderShoppingList() {
+  const list = document.getElementById('shopping-list');
+  if (!list) return;
+  list.innerHTML = '';
+  shoppingList.forEach(i => {
+    const li = document.createElement('li');
+    li.textContent = `${i.name} (${i.quantity})`;
+    list.appendChild(li);
+  });
+}
+
+let pendingManual = null;
+
+function handleManualAdd() {
+  const nameInput = document.getElementById('manual-name');
+  const qtyInput = document.getElementById('manual-qty');
+  const name = nameInput.value.trim();
+  const qty = parseInt(qtyInput.value) || 1;
+  if (!name) return;
+  const matches = currentSuggestions.filter(p => p.name.toLowerCase() === name.toLowerCase());
+  pendingManual = { name, qty, matches };
+  const choice = document.getElementById('manual-choice');
+  if (matches.length > 1) {
+    const select = document.getElementById('manual-match-select');
+    select.innerHTML = '';
+    matches.forEach((p, idx) => {
+      const opt = document.createElement('option');
+      opt.value = idx;
+      opt.textContent = `${storageName(p.storage)} / ${categoryName(p.category)}`;
+      select.appendChild(opt);
+    });
+    const optNew = document.createElement('option');
+    optNew.value = 'new';
+    optNew.textContent = t('new_product_option');
+    select.appendChild(optNew);
+    document.getElementById('new-options').style.display = 'none';
+    choice.style.display = 'block';
+  } else if (matches.length === 1) {
+    const p = matches[0];
+    handledSuggestions.add(suggestionKey(p));
+    addToShoppingList({ name: p.name, quantity: qty, storage: p.storage, category: p.category });
+    nameInput.value = '';
+    qtyInput.value = '1';
+    renderSuggestions();
+    renderShoppingList();
+  } else {
+    addToShoppingList({ name, quantity: qty });
+    nameInput.value = '';
+    qtyInput.value = '1';
+    renderShoppingList();
+  }
+}
+
+function handleManualConfirm() {
+  if (!pendingManual) return;
+  const select = document.getElementById('manual-match-select');
+  const choice = select.value;
+  const { name, qty, matches } = pendingManual;
+  if (choice === 'new') {
+    const stor = document.getElementById('manual-storage-select').value;
+    const cat = document.getElementById('manual-category-select').value;
+    addToShoppingList({ name, quantity: qty, storage: stor, category: cat });
+  } else {
+    const p = matches[parseInt(choice, 10)];
+    handledSuggestions.add(suggestionKey(p));
+    addToShoppingList({ name: p.name, quantity: qty, storage: p.storage, category: p.category });
+  }
+  document.getElementById('manual-choice').style.display = 'none';
+  pendingManual = null;
+  document.getElementById('manual-name').value = '';
+  document.getElementById('manual-qty').value = '1';
+  renderSuggestions();
+  renderShoppingList();
 }
 
 // Theme toggle
