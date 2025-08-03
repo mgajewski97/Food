@@ -1,5 +1,5 @@
 [
-  {"name": "tofu", "quantity": "2 opakowania", "category": "nabiał"},
-  {"name": "cebula czerwona", "quantity": "1 sztuka", "category": "warzywa"},
-  {"name": "feta", "quantity": "1/2 opakowania", "category": "nabiał"}
+  {"name": "tofu", "quantity": 2, "unit": "szt.", "category": "nabiał"},
+  {"name": "cebula czerwona", "quantity": 1, "unit": "szt.", "category": "warzywa"},
+  {"name": "feta", "quantity": 0.5, "unit": "szt.", "category": "nabiał"}
 ]
