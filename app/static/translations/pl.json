@@ -152,5 +152,7 @@
   "accept": "dodaj",
   "reject": "ukryj",
   "in_cart": "w koszyku",
-  "owned": "Posiadane"
+  "owned": "Posiadane",
+  "expand": "Rozwiń",
+  "collapse": "Zwiń"
 }

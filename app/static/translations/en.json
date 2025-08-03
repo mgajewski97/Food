@@ -152,5 +152,7 @@
   "accept": "accept",
   "reject": "reject",
   "in_cart": "in cart",
-  "owned": "Owned"
+  "owned": "Owned",
+  "expand": "Expand",
+  "collapse": "Collapse"
 }

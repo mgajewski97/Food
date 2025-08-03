@@ -664,30 +664,40 @@ function renderProducts(data) {
     Object.keys(categories)
       .sort((a, b) => categoryName(a).localeCompare(categoryName(b)))
       .forEach((cat, catIndex) => {
-          const categoryBlock = document.createElement('div');
-          categoryBlock.className = 'category-block';
-          categoryBlock.id = `category-${storIndex}-${catIndex}`;
+        if (!categories[cat].length) return;
+
+        const categoryBlock = document.createElement('div');
+        categoryBlock.className =
+          'category-block collapse collapse-arrow bg-base-100 rounded-box border border-base-300 mt-4 mb-2';
+        categoryBlock.id = `category-${storIndex}-${catIndex}`;
+
+        const catInput = document.createElement('input');
+        catInput.type = 'checkbox';
+        catInput.className = 'collapse-toggle peer hidden';
+        catInput.checked = true;
+        categoryBlock.appendChild(catInput);
 
         const catHeader = document.createElement('div');
         catHeader.className =
-          'flex justify-between items-center mb-2 rounded px-2 cursor-pointer md:cursor-default hover:bg-neutral/20 md:hover:bg-transparent';
-        catHeader.id = `category-header-${storIndex}-${catIndex}`;
+          'collapse-title text-md font-medium flex justify-between items-center relative';
+        const titleSpan = document.createElement('span');
+        titleSpan.textContent = categoryName(cat);
+        catHeader.appendChild(titleSpan);
 
-        const h4 = document.createElement('h4');
-        h4.className = 'text-md font-semibold';
-        h4.textContent = categoryName(cat);
+        const catBtn = document.createElement('button');
+        catBtn.type = 'button';
+        catBtn.className =
+          'hidden md:block absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 bg-transparent border-0 cursor-pointer p-0';
+        catBtn.title = t('collapse');
+        catHeader.appendChild(catBtn);
 
-        const catToggle = document.createElement('button');
-        catToggle.className = 'text-md cursor-pointer bg-transparent border-0 p-0';
-        catToggle.innerHTML = '<i class="fa-regular fa-caret-down"></i>';
-        catToggle.id = `category-toggle-${storIndex}-${catIndex}`;
-
-        catHeader.appendChild(h4);
-        catHeader.appendChild(catToggle);
         categoryBlock.appendChild(catHeader);
 
-          const table = document.createElement('table');
-          table.className = 'table table-zebra w-full';
+        const catContent = document.createElement('div');
+        catContent.className = 'collapse-content';
+
+        const table = document.createElement('table');
+        table.className = 'table table-zebra w-full';
         const thead = document.createElement('thead');
         const headRow = document.createElement('tr');
         [t('table_header_name'), t('table_header_quantity'), t('table_header_unit'), t('table_header_status'), t('grouped_table_delete_header')].forEach(text => {
@@ -700,56 +710,75 @@ function renderProducts(data) {
         table.appendChild(thead);
 
         const tbodyCat = document.createElement('tbody');
-        categories[cat].sort((a, b) => productName(a.name).localeCompare(productName(b.name)));
-        categories[cat].forEach(p => {
-          const tr = document.createElement('tr');
-          tr.className = 'hover';
-          if (p.low_stock) {
-            tr.classList.add(...LOW_STOCK_CLASS.split(' '));
-          }
-          const nameTd = document.createElement('td');
-          nameTd.className = 'px-4 py-2';
-          nameTd.textContent = productName(p.name);
-          tr.appendChild(nameTd);
+        categories[cat]
+          .sort((a, b) => productName(a.name).localeCompare(productName(b.name)))
+          .forEach(p => {
+            const tr = document.createElement('tr');
+            tr.className = 'hover';
+            if (p.low_stock) {
+              tr.classList.add(...LOW_STOCK_CLASS.split(' '));
+            }
+            const nameTd = document.createElement('td');
+            nameTd.className = 'px-4 py-2';
+            nameTd.textContent = productName(p.name);
+            tr.appendChild(nameTd);
 
-          const qtyTd = document.createElement('td');
-          qtyTd.className = 'px-4 py-2';
-          qtyTd.textContent = formatPackQuantity(p);
-        if (p.pack_size) {
-          qtyTd.title = t('pack_title');
-        }
-          tr.appendChild(qtyTd);
+            const qtyTd = document.createElement('td');
+            qtyTd.className = 'px-4 py-2';
+            qtyTd.textContent = formatPackQuantity(p);
+            if (p.pack_size) {
+              qtyTd.title = t('pack_title');
+            }
+            tr.appendChild(qtyTd);
 
-          const unitTd = document.createElement('td');
-          unitTd.className = 'px-4 py-2';
-          unitTd.textContent = unitName(p.unit);
-          tr.appendChild(unitTd);
+            const unitTd = document.createElement('td');
+            unitTd.className = 'px-4 py-2';
+            unitTd.textContent = unitName(p.unit);
+            tr.appendChild(unitTd);
 
-          const statusTd = document.createElement('td');
-          statusTd.className = 'px-4 py-2 text-center';
-          const status = getStatusIcon(p);
-          if (status) {
-            statusTd.innerHTML = status.html;
-            statusTd.title = status.title;
-          }
-          tr.appendChild(statusTd);
+            const statusTd = document.createElement('td');
+            statusTd.className = 'px-4 py-2 text-center';
+            const status = getStatusIcon(p);
+            if (status) {
+              statusTd.innerHTML = status.html;
+              statusTd.title = status.title;
+            }
+            tr.appendChild(statusTd);
 
-          tbodyCat.appendChild(tr);
-        });
+            tbodyCat.appendChild(tr);
+          });
         table.appendChild(tbodyCat);
-        categoryBlock.appendChild(table);
+        catContent.appendChild(table);
+        categoryBlock.appendChild(catContent);
         storageContent.appendChild(categoryBlock);
 
-        let catOpen = true;
-        const toggleCategory = () => {
-          catOpen = !catOpen;
-          table.classList.toggle('hidden', !catOpen);
-          catToggle.innerHTML = `<i class="fa-regular fa-caret-${catOpen ? 'down' : 'up'}"></i>`;
+        const updateTooltip = () => {
+          catBtn.title = catInput.checked ? t('collapse') : t('expand');
         };
-        catHeader.addEventListener('click', e => {
-          const isMobile = document.documentElement.getAttribute('data-layout') === 'mobile';
-          if (isMobile || e.target.closest('button') === catToggle) {
-            toggleCategory();
+
+        const closeOthers = () => {
+          if (catInput.checked) {
+            storageContent
+              .querySelectorAll('.category-block .collapse-toggle')
+              .forEach(inp => {
+                if (inp !== catInput) inp.checked = false;
+              });
+          }
+          updateTooltip();
+        };
+
+        catBtn.addEventListener('click', e => {
+          e.stopPropagation();
+          catInput.checked = !catInput.checked;
+          closeOthers();
+        });
+
+        catHeader.addEventListener('click', () => {
+          const isMobile =
+            document.documentElement.getAttribute('data-layout') === 'mobile';
+          if (isMobile) {
+            catInput.checked = !catInput.checked;
+            closeOthers();
           }
         });
       });
