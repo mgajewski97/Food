@@ -257,13 +257,13 @@ function renderProducts(data) {
   );
   storOrder.forEach(stor => {
     const storageBlock = document.createElement('div');
-    storageBlock.className = 'storage-block border border-base-300 rounded-lg p-4 mb-6';
+    storageBlock.className = 'storage-block border border-base-300 rounded-lg p-4 mb-6 text-lg';
 
     const storageHeader = document.createElement('div');
-    storageHeader.className = 'flex justify-between items-center mb-4 cursor-pointer md:cursor-default';
+    storageHeader.className = 'flex justify-between items-center mb-4 cursor-pointer md:cursor-default pl-4';
 
     const h3 = document.createElement('h3');
-    h3.className = 'text-xl font-bold';
+    h3.className = 'text-2xl font-bold';
     h3.textContent = `${STORAGE_ICONS[stor] || ''} ${STORAGE_NAMES[stor] || stor}`;
 
     const storToggle = document.createElement('button');
@@ -284,9 +284,10 @@ function renderProducts(data) {
       storageContent.style.display = storOpen ? 'block' : 'none';
       storToggle.innerHTML = `<i class="fa-solid fa-chevron-${storOpen ? 'up' : 'down'}"></i>`;
     };
-    storToggle.addEventListener('click', (e) => { e.stopPropagation(); toggleStorage(); });
     if (window.innerWidth < 768) {
       storageHeader.addEventListener('click', toggleStorage);
+    } else {
+      storToggle.addEventListener('click', toggleStorage);
     }
 
     const categories = storages[stor];
@@ -297,7 +298,7 @@ function renderProducts(data) {
         categoryBlock.className = 'category-block mb-4';
 
         const catHeader = document.createElement('div');
-        catHeader.className = 'flex justify-between items-center mb-2 pl-2 cursor-pointer md:cursor-default';
+        catHeader.className = 'flex justify-between items-center mb-2 cursor-pointer md:cursor-default pl-4';
 
         const h4 = document.createElement('h4');
         h4.className = 'text-lg font-semibold';
@@ -312,7 +313,7 @@ function renderProducts(data) {
         categoryBlock.appendChild(catHeader);
 
         const table = document.createElement('table');
-        table.className = 'table table-zebra w-full';
+        table.className = 'table table-zebra w-full mb-4';
         const thead = document.createElement('thead');
         const headRow = document.createElement('tr');
         ['Nazwa', 'Ilość', 'Jednostka', 'Usuń'].forEach(text => {
@@ -367,9 +368,10 @@ function renderProducts(data) {
           table.style.display = catOpen ? 'table' : 'none';
           catToggle.innerHTML = `<i class="fa-solid fa-chevron-${catOpen ? 'up' : 'down'}"></i>`;
         };
-        catToggle.addEventListener('click', (e) => { e.stopPropagation(); toggleCategory(); });
         if (window.innerWidth < 768) {
           catHeader.addEventListener('click', toggleCategory);
+        } else {
+          catToggle.addEventListener('click', toggleCategory);
         }
       });
     container.appendChild(storageBlock);
