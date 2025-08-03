@@ -1,3 +1,4 @@
+let editing = false;
 let groupedView = false;
 
 const UNIT = 'szt.';
@@ -46,14 +47,20 @@ document.addEventListener('DOMContentLoaded', () => {
       storage: form.storage.value,
       unit: UNIT
     };
-    const existing = (window.currentProducts || []).find(p => p.name === product.name);
-    const url = existing ? `/api/products/${encodeURIComponent(product.name)}` : '/api/products';
-    const method = existing ? 'PUT' : 'POST';
-    await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(product)
-    });
+    if (editing) {
+      await fetch('/api/products', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(product)
+      });
+    } else {
+      await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(product)
+      });
+    }
+    editing = false;
     form.reset();
     await loadProducts();
     await loadRecipes();
@@ -212,6 +219,16 @@ function renderProducts(data) {
           unitTd.textContent = p.unit;
           tr.appendChild(unitTd);
           const actionTd = document.createElement('td');
+          const edit = document.createElement('button');
+          edit.textContent = 'Edytuj';
+          edit.addEventListener('click', () => {
+            const form = document.getElementById('add-form');
+            form.name.value = p.name;
+            form.quantity.value = p.quantity;
+            form.category.value = p.category;
+            form.storage.value = p.storage || 'pantry';
+            editing = true;
+          });
           const del = document.createElement('button');
           del.textContent = 'Usuń';
           del.addEventListener('click', async () => {

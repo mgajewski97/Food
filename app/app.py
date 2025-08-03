@@ -34,7 +34,7 @@ def remove_used_products(used_ingredients):
 def index():
     return render_template('index.html')
 
-@app.route('/api/products', methods=['GET', 'POST'])
+@app.route('/api/products', methods=['GET', 'POST', 'PUT'])
 def products():
     if request.method == 'POST':
         new_product = request.json or {}
@@ -43,28 +43,63 @@ def products():
             new_product['quantity'] = float(new_product.get('quantity', 0))
         except (TypeError, ValueError):
             new_product['quantity'] = 0
+        new_product = apply_defaults(new_product)
         products = load_json(PRODUCTS_PATH)
-        products.append(new_product)
+        found = False
+        for p in products:
+            if (
+                p.get('name') == new_product['name'] and
+                p.get('category', 'uncategorized') == new_product['category'] and
+                p.get('storage', 'pantry') == new_product['storage']
+            ):
+                try:
+                    existing_qty = float(p.get('quantity', 0))
+                except (TypeError, ValueError):
+                    existing_qty = 0
+                p['quantity'] = existing_qty + new_product['quantity']
+                found = True
+                break
+        if not found:
+            products.append(new_product)
+        save_json(PRODUCTS_PATH, products)
+        return jsonify(products)
+    if request.method == 'PUT':
+        payload = request.json or []
+        if isinstance(payload, dict):
+            payload = [payload]
+        products = load_json(PRODUCTS_PATH)
+        for item in payload:
+            item['unit'] = UNIT
+            try:
+                item['quantity'] = float(item.get('quantity', 0))
+            except (TypeError, ValueError):
+                item['quantity'] = 0
+            item = apply_defaults(item)
+            found = False
+            for p in products:
+                if (
+                    p.get('name') == item['name'] and
+                    p.get('category', 'uncategorized') == item['category'] and
+                    p.get('storage', 'pantry') == item['storage']
+                ):
+                    p['quantity'] = item['quantity']
+                    p['unit'] = item['unit']
+                    found = True
+                    break
+            if not found:
+                products.append(item)
         save_json(PRODUCTS_PATH, products)
         return jsonify(products)
     products = load_json(PRODUCTS_PATH)
     products = [apply_defaults(p) for p in products]
     return jsonify(products)
 
-@app.route('/api/products/<string:name>', methods=['DELETE', 'PUT'])
-def modify_product(name):
+@app.route('/api/products/<string:name>', methods=['DELETE'])
+def delete_product(name):
     products = load_json(PRODUCTS_PATH)
-    if request.method == 'DELETE':
-        products = [p for p in products if p['name'] != name]
-        save_json(PRODUCTS_PATH, products)
-        return '', 204
-    updated = apply_defaults(request.json)
-    for i, p in enumerate(products):
-        if p['name'] == name:
-            products[i] = updated
-            break
+    products = [p for p in products if p['name'] != name]
     save_json(PRODUCTS_PATH, products)
-    return jsonify(updated)
+    return '', 204
 
 @app.route('/api/recipes')
 def recipes():
