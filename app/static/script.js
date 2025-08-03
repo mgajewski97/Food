@@ -1,4 +1,5 @@
 let editingName = null;
+let groupedView = false;
 
 const UNIT = 'szt.';
 const LOW_STOCK_THRESHOLD = 1; // TODO: thresholds per category
@@ -28,6 +29,30 @@ const STORAGE_NAMES = {
   fridge: 'Lodówka',
   pantry: 'Szafka',
   freezer: 'Zamrażarka'
+};
+
+const CATEGORY_PART_NAMES = {
+  uncategorized: 'brak kategorii',
+  fresh: 'Świeże',
+  veg: 'Warzywa',
+  mushrooms: 'Grzyby',
+  dairy: 'Nabiał',
+  eggs: 'Jajka',
+  opened: 'Otwarte',
+  preserves: 'Konserwy i przetwory',
+  ready: 'Gotowe',
+  sauces: 'Sosy',
+  dry: 'Suche',
+  bread: 'Pieczywo',
+  pasta: 'Makarony',
+  rice: 'Ryże',
+  grains: 'Kasze',
+  dried: 'Suszone',
+  legumes: 'Rośliny strączkowe',
+  oils: 'Oleje',
+  spreads: 'Smarowidła i pasty',
+  frozen: 'Mrożone',
+  meals: 'Dania / zupy'
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -78,18 +103,19 @@ document.addEventListener('DOMContentLoaded', () => {
     form.style.display = 'none';
   });
   document.getElementById('add-ingredient').addEventListener('click', () => addIngredientRow());
+  document.getElementById('view-toggle').addEventListener('click', () => {
+    groupedView = !groupedView;
+    document.getElementById('product-table').style.display = groupedView ? 'none' : 'table';
+    document.getElementById('product-list').style.display = groupedView ? 'block' : 'none';
+    document.getElementById('view-toggle').textContent = groupedView ? 'Płaska lista' : 'Widok z podziałem';
+  });
 });
 
 async function loadProducts() {
   const res = await fetch('/api/products');
   const data = await res.json();
   window.currentProducts = data;
-  const container = document.getElementById('product-list');
-  if (container) {
-    container.innerHTML = '';
-  }
 
-  const groups = {};
   const tbody = document.querySelector('#product-table tbody');
   tbody.innerHTML = '';
   data.forEach(p => {
@@ -117,32 +143,49 @@ async function loadProducts() {
     actionTd.appendChild(btn);
     tr.appendChild(actionTd);
     tbody.appendChild(tr);
-    if (container) {
-      const storage = p.storage || 'pantry';
-      if (!groups[storage]) groups[storage] = [];
-      groups[storage].push(p);
-    }
   });
 
-  if (container) {
-    const order = ['fridge', 'pantry', 'freezer'];
-    const titles = {
-      fridge: `🧊 ${STORAGE_NAMES.fridge}`,
-      pantry: `🏠 ${STORAGE_NAMES.pantry}`,
-      freezer: `❄️ ${STORAGE_NAMES.freezer}`
-    };
+  const container = document.getElementById('product-list');
+  container.innerHTML = '';
+  const storages = {};
+  data.forEach(p => {
+    const storage = p.storage || 'pantry';
+    const [cat, sub = ''] = (p.category || 'uncategorized').split('_');
+    storages[storage] ??= {};
+    storages[storage][cat] ??= {};
+    storages[storage][cat][sub] ??= [];
+    storages[storage][cat][sub].push(p);
+  });
 
-    order.forEach(stor => {
-      if (groups[stor] && groups[stor].length) {
-        const h = document.createElement('h3');
-        h.textContent = titles[stor] || stor;
-        container.appendChild(h);
+  const order = ['fridge', 'pantry', 'freezer'];
+  const titles = {
+    fridge: `🧊 ${STORAGE_NAMES.fridge}`,
+    pantry: `🏠 ${STORAGE_NAMES.pantry}`,
+    freezer: `❄️ ${STORAGE_NAMES.freezer}`
+  };
+
+  order.forEach(stor => {
+    if (!storages[stor]) return;
+    const h3 = document.createElement('h3');
+    h3.textContent = titles[stor] || stor;
+    container.appendChild(h3);
+    const categories = storages[stor];
+    Object.keys(categories).sort().forEach(cat => {
+      const h4 = document.createElement('h4');
+      h4.textContent = CATEGORY_PART_NAMES[cat] || CATEGORY_NAMES[cat] || cat;
+      container.appendChild(h4);
+      const subcats = categories[cat];
+      Object.keys(subcats).sort().forEach(sub => {
+        if (sub) {
+          const h5 = document.createElement('h5');
+          h5.textContent = CATEGORY_PART_NAMES[sub] || CATEGORY_NAMES[sub] || sub;
+          container.appendChild(h5);
+        }
         const ul = document.createElement('ul');
-        groups[stor].sort((a, b) => a.category.localeCompare(b.category));
-        groups[stor].forEach(p => {
+        subcats[sub].sort((a, b) => a.name.localeCompare(b.name));
+        subcats[sub].forEach(p => {
           const li = document.createElement('li');
-            const catName = CATEGORY_NAMES[p.category] || p.category;
-            li.textContent = `${p.name} - ${p.quantity} (${catName}) `;
+          li.textContent = `${p.name} - ${p.quantity} ${p.unit}`;
           const edit = document.createElement('button');
           edit.textContent = 'Edytuj';
           edit.addEventListener('click', () => {
@@ -165,9 +208,9 @@ async function loadProducts() {
           ul.appendChild(li);
         });
         container.appendChild(ul);
-      }
+      });
     });
-  }
+  });
 }
 
 async function loadRecipes() {
