@@ -2,7 +2,7 @@ let groupedView = false;
 let editMode = false;
 
 const UNIT = 'szt.';
-const LOW_STOCK_THRESHOLD = 1; // TODO: thresholds per category
+const LOW_STOCK_CLASS = 'bg-red-100 text-red-800';
 
 // Translations for full category names
 const CATEGORY_NAMES = {
@@ -118,9 +118,10 @@ function getFilteredProducts() {
 
   function addRowActions(tr, product, nameInput, qtyInput) {
     const actionTd = document.createElement('td');
+    actionTd.className = 'px-4 py-2';
     if (editMode) {
       const save = document.createElement('button');
-      save.textContent = 'Zapisz';
+      save.textContent = 'Zmień';
       save.addEventListener('click', async () => {
         const updated = { ...product, name: nameInput.value.trim(), quantity: parseFloat(qtyInput.value) };
         await fetch(`/api/products/${encodeURIComponent(product.name)}`, {
@@ -150,11 +151,14 @@ function renderProducts(data) {
   tbody.innerHTML = '';
     data.forEach(p => {
       const tr = document.createElement('tr');
-      if (p.quantity <= LOW_STOCK_THRESHOLD) {
-        tr.classList.add('low-stock');
+      tr.className = 'bg-white border-b hover:bg-gray-50';
+      if (p.low_stock) {
+        tr.className += ` ${LOW_STOCK_CLASS}`;
       }
       const nameTd = document.createElement('td');
+      nameTd.className = 'px-4 py-2';
       const qtyTd = document.createElement('td');
+      qtyTd.className = 'px-4 py-2';
       let nameInput, qtyInput;
       if (editMode) {
         nameInput = document.createElement('input');
@@ -171,8 +175,17 @@ function renderProducts(data) {
       tr.appendChild(nameTd);
       tr.appendChild(qtyTd);
       const unitTd = document.createElement('td');
+      unitTd.className = 'px-4 py-2';
       unitTd.textContent = p.unit;
       tr.appendChild(unitTd);
+      const catTd = document.createElement('td');
+      catTd.className = 'px-4 py-2';
+      catTd.textContent = CATEGORY_NAMES[p.category] || p.category;
+      tr.appendChild(catTd);
+      const storTd = document.createElement('td');
+      storTd.className = 'px-4 py-2';
+      storTd.textContent = STORAGE_NAMES[p.storage] || p.storage;
+      tr.appendChild(storTd);
       addRowActions(tr, p, nameInput, qtyInput);
       tbody.appendChild(tr);
     });
@@ -211,49 +224,56 @@ function renderProducts(data) {
         const h4 = document.createElement('h4');
         h4.textContent = CATEGORY_NAMES[cat] || cat;
         container.appendChild(h4);
-        const table = document.createElement('table');
-        const thead = document.createElement('thead');
-        const headRow = document.createElement('tr');
-        ['Nazwa', 'Ilość', 'Jednostka', ''].forEach(text => {
-          const th = document.createElement('th');
-          th.textContent = text;
-          headRow.appendChild(th);
-        });
-        thead.appendChild(headRow);
-        table.appendChild(thead);
-        const tbodyCat = document.createElement('tbody');
-        categories[cat].sort((a, b) => a.name.localeCompare(b.name));
-          categories[cat].forEach(p => {
-            const tr = document.createElement('tr');
-            if (p.quantity <= LOW_STOCK_THRESHOLD) {
-              tr.classList.add('low-stock');
-            }
-            const nameTd = document.createElement('td');
-            const qtyTd = document.createElement('td');
-            let nameInput, qtyInput;
-            if (editMode) {
-              nameInput = document.createElement('input');
-              nameInput.value = p.name;
-              nameTd.appendChild(nameInput);
-              qtyInput = document.createElement('input');
-              qtyInput.type = 'number';
-              qtyInput.value = p.quantity;
-              qtyTd.appendChild(qtyInput);
-            } else {
-              nameTd.textContent = p.name;
-              qtyTd.textContent = p.quantity;
-            }
-            tr.appendChild(nameTd);
-            tr.appendChild(qtyTd);
-            const unitTd = document.createElement('td');
-            unitTd.textContent = p.unit;
-            tr.appendChild(unitTd);
-            addRowActions(tr, p, nameInput, qtyInput);
-            tbodyCat.appendChild(tr);
+          const table = document.createElement('table');
+          table.className = 'w-full text-sm text-left text-gray-500 mb-4';
+          const thead = document.createElement('thead');
+          thead.className = 'text-xs text-gray-700 uppercase bg-gray-50';
+          const headRow = document.createElement('tr');
+          ['Nazwa', 'Ilość', 'Jednostka', ''].forEach(text => {
+            const th = document.createElement('th');
+            th.className = 'px-4 py-2';
+            th.textContent = text;
+            headRow.appendChild(th);
           });
-        table.appendChild(tbodyCat);
-        container.appendChild(table);
-      });
+          thead.appendChild(headRow);
+          table.appendChild(thead);
+          const tbodyCat = document.createElement('tbody');
+          categories[cat].sort((a, b) => a.name.localeCompare(b.name));
+            categories[cat].forEach(p => {
+              const tr = document.createElement('tr');
+              tr.className = 'bg-white border-b hover:bg-gray-50';
+              if (p.low_stock) {
+                tr.className += ` ${LOW_STOCK_CLASS}`;
+              }
+              const nameTd = document.createElement('td');
+              nameTd.className = 'px-4 py-2';
+              const qtyTd = document.createElement('td');
+              qtyTd.className = 'px-4 py-2';
+              let nameInput, qtyInput;
+              if (editMode) {
+                nameInput = document.createElement('input');
+                nameInput.value = p.name;
+                nameTd.appendChild(nameInput);
+                qtyInput = document.createElement('input');
+                qtyInput.type = 'number';
+                qtyInput.value = p.quantity;
+                qtyTd.appendChild(qtyInput);
+              } else {
+                nameTd.textContent = p.name;
+                qtyTd.textContent = p.quantity;
+              }
+              tr.appendChild(nameTd);
+              tr.appendChild(qtyTd);
+              const unitTd = document.createElement('td');
+              unitTd.className = 'px-4 py-2';
+              unitTd.textContent = p.unit;
+              tr.appendChild(unitTd);
+              addRowActions(tr, p, nameInput, qtyInput);
+              tbodyCat.appendChild(tr);
+            });
+          table.appendChild(tbodyCat);
+          container.appendChild(table);
+        });
   });
 }
 
