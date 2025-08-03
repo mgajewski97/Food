@@ -427,7 +427,7 @@ if (themeToggle && themeIcon) {
     const current = html.getAttribute('data-theme');
     const next = current === 'dark' ? 'light' : 'dark';
     html.setAttribute('data-theme', next);
-    themeIcon.className = next === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    themeIcon.className = 'fa-solid fa-circle-half-stroke';
   });
 }
 
