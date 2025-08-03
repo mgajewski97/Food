@@ -75,5 +75,9 @@
   "recipe_done_mod_button": "Zrobione (ze zmianami)",
   "ingredient_placeholder": "składnik",
   "quantity_placeholder_ing": "ilość",
-  "unit_piece": "szt."
+  "unit_piece": "szt.",
+  "accept": "dodaj",
+  "reject": "ukryj",
+  "in_cart": "w koszyku",
+  "owned": "Posiadane"
 }

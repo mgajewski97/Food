@@ -75,5 +75,9 @@
   "recipe_done_mod_button": "Done (modified)",
   "ingredient_placeholder": "ingredient",
   "quantity_placeholder_ing": "quantity",
-  "unit_piece": "pcs"
+  "unit_piece": "pcs",
+  "accept": "accept",
+  "reject": "reject",
+  "in_cart": "in cart",
+  "owned": "Owned"
 }

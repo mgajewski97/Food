@@ -6,6 +6,8 @@ let currentLang = localStorage.getItem('lang') || 'pl';
 let UNIT = '';
 const LOW_STOCK_CLASS = 'text-error bg-error/10';
 
+let shoppingList = JSON.parse(localStorage.getItem('shoppingList') || '[]');
+
 let translations = {};
 
 async function loadTranslations(lang) {
@@ -155,6 +157,8 @@ function sortProducts(list) {
         renderProducts(getFilteredProducts());
         loadRecipes();
         loadHistory();
+        renderSuggestions();
+        renderShoppingList();
       });
     }
 
@@ -365,6 +369,8 @@ async function loadProducts() {
   }));
   renderProducts(getFilteredProducts());
   updateDatalist();
+  renderSuggestions();
+  renderShoppingList();
 }
 
 function getFilteredProducts() {
@@ -828,6 +834,109 @@ function updateDatalist() {
     const option = document.createElement('option');
     option.value = p.name;
     datalist.appendChild(option);
+  });
+}
+
+function saveShoppingList() {
+  localStorage.setItem('shoppingList', JSON.stringify(shoppingList));
+}
+
+function addToShoppingList(name, quantity = 1) {
+  if (shoppingList.some(item => item.name === name)) return;
+  shoppingList.push({ name, quantity, inCart: false });
+  saveShoppingList();
+  renderShoppingList();
+}
+
+function renderSuggestions() {
+  const list = document.getElementById('suggestion-list');
+  if (!list) return;
+  list.innerHTML = '';
+  const existing = new Set(shoppingList.map(i => i.name.toLowerCase()));
+  (window.currentProducts || []).forEach(p => {
+    const needs = p.quantity === 0 || (p.threshold !== null && p.quantity <= p.threshold);
+    if (!needs || existing.has(p.name.toLowerCase())) return;
+    const li = document.createElement('li');
+    li.className = 'flex items-center justify-between';
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = p.name;
+    li.appendChild(nameSpan);
+    const actions = document.createElement('span');
+    actions.className = 'flex gap-2';
+    const accept = document.createElement('i');
+    accept.className = 'fa-regular fa-circle-check cursor-pointer text-success';
+    accept.title = t('accept');
+    accept.addEventListener('click', () => {
+      addToShoppingList(p.name);
+      li.remove();
+    });
+    const reject = document.createElement('i');
+    reject.className = 'fa-regular fa-circle-xmark cursor-pointer text-error';
+    reject.title = t('reject');
+    reject.addEventListener('click', () => li.remove());
+    actions.appendChild(accept);
+    actions.appendChild(reject);
+    li.appendChild(actions);
+    list.appendChild(li);
+  });
+}
+
+function renderShoppingList() {
+  const list = document.getElementById('shopping-list');
+  if (!list) return;
+  list.innerHTML = '';
+  shoppingList.sort((a, b) => {
+    if (a.inCart && b.inCart) return (a.cartTime || 0) - (b.cartTime || 0);
+    if (a.inCart !== b.inCart) return a.inCart ? 1 : -1;
+    return a.name.localeCompare(b.name);
+  });
+  shoppingList.forEach(item => {
+    const li = document.createElement('li');
+    li.className = 'flex items-center gap-2';
+    if (item.inCart) {
+      li.classList.add('opacity-50', 'italic');
+    }
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.className = 'checkbox';
+    cb.title = t('in_cart');
+    cb.checked = item.inCart;
+    cb.addEventListener('change', () => {
+      item.inCart = cb.checked;
+      if (cb.checked) {
+        item.cartTime = Date.now();
+      } else {
+        delete item.cartTime;
+      }
+      saveShoppingList();
+      renderShoppingList();
+    });
+    li.appendChild(cb);
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = item.name;
+    nameSpan.className = 'flex-1';
+    if (item.inCart) {
+      nameSpan.classList.add('line-through');
+    }
+    li.appendChild(nameSpan);
+    const qtyInput = document.createElement('input');
+    qtyInput.type = 'number';
+    qtyInput.value = item.quantity;
+    qtyInput.className = 'input input-bordered w-20 text-right';
+    qtyInput.disabled = item.inCart;
+    qtyInput.addEventListener('change', () => {
+      item.quantity = parseFloat(qtyInput.value) || 0;
+      saveShoppingList();
+    });
+    li.appendChild(qtyInput);
+    const product = (window.currentProducts || []).find(p => p.name === item.name && p.quantity > 0);
+    if (product) {
+      const owned = document.createElement('span');
+      owned.className = 'text-xs text-gray-500';
+      owned.textContent = `${formatQuantity(product)} ${t('owned')}`;
+      li.appendChild(owned);
+    }
+    list.appendChild(li);
   });
 }
 
