@@ -1,5 +1,6 @@
 let groupedView = false;
 let editMode = false;
+let currentFilter = 'missing_low';
 
 const UNIT = 'szt.';
 const LOW_STOCK_CLASS = 'text-error bg-error/10';
@@ -38,6 +39,38 @@ const STORAGE_ICONS = {
   freezer: '❄️'
 };
 
+function getStatusIcon(p) {
+  if (p.main) {
+    if (p.quantity === 0) {
+      return { html: '<i class="fa-regular fa-circle-exclamation text-red-600"></i>', title: 'Brak produktu' };
+    }
+    if (p.threshold !== null && p.quantity <= p.threshold) {
+      return { html: '<i class="fa-regular fa-triangle-exclamation text-yellow-500"></i>', title: 'Produkt się kończy' };
+    }
+  } else {
+    if (p.quantity === 0) {
+      return { html: '<i class="fa-regular fa-circle-exclamation text-red-600"></i>', title: 'Brak produktu' };
+    }
+    if (p.threshold !== null && p.quantity <= p.threshold) {
+      return { html: '<i class="fa-regular fa-triangle-exclamation text-yellow-300"></i>', title: 'Produkt się kończy' };
+    }
+  }
+  return null;
+}
+
+function updateFilterVisibility() {
+  const layout = document.documentElement.getAttribute('data-layout');
+  const radios = document.getElementById('filter-radios');
+  const selectWrapper = document.getElementById('filter-select-wrapper');
+  if (layout === 'mobile') {
+    if (radios) radios.style.display = 'none';
+    if (selectWrapper) selectWrapper.style.display = 'block';
+  } else {
+    if (radios) radios.style.display = 'flex';
+    if (selectWrapper) selectWrapper.style.display = 'none';
+  }
+}
+
 function sortProducts(list) {
   return list.sort((a, b) => {
     const storA = STORAGE_NAMES[a.storage] || a.storage;
@@ -59,6 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
     html.setAttribute('data-layout', 'mobile');
     if (icon) icon.className = 'fa-solid fa-desktop';
   }
+  updateFilterVisibility();
 
   loadProducts();
   loadRecipes();
@@ -72,6 +106,8 @@ document.addEventListener('DOMContentLoaded', () => {
       quantity: parseFloat(form.quantity.value),
       category: form.category.value,
       storage: form.storage.value,
+      threshold: form.threshold.value ? parseFloat(form.threshold.value) : null,
+      main: form.main.checked,
       unit: UNIT
     };
     await fetch('/api/products', {
@@ -148,6 +184,20 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('product-search').addEventListener('input', () => {
     renderProducts(getFilteredProducts());
   });
+  document.querySelectorAll('#filter-radios input[name="product-filter"]').forEach(r => {
+    r.addEventListener('change', (e) => {
+      currentFilter = e.target.value;
+      const select = document.getElementById('filter-select');
+      if (select) select.value = currentFilter;
+      renderProducts(getFilteredProducts());
+    });
+  });
+  document.getElementById('filter-select').addEventListener('change', (e) => {
+    currentFilter = e.target.value;
+    const radio = document.querySelector(`#filter-radios input[value="${currentFilter}"]`);
+    if (radio) radio.checked = true;
+    renderProducts(getFilteredProducts());
+  });
   document.getElementById('edit-json-btn').addEventListener('click', async () => {
     const textarea = document.getElementById('edit-json');
     try {
@@ -168,15 +218,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function loadProducts() {
   const res = await fetch('/api/products');
-  window.currentProducts = sortProducts(await res.json());
+  const data = await res.json();
+  window.currentProducts = sortProducts(data.map(p => {
+    p.low_stock = p.threshold !== null && p.quantity <= p.threshold;
+    return p;
+  }));
   renderProducts(getFilteredProducts());
 }
 
 function getFilteredProducts() {
   const query = document.getElementById('product-search').value.toLowerCase();
-  return sortProducts((window.currentProducts || []).filter(p =>
-    p.name.toLowerCase().includes(query)
-  ));
+  return sortProducts((window.currentProducts || []).filter(p => {
+    switch (currentFilter) {
+      case 'missing':
+        if (!(p.main && p.quantity === 0)) return false;
+        break;
+      case 'missing_low':
+        if (!(p.main && (p.quantity === 0 || (p.threshold !== null && p.quantity <= p.threshold)))) return false;
+        break;
+      case 'all_zero':
+        if (p.quantity !== 0) return false;
+        break;
+      case 'all':
+        break;
+    }
+    if (currentFilter !== 'all' && currentFilter !== 'all_zero') {
+      if (!p.main && p.quantity === 0) return false;
+    }
+    return p.name.toLowerCase().includes(query);
+  }));
 }
 
   function addRowActions(tr, product) {
@@ -233,6 +303,14 @@ function renderProducts(data) {
       storTd.className = 'px-4 py-2';
       storTd.textContent = STORAGE_NAMES[p.storage] || p.storage;
       tr.appendChild(storTd);
+      const statusTd = document.createElement('td');
+      statusTd.className = 'px-4 py-2 text-center';
+      const status = getStatusIcon(p);
+      if (status) {
+        statusTd.innerHTML = status.html;
+        statusTd.title = status.title;
+      }
+      tr.appendChild(statusTd);
       addRowActions(tr, p);
       tbody.appendChild(tr);
     });
@@ -316,7 +394,7 @@ function renderProducts(data) {
         table.className = 'table table-zebra w-full mb-4';
         const thead = document.createElement('thead');
         const headRow = document.createElement('tr');
-        ['Nazwa', 'Ilość', 'Jednostka', 'Usuń'].forEach(text => {
+        ['Nazwa', 'Ilość', 'Jednostka', 'Status', 'Usuń'].forEach(text => {
           const th = document.createElement('th');
           th.className = 'px-4 py-2';
           th.textContent = text;
@@ -355,6 +433,14 @@ function renderProducts(data) {
           unitTd.className = 'px-4 py-2';
           unitTd.textContent = p.unit;
           tr.appendChild(unitTd);
+          const statusTd = document.createElement('td');
+          statusTd.className = 'px-4 py-2 text-center';
+          const status = getStatusIcon(p);
+          if (status) {
+            statusTd.innerHTML = status.html;
+            statusTd.title = status.title;
+          }
+          tr.appendChild(statusTd);
           addRowActions(tr, p);
           tbodyCat.appendChild(tr);
         });
@@ -506,5 +592,6 @@ if (layoutToggle && layoutIcon) {
     const next = current === 'desktop' ? 'mobile' : 'desktop';
     html.setAttribute('data-layout', next);
     layoutIcon.className = next === 'desktop' ? 'fa-regular fa-mobile' : 'fa-solid fa-desktop';
+    updateFilterVisibility();
   });
 }

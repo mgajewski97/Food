@@ -14,6 +14,8 @@ HISTORY_PATH = os.path.join(BASE_DIR, 'data', 'history.json')
 def apply_defaults(product):
     product.setdefault('category', 'uncategorized')
     product.setdefault('storage', 'pantry')
+    product.setdefault('main', False)
+    product.setdefault('threshold', None)
     return product
 
 def load_json(path):
@@ -43,6 +45,12 @@ def products():
             new_product['quantity'] = float(new_product.get('quantity', 0))
         except (TypeError, ValueError):
             new_product['quantity'] = 0
+        try:
+            thresh = new_product.get('threshold')
+            new_product['threshold'] = float(thresh) if thresh is not None else None
+        except (TypeError, ValueError):
+            new_product['threshold'] = None
+        new_product['main'] = bool(new_product.get('main', False))
         new_product = apply_defaults(new_product)
         products = load_json(PRODUCTS_PATH)
         found = False
@@ -74,6 +82,12 @@ def products():
                 item['quantity'] = float(item.get('quantity', 0))
             except (TypeError, ValueError):
                 item['quantity'] = 0
+            try:
+                thresh = item.get('threshold')
+                item['threshold'] = float(thresh) if thresh is not None else None
+            except (TypeError, ValueError):
+                item['threshold'] = None
+            item['main'] = bool(item.get('main', False))
             item = apply_defaults(item)
             found = False
             for p in products:
@@ -84,6 +98,8 @@ def products():
                 ):
                     p['quantity'] = item['quantity']
                     p['unit'] = item['unit']
+                    p['threshold'] = item['threshold']
+                    p['main'] = item['main']
                     found = True
                     break
             if not found:
@@ -107,6 +123,12 @@ def modify_product(name):
         updated['quantity'] = float(updated.get('quantity', 0))
     except (TypeError, ValueError):
         updated['quantity'] = 0
+    try:
+        thresh = updated.get('threshold')
+        updated['threshold'] = float(thresh) if thresh is not None else None
+    except (TypeError, ValueError):
+        updated['threshold'] = None
+    updated['main'] = bool(updated.get('main', False))
     updated = apply_defaults(updated)
     for p in products:
         if p.get('name') == name:
