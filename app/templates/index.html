@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8">
+    <title>Food App</title>
+</head>
+<body>
+    <h1>Produkty</h1>
+    <ul id="product-list"></ul>
+
+    <h2>Dodaj produkt</h2>
+    <form id="add-form">
+        <input name="name" placeholder="nazwa" required>
+        <input name="quantity" placeholder="ilość" required>
+        <input name="category" placeholder="kategoria" required>
+        <button type="submit">Dodaj</button>
+    </form>
+
+    <button id="copy-btn">Kopiuj jako prompt</button>
+
+    <h1>Przepisy</h1>
+    <ul id="recipe-list"></ul>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
