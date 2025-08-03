@@ -3,15 +3,37 @@
 <head>
     <meta charset="utf-8">
     <title>Food App</title>
+    <style>
+        .low-stock {
+            background-color: #ffcccc;
+        }
+        table {
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 4px 8px;
+        }
+    </style>
 </head>
 <body>
     <h1>Produkty</h1>
-    <ul id="product-list"></ul>
+    <table id="product-table">
+        <thead>
+            <tr>
+                <th>Nazwa</th>
+                <th>Ilość</th>
+                <th>Jednostka</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 
     <h2>Dodaj produkt</h2>
     <form id="add-form">
         <input name="name" placeholder="nazwa" required>
-        <input name="quantity" placeholder="ilość" required>
+        <input type="number" step="any" name="quantity" placeholder="ilość" required>
         <input name="category" placeholder="kategoria" required>
         <button type="submit">Dodaj</button>
     </form>

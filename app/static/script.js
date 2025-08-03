@@ -1,3 +1,6 @@
+const UNIT = 'szt.';
+const LOW_STOCK_THRESHOLD = 1; // TODO: thresholds per category
+
 document.addEventListener('DOMContentLoaded', () => {
   loadProducts();
   loadRecipes();
@@ -7,8 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = e.target;
     const product = {
       name: form.name.value,
-      quantity: form.quantity.value,
-      category: form.category.value
+      quantity: parseFloat(form.quantity.value),
+      category: form.category.value,
+      unit: UNIT
     };
     await fetch('/api/products', {
       method: 'POST',
@@ -23,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('copy-btn').addEventListener('click', () => {
     const lines = ['Produkty:'];
     (window.currentProducts || []).forEach(p => {
-      lines.push(`- ${p.name}: ${p.quantity}`);
+      lines.push(`- ${p.name}: ${p.quantity} ${p.unit}`);
     });
     navigator.clipboard.writeText(lines.join('\n'));
   });
@@ -33,11 +37,23 @@ async function loadProducts() {
   const res = await fetch('/api/products');
   const data = await res.json();
   window.currentProducts = data;
-  const list = document.getElementById('product-list');
-  list.innerHTML = '';
+  const tbody = document.querySelector('#product-table tbody');
+  tbody.innerHTML = '';
   data.forEach(p => {
-    const li = document.createElement('li');
-    li.textContent = `${p.name} - ${p.quantity} (${p.category}) `;
+    const tr = document.createElement('tr');
+    if (p.quantity <= LOW_STOCK_THRESHOLD) {
+      tr.classList.add('low-stock');
+    }
+    const nameTd = document.createElement('td');
+    nameTd.textContent = p.name;
+    tr.appendChild(nameTd);
+    const qtyTd = document.createElement('td');
+    qtyTd.textContent = p.quantity;
+    tr.appendChild(qtyTd);
+    const unitTd = document.createElement('td');
+    unitTd.textContent = p.unit;
+    tr.appendChild(unitTd);
+    const actionTd = document.createElement('td');
     const btn = document.createElement('button');
     btn.textContent = 'Usuń';
     btn.addEventListener('click', async () => {
@@ -45,8 +61,9 @@ async function loadProducts() {
       await loadProducts();
       await loadRecipes();
     });
-    li.appendChild(btn);
-    list.appendChild(li);
+    actionTd.appendChild(btn);
+    tr.appendChild(actionTd);
+    tbody.appendChild(tr);
   });
 }
 

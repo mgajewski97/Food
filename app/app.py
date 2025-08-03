@@ -7,6 +7,7 @@ app = Flask(__name__, static_folder='static', template_folder='templates')
 BASE_DIR = os.path.dirname(__file__)
 PRODUCTS_PATH = os.path.join(BASE_DIR, 'data', 'products.json')
 RECIPES_PATH = os.path.join(BASE_DIR, 'data', 'recipes.json')
+UNIT = "szt."
 
 def load_json(path):
     with open(path, 'r', encoding='utf-8') as f:
@@ -23,7 +24,12 @@ def index():
 @app.route('/api/products', methods=['GET', 'POST'])
 def products():
     if request.method == 'POST':
-        new_product = request.json
+        new_product = request.json or {}
+        new_product['unit'] = UNIT
+        try:
+            new_product['quantity'] = float(new_product.get('quantity', 0))
+        except (TypeError, ValueError):
+            new_product['quantity'] = 0
         products = load_json(PRODUCTS_PATH)
         products.append(new_product)
         save_json(PRODUCTS_PATH, products)
