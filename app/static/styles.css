@@ -38,3 +38,26 @@ html[data-layout="mobile"] #product-table th:nth-child(n+4),
 html[data-layout="mobile"] #product-table td:nth-child(n+4) {
   display: none;
 }
+
+html[data-layout="mobile"] {
+  font-size: 150%;
+}
+
+html[data-layout="mobile"] #product-table th,
+html[data-layout="mobile"] #product-table td,
+html[data-layout="mobile"] #product-list,
+html[data-layout="mobile"] #recipe-list,
+html[data-layout="mobile"] #history-list {
+  font-size: 1em;
+}
+
+html[data-layout="mobile"] #product-table th,
+html[data-layout="mobile"] #product-table td {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+html[data-layout="mobile"] button {
+  font-size: 1em;
+  padding: 0.75rem 1rem;
+}

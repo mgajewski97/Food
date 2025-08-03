@@ -53,6 +53,13 @@ function sortProducts(list) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  const html = document.documentElement;
+  const icon = document.getElementById('layout-icon');
+  if (window.innerWidth < 768) {
+    html.setAttribute('data-layout', 'mobile');
+    if (icon) icon.className = 'fa-solid fa-desktop';
+  }
+
   loadProducts();
   loadRecipes();
   loadHistory();
