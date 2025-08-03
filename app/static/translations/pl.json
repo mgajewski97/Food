@@ -153,6 +153,8 @@
   "reject": "ukryj",
   "in_cart": "w koszyku",
   "owned": "Posiadane",
+  "expand": "Rozwiń",
+  "collapse": "Zwiń",
   "owned_units": "szt Posiadane",
   "remove": "Usuń",
   "delete_item_question": "Czy na pewno chcesz usunąć ten produkt?"
