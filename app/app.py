@@ -94,12 +94,28 @@ def products():
     products = [apply_defaults(p) for p in products]
     return jsonify(products)
 
-@app.route('/api/products/<string:name>', methods=['DELETE'])
-def delete_product(name):
+@app.route('/api/products/<string:name>', methods=['PUT', 'DELETE'])
+def modify_product(name):
     products = load_json(PRODUCTS_PATH)
-    products = [p for p in products if p['name'] != name]
+    if request.method == 'DELETE':
+        products = [p for p in products if p['name'] != name]
+        save_json(PRODUCTS_PATH, products)
+        return '', 204
+    updated = request.json or {}
+    updated['unit'] = updated.get('unit', UNIT)
+    try:
+        updated['quantity'] = float(updated.get('quantity', 0))
+    except (TypeError, ValueError):
+        updated['quantity'] = 0
+    updated = apply_defaults(updated)
+    for p in products:
+        if p.get('name') == name:
+            p.update(updated)
+            break
+    else:
+        products.append(updated)
     save_json(PRODUCTS_PATH, products)
-    return '', 204
+    return jsonify(products)
 
 @app.route('/api/recipes')
 def recipes():
