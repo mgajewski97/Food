@@ -76,9 +76,9 @@ function formatQuantity(p) {
   const packages = p.quantity;
   const units = packages * (p.package_size || 1);
   if ((p.package_size || 1) !== 1) {
-    return `${packages} op. (${units} ${p.unit})`;
+    return `${packages} op. (${units} ${t(p.unit)})`;
   }
-  return `${units} ${p.unit}`;
+  return `${units} ${t(p.unit)}`;
 }
 
 function formatPackQuantity(p) {
@@ -118,14 +118,14 @@ function sortProducts(list) {
     const catB = categoryName(b.category);
     const catCmp = catA.localeCompare(catB);
     if (catCmp !== 0) return catCmp;
-    return a.name.localeCompare(b.name);
+    return t(a.name).localeCompare(t(b.name));
   });
 }
 
   document.addEventListener('DOMContentLoaded', async () => {
     await loadTranslations(currentLang);
     document.documentElement.setAttribute('lang', currentLang);
-    UNIT = t('unit_piece');
+    UNIT = 'unit.pieces';
     applyTranslations();
   const html = document.documentElement;
   const icon = document.getElementById('layout-icon');
@@ -145,7 +145,7 @@ function sortProducts(list) {
         const activeTarget = active ? active.dataset.tabTarget : null;
         await loadTranslations(currentLang);
         document.documentElement.setAttribute('lang', currentLang);
-        UNIT = t('unit_piece');
+        UNIT = 'unit.pieces';
         applyTranslations();
         if (activeTarget) {
           document.querySelectorAll('.tab-panel').forEach(panel => (panel.style.display = 'none'));
@@ -183,8 +183,12 @@ function sortProducts(list) {
     const form = e.target;
     const pkgSize = parseFloat(form.package_size.value) || 1;
     const packSize = form.pack_size.value ? parseInt(form.pack_size.value, 10) : null;
+    const inputName = form.name.value.trim();
+    let nameKey = inputName;
+    const opt = Array.from(document.querySelectorAll('#product-datalist option')).find(o => o.value === inputName);
+    if (opt) nameKey = opt.dataset.key;
     const product = {
-      name: form.name.value,
+      name: nameKey,
       quantity: parseFloat(form.quantity.value) / pkgSize,
       category: form.category.value,
       storage: form.storage.value,
@@ -208,7 +212,7 @@ function sortProducts(list) {
     const lines = [t('clipboard_header_products')];
     (window.currentProducts || []).forEach(p => {
       const units = p.quantity * (p.package_size || 1);
-      lines.push(`- ${p.name}: ${units} ${p.unit}`);
+      lines.push(`- ${t(p.name)}: ${units} ${t(p.unit)}`);
     });
     navigator.clipboard.writeText(lines.join('\n'));
   });
@@ -259,7 +263,7 @@ function sortProducts(list) {
     });
     pendingDelete = names;
     const summary = document.getElementById('delete-summary');
-    summary.innerHTML = names.map(n => `<div>${n}</div>`).join('');
+    summary.innerHTML = names.map(n => `<div>${t(n)}</div>`).join('');
     document.getElementById('delete-modal').showModal();
   });
 
@@ -384,7 +388,7 @@ function getFilteredProducts() {
         if (p.quantity <= 0) return false;
         break;
     }
-    return p.name.toLowerCase().includes(query);
+    return t(p.name).toLowerCase().includes(query);
   }));
 }
 
@@ -488,7 +492,7 @@ function renderProducts(data) {
     } else {
       const nameTd = document.createElement('td');
       nameTd.className = 'px-4 py-2';
-      nameTd.textContent = p.name;
+      nameTd.textContent = t(p.name);
       tr.appendChild(nameTd);
 
       const qtyTd = document.createElement('td');
@@ -501,7 +505,7 @@ function renderProducts(data) {
 
       const unitTd = document.createElement('td');
       unitTd.className = 'px-4 py-2';
-      unitTd.textContent = p.unit;
+      unitTd.textContent = t(p.unit);
       tr.appendChild(unitTd);
 
       const catTd = document.createElement('td');
@@ -625,7 +629,7 @@ function renderProducts(data) {
         table.appendChild(thead);
 
         const tbodyCat = document.createElement('tbody');
-        categories[cat].sort((a, b) => a.name.localeCompare(b.name));
+        categories[cat].sort((a, b) => t(a.name).localeCompare(t(b.name)));
         categories[cat].forEach(p => {
           const tr = document.createElement('tr');
           tr.className = 'hover';
@@ -634,7 +638,7 @@ function renderProducts(data) {
           }
           const nameTd = document.createElement('td');
           nameTd.className = 'px-4 py-2';
-          nameTd.textContent = p.name;
+          nameTd.textContent = t(p.name);
           tr.appendChild(nameTd);
 
           const qtyTd = document.createElement('td');
@@ -647,7 +651,7 @@ function renderProducts(data) {
 
           const unitTd = document.createElement('td');
           unitTd.className = 'px-4 py-2';
-          unitTd.textContent = p.unit;
+          unitTd.textContent = t(p.unit);
           tr.appendChild(unitTd);
 
           const statusTd = document.createElement('td');
@@ -826,7 +830,8 @@ function updateDatalist() {
   datalist.innerHTML = '';
   (window.currentProducts || []).forEach(p => {
     const option = document.createElement('option');
-    option.value = p.name;
+    option.value = t(p.name);
+    option.dataset.key = p.name;
     datalist.appendChild(option);
   });
 }
