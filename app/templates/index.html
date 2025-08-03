@@ -144,27 +144,55 @@
         </div>
 
         <div id="tab-shopping" class="tab-panel" style="display:none;">
-            <h1 class="text-2xl font-bold mb-4" data-i18n="heading_shopping">Lista zakupów</h1>
-            <div id="suggestions-section" class="mb-6">
-                <h2 class="text-xl font-semibold mb-2" data-i18n="heading_suggestions">Propozycje</h2>
-                <ul id="suggestion-list" class="space-y-2"></ul>
+            <h1 class="text-2xl font-bold mb-6" data-i18n="heading_shopping">Lista zakupów</h1>
+            <div id="suggestions-section" class="mb-8">
+                <h2 class="text-xl font-semibold mb-4" data-i18n="heading_suggestions">Propozycje</h2>
+                <div class="overflow-x-auto">
+                    <table id="suggestion-table" class="table w-full border border-base-300 rounded-lg suggestion-table">
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
-            <div id="manual-add-section" class="mb-6 p-4 border rounded">
-                <h2 class="text-xl font-semibold mb-2" data-i18n="heading_add_product">Dodaj produkt</h2>
-                <div class="flex items-center gap-2">
-                    <input id="manual-name" class="input input-bordered flex-1" placeholder="nazwa" data-i18n="add_form_name_placeholder">
+            <div id="shopping-list-section" class="mb-8">
+                <h2 class="text-xl font-semibold mb-4" data-i18n="heading_shopping_list">Lista zakupów</h2>
+                <div class="overflow-x-auto">
+                    <table id="shopping-list" class="table w-full border border-base-300 rounded-lg shopping-table">
+                        <thead>
+                            <tr>
+                                <th data-i18n="table_header_name">Nazwa</th>
+                                <th data-i18n="table_header_quantity">Ilość</th>
+                                <th data-i18n="owned_units">szt Posiadane</th>
+                                <th data-i18n="in_cart">w koszyku</th>
+                                <th data-i18n="remove"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="manual-add-section" class="mb-8 p-4 border rounded">
+                <h2 class="text-xl font-semibold mb-4" data-i18n="heading_add_product">Dodaj produkt</h2>
+                <div class="flex flex-wrap items-center gap-2">
+                    <input id="manual-name" list="product-datalist" class="input input-bordered flex-1" placeholder="nazwa" data-i18n="add_form_name_placeholder">
                     <div class="flex items-center">
-                        <button id="manual-dec" class="btn btn-outline btn-xs">−</button>
-                        <input id="manual-qty" type="number" min="1" value="1" class="input input-bordered w-16 text-center mx-2 appearance-none" placeholder="1" data-i18n="add_form_quantity_placeholder">
-                        <button id="manual-inc" class="btn btn-outline btn-xs">+</button>
+                        <button id="manual-dec" type="button" class="btn btn-outline btn-xs">−</button>
+                        <input id="manual-qty" type="number" min="1" value="1" class="input input-bordered w-16 text-center mx-2 no-spinner" placeholder="1" data-i18n="add_form_quantity_placeholder">
+                        <button id="manual-inc" type="button" class="btn btn-outline btn-xs">+</button>
                     </div>
                     <button id="manual-add-btn" class="btn btn-primary btn-sm" data-i18n="save_button">Zapisz</button>
                 </div>
+                <datalist id="product-datalist"></datalist>
             </div>
-            <div id="shopping-list-section">
-                <h2 class="text-xl font-semibold mb-2" data-i18n="heading_shopping_list">Lista zakupów</h2>
-                <ul id="shopping-list" class="space-y-2"></ul>
-            </div>
+            <dialog id="shopping-delete-modal" class="modal">
+                <form method="dialog" class="modal-box">
+                    <h3 class="font-bold text-lg" data-i18n="delete_modal_title">Potwierdź usunięcie</h3>
+                    <p class="py-4" data-i18n="delete_item_question">Czy na pewno chcesz usunąć ten produkt?</p>
+                    <div class="modal-action">
+                        <button id="confirm-remove-item" class="btn btn-error btn-sm" data-i18n="delete_confirm_button">Usuń</button>
+                        <button class="btn btn-outline btn-sm" data-i18n="delete_cancel_button">Anuluj</button>
+                    </div>
+                </form>
+            </dialog>
         </div>
 
     </div>
