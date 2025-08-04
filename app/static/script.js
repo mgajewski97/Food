@@ -9,6 +9,8 @@ let lowStockToastShown = false;
 
 let shoppingList = JSON.parse(localStorage.getItem('shoppingList') || '[]');
 let pendingRemoveIndex = null;
+let cookingSession = null;
+let touchStartX = null;
 
 let uiTranslations = { pl: {}, en: {} };
 let translations = { products: {} };
@@ -291,6 +293,7 @@ function checkLowStockToast() {
     }
 
   loadProducts();
+  loadRecipes();
 
   document.querySelectorAll('[data-tab-target]').forEach(tab => {
     tab.addEventListener('click', () => {
@@ -928,6 +931,45 @@ function updateDeleteButton() {
   btn.disabled = !any;
 }
 
+function startCookingMode(recipe) {
+  if (!recipe.steps || !recipe.steps.length) return;
+  cookingSession = { recipe, index: 0 };
+  localStorage.setItem('cookingProgress', JSON.stringify({ name: recipe.name, index: 0 }));
+  showCookingStep();
+}
+
+function showCookingStep() {
+  if (!cookingSession) return;
+  const overlay = document.getElementById('cooking-overlay');
+  const stepEl = document.getElementById('cooking-step');
+  const nextBtn = document.getElementById('cooking-next');
+  if (!overlay || !stepEl || !nextBtn) return;
+  if (cookingSession.index < cookingSession.recipe.steps.length) {
+    stepEl.textContent = cookingSession.recipe.steps[cookingSession.index];
+    nextBtn.textContent =
+      cookingSession.index === cookingSession.recipe.steps.length - 1
+        ? t('finish_cooking')
+        : t('next_step');
+    overlay.style.display = 'flex';
+  } else {
+    overlay.style.display = 'none';
+    localStorage.removeItem('cookingProgress');
+    const recipe = cookingSession.recipe;
+    cookingSession = null;
+    showHistoryForm(recipe, false);
+  }
+}
+
+function nextCookingStep() {
+  if (!cookingSession) return;
+  cookingSession.index++;
+  localStorage.setItem(
+    'cookingProgress',
+    JSON.stringify({ name: cookingSession.recipe.name, index: cookingSession.index })
+  );
+  showCookingStep();
+}
+
 async function loadRecipes() {
   const res = await fetch('/api/recipes');
   const data = await res.json();
@@ -942,10 +984,24 @@ async function loadRecipes() {
     const modBtn = document.createElement('button');
     modBtn.textContent = t('recipe_done_mod_button');
     modBtn.addEventListener('click', () => showHistoryForm(r, true));
+    const cookBtn = document.createElement('button');
+    cookBtn.textContent = t('cooking_mode_button');
+    cookBtn.addEventListener('click', () => startCookingMode(r));
     li.appendChild(doneBtn);
     li.appendChild(modBtn);
+    li.appendChild(cookBtn);
     list.appendChild(li);
   });
+  const progress = JSON.parse(localStorage.getItem('cookingProgress') || 'null');
+  if (progress) {
+    const recipe = data.find(r => r.name === progress.name);
+    if (recipe && recipe.steps && progress.index < recipe.steps.length) {
+      cookingSession = { recipe, index: progress.index };
+      showCookingStep();
+    } else {
+      localStorage.removeItem('cookingProgress');
+    }
+  }
 }
 
 async function loadHistory() {
@@ -1049,6 +1105,22 @@ async function handleHistorySubmit(e) {
   await loadProducts();
   await loadRecipes();
   await loadHistory();
+}
+
+const cookingNextBtn = document.getElementById('cooking-next');
+if (cookingNextBtn) cookingNextBtn.addEventListener('click', nextCookingStep);
+const cookingOverlay = document.getElementById('cooking-overlay');
+if (cookingOverlay) {
+  cookingOverlay.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].screenX;
+  });
+  cookingOverlay.addEventListener('touchend', e => {
+    if (touchStartX !== null) {
+      const dx = e.changedTouches[0].screenX - touchStartX;
+      if (Math.abs(dx) > 50) nextCookingStep();
+    }
+    touchStartX = null;
+  });
 }
 
 // Theme toggle
