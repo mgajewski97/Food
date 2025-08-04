@@ -11,6 +11,8 @@ let shoppingList = JSON.parse(localStorage.getItem('shoppingList') || '[]');
 let pendingRemoveIndex = null;
 let currentRecipeName = null;
 let currentRecipeSort = 'name';
+let cookingState = { recipe: null, step: 0 };
+let touchStartX = 0;
 
 let uiTranslations = { pl: {}, en: {} };
 let translations = { products: {} };
@@ -973,8 +975,17 @@ async function loadRecipes() {
     doneBtn.textContent = t('recipe_done_button');
     doneBtn.addEventListener('click', () => openRatingModal(r));
     li.appendChild(doneBtn);
+    const cookBtn = document.createElement('button');
+    cookBtn.textContent = t('cooking_mode_button');
+    cookBtn.addEventListener('click', () => openCookingMode(r));
+    li.appendChild(cookBtn);
     list.appendChild(li);
   });
+  const saved = JSON.parse(localStorage.getItem('cookingProgress') || '{}');
+  if (saved.recipe) {
+    const rec = data.find(r => r.name === saved.recipe);
+    if (rec) openCookingMode(rec);
+  }
 }
 
 async function loadHistory() {
@@ -1016,11 +1027,12 @@ async function handleRatingSubmit(e) {
   const taste = parseInt(form.taste.value, 10);
   const time = parseInt(form.time.value, 10);
   if (!taste || !time) return;
+  const comment = form.comment ? form.comment.value.trim() : null;
   const entry = {
     name: currentRecipeName,
     used_ingredients: {},
     followed_recipe_exactly: true,
-    comment: null,
+    comment: comment || null,
     rating: { taste, prep_time: time },
     favorite: false
   };
@@ -1033,6 +1045,84 @@ async function handleRatingSubmit(e) {
   document.getElementById('rating-modal').close();
   await loadRecipes();
   await loadHistory();
+}
+
+function showCookingStep() {
+  const stepEl = document.getElementById('cooking-step');
+  const nextBtn = document.getElementById('cooking-next');
+  const form = document.getElementById('cooking-form');
+  const steps = (cookingState.recipe && cookingState.recipe.steps) || [];
+  if (cookingState.step < steps.length) {
+    stepEl.textContent = steps[cookingState.step];
+    form.classList.add('hidden');
+    nextBtn.classList.remove('hidden');
+  } else {
+    stepEl.textContent = t('cooking_end_title');
+    nextBtn.classList.add('hidden');
+    form.classList.remove('hidden');
+  }
+  localStorage.setItem('cookingProgress', JSON.stringify({ recipe: cookingState.recipe.name, step: cookingState.step }));
+}
+
+function openCookingMode(recipe) {
+  cookingState.recipe = recipe;
+  const saved = JSON.parse(localStorage.getItem('cookingProgress') || '{}');
+  cookingState.step = saved.recipe === recipe.name ? saved.step || 0 : 0;
+  const overlay = document.getElementById('cooking-overlay');
+  overlay.classList.remove('hidden');
+  showCookingStep();
+}
+
+async function handleCookingSubmit(e) {
+  e.preventDefault();
+  const form = e.target;
+  const taste = parseInt(form.taste.value, 10);
+  const time = parseInt(form.time.value, 10);
+  if (!taste || !time) return;
+  const comment = form.comment ? form.comment.value.trim() : null;
+  const entry = {
+    name: cookingState.recipe.name,
+    used_ingredients: {},
+    followed_recipe_exactly: true,
+    comment: comment || null,
+    rating: { taste, prep_time: time },
+    favorite: false
+  };
+  await fetch('/api/history', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(entry)
+  });
+  form.reset();
+  document.getElementById('cooking-overlay').classList.add('hidden');
+  localStorage.removeItem('cookingProgress');
+  await loadRecipes();
+  await loadHistory();
+}
+
+const cookingNext = document.getElementById('cooking-next');
+if (cookingNext) {
+  cookingNext.addEventListener('click', () => {
+    cookingState.step++;
+    showCookingStep();
+  });
+}
+const cookingForm = document.getElementById('cooking-form');
+if (cookingForm) {
+  cookingForm.addEventListener('submit', handleCookingSubmit);
+}
+const cookingOverlay = document.getElementById('cooking-overlay');
+if (cookingOverlay) {
+  cookingOverlay.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].screenX;
+  });
+  cookingOverlay.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].screenX - touchStartX;
+    if (dx < -50) {
+      cookingState.step++;
+      showCookingStep();
+    }
+  });
 }
 
 // Theme toggle

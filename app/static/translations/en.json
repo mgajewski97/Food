@@ -178,5 +178,9 @@
   "collapse": "Collapse",
   "owned_units": "Owned unit(s)",
   "remove": "Remove",
-  "delete_item_question": "Are you sure you want to remove this item?"
+  "delete_item_question": "Are you sure you want to remove this item?",
+  "cooking_mode_button": "Cooking mode",
+  "next_step_button": "Next",
+  "cooking_end_title": "Recipe complete"
 }
+
