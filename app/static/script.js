@@ -264,10 +264,14 @@ function sortProducts(list) {
 
   document.getElementById('history-form').addEventListener('submit', handleHistorySubmit);
   document.getElementById('history-cancel').addEventListener('click', () => {
+    const modal = document.getElementById('history-modal');
     const form = document.getElementById('history-form');
-    form.style.display = 'none';
+    form.reset();
+    if (modal) modal.close();
   });
   document.getElementById('add-ingredient').addEventListener('click', () => addIngredientRow());
+  const recipeSort = document.getElementById('recipe-sort');
+  if (recipeSort) recipeSort.addEventListener('change', loadRecipes);
   document.getElementById('view-toggle').addEventListener('click', () => {
     if (editMode) {
       editMode = false;
@@ -816,6 +820,25 @@ function updateDeleteButton() {
 async function loadRecipes() {
   const res = await fetch('/api/recipes');
   const data = await res.json();
+  const historyRes = await fetch('/api/history');
+  const history = await historyRes.json();
+  const averages = {};
+  history.forEach(h => {
+    const name = h.name;
+    if (!averages[name]) averages[name] = { taste: 0, prep: 0, count: 0 };
+    averages[name].taste += h.rating?.taste || 0;
+    averages[name].prep += h.rating?.prep_time || 0;
+    averages[name].count += 1;
+  });
+  data.forEach(r => {
+    const avg = averages[r.name];
+    r.avgTaste = avg ? avg.taste / avg.count : 0;
+    r.avgPrep = avg ? avg.prep / avg.count : 0;
+  });
+  const sortSelect = document.getElementById('recipe-sort');
+  const sort = sortSelect ? sortSelect.value : '';
+  if (sort === 'taste') data.sort((a, b) => b.avgTaste - a.avgTaste);
+  if (sort === 'prep') data.sort((a, b) => b.avgPrep - a.avgPrep);
   const list = document.getElementById('recipe-list');
   list.innerHTML = '';
   data.forEach(r => {
@@ -841,7 +864,7 @@ async function loadHistory() {
   data.forEach(h => {
     const li = document.createElement('li');
     const star = h.favorite ? ' ★' : '';
-    li.textContent = `${h.date} - ${h.name} (${t('label_taste')} ${h.rating.taste}, ${t('label_effort')} ${h.rating.effort})${star}`;
+    li.textContent = `${h.date} - ${h.name} (${t('label_taste')} ${h.rating.taste}, ${t('label_prep_time')} ${h.rating.prep_time})${star}`;
     list.appendChild(li);
   });
 }
@@ -864,7 +887,9 @@ function addIngredientRow(name = '', qty = '') {
 }
 
 function showHistoryForm(recipe, allowExtra) {
+  const modal = document.getElementById('history-modal');
   const form = document.getElementById('history-form');
+  form.reset();
   document.getElementById('history-title').textContent = recipe.name;
   document.getElementById('history-name').value = recipe.name;
   const container = document.getElementById('used-ingredients');
@@ -883,7 +908,7 @@ function showHistoryForm(recipe, allowExtra) {
     container.appendChild(div);
   });
   document.getElementById('add-ingredient').style.display = allowExtra ? 'inline' : 'none';
-  form.style.display = 'block';
+  if (modal) modal.showModal();
 }
 
 async function handleHistorySubmit(e) {
@@ -897,12 +922,14 @@ async function handleHistorySubmit(e) {
       used[name] = qty;
     }
   });
+  const taste = parseInt(form.querySelector('input[name="taste"]:checked')?.value) || 0;
+  const prep = parseInt(form.querySelector('input[name="prep_time"]:checked')?.value) || 0;
   const entry = {
     name: document.getElementById('history-name').value,
     used_ingredients: used,
     rating: {
-      taste: parseInt(form.taste.value) || 0,
-      effort: parseInt(form.effort.value) || 0
+      taste: taste,
+      prep_time: prep
     },
     favorite: form.favorite.checked
   };
@@ -912,7 +939,8 @@ async function handleHistorySubmit(e) {
     body: JSON.stringify(entry)
   });
   form.reset();
-  form.style.display = 'none';
+  const modal = document.getElementById('history-modal');
+  if (modal) modal.close();
   await loadProducts();
   await loadRecipes();
   await loadHistory();
