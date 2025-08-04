@@ -9,6 +9,8 @@ let lowStockToastShown = false;
 
 let shoppingList = JSON.parse(localStorage.getItem('shoppingList') || '[]');
 let pendingRemoveIndex = null;
+let currentRecipeName = null;
+let currentRecipeSort = 'name';
 
 let uiTranslations = { pl: {}, en: {} };
 let translations = { products: {} };
@@ -362,19 +364,19 @@ function checkLowStockToast() {
     navigator.clipboard.writeText(lines.join('\n'));
   });
 
-document.getElementById('history-form').addEventListener('submit', handleHistorySubmit);
-document.getElementById('history-cancel').addEventListener('click', () => {
-  const form = document.getElementById('history-form');
-  form.style.display = 'none';
-});
-document.getElementById('add-ingredient').addEventListener('click', () => addIngredientRow());
-const followedToggle = document.getElementById('followed-exactly');
-const commentWrapper = document.getElementById('comment-wrapper');
-if (followedToggle && commentWrapper) {
-  followedToggle.addEventListener('change', () => {
-    commentWrapper.style.display = followedToggle.checked ? 'none' : 'block';
-  });
-}
+  const ratingForm = document.getElementById('rating-form');
+  const ratingModal = document.getElementById('rating-modal');
+  if (ratingForm && ratingModal) {
+    ratingForm.addEventListener('submit', handleRatingSubmit);
+    document.getElementById('rating-cancel').addEventListener('click', () => ratingModal.close());
+  }
+  const recipeSort = document.getElementById('recipe-sort');
+  if (recipeSort) {
+    recipeSort.addEventListener('change', e => {
+      currentRecipeSort = e.target.value;
+      loadRecipes();
+    });
+  }
   document.getElementById('view-toggle').addEventListener('click', () => {
     if (editMode) {
       editMode = false;
@@ -929,21 +931,48 @@ function updateDeleteButton() {
 }
 
 async function loadRecipes() {
-  const res = await fetch('/api/recipes');
+  const [res, histRes] = await Promise.all([
+    fetch('/api/recipes'),
+    fetch('/api/history')
+  ]);
   const data = await res.json();
+  const history = await histRes.json();
+  const ratingMap = {};
+  history.forEach(h => {
+    if (h.name && h.rating) {
+      if (!ratingMap[h.name]) {
+        ratingMap[h.name] = { taste: [], prep_time: [] };
+      }
+      if (h.rating.taste) ratingMap[h.name].taste.push(h.rating.taste);
+      if (h.rating.prep_time) ratingMap[h.name].prep_time.push(h.rating.prep_time);
+    }
+  });
+  data.forEach(r => {
+    const ratings = ratingMap[r.name];
+    r.avgTaste = ratings && ratings.taste.length
+      ? ratings.taste.reduce((a, b) => a + b, 0) / ratings.taste.length
+      : 0;
+    r.avgPrepTime = ratings && ratings.prep_time.length
+      ? ratings.prep_time.reduce((a, b) => a + b, 0) / ratings.prep_time.length
+      : 0;
+  });
+  data.sort((a, b) => {
+    if (currentRecipeSort === 'taste') return b.avgTaste - a.avgTaste;
+    if (currentRecipeSort === 'time') return b.avgPrepTime - a.avgPrepTime;
+    return a.name.localeCompare(b.name);
+  });
   const list = document.getElementById('recipe-list');
   list.innerHTML = '';
   data.forEach(r => {
     const li = document.createElement('li');
-    li.textContent = `${r.name} (${r.ingredients.join(', ')})`;
+    const avgText = (r.avgTaste || r.avgPrepTime)
+      ? ` [${r.avgTaste.toFixed(1)}★, ${r.avgPrepTime.toFixed(1)}⏱]`
+      : '';
+    li.textContent = `${r.name}${avgText} (${r.ingredients.join(', ')})`;
     const doneBtn = document.createElement('button');
     doneBtn.textContent = t('recipe_done_button');
-    doneBtn.addEventListener('click', () => showHistoryForm(r, false));
-    const modBtn = document.createElement('button');
-    modBtn.textContent = t('recipe_done_mod_button');
-    modBtn.addEventListener('click', () => showHistoryForm(r, true));
+    doneBtn.addEventListener('click', () => openRatingModal(r));
     li.appendChild(doneBtn);
-    li.appendChild(modBtn);
     list.appendChild(li);
   });
 }
@@ -963,7 +992,7 @@ async function loadHistory() {
     }
     text += ')';
     if (h.rating) {
-      text += ` (${t('label_taste')} ${h.rating.taste}, ${t('label_effort')} ${h.rating.effort})`;
+      text += ` (${t('label_taste')} ${h.rating.taste}, ${t('label_prep_time')} ${h.rating.prep_time})`;
     }
     text += star;
     li.textContent = text;
@@ -971,73 +1000,29 @@ async function loadHistory() {
   });
 }
 
-function addIngredientRow(name = '', qty = '') {
-  const container = document.getElementById('used-ingredients');
-  const div = document.createElement('div');
-  div.className = 'ingredient';
-  const nameInput = document.createElement('input');
-  nameInput.className = 'ing-name';
-  nameInput.placeholder = t('ingredient_placeholder');
-  nameInput.value = name;
-  const qtyInput = document.createElement('input');
-  qtyInput.className = 'ing-qty';
-  qtyInput.placeholder = t('quantity_placeholder_ing');
-  qtyInput.value = qty;
-  div.appendChild(nameInput);
-  div.appendChild(qtyInput);
-  container.appendChild(div);
+function openRatingModal(recipe) {
+  currentRecipeName = recipe.name;
+  const modal = document.getElementById('rating-modal');
+  const title = document.getElementById('rating-title');
+  if (title) title.textContent = `${t('rating_modal_title')} ${recipe.name}`;
+  const form = document.getElementById('rating-form');
+  if (form) form.reset();
+  if (modal) modal.showModal();
 }
 
-function showHistoryForm(recipe, allowExtra) {
-  const form = document.getElementById('history-form');
-  document.getElementById('history-title').textContent = recipe.name;
-  document.getElementById('history-name').value = recipe.name;
-  const container = document.getElementById('used-ingredients');
-  container.innerHTML = '';
-  recipe.ingredients.forEach(ing => {
-    const div = document.createElement('div');
-    div.className = 'ingredient';
-    div.dataset.name = ing;
-    const label = document.createElement('span');
-    label.textContent = ing;
-    const qtyInput = document.createElement('input');
-    qtyInput.className = 'ing-qty';
-    qtyInput.placeholder = t('quantity_placeholder_ing');
-    div.appendChild(label);
-    div.appendChild(qtyInput);
-    container.appendChild(div);
-  });
-  document.getElementById('add-ingredient').style.display = allowExtra ? 'inline' : 'none';
-  const toggle = document.getElementById('followed-exactly');
-  const comment = document.getElementById('history-comment');
-  const wrapper = document.getElementById('comment-wrapper');
-  if (toggle) toggle.checked = true;
-  if (comment) comment.value = '';
-  if (wrapper) wrapper.style.display = 'none';
-  form.style.display = 'block';
-}
-
-async function handleHistorySubmit(e) {
+async function handleRatingSubmit(e) {
   e.preventDefault();
   const form = e.target;
-  const used = {};
-  document.querySelectorAll('#used-ingredients .ingredient').forEach(row => {
-    const name = row.dataset.name || row.querySelector('.ing-name').value.trim();
-    const qty = row.querySelector('.ing-qty').value.trim();
-    if (name) {
-      used[name] = qty;
-    }
-  });
+  const taste = parseInt(form.taste.value, 10);
+  const time = parseInt(form.time.value, 10);
+  if (!taste || !time) return;
   const entry = {
-    name: document.getElementById('history-name').value,
-    used_ingredients: used,
-    followed_recipe_exactly: document.getElementById('followed-exactly').checked,
-    comment: document.getElementById('history-comment').value.trim() || null,
-    rating: {
-      taste: parseInt(form.taste.value) || 0,
-      effort: parseInt(form.effort.value) || 0
-    },
-    favorite: form.favorite.checked
+    name: currentRecipeName,
+    used_ingredients: {},
+    followed_recipe_exactly: true,
+    comment: null,
+    rating: { taste, prep_time: time },
+    favorite: false
   };
   await fetch('/api/history', {
     method: 'POST',
@@ -1045,8 +1030,7 @@ async function handleHistorySubmit(e) {
     body: JSON.stringify(entry)
   });
   form.reset();
-  form.style.display = 'none';
-  await loadProducts();
+  document.getElementById('rating-modal').close();
   await loadRecipes();
   await loadHistory();
 }
