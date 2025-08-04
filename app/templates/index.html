@@ -126,6 +126,13 @@
                 <input type="hidden" name="name" id="history-name">
                 <div id="used-ingredients"></div>
                 <button type="button" id="add-ingredient" style="display:none;" class="btn btn-outline btn-primary btn-sm" data-i18n="add_ingredient_button">Dodaj składnik</button>
+                <div class="flex items-center gap-2">
+                    <span data-i18n="label_followed_recipe">Czy przygotowano według przepisu?</span>
+                    <input type="checkbox" id="followed-exactly" class="toggle" checked>
+                </div>
+                <div id="comment-wrapper" style="display:none;">
+                    <textarea id="history-comment" name="comment" class="textarea textarea-bordered w-full" data-i18n="comment_placeholder"></textarea>
+                </div>
                 <div class="flex gap-4">
                     <label><span data-i18n="label_taste">Smak:</span> <input type="number" name="taste" min="1" max="5" class="input input-bordered w-16"></label>
                     <label><span data-i18n="label_effort">Wysiłek:</span> <input type="number" name="effort" min="1" max="5" class="input input-bordered w-16"></label>
@@ -139,7 +146,7 @@
         </div>
 
         <div id="tab-history" class="tab-panel" style="display:none;">
-            <h1 class="text-2xl font-bold mb-4" data-i18n="heading_history">Historia</h1>
+            <h1 class="text-2xl font-bold mb-4" data-i18n="heading_history">Historia dań</h1>
             <ul id="history-list" class="list-disc pl-4"></ul>
         </div>
 

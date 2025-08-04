@@ -262,12 +262,19 @@ function sortProducts(list) {
     navigator.clipboard.writeText(lines.join('\n'));
   });
 
-  document.getElementById('history-form').addEventListener('submit', handleHistorySubmit);
-  document.getElementById('history-cancel').addEventListener('click', () => {
-    const form = document.getElementById('history-form');
-    form.style.display = 'none';
+document.getElementById('history-form').addEventListener('submit', handleHistorySubmit);
+document.getElementById('history-cancel').addEventListener('click', () => {
+  const form = document.getElementById('history-form');
+  form.style.display = 'none';
+});
+document.getElementById('add-ingredient').addEventListener('click', () => addIngredientRow());
+const followedToggle = document.getElementById('followed-exactly');
+const commentWrapper = document.getElementById('comment-wrapper');
+if (followedToggle && commentWrapper) {
+  followedToggle.addEventListener('change', () => {
+    commentWrapper.style.display = followedToggle.checked ? 'none' : 'block';
   });
-  document.getElementById('add-ingredient').addEventListener('click', () => addIngredientRow());
+}
   document.getElementById('view-toggle').addEventListener('click', () => {
     if (editMode) {
       editMode = false;
@@ -854,7 +861,17 @@ async function loadHistory() {
   data.forEach(h => {
     const li = document.createElement('li');
     const star = h.favorite ? ' ★' : '';
-    li.textContent = `${h.date} - ${h.name} (${t('label_taste')} ${h.rating.taste}, ${t('label_effort')} ${h.rating.effort})${star}`;
+    const followedText = h.followed_recipe_exactly ? t('yes') : t('no');
+    let text = `${h.date} - ${h.name} (${t('label_followed_recipe')} ${followedText}`;
+    if (!h.followed_recipe_exactly && h.comment) {
+      text += `, ${h.comment}`;
+    }
+    text += ')';
+    if (h.rating) {
+      text += ` (${t('label_taste')} ${h.rating.taste}, ${t('label_effort')} ${h.rating.effort})`;
+    }
+    text += star;
+    li.textContent = text;
     list.appendChild(li);
   });
 }
@@ -896,6 +913,12 @@ function showHistoryForm(recipe, allowExtra) {
     container.appendChild(div);
   });
   document.getElementById('add-ingredient').style.display = allowExtra ? 'inline' : 'none';
+  const toggle = document.getElementById('followed-exactly');
+  const comment = document.getElementById('history-comment');
+  const wrapper = document.getElementById('comment-wrapper');
+  if (toggle) toggle.checked = true;
+  if (comment) comment.value = '';
+  if (wrapper) wrapper.style.display = 'none';
   form.style.display = 'block';
 }
 
@@ -913,6 +936,8 @@ async function handleHistorySubmit(e) {
   const entry = {
     name: document.getElementById('history-name').value,
     used_ingredients: used,
+    followed_recipe_exactly: document.getElementById('followed-exactly').checked,
+    comment: document.getElementById('history-comment').value.trim() || null,
     rating: {
       taste: parseInt(form.taste.value) || 0,
       effort: parseInt(form.effort.value) || 0
