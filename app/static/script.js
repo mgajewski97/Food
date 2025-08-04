@@ -487,13 +487,14 @@ function renderProducts(data) {
   document.getElementById('select-header').style.display = editMode ? 'table-cell' : 'none';
   data.forEach(p => {
     const tr = document.createElement('tr');
-    tr.className = 'bg-white border-b hover:bg-gray-50';
+    tr.className =
+      'bg-white border-b hover:bg-base-200 transition-colors duration-300';
     if (p.low_stock) {
       tr.className += ` ${LOW_STOCK_CLASS}`;
     }
     if (editMode) {
       const selectTd = document.createElement('td');
-      selectTd.className = 'px-4 py-2';
+      selectTd.className = 'px-2 py-1 sm:px-4 sm:py-2';
       const cb = document.createElement('input');
       cb.type = 'checkbox';
       cb.className = 'row-select checkbox';
@@ -502,7 +503,7 @@ function renderProducts(data) {
       tr.appendChild(selectTd);
 
       const nameTd = document.createElement('td');
-      nameTd.className = 'px-4 py-2';
+      nameTd.className = 'px-2 py-1 sm:px-4 sm:py-2';
       const nameInput = document.createElement('input');
       nameInput.value = productName(p.name);
       nameInput.dataset.key = p.name;
@@ -511,7 +512,7 @@ function renderProducts(data) {
       tr.appendChild(nameTd);
 
       const qtyTd = document.createElement('td');
-      qtyTd.className = 'px-4 py-2 flex items-center';
+      qtyTd.className = 'px-2 py-1 sm:px-4 sm:py-2 flex items-center';
       const decBtn = document.createElement('button');
       decBtn.textContent = '−';
       decBtn.className = 'btn btn-outline btn-xs';
@@ -536,7 +537,7 @@ function renderProducts(data) {
       tr.appendChild(qtyTd);
 
       const unitTd = document.createElement('td');
-      unitTd.className = 'px-4 py-2';
+      unitTd.className = 'px-2 py-1 sm:px-4 sm:py-2';
       const unitInput = document.createElement('input');
       unitInput.value = unitName(p.unit);
       unitInput.dataset.key = p.unit;
@@ -545,7 +546,7 @@ function renderProducts(data) {
       tr.appendChild(unitTd);
 
       const catTd = document.createElement('td');
-      catTd.className = 'px-4 py-2';
+      catTd.className = 'px-2 py-1 sm:px-4 sm:py-2';
       const catSelect = document.createElement('select');
       catSelect.className = 'edit-category select select-bordered';
       Object.entries(CATEGORY_KEYS).forEach(([val, key]) => {
@@ -559,7 +560,7 @@ function renderProducts(data) {
       tr.appendChild(catTd);
 
       const storTd = document.createElement('td');
-      storTd.className = 'px-4 py-2';
+      storTd.className = 'px-2 py-1 sm:px-4 sm:py-2';
       const storSelect = document.createElement('select');
       storSelect.className = 'edit-storage select select-bordered';
       Object.entries(STORAGE_KEYS).forEach(([val, key]) => {
@@ -573,7 +574,7 @@ function renderProducts(data) {
       tr.appendChild(storTd);
 
       const statusTd = document.createElement('td');
-      statusTd.className = 'px-4 py-2 text-center';
+      statusTd.className = 'px-2 py-1 sm:px-4 sm:py-2 text-center';
       const status = getStatusIcon(p);
       if (status) {
         statusTd.innerHTML = status.html;
@@ -582,12 +583,12 @@ function renderProducts(data) {
       tr.appendChild(statusTd);
     } else {
       const nameTd = document.createElement('td');
-      nameTd.className = 'px-4 py-2';
+      nameTd.className = 'px-2 py-1 sm:px-4 sm:py-2';
       nameTd.textContent = productName(p.name);
       tr.appendChild(nameTd);
 
       const qtyTd = document.createElement('td');
-      qtyTd.className = 'px-4 py-2';
+      qtyTd.className = 'px-2 py-1 sm:px-4 sm:py-2';
       qtyTd.textContent = formatPackQuantity(p);
       if (p.pack_size) {
         qtyTd.title = t('pack_title');
@@ -595,22 +596,22 @@ function renderProducts(data) {
       tr.appendChild(qtyTd);
 
       const unitTd = document.createElement('td');
-      unitTd.className = 'px-4 py-2';
+      unitTd.className = 'px-2 py-1 sm:px-4 sm:py-2';
       unitTd.textContent = unitName(p.unit);
       tr.appendChild(unitTd);
 
       const catTd = document.createElement('td');
-      catTd.className = 'px-4 py-2';
+      catTd.className = 'px-2 py-1 sm:px-4 sm:py-2';
       catTd.textContent = categoryName(p.category);
       tr.appendChild(catTd);
 
       const storTd = document.createElement('td');
-      storTd.className = 'px-4 py-2';
+      storTd.className = 'px-2 py-1 sm:px-4 sm:py-2';
       storTd.textContent = storageName(p.storage);
       tr.appendChild(storTd);
 
       const statusTd = document.createElement('td');
-      statusTd.className = 'px-4 py-2 text-center';
+      statusTd.className = 'px-2 py-1 sm:px-4 sm:py-2 text-center';
       const status = getStatusIcon(p);
       if (status) {
         statusTd.innerHTML = status.html;
@@ -655,8 +656,11 @@ function renderProducts(data) {
     h3.textContent = `${STORAGE_ICONS[stor] || ''} ${storageName(stor)}`;
 
     const storToggle = document.createElement('button');
-    storToggle.className = 'text-xl cursor-pointer bg-transparent border-0 p-0';
-    storToggle.innerHTML = '<i class="fa-regular fa-caret-down"></i>';
+    storToggle.className =
+      'text-xl cursor-pointer bg-transparent border-0 p-0 transition-transform';
+    const storIcon = document.createElement('i');
+    storIcon.className = 'fa-regular fa-caret-down transition-transform';
+    storToggle.appendChild(storIcon);
     storToggle.id = `storage-toggle-${storIndex}`;
 
     storageHeader.appendChild(h3);
@@ -664,15 +668,23 @@ function renderProducts(data) {
     storageBlock.appendChild(storageHeader);
 
     const storageContent = document.createElement('div');
-    storageContent.className = 'space-y-4';
+    storageContent.className =
+      'space-y-2 overflow-hidden transition-all duration-300';
     storageBlock.appendChild(storageContent);
 
     let storOpen = true;
     const toggleStorage = () => {
       storOpen = !storOpen;
-      storageContent.classList.toggle('hidden', !storOpen);
-      storToggle.innerHTML = `<i class="fa-regular fa-caret-${storOpen ? 'down' : 'up'}"></i>`;
+      storToggle.title = storOpen ? t('collapse') : t('expand');
+      storIcon.classList.toggle('rotate-180', storOpen);
+      storageContent.style.maxHeight = storOpen
+        ? storageContent.scrollHeight + 'px'
+        : '0';
     };
+
+    storIcon.classList.add('rotate-180');
+    storToggle.title = t('collapse');
+
     storageHeader.addEventListener('click', e => {
       const isMobile = document.documentElement.getAttribute('data-layout') === 'mobile';
       if (isMobile || e.target.closest('button') === storToggle) {
@@ -688,18 +700,12 @@ function renderProducts(data) {
 
         const categoryBlock = document.createElement('div');
         categoryBlock.className =
-          'category-block collapse collapse-arrow bg-base-100 rounded-box border border-base-300 mt-4 mb-2';
+          'category-block border border-base-300 rounded mb-4';
         categoryBlock.id = `category-${storIndex}-${catIndex}`;
-
-        const catInput = document.createElement('input');
-        catInput.type = 'checkbox';
-        catInput.className = 'collapse-toggle peer hidden';
-        catInput.checked = true;
-        categoryBlock.appendChild(catInput);
 
         const catHeader = document.createElement('div');
         catHeader.className =
-          'collapse-title text-md font-medium flex justify-between items-center relative';
+          'flex items-center justify-between px-2 py-1 bg-base-100 rounded-t';
         const titleSpan = document.createElement('span');
         titleSpan.textContent = categoryName(cat);
         catHeader.appendChild(titleSpan);
@@ -707,22 +713,31 @@ function renderProducts(data) {
         const catBtn = document.createElement('button');
         catBtn.type = 'button';
         catBtn.className =
-          'hidden md:block absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 bg-transparent border-0 cursor-pointer p-0';
+          'text-lg bg-transparent border-0 p-0 md:cursor-pointer cursor-pointer transition-transform';
+        const catIcon = document.createElement('i');
+        catIcon.className = 'fa-regular fa-caret-down transition-transform';
+        catBtn.appendChild(catIcon);
         catBtn.title = t('collapse');
         catHeader.appendChild(catBtn);
 
         categoryBlock.appendChild(catHeader);
 
         const catContent = document.createElement('div');
-        catContent.className = 'collapse-content';
+        catContent.className =
+          'overflow-hidden transition-all duration-300 rounded-b';
 
         const table = document.createElement('table');
         table.className = 'table table-zebra w-full';
         const thead = document.createElement('thead');
         const headRow = document.createElement('tr');
-        [t('table_header_name'), t('table_header_quantity'), t('table_header_unit'), t('table_header_status'), t('grouped_table_delete_header')].forEach(text => {
+        [
+          t('table_header_name'),
+          t('table_header_quantity'),
+          t('table_header_unit'),
+          t('table_header_status')
+        ].forEach(text => {
           const th = document.createElement('th');
-          th.className = 'px-4 py-2';
+          th.className = 'px-2 py-1 sm:px-4 sm:py-2';
           th.textContent = text;
           headRow.appendChild(th);
         });
@@ -734,17 +749,17 @@ function renderProducts(data) {
           .sort((a, b) => productName(a.name).localeCompare(productName(b.name)))
           .forEach(p => {
             const tr = document.createElement('tr');
-            tr.className = 'hover';
+            tr.className = 'hover transition-colors duration-300 hover:bg-base-200';
             if (p.low_stock) {
               tr.classList.add(...LOW_STOCK_CLASS.split(' '));
             }
             const nameTd = document.createElement('td');
-            nameTd.className = 'px-4 py-2';
+            nameTd.className = 'px-2 py-1 sm:px-4 sm:py-2';
             nameTd.textContent = productName(p.name);
             tr.appendChild(nameTd);
 
             const qtyTd = document.createElement('td');
-            qtyTd.className = 'px-4 py-2';
+            qtyTd.className = 'px-2 py-1 sm:px-4 sm:py-2';
             qtyTd.textContent = formatPackQuantity(p);
             if (p.pack_size) {
               qtyTd.title = t('pack_title');
@@ -752,12 +767,12 @@ function renderProducts(data) {
             tr.appendChild(qtyTd);
 
             const unitTd = document.createElement('td');
-            unitTd.className = 'px-4 py-2';
+            unitTd.className = 'px-2 py-1 sm:px-4 sm:py-2';
             unitTd.textContent = unitName(p.unit);
             tr.appendChild(unitTd);
 
             const statusTd = document.createElement('td');
-            statusTd.className = 'px-4 py-2 text-center';
+            statusTd.className = 'px-2 py-1 sm:px-4 sm:py-2 text-center';
             const status = getStatusIcon(p);
             if (status) {
               statusTd.innerHTML = status.html;
@@ -772,36 +787,34 @@ function renderProducts(data) {
         categoryBlock.appendChild(catContent);
         storageContent.appendChild(categoryBlock);
 
-        const updateTooltip = () => {
-          catBtn.title = catInput.checked ? t('collapse') : t('expand');
+        catContent.style.maxHeight = catContent.scrollHeight + 'px';
+
+        let catOpen = true;
+        const toggleCat = () => {
+          catOpen = !catOpen;
+          catBtn.title = catOpen ? t('collapse') : t('expand');
+          catIcon.classList.toggle('rotate-180', catOpen);
+          catContent.style.maxHeight = catOpen
+            ? catContent.scrollHeight + 'px'
+            : '0';
         };
 
-        const closeOthers = () => {
-          if (catInput.checked) {
-            storageContent
-              .querySelectorAll('.category-block .collapse-toggle')
-              .forEach(inp => {
-                if (inp !== catInput) inp.checked = false;
-              });
-          }
-          updateTooltip();
-        };
+        catIcon.classList.add('rotate-180');
 
         catBtn.addEventListener('click', e => {
           e.stopPropagation();
-          catInput.checked = !catInput.checked;
-          closeOthers();
+          toggleCat();
         });
 
         catHeader.addEventListener('click', () => {
           const isMobile =
             document.documentElement.getAttribute('data-layout') === 'mobile';
           if (isMobile) {
-            catInput.checked = !catInput.checked;
-            closeOthers();
+            toggleCat();
           }
         });
       });
+    storageContent.style.maxHeight = storageContent.scrollHeight + 'px';
     container.appendChild(storageBlock);
   });
 }
