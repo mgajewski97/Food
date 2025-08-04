@@ -259,17 +259,31 @@ function showLowStockToast() {
   if (!container) return;
   container.innerHTML = '';
   const alert = document.createElement('div');
-  alert.className = 'alert alert-warning';
+  alert.className = 'alert alert-warning relative';
   const span = document.createElement('span');
   span.textContent = t('toast_low_stock');
   const btn = document.createElement('button');
   btn.className = 'btn btn-sm ml-4';
-  btn.textContent = t('toast_hide');
+  btn.dataset.action = 'shopping';
+  btn.textContent = t('toast_go_shopping');
   btn.addEventListener('click', () => {
+    activateTab('tab-shopping');
+    localStorage.setItem('activeTab', 'tab-shopping');
+    renderSuggestions();
+    renderShoppingList();
+    container.innerHTML = '';
+  });
+  const close = document.createElement('button');
+  close.className = 'absolute top-1 right-1 p-1 hover:opacity-70';
+  close.dataset.action = 'close';
+  close.setAttribute('title', t('toast_close'));
+  close.innerHTML = '<i class="fa-regular fa-xmark"></i>';
+  close.addEventListener('click', () => {
     container.innerHTML = '';
   });
   alert.appendChild(span);
   alert.appendChild(btn);
+  alert.appendChild(close);
   container.appendChild(alert);
 }
 
@@ -282,8 +296,10 @@ function checkLowStockToast() {
       showLowStockToast();
     } else if (container && container.childElementCount) {
       container.querySelector('span').textContent = t('toast_low_stock');
-      const btn = container.querySelector('button');
-      if (btn) btn.textContent = t('toast_hide');
+      const btn = container.querySelector('button[data-action="shopping"]');
+      if (btn) btn.textContent = t('toast_go_shopping');
+      const close = container.querySelector('button[data-action="close"]');
+      if (close) close.setAttribute('title', t('toast_close'));
     }
   }
 }
@@ -334,12 +350,22 @@ function checkLowStockToast() {
       });
     }
 
-  loadProducts();
+    const initialTab = localStorage.getItem('activeTab') || 'tab-products';
+    activateTab(initialTab);
+    await loadProducts();
+    if (initialTab === 'tab-recipes') {
+      loadRecipes();
+    } else if (initialTab === 'tab-history') {
+      loadHistory();
+    } else if (initialTab === 'tab-settings') {
+      renderUnitsAdmin();
+    }
 
   document.querySelectorAll('[data-tab-target]').forEach(tab => {
     tab.addEventListener('click', () => {
       const targetId = tab.dataset.tabTarget;
       activateTab(targetId);
+      localStorage.setItem('activeTab', targetId);
       if (targetId === 'tab-products') {
         loadProducts();
       } else if (targetId === 'tab-recipes') {
