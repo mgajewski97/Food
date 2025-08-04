@@ -1067,20 +1067,29 @@ function setupStarRatings(form) {
   groups.forEach(group => {
     group.dataset.current = '0';
     const inputs = group.querySelectorAll('input');
+    const update = () => {
+      const val = parseInt(group.dataset.current, 10);
+      inputs.forEach((input, idx) => {
+        const active = idx < val;
+        input.classList.toggle('bg-orange-400', active);
+        input.classList.toggle('bg-base-300', !active);
+      });
+    };
+    update();
     inputs.forEach(input => {
-      input.addEventListener('click', () => {
+      input.addEventListener('click', e => {
+        e.preventDefault();
         if (group.dataset.current === input.value) {
-          inputs.forEach(i => (i.checked = false));
           group.dataset.current = '0';
         } else {
           group.dataset.current = input.value;
         }
+        update();
       });
     });
-  });
-  form.addEventListener('reset', () => {
-    groups.forEach(g => {
-      g.dataset.current = '0';
+    form.addEventListener('reset', () => {
+      group.dataset.current = '0';
+      update();
     });
   });
 }
@@ -1088,8 +1097,10 @@ function setupStarRatings(form) {
 async function handleRatingSubmit(e) {
   e.preventDefault();
   const form = e.target;
-  const taste = parseInt(form.taste.value, 10);
-  const time = parseInt(form.time.value, 10);
+  const tasteGroup = form.querySelector('input[name="taste"]').closest('.rating');
+  const timeGroup = form.querySelector('input[name="time"]').closest('.rating');
+  const taste = Number(tasteGroup?.dataset.current || 0);
+  const time = Number(timeGroup?.dataset.current || 0);
   const comment = form.comment ? form.comment.value.trim() : null;
   const entry = {
     name: currentRecipeName,
@@ -1097,8 +1108,8 @@ async function handleRatingSubmit(e) {
     followed_recipe_exactly: true,
     comment: comment || null,
     rating: {
-      taste: Number.isNaN(taste) ? 0 : taste,
-      prep_time: Number.isNaN(time) ? 0 : time
+      taste: taste,
+      prep_time: time
     },
     favorite: false
   };
@@ -1144,8 +1155,10 @@ function openCookingMode(recipe) {
 async function handleCookingSubmit(e) {
   e.preventDefault();
   const form = e.target;
-  const taste = parseInt(form.taste.value, 10);
-  const time = parseInt(form.time.value, 10);
+  const tasteGroup = form.querySelector('input[name="taste"]').closest('.rating');
+  const timeGroup = form.querySelector('input[name="time"]').closest('.rating');
+  const taste = Number(tasteGroup?.dataset.current || 0);
+  const time = Number(timeGroup?.dataset.current || 0);
   const comment = form.comment ? form.comment.value.trim() : null;
   const entry = {
     name: cookingState.recipe.name,
@@ -1153,8 +1166,8 @@ async function handleCookingSubmit(e) {
     followed_recipe_exactly: true,
     comment: comment || null,
     rating: {
-      taste: Number.isNaN(taste) ? 0 : taste,
-      prep_time: Number.isNaN(time) ? 0 : time
+      taste: taste,
+      prep_time: time
     },
     favorite: false
   };
