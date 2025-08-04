@@ -13,15 +13,18 @@ html[data-layout="desktop"] .main-container {
 }
 
 .corner-icons {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
+  position: sticky;
+  top: 0;
+  right: 0;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
   padding: 0.5rem;
+  z-index: 10;
 }
 
 html[data-layout="mobile"] .corner-icons {
-  top: 0.5rem;
-  right: 0.5rem;
+  top: 0;
 }
 
 html[data-layout="mobile"] #controls {

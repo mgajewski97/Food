@@ -12,6 +12,8 @@
   "state_filter_all": "Wszystkie",
   "change_view_toggle_grouped": "Widok z podziałem",
   "change_view_toggle_flat": "Płaska lista",
+  "theme_light": "Tryb jasny",
+  "theme_dark": "Tryb ciemny",
   "edit_mode_button_on": "Edytuj",
   "edit_mode_button_off": "Zakończ edycję",
   "save_button": "Zapisz",
