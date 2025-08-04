@@ -18,6 +18,29 @@ let uiTranslations = { pl: {}, en: {} };
 let translations = { products: {} };
 let units = {};
 
+const html = document.documentElement;
+const layoutIcon = document.getElementById('layout-icon');
+let state = { displayMode: html.getAttribute('data-layout') || 'desktop' };
+
+function setDisplayMode(mode) {
+  state.displayMode = mode;
+  html.setAttribute('data-layout', mode);
+  if (layoutIcon) {
+    layoutIcon.className = mode === 'desktop' ? 'fa-regular fa-mobile' : 'fa-solid fa-desktop';
+  }
+}
+
+function detectInitialDisplayMode() {
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
+  if (isMobile && state.displayMode === 'desktop') {
+    setDisplayMode('mobile');
+  } else if (!isMobile && state.displayMode === 'mobile') {
+    setDisplayMode('desktop');
+  }
+}
+
+detectInitialDisplayMode();
+
 async function loadTranslations() {
   try {
     const [plRes, enRes] = await Promise.all([
@@ -280,13 +303,6 @@ function checkLowStockToast() {
         installBtn.style.display = 'none';
       });
     }
-  const html = document.documentElement;
-  const icon = document.getElementById('layout-icon');
-  if (window.innerWidth < 768) {
-    html.setAttribute('data-layout', 'mobile');
-    if (icon) icon.className = 'fa-solid fa-desktop';
-  }
-
   const langBtn = document.getElementById('lang-toggle');
     if (langBtn) {
       langBtn.textContent = currentLang.toUpperCase();
@@ -1244,14 +1260,10 @@ if (themeToggle && themeIcon) {
 
 // Layout toggle
 const layoutToggle = document.getElementById('layout-toggle');
-const layoutIcon = document.getElementById('layout-icon');
 if (layoutToggle && layoutIcon) {
   layoutToggle.addEventListener('click', () => {
-    const html = document.documentElement;
-    const current = html.getAttribute('data-layout') || 'desktop';
-    const next = current === 'desktop' ? 'mobile' : 'desktop';
-    html.setAttribute('data-layout', next);
-    layoutIcon.className = next === 'desktop' ? 'fa-regular fa-mobile' : 'fa-solid fa-desktop';
+    const next = state.displayMode === 'desktop' ? 'mobile' : 'desktop';
+    setDisplayMode(next);
   });
 }
 
