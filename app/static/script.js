@@ -11,6 +11,8 @@ let pendingRemoveIndex = null;
 
 let uiTranslations = { pl: {}, en: {} };
 let translations = { products: {}, units: {} };
+let recipesCache = [];
+let cookSession = null;
 
 async function loadTranslations() {
   try {
@@ -268,6 +270,14 @@ function sortProducts(list) {
     form.style.display = 'none';
   });
   document.getElementById('add-ingredient').addEventListener('click', () => addIngredientRow());
+  document.getElementById('cook-next').addEventListener('click', nextCookStep);
+  document.getElementById('cook-save').addEventListener('click', saveCookResult);
+  const cookOverlay = document.getElementById('cook-overlay');
+  let startX = 0;
+  cookOverlay.addEventListener('touchstart', e => { startX = e.touches[0].clientX; });
+  cookOverlay.addEventListener('touchend', e => {
+    if (startX - e.changedTouches[0].clientX > 50) nextCookStep();
+  });
   document.getElementById('view-toggle').addEventListener('click', () => {
     if (editMode) {
       editMode = false;
@@ -816,21 +826,31 @@ function updateDeleteButton() {
 async function loadRecipes() {
   const res = await fetch('/api/recipes');
   const data = await res.json();
+  recipesCache = data;
   const list = document.getElementById('recipe-list');
   list.innerHTML = '';
   data.forEach(r => {
     const li = document.createElement('li');
     li.textContent = `${r.name} (${r.ingredients.join(', ')})`;
+    const cookBtn = document.createElement('button');
+    cookBtn.textContent = t('cook_mode_button');
+    cookBtn.addEventListener('click', () => startCookMode(r));
     const doneBtn = document.createElement('button');
     doneBtn.textContent = t('recipe_done_button');
     doneBtn.addEventListener('click', () => showHistoryForm(r, false));
     const modBtn = document.createElement('button');
     modBtn.textContent = t('recipe_done_mod_button');
     modBtn.addEventListener('click', () => showHistoryForm(r, true));
+    li.appendChild(cookBtn);
     li.appendChild(doneBtn);
     li.appendChild(modBtn);
     list.appendChild(li);
   });
+  const progress = JSON.parse(localStorage.getItem('cookProgress') || 'null');
+  if (progress) {
+    const recipe = recipesCache.find(r => r.name === progress.name);
+    if (recipe) startCookMode(recipe, progress.step);
+  }
 }
 
 async function loadHistory() {
@@ -841,9 +861,68 @@ async function loadHistory() {
   data.forEach(h => {
     const li = document.createElement('li');
     const star = h.favorite ? ' ★' : '';
-    li.textContent = `${h.date} - ${h.name} (${t('label_taste')} ${h.rating.taste}, ${t('label_effort')} ${h.rating.effort})${star}`;
+    li.textContent = `${h.date} - ${h.name} (${t('label_taste')} ${h.rating.taste}, ${t('label_time')} ${h.rating.time})${star}`;
     list.appendChild(li);
   });
+}
+
+function startCookMode(recipe, step = 0) {
+  cookSession = { recipe, step };
+  localStorage.setItem('cookProgress', JSON.stringify({ name: recipe.name, step }));
+  document.getElementById('cook-overlay').classList.remove('hidden');
+  updateCookStep();
+}
+
+function updateCookStep() {
+  if (!cookSession) return;
+  const stepEl = document.getElementById('cook-step');
+  const nextBtn = document.getElementById('cook-next');
+  const finishDiv = document.getElementById('cook-finish');
+  if (cookSession.step < cookSession.recipe.steps.length) {
+    stepEl.textContent = cookSession.recipe.steps[cookSession.step];
+    nextBtn.classList.remove('hidden');
+    finishDiv.classList.add('hidden');
+  } else {
+    stepEl.textContent = cookSession.recipe.name;
+    nextBtn.classList.add('hidden');
+    finishDiv.classList.remove('hidden');
+  }
+}
+
+function nextCookStep() {
+  if (!cookSession) return;
+  cookSession.step += 1;
+  localStorage.setItem('cookProgress', JSON.stringify({ name: cookSession.recipe.name, step: cookSession.step }));
+  updateCookStep();
+}
+
+function saveCookResult() {
+  if (!cookSession) return;
+  const entry = {
+    name: cookSession.recipe.name,
+    used_ingredients: cookSession.recipe.ingredients.reduce((acc, ing) => { acc[ing] = ''; return acc; }, {}),
+    notes: document.getElementById('cook-notes').value,
+    rating: {
+      taste: parseInt(document.getElementById('cook-taste').value) || 0,
+      time: parseInt(document.getElementById('cook-time').value) || 0
+    }
+  };
+  fetch('/api/history', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(entry)
+  }).then(() => {
+    closeCookMode();
+    loadProducts();
+    loadRecipes();
+    loadHistory();
+  });
+}
+
+function closeCookMode() {
+  document.getElementById('cook-overlay').classList.add('hidden');
+  cookSession = null;
+  localStorage.removeItem('cookProgress');
 }
 
 function addIngredientRow(name = '', qty = '') {
@@ -902,8 +981,9 @@ async function handleHistorySubmit(e) {
     used_ingredients: used,
     rating: {
       taste: parseInt(form.taste.value) || 0,
-      effort: parseInt(form.effort.value) || 0
+      time: parseInt(form.time.value) || 0
     },
+    notes: form.notes.value,
     favorite: form.favorite.checked
   };
   await fetch('/api/history', {

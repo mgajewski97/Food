@@ -126,9 +126,10 @@
                 <input type="hidden" name="name" id="history-name">
                 <div id="used-ingredients"></div>
                 <button type="button" id="add-ingredient" style="display:none;" class="btn btn-outline btn-primary btn-sm" data-i18n="add_ingredient_button">Dodaj składnik</button>
-                <div class="flex gap-4">
-                    <label><span data-i18n="label_taste">Smak:</span> <input type="number" name="taste" min="1" max="5" class="input input-bordered w-16"></label>
-                    <label><span data-i18n="label_effort">Wysiłek:</span> <input type="number" name="effort" min="1" max="5" class="input input-bordered w-16"></label>
+                <div class="flex flex-col gap-2">
+                    <label class="flex items-center gap-2"><span data-i18n="label_taste">Smak:</span> <input type="number" name="taste" min="1" max="5" class="input input-bordered w-16"></label>
+                    <label class="flex items-center gap-2"><span data-i18n="label_time">Czas:</span> <input type="number" name="time" min="1" max="5" class="input input-bordered w-16"></label>
+                    <label class="flex flex-col"><span data-i18n="label_notes">Notatki:</span> <textarea name="notes" class="textarea textarea-bordered"></textarea></label>
                 </div>
                 <label class="flex items-center gap-2"><input type="checkbox" name="favorite" class="checkbox"> <span data-i18n="checkbox_favorite_label">Ulubione</span></label>
                 <div class="flex gap-4">
@@ -220,6 +221,18 @@
         </div>
 
     </div>
+
+    <div id="cook-overlay" class="fixed inset-0 bg-base-100 hidden flex flex-col items-center justify-center p-4 text-center gap-4">
+        <div id="cook-step" class="text-xl"></div>
+        <button id="cook-next" class="btn btn-primary" data-i18n="next_step_button">Dalej</button>
+        <div id="cook-finish" class="hidden w-full max-w-md space-y-4">
+            <textarea id="cook-notes" class="textarea textarea-bordered w-full" data-i18n="notes_placeholder"></textarea>
+            <label class="flex items-center justify-between"><span data-i18n="label_taste">Smak:</span> <input id="cook-taste" type="number" min="1" max="5" class="input input-bordered w-16"></label>
+            <label class="flex items-center justify-between"><span data-i18n="label_time">Czas:</span> <input id="cook-time" type="number" min="1" max="5" class="input input-bordered w-16"></label>
+            <button id="cook-save" class="btn btn-success w-full" data-i18n="recipe_done_button">Zrobione</button>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.5/dist/tesseract.min.js"></script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
