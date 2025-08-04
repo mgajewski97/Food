@@ -1063,27 +1063,42 @@ function setupStarRatings(form) {
   const groups = form.querySelectorAll('.rating');
   groups.forEach(group => {
     group.dataset.current = '0';
-    const inputs = group.querySelectorAll('input');
+    const stars = group.querySelectorAll('.star');
     const update = () => {
       const val = parseInt(group.dataset.current, 10);
-      inputs.forEach((input, idx) => {
+      stars.forEach((star, idx) => {
         const active = idx < val;
-        input.classList.toggle('bg-orange-400', active);
-        input.classList.toggle('bg-base-300', !active);
+        star.classList.toggle('fa-solid', active);
+        star.classList.toggle('fa-regular', !active);
+        star.classList.toggle('text-yellow-400', active);
+        star.classList.toggle('text-base-300', !active);
       });
     };
     update();
-    inputs.forEach(input => {
-      input.addEventListener('click', e => {
-        e.preventDefault();
-        if (group.dataset.current === input.value) {
+    stars.forEach((star, idx) => {
+      const val = idx + 1;
+      star.addEventListener('mouseenter', () => {
+        stars.forEach((s, i) => {
+          const active = i < val;
+          s.classList.toggle('fa-solid', active);
+          s.classList.toggle('fa-regular', !active);
+          s.classList.toggle('text-yellow-400', active);
+          s.classList.toggle('text-base-300', !active);
+        });
+      });
+      star.addEventListener('mouseleave', () => {
+        update();
+      });
+      star.addEventListener('click', () => {
+        if (group.dataset.current === String(val)) {
           group.dataset.current = '0';
         } else {
-          group.dataset.current = input.value;
+          group.dataset.current = String(val);
         }
         update();
       });
     });
+    group.addEventListener('mouseleave', () => update());
     form.addEventListener('reset', () => {
       group.dataset.current = '0';
       update();
@@ -1094,8 +1109,8 @@ function setupStarRatings(form) {
 async function handleRatingSubmit(e) {
   e.preventDefault();
   const form = e.target;
-  const tasteGroup = form.querySelector('input[name="taste"]').closest('.rating');
-  const timeGroup = form.querySelector('input[name="time"]').closest('.rating');
+  const tasteGroup = form.querySelector('.rating[data-name="taste"]');
+  const timeGroup = form.querySelector('.rating[data-name="time"]');
   const taste = Number(tasteGroup?.dataset.current || 0);
   const time = Number(timeGroup?.dataset.current || 0);
   const comment = form.comment ? form.comment.value.trim() : null;
@@ -1152,8 +1167,8 @@ function openCookingMode(recipe) {
 async function handleCookingSubmit(e) {
   e.preventDefault();
   const form = e.target;
-  const tasteGroup = form.querySelector('input[name="taste"]').closest('.rating');
-  const timeGroup = form.querySelector('input[name="time"]').closest('.rating');
+  const tasteGroup = form.querySelector('.rating[data-name="taste"]');
+  const timeGroup = form.querySelector('.rating[data-name="time"]');
   const taste = Number(tasteGroup?.dataset.current || 0);
   const time = Number(timeGroup?.dataset.current || 0);
   const comment = form.comment ? form.comment.value.trim() : null;
