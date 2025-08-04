@@ -299,7 +299,7 @@ function showLowStockToast() {
     container.innerHTML = '';
   });
   const close = document.createElement('button');
-  close.className = 'absolute top-1 right-1 p-1 hover:opacity-70';
+  close.className = 'btn btn-xs btn-circle btn-ghost absolute top-1 right-1';
   close.dataset.action = 'close';
   close.setAttribute('title', t('toast_close'));
   close.innerHTML = '<i class="fa-regular fa-xmark"></i>';
