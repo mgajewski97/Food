@@ -844,6 +844,14 @@ function renderProducts(data) {
       toggleStorage();
     });
 
+    storageHeader.addEventListener('click', () => {
+      const isMobile =
+        document.documentElement.getAttribute('data-layout') === 'mobile';
+      if (isMobile) {
+        toggleStorage();
+      }
+    });
+
     const categories = storages[stor];
     Object.keys(categories)
       .sort((a, b) => categoryName(a).localeCompare(categoryName(b)))
