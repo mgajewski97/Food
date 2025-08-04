@@ -770,8 +770,7 @@ function renderProducts(data) {
     storageBlock.id = `storage-${storIndex}`;
 
     const storageHeader = document.createElement('div');
-    storageHeader.className =
-      'flex justify-between items-center mb-4 rounded px-2 cursor-pointer md:cursor-default hover:bg-neutral/20 md:hover:bg-transparent';
+    storageHeader.className = 'mb-4 rounded px-2';
     storageHeader.id = `storage-header-${storIndex}`;
 
     const h3 = document.createElement('h3');
@@ -781,7 +780,8 @@ function renderProducts(data) {
     h3.appendChild(nameSpan);
 
     const storToggle = document.createElement('button');
-    storToggle.className = 'text-xl cursor-pointer bg-transparent border-0 p-0 transition-transform';
+    storToggle.type = 'button';
+    storToggle.className = 'ml-2 text-xl inline-flex items-center cursor-pointer bg-transparent border-0 p-0';
     const storIcon = document.createElement('i');
     storIcon.className = 'fa-regular fa-caret-up transition-transform';
     storToggle.appendChild(storIcon);
@@ -798,7 +798,9 @@ function renderProducts(data) {
     let storOpen = true;
     const toggleStorage = () => {
       storOpen = !storOpen;
-      storToggle.title = storOpen ? t('collapse') : t('expand');
+      const title = storOpen ? t('collapse') : t('expand');
+      storToggle.title = title;
+      storToggle.setAttribute('aria-label', title);
       storIcon.classList.add('rotate-180');
       storIcon.addEventListener(
         'transitionend',
@@ -814,18 +816,13 @@ function renderProducts(data) {
         : '0';
     };
 
-    storToggle.title = t('collapse');
+    const initialTitle = t('collapse');
+    storToggle.title = initialTitle;
+    storToggle.setAttribute('aria-label', initialTitle);
 
     storToggle.addEventListener('click', e => {
       e.stopPropagation();
       toggleStorage();
-    });
-
-    storageHeader.addEventListener('click', () => {
-      const isMobile = document.documentElement.getAttribute('data-layout') === 'mobile';
-      if (isMobile) {
-        toggleStorage();
-      }
     });
 
     const categories = storages[stor];
