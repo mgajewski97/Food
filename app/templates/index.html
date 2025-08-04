@@ -23,7 +23,7 @@
     <button id="install-btn" class="text-xl p-2 bg-transparent border-0" style="display:none;"><i class="fa-solid fa-download"></i></button>
 </div>
 <div class="max-w-screen-lg mx-auto px-4 py-6 main-container">
-    <div class="tabs tabs-bordered flex-nowrap overflow-x-auto whitespace-nowrap mb-6">
+    <div class="tabs tabs-bordered flex-nowrap overflow-x-auto whitespace-nowrap mb-6 desktop-nav">
         <a class="tab tab-active font-bold" data-tab-target="tab-products" data-i18n="tab_products">Produkty</a>
         <a class="tab" data-tab-target="tab-recipes" data-i18n="tab_recipes">Przepisy</a>
         <a class="tab" data-tab-target="tab-history" data-i18n="tab_history">Historia</a>
@@ -307,6 +307,24 @@
         </div>
 
     </div>
+    <nav class="mobile-nav bottom-0 fixed w-full z-50 bg-base-100 border-t border-base-300 flex">
+        <a class="tab tab-active font-bold flex flex-col items-center justify-center flex-1 py-3 px-2" data-tab-target="tab-products">
+            <i class="fa-solid fa-box text-xl"></i>
+            <span class="text-xs" data-i18n="tab_products">Produkty</span>
+        </a>
+        <a class="tab flex flex-col items-center justify-center flex-1 py-3 px-2" data-tab-target="tab-recipes">
+            <i class="fa-solid fa-utensils text-xl"></i>
+            <span class="text-xs" data-i18n="tab_recipes">Przepisy</span>
+        </a>
+        <a class="tab flex flex-col items-center justify-center flex-1 py-3 px-2" data-tab-target="tab-history">
+            <i class="fa-solid fa-clock-rotate-left text-xl"></i>
+            <span class="text-xs" data-i18n="tab_history">Historia</span>
+        </a>
+        <a class="tab flex flex-col items-center justify-center flex-1 py-3 px-2" data-tab-target="tab-shopping">
+            <i class="fa-solid fa-cart-shopping text-xl"></i>
+            <span class="text-xs" data-i18n="tab_shopping">Lista zakupów</span>
+        </a>
+    </nav>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.5/dist/tesseract.min.js"></script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>

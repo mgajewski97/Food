@@ -84,6 +84,20 @@ html[data-layout="mobile"] button {
   margin-bottom: 0;
 }
 
+/* Navigation positioning for mobile view */
+.mobile-nav {
+  display: none;
+}
+html[data-layout="mobile"] .desktop-nav {
+  display: none;
+}
+html[data-layout="mobile"] .mobile-nav {
+  display: flex;
+}
+html[data-layout="mobile"] body {
+  padding-bottom: 4.5rem;
+}
+
 /* Remove number input arrows */
 .no-spinner::-webkit-outer-spin-button,
 .no-spinner::-webkit-inner-spin-button {
