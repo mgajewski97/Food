@@ -609,10 +609,12 @@ function checkLowStockToast() {
   const manualInc = document.getElementById('manual-inc');
   if (manualDec && manualInc && manualQty) {
     manualDec.addEventListener('click', () => {
-      manualQty.value = Math.max(1, (parseInt(manualQty.value) || 1) - 1);
+      const current = parseInt(manualQty.textContent) || 1;
+      manualQty.textContent = Math.max(1, current - 1);
     });
     manualInc.addEventListener('click', () => {
-      manualQty.value = (parseInt(manualQty.value) || 1) + 1;
+      const current = parseInt(manualQty.textContent) || 1;
+      manualQty.textContent = current + 1;
     });
   }
   const manualAddBtn = document.getElementById('manual-add-btn');
@@ -1371,15 +1373,15 @@ function addToShoppingList(name, quantity = 1) {
 
 function handleManualAdd() {
   const nameInput = document.getElementById('manual-name');
-  const qtyInput = document.getElementById('manual-qty');
+  const qtyDisplay = document.getElementById('manual-qty');
   let name = nameInput.value.trim();
-  const qty = parseInt(qtyInput.value) || 1;
+  const qty = parseInt(qtyDisplay.textContent) || 1;
   if (!name) return;
   const opt = Array.from(document.querySelectorAll('#product-datalist option')).find(o => o.value.toLowerCase() === name.toLowerCase());
   if (opt) name = opt.dataset.key;
   addToShoppingList(name, qty);
   nameInput.value = '';
-  qtyInput.value = '1';
+  qtyDisplay.textContent = '1';
   renderSuggestions();
   renderShoppingList();
 }
@@ -1409,7 +1411,7 @@ function renderSuggestions() {
     qtyInput.type = 'number';
     qtyInput.min = '1';
     qtyInput.value = '1';
-    qtyInput.className = 'input input-bordered w-16 text-center mx-2 no-spinner';
+    qtyInput.className = 'input input-bordered w-16 text-center mx-2';
     const inc = document.createElement('button');
     inc.type = 'button';
     inc.textContent = '+';
@@ -1470,44 +1472,33 @@ function renderShoppingList() {
 
     const qtyTd = document.createElement('td');
     const qtyWrap = document.createElement('div');
-    qtyWrap.className = 'flex items-center justify-center';
+    qtyWrap.className = 'flex items-center justify-center gap-2 mx-2';
     const dec = document.createElement('button');
     dec.type = 'button';
-    dec.textContent = '−';
-    dec.className = 'btn btn-outline btn-xs';
+    dec.innerHTML = '<i class="fa-solid fa-minus"></i>';
+    dec.className = 'text-xl';
     dec.disabled = item.inCart;
-    const qtyInput = document.createElement('input');
-    qtyInput.type = 'number';
-    qtyInput.min = '1';
-    qtyInput.value = item.quantity;
-    qtyInput.className = 'input input-bordered w-16 text-center mx-2 no-spinner';
-    qtyInput.disabled = item.inCart;
+    const qtyDisplay = document.createElement('span');
+    qtyDisplay.textContent = item.quantity;
+    qtyDisplay.className = 'w-8 text-center';
     const inc = document.createElement('button');
     inc.type = 'button';
-    inc.textContent = '+';
-    inc.className = 'btn btn-outline btn-xs';
+    inc.innerHTML = '<i class="fa-solid fa-plus"></i>';
+    inc.className = 'text-xl';
     inc.disabled = item.inCart;
     dec.addEventListener('click', () => {
-      const v = parseInt(qtyInput.value) || 1;
-      const newVal = Math.max(1, v - 1);
-      qtyInput.value = newVal;
+      const newVal = Math.max(1, item.quantity - 1);
       item.quantity = newVal;
+      qtyDisplay.textContent = newVal;
       saveShoppingList();
     });
     inc.addEventListener('click', () => {
-      const v = parseInt(qtyInput.value) || 1;
-      const newVal = v + 1;
-      qtyInput.value = newVal;
+      const newVal = item.quantity + 1;
       item.quantity = newVal;
+      qtyDisplay.textContent = newVal;
       saveShoppingList();
     });
-    qtyInput.addEventListener('change', () => {
-      const v = Math.max(1, parseInt(qtyInput.value) || 1);
-      qtyInput.value = v;
-      item.quantity = v;
-      saveShoppingList();
-    });
-    qtyWrap.append(dec, qtyInput, inc);
+    qtyWrap.append(dec, qtyDisplay, inc);
     qtyTd.appendChild(qtyWrap);
     tr.appendChild(qtyTd);
 
