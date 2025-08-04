@@ -1475,6 +1475,7 @@ function renderShoppingList() {
   });
   shoppingList.forEach((item, idx) => {
     const tr = document.createElement('tr');
+    tr.className = 'shopping-row';
     if (item.inCart) tr.classList.add('opacity-50', 'italic');
 
     const nameTd = document.createElement('td');
@@ -1514,13 +1515,9 @@ function renderShoppingList() {
     qtyTd.appendChild(qtyWrap);
     tr.appendChild(qtyTd);
 
-    const ownedTd = document.createElement('td');
-    const product = (window.currentProducts || []).find(p => p.name === item.name && p.quantity > 0);
-    ownedTd.textContent = product ? `${formatQuantity(product)} ${t('owned')}` : '';
-    tr.appendChild(ownedTd);
+    const actionsTd = document.createElement('td');
+    actionsTd.className = 'flex items-center justify-end gap-2';
 
-    const cartTd = document.createElement('td');
-    cartTd.className = 'text-center';
     const cartBtn = document.createElement('button');
     cartBtn.type = 'button';
     cartBtn.innerHTML = '<i class="fa-solid fa-cart-shopping"></i>';
@@ -1536,23 +1533,21 @@ function renderShoppingList() {
       saveShoppingList();
       renderShoppingList();
     });
-    cartTd.appendChild(cartBtn);
-    tr.appendChild(cartTd);
+    actionsTd.appendChild(cartBtn);
 
-    const removeTd = document.createElement('td');
-    removeTd.className = 'text-center';
     const removeBtn = document.createElement('button');
     removeBtn.type = 'button';
     removeBtn.className = 'text-error touch-btn';
-    removeBtn.innerHTML = '<i class="fa-regular fa-circle-minus"></i>';
+    removeBtn.innerHTML = '<i class="fa-regular fa-trash-can"></i>';
     removeBtn.setAttribute('aria-label', t('remove'));
     removeBtn.addEventListener('click', () => {
       pendingRemoveIndex = idx;
       const modal = document.getElementById('shopping-delete-modal');
       if (modal) modal.showModal();
     });
-    removeTd.appendChild(removeBtn);
-    tr.appendChild(removeTd);
+    actionsTd.appendChild(removeBtn);
+
+    tr.appendChild(actionsTd);
 
     tbody.appendChild(tr);
   });
