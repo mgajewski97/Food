@@ -803,19 +803,12 @@ function renderProducts(data) {
       const title = storOpen ? t('collapse') : t('expand');
       storToggle.title = title;
       storToggle.setAttribute('aria-label', title);
-      storIcon.classList.add('rotate-180');
-      storIcon.addEventListener(
-        'transitionend',
-        () => {
-          storIcon.classList.remove('rotate-180');
-          storIcon.classList.toggle('fa-caret-up', storOpen);
-          storIcon.classList.toggle('fa-caret-down', !storOpen);
-        },
-        { once: true }
-      );
+      storIcon.classList.toggle('fa-caret-up', storOpen);
+      storIcon.classList.toggle('fa-caret-down', !storOpen);
       storageContent.style.maxHeight = storOpen
         ? storageContent.scrollHeight + 'px'
         : '0';
+      storageContent.classList.toggle('opacity-0', !storOpen);
     };
 
     const initialTitle = t('collapse');
@@ -932,19 +925,12 @@ function renderProducts(data) {
           const title = catOpen ? t('collapse') : t('expand');
           catBtn.title = title;
           catBtn.setAttribute('aria-label', title);
-          catIcon.classList.add('rotate-180');
-          catIcon.addEventListener(
-            'transitionend',
-            () => {
-              catIcon.classList.remove('rotate-180');
-              catIcon.classList.toggle('fa-caret-up', catOpen);
-              catIcon.classList.toggle('fa-caret-down', !catOpen);
-            },
-            { once: true }
-          );
+          catIcon.classList.toggle('fa-caret-up', catOpen);
+          catIcon.classList.toggle('fa-caret-down', !catOpen);
           catContent.style.maxHeight = catOpen
             ? catContent.scrollHeight + 'px'
             : '0';
+          catContent.classList.toggle('opacity-0', !catOpen);
           if (storOpen) {
             storageContent.style.maxHeight =
               storageContent.scrollHeight + 'px';
