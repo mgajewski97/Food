@@ -109,21 +109,28 @@ function renderUnitsAdmin() {
   Object.entries(units).forEach(([code, names]) => {
     const tr = document.createElement('tr');
     tr.dataset.code = code;
+
     const codeTd = document.createElement('td');
+    codeTd.className = 'w-1/3 align-middle text-center';
     codeTd.textContent = code;
     tr.appendChild(codeTd);
+
     const plTd = document.createElement('td');
+    plTd.className = 'w-1/3 align-middle text-center';
     const plInput = document.createElement('input');
     plInput.value = names.pl || '';
-    plInput.className = 'input input-bordered w-full';
+    plInput.className = 'input input-bordered w-full text-center';
     plTd.appendChild(plInput);
     tr.appendChild(plTd);
+
     const enTd = document.createElement('td');
+    enTd.className = 'w-1/3 align-middle text-center';
     const enInput = document.createElement('input');
     enInput.value = names.en || '';
-    enInput.className = 'input input-bordered w-full';
+    enInput.className = 'input input-bordered w-full text-center';
     enTd.appendChild(enInput);
     tr.appendChild(enTd);
+
     tbody.appendChild(tr);
   });
 }
