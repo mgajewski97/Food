@@ -767,23 +767,25 @@ function renderProducts(data) {
 
     const storageHeader = document.createElement('div');
     storageHeader.className =
-      'flex justify-between items-center mb-4 rounded px-2 cursor-pointer md:cursor-default hover:bg-neutral/20 md:hover:bg-transparent';
+      'mb-4 rounded px-2 cursor-pointer md:cursor-default hover:bg-neutral/20 md:hover:bg-transparent';
     storageHeader.id = `storage-header-${storIndex}`;
 
     const h3 = document.createElement('h3');
-    h3.className = 'text-2xl font-bold';
-    h3.textContent = `${STORAGE_ICONS[stor] || ''} ${storageName(stor)}`;
+    h3.className = 'text-2xl font-bold flex items-center gap-2';
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = `${STORAGE_ICONS[stor] || ''} ${storageName(stor)}`;
+    h3.appendChild(nameSpan);
 
     const storToggle = document.createElement('button');
     storToggle.className =
       'text-xl cursor-pointer bg-transparent border-0 p-0 transition-transform';
     const storIcon = document.createElement('i');
-    storIcon.className = 'fa-regular fa-caret-down transition-transform';
+    storIcon.className = 'fa-regular fa-caret-up transition-transform';
     storToggle.appendChild(storIcon);
     storToggle.id = `storage-toggle-${storIndex}`;
 
+    h3.appendChild(storToggle);
     storageHeader.appendChild(h3);
-    storageHeader.appendChild(storToggle);
     storageBlock.appendChild(storageHeader);
 
     const storageContent = document.createElement('div');
@@ -795,18 +797,31 @@ function renderProducts(data) {
     const toggleStorage = () => {
       storOpen = !storOpen;
       storToggle.title = storOpen ? t('collapse') : t('expand');
-      storIcon.classList.toggle('rotate-180', storOpen);
+      storIcon.classList.add('rotate-180');
+      storIcon.addEventListener(
+        'transitionend',
+        () => {
+          storIcon.classList.remove('rotate-180');
+          storIcon.classList.toggle('fa-caret-up', storOpen);
+          storIcon.classList.toggle('fa-caret-down', !storOpen);
+        },
+        { once: true }
+      );
       storageContent.style.maxHeight = storOpen
         ? storageContent.scrollHeight + 'px'
         : '0';
     };
 
-    storIcon.classList.add('rotate-180');
     storToggle.title = t('collapse');
 
-    storageHeader.addEventListener('click', e => {
+    storToggle.addEventListener('click', e => {
+      e.stopPropagation();
+      toggleStorage();
+    });
+
+    storageHeader.addEventListener('click', () => {
       const isMobile = document.documentElement.getAttribute('data-layout') === 'mobile';
-      if (isMobile || e.target.closest('button') === storToggle) {
+      if (isMobile) {
         toggleStorage();
       }
     });
