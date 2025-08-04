@@ -2,7 +2,7 @@
   {
     "name": "product.toast_bread",
     "quantity": "1",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "bread",
     "storage": "pantry",
     "threshold": 1,
@@ -11,7 +11,7 @@
   {
     "name": "product.eggs",
     "quantity": "10",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "dairy_eggs",
     "storage": "fridge",
     "threshold": 1,
@@ -20,7 +20,7 @@
   {
     "name": "product.natural_tofu",
     "quantity": "2",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "dairy_eggs",
     "storage": "fridge",
     "threshold": 1,
@@ -29,7 +29,7 @@
   {
     "name": "product.breaded_tofu_hot_spicy",
     "quantity": "1",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "dairy_eggs",
     "storage": "fridge",
     "threshold": 1,
@@ -38,7 +38,7 @@
   {
     "name": "product.sour_cream_18",
     "quantity": "2",
-    "unit": "unit.250g",
+    "unit": "250g",
     "category": "dairy_eggs",
     "storage": "fridge",
     "threshold": 1,
@@ -47,7 +47,7 @@
   {
     "name": "product.beans_piekny_jas",
     "quantity": "400",
-    "unit": "unit.grams",
+    "unit": "g",
     "category": "dried_legumes",
     "storage": "pantry",
     "threshold": 1,
@@ -56,7 +56,7 @@
   {
     "name": "product.lentils_red",
     "quantity": "1",
-    "unit": "unit.package_350g",
+    "unit": "opak_350g",
     "category": "dried_legumes",
     "storage": "pantry",
     "threshold": 1,
@@ -65,7 +65,7 @@
   {
     "name": "product.lentils_green",
     "quantity": "1",
-    "unit": "unit.package_350g",
+    "unit": "opak_350g",
     "category": "dried_legumes",
     "storage": "pantry",
     "threshold": 1,
@@ -74,7 +74,7 @@
   {
     "name": "product.spring_onion",
     "quantity": "1",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "dry_veg",
     "storage": "fridge",
     "threshold": 1,
@@ -83,7 +83,7 @@
   {
     "name": "product.red_onion",
     "quantity": "1000",
-    "unit": "unit.grams",
+    "unit": "g",
     "category": "dry_veg",
     "storage": "pantry",
     "threshold": 1,
@@ -92,7 +92,7 @@
   {
     "name": "product.garlic",
     "quantity": "3",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "dry_veg",
     "storage": "pantry",
     "threshold": 1,
@@ -101,7 +101,7 @@
   {
     "name": "product.lime",
     "quantity": "2",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "dry_veg",
     "storage": "pantry",
     "threshold": 1,
@@ -110,7 +110,7 @@
   {
     "name": "product.eggplant",
     "quantity": "1",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "fresh_veg",
     "storage": "fridge",
     "threshold": 1,
@@ -119,7 +119,7 @@
   {
     "name": "product.zucchini",
     "quantity": "2",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "fresh_veg",
     "storage": "fridge",
     "threshold": 1,
@@ -128,7 +128,7 @@
   {
     "name": "product.fries",
     "quantity": "1",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "fresh_veg",
     "storage": "fridge",
     "threshold": 1,
@@ -137,7 +137,7 @@
   {
     "name": "product.chinese_cabbage",
     "quantity": "1",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "fresh_veg",
     "storage": "fridge",
     "threshold": 1,
@@ -146,7 +146,7 @@
   {
     "name": "product.carrot",
     "quantity": "500",
-    "unit": "unit.grams",
+    "unit": "g",
     "category": "fresh_veg",
     "storage": "fridge",
     "threshold": 1,
@@ -155,7 +155,7 @@
   {
     "name": "product.parsley",
     "quantity": "1",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "fresh_veg",
     "storage": "fridge",
     "threshold": 1,
@@ -164,7 +164,7 @@
   {
     "name": "product.bell_peppers",
     "quantity": "2",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "fresh_veg",
     "storage": "fridge",
     "threshold": 1,
@@ -173,7 +173,7 @@
   {
     "name": "product.pink_tomatoes",
     "quantity": "3",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "fresh_veg",
     "storage": "fridge",
     "threshold": 1,
@@ -182,7 +182,7 @@
   {
     "name": "product.tomato_puree",
     "quantity": "500",
-    "unit": "unit.grams",
+    "unit": "g",
     "category": "fresh_veg",
     "storage": "fridge",
     "threshold": 1,
@@ -191,7 +191,7 @@
   {
     "name": "product.new_potatoes",
     "quantity": "1000",
-    "unit": "unit.grams",
+    "unit": "g",
     "category": "fresh_veg",
     "storage": "fridge",
     "threshold": 1,
@@ -200,7 +200,7 @@
   {
     "name": "product.borscht",
     "quantity": "1",
-    "unit": "unit.jar",
+    "unit": "sloik",
     "category": "frozen_meals",
     "storage": "freezer",
     "threshold": 1,
@@ -209,7 +209,7 @@
   {
     "name": "product.chinese_sauce",
     "quantity": "1",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "frozen_meals",
     "storage": "freezer",
     "threshold": 1,
@@ -218,7 +218,7 @@
   {
     "name": "product.gravy",
     "quantity": "1",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "frozen_meals",
     "storage": "freezer",
     "threshold": 1,
@@ -227,7 +227,7 @@
   {
     "name": "product.spinach",
     "quantity": "1",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "frozen_meals",
     "storage": "freezer",
     "threshold": 1,
@@ -236,7 +236,7 @@
   {
     "name": "product.stir_fry_vegetables",
     "quantity": "2",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "frozen_meals",
     "storage": "freezer",
     "threshold": 1,
@@ -245,7 +245,7 @@
   {
     "name": "product.cauliflower_soup",
     "quantity": "1",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "frozen_meals",
     "storage": "freezer",
     "threshold": 1,
@@ -254,7 +254,7 @@
   {
     "name": "product.bulgur",
     "quantity": "3",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "grains",
     "storage": "pantry",
     "threshold": 1,
@@ -263,7 +263,7 @@
   {
     "name": "product.buckwheat",
     "quantity": "1",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "grains",
     "storage": "pantry",
     "threshold": 1,
@@ -272,7 +272,7 @@
   {
     "name": "product.barley",
     "quantity": "8",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "grains",
     "storage": "pantry",
     "threshold": 1,
@@ -281,7 +281,7 @@
   {
     "name": "product.rice_arborio",
     "quantity": "500",
-    "unit": "unit.grams",
+    "unit": "g",
     "category": "grains",
     "storage": "pantry",
     "threshold": 1,
@@ -290,7 +290,7 @@
   {
     "name": "product.rice_basmati",
     "quantity": "5",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "grains",
     "storage": "pantry",
     "threshold": 1,
@@ -299,7 +299,7 @@
   {
     "name": "product.rice_jasmine",
     "quantity": "4",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "grains",
     "storage": "pantry",
     "threshold": 1,
@@ -308,7 +308,7 @@
   {
     "name": "product.oyster_mushrooms",
     "quantity": "250",
-    "unit": "unit.grams",
+    "unit": "g",
     "category": "mushrooms",
     "storage": "fridge",
     "threshold": 1,
@@ -317,7 +317,7 @@
   {
     "name": "product.champignons",
     "quantity": "500",
-    "unit": "unit.grams",
+    "unit": "g",
     "category": "mushrooms",
     "storage": "fridge",
     "threshold": 1,
@@ -326,7 +326,7 @@
   {
     "name": "product.sesame_oil",
     "quantity": "1",
-    "unit": "unit.bottle",
+    "unit": "butelka",
     "category": "oils",
     "storage": "pantry",
     "threshold": 1,
@@ -335,7 +335,7 @@
   {
     "name": "product.sun_dried_tomatoes",
     "quantity": "3",
-    "unit": "unit.x270g",
+    "unit": "x270g",
     "category": "oils",
     "storage": "pantry",
     "threshold": 1,
@@ -344,7 +344,7 @@
   {
     "name": "product.chickpeas",
     "quantity": "1",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "opened_preserves",
     "storage": "fridge",
     "threshold": 1,
@@ -353,7 +353,7 @@
   {
     "name": "product.garlic_in_oil",
     "quantity": "1",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "opened_preserves",
     "storage": "fridge",
     "threshold": 1,
@@ -362,7 +362,7 @@
   {
     "name": "product.red_beans",
     "quantity": "1",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "opened_preserves",
     "storage": "fridge",
     "threshold": 1,
@@ -371,7 +371,7 @@
   {
     "name": "product.corn",
     "quantity": "1",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "opened_preserves",
     "storage": "fridge",
     "threshold": 1,
@@ -380,7 +380,7 @@
   {
     "name": "product.pickled_pearl_onions",
     "quantity": "1",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "opened_preserves",
     "storage": "fridge",
     "threshold": 1,
@@ -389,7 +389,7 @@
   {
     "name": "product.dijon_mustard",
     "quantity": "1",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "opened_preserves",
     "storage": "fridge",
     "threshold": 1,
@@ -398,7 +398,7 @@
   {
     "name": "product.french_mustard",
     "quantity": "1",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "opened_preserves",
     "storage": "fridge",
     "threshold": 1,
@@ -407,7 +407,7 @@
   {
     "name": "product.large_green_olives",
     "quantity": "500",
-    "unit": "unit.grams",
+    "unit": "g",
     "category": "opened_preserves",
     "storage": "fridge",
     "threshold": 1,
@@ -416,7 +416,7 @@
   {
     "name": "product.green_peas",
     "quantity": "1",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "opened_preserves",
     "storage": "fridge",
     "threshold": 1,
@@ -425,7 +425,7 @@
   {
     "name": "product.ditalini_rigati_pasta",
     "quantity": "500",
-    "unit": "unit.grams",
+    "unit": "g",
     "category": "pasta",
     "storage": "pantry",
     "threshold": 1,
@@ -434,7 +434,7 @@
   {
     "name": "product.penne_pasta",
     "quantity": "1000",
-    "unit": "unit.grams",
+    "unit": "g",
     "category": "pasta",
     "storage": "pantry",
     "threshold": 1,
@@ -443,7 +443,7 @@
   {
     "name": "product.sciatelli_al_limone_pasta",
     "quantity": "500",
-    "unit": "unit.grams",
+    "unit": "g",
     "category": "pasta",
     "storage": "pantry",
     "threshold": 1,
@@ -452,7 +452,7 @@
   {
     "name": "product.sauce_alla_norma",
     "quantity": "400",
-    "unit": "unit.grams",
+    "unit": "g",
     "category": "ready_sauces",
     "storage": "fridge",
     "threshold": 1,
@@ -461,7 +461,7 @@
   {
     "name": "product.sauce_alla_puttanesca",
     "quantity": "400",
-    "unit": "unit.grams",
+    "unit": "g",
     "category": "ready_sauces",
     "storage": "fridge",
     "threshold": 1,
@@ -470,7 +470,7 @@
   {
     "name": "product.sauce_basilico",
     "quantity": "400",
-    "unit": "unit.grams",
+    "unit": "g",
     "category": "ready_sauces",
     "storage": "fridge",
     "threshold": 1,
@@ -479,7 +479,7 @@
   {
     "name": "product.sauce_bearnaise",
     "quantity": "125",
-    "unit": "unit.grams",
+    "unit": "g",
     "category": "ready_sauces",
     "storage": "fridge",
     "threshold": 1,
@@ -488,7 +488,7 @@
   {
     "name": "product.sauce_cacio_e_pepe",
     "quantity": "350",
-    "unit": "unit.grams",
+    "unit": "g",
     "category": "ready_sauces",
     "storage": "fridge",
     "threshold": 1,
@@ -497,7 +497,7 @@
   {
     "name": "product.sauce_napoletana",
     "quantity": "400",
-    "unit": "unit.grams",
+    "unit": "g",
     "category": "ready_sauces",
     "storage": "fridge",
     "threshold": 1,
@@ -506,7 +506,7 @@
   {
     "name": "product.pistachio_cream",
     "quantity": "1",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "spreads",
     "storage": "pantry",
     "threshold": 1,
@@ -515,7 +515,7 @@
   {
     "name": "product.peanut_butter",
     "quantity": "1",
-    "unit": "unit.pieces",
+    "unit": "szt",
     "category": "spreads",
     "storage": "pantry",
     "threshold": 1,
@@ -524,7 +524,7 @@
   {
     "name": "product.thai_spice_mix",
     "quantity": "15",
-    "unit": "unit.grams",
+    "unit": "g",
     "category": "spreads",
     "storage": "pantry",
     "threshold": 1,
@@ -533,7 +533,7 @@
   {
     "name": "product.cashew_nuts",
     "quantity": "35",
-    "unit": "unit.grams",
+    "unit": "g",
     "category": "spreads",
     "storage": "pantry",
     "threshold": 1,

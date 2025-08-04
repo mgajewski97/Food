@@ -8,7 +8,8 @@ app = Flask(__name__, static_folder='static', template_folder='templates')
 BASE_DIR = os.path.dirname(__file__)
 PRODUCTS_PATH = os.path.join(BASE_DIR, 'data', 'products.json')
 RECIPES_PATH = os.path.join(BASE_DIR, 'data', 'recipes.json')
-UNIT = "unit.pieces"
+UNITS_PATH = os.path.join(BASE_DIR, 'data', 'units.json')
+DEFAULT_UNIT = 'szt'
 HISTORY_PATH = os.path.join(BASE_DIR, 'data', 'history.json')
 
 def apply_defaults(product):
@@ -42,7 +43,7 @@ def index():
 def products():
     if request.method == 'POST':
         new_product = request.json or {}
-        new_product['unit'] = new_product.get('unit', UNIT)
+        new_product['unit'] = new_product.get('unit', DEFAULT_UNIT)
         try:
             new_product['quantity'] = float(new_product.get('quantity', 0))
         except (TypeError, ValueError):
@@ -88,7 +89,7 @@ def products():
             payload = [payload]
         products = load_json(PRODUCTS_PATH)
         for item in payload:
-            item['unit'] = item.get('unit', UNIT)
+            item['unit'] = item.get('unit', DEFAULT_UNIT)
             try:
                 item['quantity'] = float(item.get('quantity', 0))
             except (TypeError, ValueError):
@@ -140,7 +141,7 @@ def modify_product(name):
         save_json(PRODUCTS_PATH, products)
         return '', 204
     updated = request.json or {}
-    updated['unit'] = updated.get('unit', UNIT)
+    updated['unit'] = updated.get('unit', DEFAULT_UNIT)
     try:
         updated['quantity'] = float(updated.get('quantity', 0))
     except (TypeError, ValueError):
@@ -170,6 +171,14 @@ def modify_product(name):
     save_json(PRODUCTS_PATH, products)
     return jsonify(products)
 
+
+@app.route('/api/units', methods=['GET', 'PUT'])
+def units():
+    if request.method == 'PUT':
+        units = request.json or {}
+        save_json(UNITS_PATH, units)
+        return jsonify(units)
+    return jsonify(load_json(UNITS_PATH))
 
 @app.route('/api/ocr-match', methods=['POST'])
 def ocr_match():
