@@ -821,10 +821,23 @@ function renderProducts(data) {
       storToggle.setAttribute('aria-label', title);
       storIcon.classList.toggle('fa-caret-up', storOpen);
       storIcon.classList.toggle('fa-caret-down', !storOpen);
-      storageContent.style.maxHeight = storOpen
-        ? storageContent.scrollHeight + 'px'
-        : '0';
-      storageContent.classList.toggle('opacity-0', !storOpen);
+      storageContent.classList.toggle('mt-2', storOpen);
+      storageContent.classList.toggle('mt-0', !storOpen);
+      if (storOpen) {
+        storageContent.classList.remove('hidden', 'opacity-0');
+        storageContent.style.maxHeight =
+          storageContent.scrollHeight + 'px';
+      } else {
+        storageContent.style.maxHeight = '0';
+        storageContent.classList.add('opacity-0');
+        storageContent.addEventListener(
+          'transitionend',
+          () => {
+            if (!storOpen) storageContent.classList.add('hidden');
+          },
+          { once: true }
+        );
+      }
     };
 
     const initialTitle = t('collapse');
@@ -943,10 +956,21 @@ function renderProducts(data) {
           catBtn.setAttribute('aria-label', title);
           catIcon.classList.toggle('fa-caret-up', catOpen);
           catIcon.classList.toggle('fa-caret-down', !catOpen);
-          catContent.style.maxHeight = catOpen
-            ? catContent.scrollHeight + 'px'
-            : '0';
-          catContent.classList.toggle('opacity-0', !catOpen);
+          if (catOpen) {
+            catContent.classList.remove('hidden', 'opacity-0');
+            catContent.style.maxHeight =
+              catContent.scrollHeight + 'px';
+          } else {
+            catContent.style.maxHeight = '0';
+            catContent.classList.add('opacity-0');
+            catContent.addEventListener(
+              'transitionend',
+              () => {
+                if (!catOpen) catContent.classList.add('hidden');
+              },
+              { once: true }
+            );
+          }
           if (storOpen) {
             storageContent.style.maxHeight =
               storageContent.scrollHeight + 'px';
