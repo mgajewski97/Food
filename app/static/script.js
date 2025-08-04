@@ -813,6 +813,8 @@ function renderProducts(data) {
     storageBlock.appendChild(storageContent);
     container.appendChild(storageBlock);
 
+    const categoriesState = [];
+
     let storOpen = true;
     const toggleStorage = () => {
       storOpen = !storOpen;
@@ -828,6 +830,7 @@ function renderProducts(data) {
         storageContent.style.maxHeight =
           storageContent.scrollHeight + 'px';
       } else {
+        categoriesState.forEach(cat => cat.toggleCat(false));
         storageContent.style.maxHeight = '0';
         storageContent.classList.add('opacity-0');
         storageContent.addEventListener(
@@ -949,8 +952,10 @@ function renderProducts(data) {
         catContent.style.maxHeight = catContent.scrollHeight + 'px';
 
         let catOpen = true;
-        const toggleCat = () => {
-          catOpen = !catOpen;
+        const toggleCat = (open = null) => {
+          const newState = open === null ? !catOpen : open;
+          if (newState === catOpen) return;
+          catOpen = newState;
           const title = catOpen ? t('collapse') : t('expand');
           catBtn.title = title;
           catBtn.setAttribute('aria-label', title);
@@ -976,6 +981,8 @@ function renderProducts(data) {
               storageContent.scrollHeight + 'px';
           }
         };
+
+        categoriesState.push({ toggleCat });
 
         catBtn.addEventListener('click', e => {
           e.stopPropagation();
