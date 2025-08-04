@@ -395,6 +395,7 @@ function checkLowStockToast() {
   const ratingForm = document.getElementById('rating-form');
   const ratingModal = document.getElementById('rating-modal');
   if (ratingForm && ratingModal) {
+    setupStarRatings(ratingForm);
     ratingForm.addEventListener('submit', handleRatingSubmit);
     document.getElementById('rating-cancel').addEventListener('click', () => ratingModal.close());
   }
@@ -978,8 +979,8 @@ async function loadRecipes() {
       if (!ratingMap[h.name]) {
         ratingMap[h.name] = { taste: [], prep_time: [] };
       }
-      if (h.rating.taste) ratingMap[h.name].taste.push(h.rating.taste);
-      if (h.rating.prep_time) ratingMap[h.name].prep_time.push(h.rating.prep_time);
+      if (h.rating.taste != null) ratingMap[h.name].taste.push(h.rating.taste);
+      if (h.rating.prep_time != null) ratingMap[h.name].prep_time.push(h.rating.prep_time);
     }
   });
   data.forEach(r => {
@@ -1065,19 +1066,44 @@ function openRatingModal(recipe) {
   if (modal) modal.showModal();
 }
 
+function setupStarRatings(form) {
+  const groups = form.querySelectorAll('.rating');
+  groups.forEach(group => {
+    group.dataset.current = '0';
+    const inputs = group.querySelectorAll('input');
+    inputs.forEach(input => {
+      input.addEventListener('click', () => {
+        if (group.dataset.current === input.value) {
+          inputs.forEach(i => (i.checked = false));
+          group.dataset.current = '0';
+        } else {
+          group.dataset.current = input.value;
+        }
+      });
+    });
+  });
+  form.addEventListener('reset', () => {
+    groups.forEach(g => {
+      g.dataset.current = '0';
+    });
+  });
+}
+
 async function handleRatingSubmit(e) {
   e.preventDefault();
   const form = e.target;
   const taste = parseInt(form.taste.value, 10);
   const time = parseInt(form.time.value, 10);
-  if (!taste || !time) return;
   const comment = form.comment ? form.comment.value.trim() : null;
   const entry = {
     name: currentRecipeName,
     used_ingredients: {},
     followed_recipe_exactly: true,
     comment: comment || null,
-    rating: { taste, prep_time: time },
+    rating: {
+      taste: Number.isNaN(taste) ? 0 : taste,
+      prep_time: Number.isNaN(time) ? 0 : time
+    },
     favorite: false
   };
   await fetch('/api/history', {
@@ -1124,14 +1150,16 @@ async function handleCookingSubmit(e) {
   const form = e.target;
   const taste = parseInt(form.taste.value, 10);
   const time = parseInt(form.time.value, 10);
-  if (!taste || !time) return;
   const comment = form.comment ? form.comment.value.trim() : null;
   const entry = {
     name: cookingState.recipe.name,
     used_ingredients: {},
     followed_recipe_exactly: true,
     comment: comment || null,
-    rating: { taste, prep_time: time },
+    rating: {
+      taste: Number.isNaN(taste) ? 0 : taste,
+      prep_time: Number.isNaN(time) ? 0 : time
+    },
     favorite: false
   };
   await fetch('/api/history', {
@@ -1155,6 +1183,7 @@ if (cookingNext) {
 }
 const cookingForm = document.getElementById('cooking-form');
 if (cookingForm) {
+  setupStarRatings(cookingForm);
   cookingForm.addEventListener('submit', handleCookingSubmit);
 }
 const cookingOverlay = document.getElementById('cooking-overlay');
