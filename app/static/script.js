@@ -781,7 +781,7 @@ function renderProducts(data) {
 
     const storToggle = document.createElement('button');
     storToggle.type = 'button';
-    storToggle.className = 'ml-2 text-xl inline-flex items-center cursor-pointer bg-transparent border-0 p-0';
+    storToggle.className = 'ml-2 text-xl inline-flex items-center self-center leading-none cursor-pointer bg-transparent border-0 p-0';
     const storIcon = document.createElement('i');
     storIcon.className = 'fa-regular fa-caret-up transition-transform';
     storToggle.appendChild(storIcon);
@@ -795,6 +795,7 @@ function renderProducts(data) {
     storageContent.className =
       'mt-2 overflow-hidden transition-all duration-300';
     storageBlock.appendChild(storageContent);
+    container.appendChild(storageBlock);
 
     let storOpen = true;
     const toggleStorage = () => {
@@ -840,7 +841,7 @@ function renderProducts(data) {
         const catHeader = document.createElement('div');
         catHeader.className = 'rounded px-2';
         const h4 = document.createElement('h4');
-        h4.className = 'text-xl font-semibold flex items-center gap-2 mb-0';
+        h4.className = 'text-xl font-semibold flex items-center gap-2 m-0';
         const titleSpan = document.createElement('span');
         titleSpan.textContent = categoryName(cat);
         h4.appendChild(titleSpan);
@@ -848,7 +849,7 @@ function renderProducts(data) {
         const catBtn = document.createElement('button');
         catBtn.type = 'button';
         catBtn.className =
-          'ml-2 text-lg inline-flex items-center cursor-pointer bg-transparent border-0 p-0';
+          'ml-2 text-lg inline-flex items-center self-center leading-none cursor-pointer bg-transparent border-0 p-0';
         const catIcon = document.createElement('i');
         catIcon.className = 'fa-regular fa-caret-up transition-transform';
         catBtn.appendChild(catIcon);
@@ -861,7 +862,7 @@ function renderProducts(data) {
 
         const catContent = document.createElement('div');
         catContent.className =
-          'overflow-hidden transition-all duration-300';
+          'category-content overflow-hidden transition-all duration-300';
 
         const table = document.createElement('table');
         table.className = 'table table-zebra w-full';
@@ -923,7 +924,6 @@ function renderProducts(data) {
         catContent.appendChild(table);
         categoryBlock.appendChild(catContent);
         storageContent.appendChild(categoryBlock);
-
         catContent.style.maxHeight = catContent.scrollHeight + 'px';
 
         let catOpen = true;
@@ -965,7 +965,6 @@ function renderProducts(data) {
         });
       });
     storageContent.style.maxHeight = storageContent.scrollHeight + 'px';
-    container.appendChild(storageBlock);
   });
 }
 
