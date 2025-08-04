@@ -127,7 +127,8 @@
             <hr class="border-t border-base-300 my-6">
 
             <h3 class="text-lg font-semibold mt-6 mb-2" data-i18n="heading_edit_json">Edytuj produkty (JSON)</h3>
-            <textarea id="edit-json" rows="10" placeholder='JSON' data-i18n="edit_json_placeholder" class="textarea textarea-bordered w-full mb-4 h-60 overflow-y-scroll resize-y p-2"></textarea>            <div class="flex flex-col sm:flex-row gap-2 mb-8">
+            <textarea id="edit-json" rows="10" placeholder='JSON' data-i18n="edit_json_placeholder" class="textarea textarea-bordered w-full max-w-full mb-4 h-60 overflow-y-auto overflow-x-hidden resize-none p-4"></textarea>
+            <div class="flex flex-col sm:flex-row gap-2 mb-8">
                 <button id="edit-json-btn" class="btn btn-outline btn-primary btn-sm w-full sm:w-auto" data-i18n="edit_json_submit_button">Wyślij JSON</button>
                 <button id="copy-btn" class="btn btn-outline btn-sm w-full sm:w-auto" data-i18n="copy_structure_button">Pobierz strukturę</button>
             </div>

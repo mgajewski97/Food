@@ -121,3 +121,13 @@ input[type="number"] {
 .shopping-table {
   border-radius: 0.5rem;
 }
+
+/* JSON editor adjustments */
+#edit-json {
+  box-sizing: border-box;
+}
+
+html[data-layout="mobile"] #edit-json {
+  width: 100%;
+  max-width: 100%;
+}
