@@ -20,7 +20,11 @@ let units = {};
 
 const html = document.documentElement;
 const layoutIcon = document.getElementById('layout-icon');
-let state = { displayMode: html.getAttribute('data-layout') || 'desktop' };
+let state = {
+  displayMode: html.getAttribute('data-layout') || 'desktop',
+  expandedStorages: {},
+  expandedCategories: {}
+};
 
 function setDisplayMode(mode) {
   state.displayMode = mode;
@@ -808,44 +812,32 @@ function renderProducts(data) {
     storageBlock.appendChild(storageHeader);
 
     const storageContent = document.createElement('div');
-    storageContent.className =
-      'mt-2 overflow-hidden transition-all duration-300';
+    storageContent.className = 'mt-2';
     storageBlock.appendChild(storageContent);
     container.appendChild(storageBlock);
 
-    const categoriesState = [];
+    if (state.expandedStorages[stor] === undefined) {
+      state.expandedStorages[stor] = true;
+    }
+    let storOpen = state.expandedStorages[stor];
 
-    let storOpen = true;
-    const toggleStorage = () => {
-      storOpen = !storOpen;
+    const applyStorState = () => {
       const title = storOpen ? t('collapse') : t('expand');
       storToggle.title = title;
       storToggle.setAttribute('aria-label', title);
       storIcon.classList.toggle('fa-caret-up', storOpen);
       storIcon.classList.toggle('fa-caret-down', !storOpen);
-      storageContent.classList.toggle('mt-2', storOpen);
-      storageContent.classList.toggle('mt-0', !storOpen);
-      if (storOpen) {
-        storageContent.classList.remove('hidden', 'opacity-0');
-        storageContent.style.maxHeight =
-          storageContent.scrollHeight + 'px';
-      } else {
-        categoriesState.forEach(cat => cat.toggleCat(false));
-        storageContent.style.maxHeight = '0';
-        storageContent.classList.add('opacity-0');
-        storageContent.addEventListener(
-          'transitionend',
-          () => {
-            if (!storOpen) storageContent.classList.add('hidden');
-          },
-          { once: true }
-        );
-      }
+      // Use v-show instead of v-if to preserve DOM state when hiding content. v-if fully removes elements from the DOM.
+      storageContent.style.display = storOpen ? '' : 'none';
     };
 
-    const initialTitle = t('collapse');
-    storToggle.title = initialTitle;
-    storToggle.setAttribute('aria-label', initialTitle);
+    const toggleStorage = () => {
+      storOpen = !storOpen;
+      state.expandedStorages[stor] = storOpen;
+      applyStorState();
+    };
+
+    applyStorState();
 
     storToggle.addEventListener('click', e => {
       e.stopPropagation();
@@ -886,8 +878,7 @@ function renderProducts(data) {
         categoryBlock.appendChild(catHeader);
 
         const catContent = document.createElement('div');
-        catContent.className =
-          'category-content overflow-hidden transition-all duration-300';
+        catContent.className = 'category-content';
 
         const table = document.createElement('table');
         table.className = 'table table-zebra w-full';
@@ -949,40 +940,32 @@ function renderProducts(data) {
         catContent.appendChild(table);
         categoryBlock.appendChild(catContent);
         storageContent.appendChild(categoryBlock);
-        catContent.style.maxHeight = catContent.scrollHeight + 'px';
 
-        let catOpen = true;
-        const toggleCat = (open = null) => {
-          const newState = open === null ? !catOpen : open;
-          if (newState === catOpen) return;
-          catOpen = newState;
+        if (!state.expandedCategories[stor]) {
+          state.expandedCategories[stor] = {};
+        }
+        if (state.expandedCategories[stor][cat] === undefined) {
+          state.expandedCategories[stor][cat] = true;
+        }
+        let catOpen = state.expandedCategories[stor][cat];
+
+        const applyCatState = () => {
           const title = catOpen ? t('collapse') : t('expand');
           catBtn.title = title;
           catBtn.setAttribute('aria-label', title);
           catIcon.classList.toggle('fa-caret-up', catOpen);
           catIcon.classList.toggle('fa-caret-down', !catOpen);
-          if (catOpen) {
-            catContent.classList.remove('hidden', 'opacity-0');
-            catContent.style.maxHeight =
-              catContent.scrollHeight + 'px';
-          } else {
-            catContent.style.maxHeight = '0';
-            catContent.classList.add('opacity-0');
-            catContent.addEventListener(
-              'transitionend',
-              () => {
-                if (!catOpen) catContent.classList.add('hidden');
-              },
-              { once: true }
-            );
-          }
-          if (storOpen) {
-            storageContent.style.maxHeight =
-              storageContent.scrollHeight + 'px';
-          }
+          // Use v-show instead of v-if to preserve DOM state when hiding content. v-if fully removes elements from the DOM.
+          catContent.style.display = catOpen ? '' : 'none';
         };
 
-        categoriesState.push({ toggleCat });
+        const toggleCat = () => {
+          catOpen = !catOpen;
+          state.expandedCategories[stor][cat] = catOpen;
+          applyCatState();
+        };
+
+        applyCatState();
 
         catBtn.addEventListener('click', e => {
           e.stopPropagation();
@@ -997,7 +980,6 @@ function renderProducts(data) {
           }
         });
       });
-    storageContent.style.maxHeight = storageContent.scrollHeight + 'px';
   });
 }
 
