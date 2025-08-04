@@ -1488,7 +1488,7 @@ function renderShoppingList() {
     const dec = document.createElement('button');
     dec.type = 'button';
     dec.innerHTML = '<i class="fa-solid fa-minus"></i>';
-    dec.className = 'text-xl';
+    dec.className = 'touch-btn';
     dec.disabled = item.inCart;
     const qtyDisplay = document.createElement('span');
     qtyDisplay.textContent = item.quantity;
@@ -1496,7 +1496,7 @@ function renderShoppingList() {
     const inc = document.createElement('button');
     inc.type = 'button';
     inc.innerHTML = '<i class="fa-solid fa-plus"></i>';
-    inc.className = 'text-xl';
+    inc.className = 'touch-btn';
     inc.disabled = item.inCart;
     dec.addEventListener('click', () => {
       const newVal = Math.max(1, item.quantity - 1);
@@ -1520,10 +1520,11 @@ function renderShoppingList() {
     tr.appendChild(ownedTd);
 
     const cartTd = document.createElement('td');
+    cartTd.className = 'text-center';
     const cartBtn = document.createElement('button');
     cartBtn.type = 'button';
     cartBtn.innerHTML = '<i class="fa-solid fa-cart-shopping"></i>';
-    cartBtn.className = item.inCart ? 'text-success' : 'text-gray-400';
+    cartBtn.className = (item.inCart ? 'text-success ' : 'text-gray-400 ') + 'touch-btn';
     cartBtn.setAttribute('aria-label', t('in_cart'));
     cartBtn.addEventListener('click', () => {
       item.inCart = !item.inCart;
@@ -1539,9 +1540,10 @@ function renderShoppingList() {
     tr.appendChild(cartTd);
 
     const removeTd = document.createElement('td');
+    removeTd.className = 'text-center';
     const removeBtn = document.createElement('button');
     removeBtn.type = 'button';
-    removeBtn.className = 'text-error';
+    removeBtn.className = 'text-error touch-btn';
     removeBtn.innerHTML = '<i class="fa-regular fa-circle-minus"></i>';
     removeBtn.setAttribute('aria-label', t('remove'));
     removeBtn.addEventListener('click', () => {
