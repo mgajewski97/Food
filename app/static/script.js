@@ -1470,44 +1470,33 @@ function renderShoppingList() {
 
     const qtyTd = document.createElement('td');
     const qtyWrap = document.createElement('div');
-    qtyWrap.className = 'flex items-center justify-center';
+    qtyWrap.className = 'flex items-center justify-center gap-2';
     const dec = document.createElement('button');
     dec.type = 'button';
-    dec.textContent = '−';
-    dec.className = 'btn btn-outline btn-xs';
+    dec.innerHTML = '<i class="fa-solid fa-minus"></i>';
+    dec.className = 'mx-2';
     dec.disabled = item.inCart;
-    const qtyInput = document.createElement('input');
-    qtyInput.type = 'number';
-    qtyInput.min = '1';
-    qtyInput.value = item.quantity;
-    qtyInput.className = 'input input-bordered w-16 text-center mx-2 no-spinner';
-    qtyInput.disabled = item.inCart;
+    const qtySpan = document.createElement('span');
+    qtySpan.textContent = item.quantity;
+    qtySpan.className = 'text-center w-8';
     const inc = document.createElement('button');
     inc.type = 'button';
-    inc.textContent = '+';
-    inc.className = 'btn btn-outline btn-xs';
+    inc.innerHTML = '<i class="fa-solid fa-plus"></i>';
+    inc.className = 'mx-2';
     inc.disabled = item.inCart;
     dec.addEventListener('click', () => {
-      const v = parseInt(qtyInput.value) || 1;
-      const newVal = Math.max(1, v - 1);
-      qtyInput.value = newVal;
+      const newVal = Math.max(1, item.quantity - 1);
       item.quantity = newVal;
+      qtySpan.textContent = newVal;
       saveShoppingList();
     });
     inc.addEventListener('click', () => {
-      const v = parseInt(qtyInput.value) || 1;
-      const newVal = v + 1;
-      qtyInput.value = newVal;
+      const newVal = item.quantity + 1;
       item.quantity = newVal;
+      qtySpan.textContent = newVal;
       saveShoppingList();
     });
-    qtyInput.addEventListener('change', () => {
-      const v = Math.max(1, parseInt(qtyInput.value) || 1);
-      qtyInput.value = v;
-      item.quantity = v;
-      saveShoppingList();
-    });
-    qtyWrap.append(dec, qtyInput, inc);
+    qtyWrap.append(dec, qtySpan, inc);
     qtyTd.appendChild(qtyWrap);
     tr.appendChild(qtyTd);
 

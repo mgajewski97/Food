@@ -90,9 +90,9 @@
             <form id="add-form" class="grid grid-cols-1 sm:grid-cols-8 gap-2 mb-8">
                 <input name="name" placeholder="nazwa" data-i18n="add_form_name_placeholder" required class="input input-bordered w-full">
                 <input name="quantity" placeholder="ilość" data-i18n="add_form_quantity_placeholder" required class="input input-bordered w-full">
-                <input name="package_size" placeholder="w opak." data-i18n="add_form_package_size_placeholder" class="input input-bordered w-full" type="number" value="1">
-                <input name="pack_size" placeholder="paczka" data-i18n="add_form_pack_size_placeholder" class="input input-bordered w-full" type="number">
-                <input name="threshold" placeholder="próg" data-i18n="add_form_threshold_placeholder" class="input input-bordered w-full" type="number">
+                <input name="package_size" placeholder="w opak." data-i18n="add_form_package_size_placeholder" class="input input-bordered w-full no-spinner" type="number" value="1">
+                <input name="pack_size" placeholder="paczka" data-i18n="add_form_pack_size_placeholder" class="input input-bordered w-full no-spinner" type="number">
+                <input name="threshold" placeholder="próg" data-i18n="add_form_threshold_placeholder" class="input input-bordered w-full no-spinner" type="number">
                 <select name="category" required class="select select-bordered w-full">
                     <option value="uncategorized" data-i18n="category_uncategorized">brak kategorii</option>
                     <option value="fresh_veg" data-i18n="category_fresh_veg">Świeże warzywa</option>
@@ -248,10 +248,10 @@
                 <h2 class="text-xl font-semibold mb-4" data-i18n="heading_add_product">Dodaj produkt</h2>
                 <div class="flex flex-wrap items-center gap-2">
                     <input id="manual-name" list="product-datalist" class="input input-bordered flex-1" placeholder="nazwa" data-i18n="add_form_name_placeholder">
-                    <div class="flex items-center">
-                        <button id="manual-dec" type="button" class="btn btn-outline btn-xs">−</button>
-                        <input id="manual-qty" type="number" min="1" value="1" class="input input-bordered w-16 text-center mx-2 no-spinner" placeholder="1" data-i18n="add_form_quantity_placeholder">
-                        <button id="manual-inc" type="button" class="btn btn-outline btn-xs">+</button>
+                    <div class="flex items-center gap-2">
+                        <button id="manual-dec" type="button" class="mx-2"><i class="fa-solid fa-minus"></i></button>
+                        <input id="manual-qty" type="number" min="1" value="1" class="input input-bordered w-16 text-center no-spinner" placeholder="1" data-i18n="add_form_quantity_placeholder">
+                        <button id="manual-inc" type="button" class="mx-2"><i class="fa-solid fa-plus"></i></button>
                     </div>
                     <button id="manual-add-btn" class="btn btn-primary btn-sm" data-i18n="save_button">Zapisz</button>
                 </div>
