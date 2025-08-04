@@ -2,11 +2,19 @@
   {
     "name": "Sałatka z tofu",
     "ingredients": ["tofu", "cebula czerwona", "feta"],
-    "tags": ["wegetariańskie"]
+    "tags": ["wegetariańskie"],
+    "steps": [
+      "Pokrój tofu i cebulę.",
+      "Wymieszaj z fetą i podawaj."
+    ]
   },
   {
     "name": "Omlet",
     "ingredients": ["jajka", "ser"],
-    "tags": ["śniadanie"]
+    "tags": ["śniadanie"],
+    "steps": [
+      "Rozbij jajka i wymieszaj.",
+      "Dodaj ser i usmaż omlet."
+    ]
   }
 ]

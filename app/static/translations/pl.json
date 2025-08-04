@@ -178,5 +178,8 @@
   "collapse": "Zwiń",
   "owned_units": "szt Posiadane",
   "remove": "Usuń",
-  "delete_item_question": "Czy na pewno chcesz usunąć ten produkt?"
+  "delete_item_question": "Czy na pewno chcesz usunąć ten produkt?",
+  "cooking_mode_button": "Tryb gotowania",
+  "next_step_button": "Dalej",
+  "cooking_end_title": "Koniec przepisu"
 }
