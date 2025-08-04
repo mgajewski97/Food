@@ -96,27 +96,32 @@
                 <input name="pack_size" placeholder="paczka" data-i18n="add_form_pack_size_placeholder" class="input input-bordered w-full" type="number">
                 <input name="threshold" placeholder="próg" data-i18n="add_form_threshold_placeholder" class="input input-bordered w-full" type="number">
                 <div class="flex flex-col gap-2 w-full">
-                    <select name="category" required class="select select-bordered w-full">
-                        <option value="uncategorized" data-i18n="category_uncategorized">brak kategorii</option>
-                        <option value="fresh_veg" data-i18n="category_fresh_veg">Świeże warzywa</option>
-                        <option value="mushrooms" data-i18n="category_mushrooms">Grzyby</option>
-                        <option value="dairy_eggs" data-i18n="category_dairy_eggs">Nabiał i jajka</option>
-                        <option value="opened_preserves" data-i18n="category_opened_preserves">Otwarte konserwy i przetwory</option>
-                        <option value="ready_sauces" data-i18n="category_ready_sauces">Sosy</option>
-                        <option value="dry_veg" data-i18n="category_dry_veg">Warzywa suche</option>
-                        <option value="bread" data-i18n="category_bread">Pieczywo</option>
-                        <option value="pasta" data-i18n="category_pasta">Makarony</option>
-                        <option value="rice" data-i18n="category_rice">Ryże</option>
-                        <option value="grains" data-i18n="category_grains">Kasze</option>
-                        <option value="dried_legumes" data-i18n="category_dried_legumes">Suche rośliny strączkowe</option>
-                        <option value="sauces" data-i18n="category_sauces">Sosy i przyprawy płynne</option>
-                        <option value="oils" data-i18n="category_oils">Oleje</option>
-                        <option value="spreads" data-i18n="category_spreads">Smarowidła i pasty</option>
-                        <option value="frozen_veg" data-i18n="category_frozen_veg">Mrożone warzywa</option>
-                        <option value="frozen_sauces" data-i18n="category_frozen_sauces">Mrożone sosy</option>
-                        <option value="frozen_meals" data-i18n="category_frozen_meals">Mrożone dania / zupy</option>
-                    </select>
-                    <label class="flex items-center gap-2 w-full"><input type="checkbox" name="main" class="checkbox"> <span data-i18n="checkbox_main_label">Główny produkt</span></label>
+                    <div id="category-checkboxes" class="flex flex-wrap gap-2">
+                        <select name="category" required class="select select-bordered w-full">
+                            <option value="uncategorized" data-i18n="category_uncategorized">brak kategorii</option>
+                            <option value="fresh_veg" data-i18n="category_fresh_veg">Świeże warzywa</option>
+                            <option value="mushrooms" data-i18n="category_mushrooms">Grzyby</option>
+                            <option value="dairy_eggs" data-i18n="category_dairy_eggs">Nabiał i jajka</option>
+                            <option value="opened_preserves" data-i18n="category_opened_preserves">Otwarte konserwy i przetwory</option>
+                            <option value="ready_sauces" data-i18n="category_ready_sauces">Sosy</option>
+                            <option value="dry_veg" data-i18n="category_dry_veg">Warzywa suche</option>
+                            <option value="bread" data-i18n="category_bread">Pieczywo</option>
+                            <option value="pasta" data-i18n="category_pasta">Makarony</option>
+                            <option value="rice" data-i18n="category_rice">Ryże</option>
+                            <option value="grains" data-i18n="category_grains">Kasze</option>
+                            <option value="dried_legumes" data-i18n="category_dried_legumes">Suche rośliny strączkowe</option>
+                            <option value="sauces" data-i18n="category_sauces">Sosy i przyprawy płynne</option>
+                            <option value="oils" data-i18n="category_oils">Oleje</option>
+                            <option value="spreads" data-i18n="category_spreads">Smarowidła i pasty</option>
+                            <option value="frozen_veg" data-i18n="category_frozen_veg">Mrożone warzywa</option>
+                            <option value="frozen_sauces" data-i18n="category_frozen_sauces">Mrożone sosy</option>
+                            <option value="frozen_meals" data-i18n="category_frozen_meals">Mrożone dania / zupy</option>
+                        </select>
+                    </div>
+                    <label class="flex items-center gap-2 w-full">
+                        <input type="checkbox" name="main" class="checkbox">
+                        <span data-i18n="checkbox_main_label">Główny produkt</span>
+                    </label>
                 </div>
                 <select name="storage" required class="select select-bordered w-full">
                     <option value="fridge" data-i18n="storage_fridge">Lodówka</option>
