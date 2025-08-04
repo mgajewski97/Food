@@ -612,7 +612,7 @@ function checkLowStockToast() {
       await loadProducts();
       await loadRecipes();
     } catch (err) {
-      alert(t('invalid_json_alert'));
+      console.error(t('invalid_json_alert'));
     }
   });
 
