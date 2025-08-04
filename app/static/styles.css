@@ -76,7 +76,7 @@ html[data-layout="mobile"] button {
 }
 
 #product-list .category-block {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 #product-list .category-block table {

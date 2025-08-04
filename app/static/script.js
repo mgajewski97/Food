@@ -770,7 +770,7 @@ function renderProducts(data) {
     storageBlock.id = `storage-${storIndex}`;
 
     const storageHeader = document.createElement('div');
-    storageHeader.className = 'mb-4 rounded px-2';
+    storageHeader.className = 'mb-2 rounded px-2';
     storageHeader.id = `storage-header-${storIndex}`;
 
     const h3 = document.createElement('h3');
@@ -792,7 +792,7 @@ function renderProducts(data) {
     storageBlock.appendChild(storageHeader);
 
     const storageContent = document.createElement('div');
-    storageContent.className = 'space-y-2 mt-2';
+    storageContent.className = 'mt-2';
     storageBlock.appendChild(storageContent);
 
     let storOpen = true;
@@ -832,20 +832,20 @@ function renderProducts(data) {
         if (!categories[cat].length) return;
 
         const categoryBlock = document.createElement('div');
-        categoryBlock.className = 'category-block border border-base-300 rounded mb-4';
+        categoryBlock.className = 'category-block border border-base-300 rounded';
         categoryBlock.id = `category-${storIndex}-${catIndex}`;
 
         const catHeader = document.createElement('div');
-        catHeader.className = 'flex items-center justify-between px-2 py-1 bg-base-100 rounded-t';
+        catHeader.className = 'flex items-center justify-between px-2 py-1 sm:px-4 sm:py-2 bg-base-100 rounded-t mb-2';
         const titleSpan = document.createElement('span');
         titleSpan.textContent = categoryName(cat);
         catHeader.appendChild(titleSpan);
 
         const catBtn = document.createElement('button');
         catBtn.type = 'button';
-        catBtn.className = 'text-lg bg-transparent border-0 p-0 md:cursor-pointer cursor-pointer transition-transform';
+        catBtn.className = 'flex items-center text-lg bg-transparent border-0 p-0 md:cursor-pointer cursor-pointer';
         const catIcon = document.createElement('i');
-        catIcon.className = 'fa-regular fa-caret-down transition-transform';
+        catIcon.className = 'fa-regular fa-caret-up';
         catBtn.appendChild(catIcon);
         catBtn.title = t('collapse');
         catHeader.appendChild(catBtn);
@@ -853,7 +853,7 @@ function renderProducts(data) {
         categoryBlock.appendChild(catHeader);
 
         const catContent = document.createElement('div');
-        catContent.className = 'mt-2 rounded-b';
+        catContent.className = 'rounded-b overflow-hidden';
 
         const table = document.createElement('table');
         table.className = 'table table-zebra w-full';
@@ -916,17 +916,14 @@ function renderProducts(data) {
         categoryBlock.appendChild(catContent);
         storageContent.appendChild(categoryBlock);
 
-        catContent.style.maxHeight = catContent.scrollHeight + 'px';
-
         let catOpen = true;
         const toggleCat = () => {
           catOpen = !catOpen;
           catBtn.title = catOpen ? t('collapse') : t('expand');
-          catIcon.classList.toggle('rotate-180', catOpen);
+          catIcon.classList.toggle('fa-caret-up', catOpen);
+          catIcon.classList.toggle('fa-caret-down', !catOpen);
           catContent.classList.toggle('hidden', !catOpen);
         };
-
-        catIcon.classList.add('rotate-180');
 
         catBtn.addEventListener('click', e => {
           e.stopPropagation();
