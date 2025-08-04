@@ -1,7 +1,7 @@
 {
   "tab_products": "Products",
   "tab_recipes": "Recipes",
-  "tab_history": "Meal History",
+  "tab_history": "Dishes History",
   "tab_shopping": "Shopping List",
   "tab_settings": "Settings",
   "heading_products": "Products",
@@ -69,7 +69,7 @@
   "yes": "Yes",
   "no": "No",
   "checkbox_favorite_label": "Favorite",
-  "heading_history": "Meal History",
+  "heading_history": "Dishes History",
   "heading_shopping": "Shopping List",
   "heading_settings": "Settings",
   "receipt_import": "Import from receipt",

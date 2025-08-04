@@ -28,6 +28,9 @@
     <button id="install-btn" aria-label="Install app" class="text-xl p-2 bg-transparent border-0" style="display:none;">
         <i class="fa-solid fa-download"></i>
     </button>
+    <button id="settings-btn" aria-label="Settings" class="text-xl p-2 bg-transparent border-0">
+        <i class="fa-solid fa-gear"></i>
+    </button>
 </div>
 <div class="max-w-screen-lg mx-auto px-4 py-6 main-container">
     <div class="tabs tabs-bordered flex-nowrap overflow-x-auto whitespace-nowrap mb-6 desktop-nav">
@@ -35,7 +38,6 @@
         <a class="tab" data-tab-target="tab-recipes" data-i18n="tab_recipes">Przepisy</a>
         <a class="tab" data-tab-target="tab-history" data-i18n="tab_history">Historia dań</a>
         <a class="tab" data-tab-target="tab-shopping" data-i18n="tab_shopping">Lista zakupów</a>
-        <a class="tab" data-tab-target="tab-settings" data-i18n="tab_settings">Ustawienia</a>
     </div>
         <div id="tab-products" class="tab-panel">
             <h1 class="text-2xl font-bold mb-4" data-i18n="heading_products">Produkty</h1>
@@ -317,16 +319,16 @@
         </div>
 
     </div>
-    <nav class="mobile-nav bottom-0 fixed w-full z-50 bg-base-100 border-t border-base-300 flex divide-x divide-base-300">
-        <a class="tab tab-active font-bold flex flex-col items-center justify-center flex-1 py-3 px-2" data-tab-target="tab-products">
+    <nav class="mobile-nav fixed bottom-0 left-0 w-full z-50 bg-base-100 border-t border-base-300 flex">
+        <a class="tab tab-active font-bold flex flex-col items-center justify-center flex-1 py-3 px-2 border-r border-base-300" data-tab-target="tab-products">
             <i class="fa-solid fa-box text-xl"></i>
             <span class="text-xs" data-i18n="tab_products">Produkty</span>
         </a>
-        <a class="tab flex flex-col items-center justify-center flex-1 py-3 px-2" data-tab-target="tab-recipes">
+        <a class="tab flex flex-col items-center justify-center flex-1 py-3 px-2 border-r border-base-300" data-tab-target="tab-recipes">
             <i class="fa-solid fa-utensils text-xl"></i>
             <span class="text-xs" data-i18n="tab_recipes">Przepisy</span>
         </a>
-        <a class="tab flex flex-col items-center justify-center flex-1 py-3 px-2" data-tab-target="tab-history">
+        <a class="tab flex flex-col items-center justify-center flex-1 py-3 px-2 border-r border-base-300" data-tab-target="tab-history">
             <i class="fa-solid fa-clock-rotate-left text-xl"></i>
             <span class="text-xs" data-i18n="tab_history">Historia dań</span>
         </a>

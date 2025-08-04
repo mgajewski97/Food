@@ -405,6 +405,15 @@ function checkLowStockToast() {
     });
   });
 
+  const settingsBtn = document.getElementById('settings-btn');
+  if (settingsBtn) {
+    settingsBtn.addEventListener('click', () => {
+      activateTab('tab-settings');
+      localStorage.setItem('activeTab', 'tab-settings');
+      renderUnitsAdmin();
+    });
+  }
+
   const saveUnitsBtn = document.getElementById('units-save');
   if (saveUnitsBtn) {
     saveUnitsBtn.addEventListener('click', async (e) => {
