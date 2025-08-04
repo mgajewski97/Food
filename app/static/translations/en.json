@@ -12,6 +12,8 @@
   "state_filter_all": "All",
   "change_view_toggle_grouped": "Categories view",
   "change_view_toggle_flat": "Flat list",
+  "theme_light": "Light mode",
+  "theme_dark": "Dark mode",
   "edit_mode_button_on": "Edit",
   "edit_mode_button_off": "Finish editing",
   "save_button": "Save",

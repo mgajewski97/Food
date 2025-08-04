@@ -13,6 +13,7 @@ let currentRecipeName = null;
 let currentRecipeSort = 'name';
 let cookingState = { recipe: null, step: 0 };
 let touchStartX = 0;
+let cornerIconsTop = true;
 
 let uiTranslations = { pl: {}, en: {} };
 let translations = { products: {} };
@@ -20,6 +21,17 @@ let units = {};
 
 const html = document.documentElement;
 const layoutIcon = document.getElementById('layout-icon');
+const cornerIcons = document.querySelector('.corner-icons');
+const topSentinel = document.getElementById('top-sentinel');
+
+function updateCornerIconsVisibility() {
+  if (!cornerIcons) return;
+  if (html.getAttribute('data-layout') === 'mobile') {
+    cornerIcons.style.display = cornerIconsTop ? 'flex' : 'none';
+  } else {
+    cornerIcons.style.display = 'flex';
+  }
+}
 let state = {
   displayMode: html.getAttribute('data-layout') || 'desktop',
   expandedStorages: {},
@@ -32,6 +44,7 @@ function setDisplayMode(mode) {
   if (layoutIcon) {
     layoutIcon.className = mode === 'desktop' ? 'fa-regular fa-mobile' : 'fa-solid fa-desktop';
   }
+  updateCornerIconsVisibility();
 }
 
 function detectInitialDisplayMode() {
@@ -44,6 +57,15 @@ function detectInitialDisplayMode() {
 }
 
 detectInitialDisplayMode();
+updateCornerIconsVisibility();
+
+if (topSentinel && cornerIcons) {
+  const observer = new IntersectionObserver(entries => {
+    cornerIconsTop = entries[0].isIntersecting;
+    updateCornerIconsVisibility();
+  });
+  observer.observe(topSentinel);
+}
 
 async function loadTranslations() {
   try {
@@ -310,6 +332,7 @@ function checkLowStockToast() {
     document.documentElement.setAttribute('lang', currentLang);
     UNIT = 'szt';
     applyTranslations();
+    updateThemeToggleLabel();
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/service-worker.js');
     }
@@ -335,6 +358,7 @@ function checkLowStockToast() {
         document.documentElement.setAttribute('lang', currentLang);
         UNIT = 'szt';
         applyTranslations();
+        updateThemeToggleLabel();
         renderUnitsAdmin();
         if (activeTarget) {
           document.querySelectorAll('.tab-panel').forEach(panel => (panel.style.display = 'none'));
@@ -1295,6 +1319,13 @@ if (cookingOverlay) {
 // Theme toggle
 const themeToggle = document.getElementById('theme-toggle');
 const themeIcon = document.getElementById('theme-icon');
+function updateThemeToggleLabel() {
+  if (!themeToggle) return;
+  const key = document.documentElement.getAttribute('data-theme') === 'dark' ? 'theme_light' : 'theme_dark';
+  const label = t(key);
+  themeToggle.setAttribute('aria-label', label);
+  themeToggle.setAttribute('title', label);
+}
 if (themeToggle && themeIcon) {
   themeToggle.addEventListener('click', () => {
     const html = document.documentElement;
@@ -1302,6 +1333,7 @@ if (themeToggle && themeIcon) {
     const next = current === 'dark' ? 'light' : 'dark';
     html.setAttribute('data-theme', next);
     themeIcon.className = 'fa-solid fa-circle-half-stroke';
+    updateThemeToggleLabel();
   });
 }
 
