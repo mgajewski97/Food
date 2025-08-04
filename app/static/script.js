@@ -60,10 +60,13 @@ detectInitialDisplayMode();
 updateCornerIconsVisibility();
 
 if (topSentinel && cornerIcons) {
-  const observer = new IntersectionObserver(entries => {
-    cornerIconsTop = entries[0].isIntersecting;
-    updateCornerIconsVisibility();
-  });
+  const observer = new IntersectionObserver(
+    entries => {
+      cornerIconsTop = entries[0].intersectionRatio === 1;
+      updateCornerIconsVisibility();
+    },
+    { threshold: [0, 1] }
+  );
   observer.observe(topSentinel);
 }
 
