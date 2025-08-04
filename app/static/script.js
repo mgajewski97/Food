@@ -1674,3 +1674,21 @@ async function handleReceiptUpload(file) {
   });
 }
 
+// Toggle mobile tab labels based on scroll direction
+const mobileNav = document.querySelector('.mobile-nav');
+let lastScroll = 0;
+window.addEventListener(
+  'scroll',
+  () => {
+    if (!mobileNav || html.getAttribute('data-layout') !== 'mobile') return;
+    const current = window.pageYOffset || document.documentElement.scrollTop;
+    if (current > lastScroll) {
+      mobileNav.classList.remove('labels-hidden');
+    } else if (current < lastScroll) {
+      mobileNav.classList.add('labels-hidden');
+    }
+    lastScroll = current <= 0 ? 0 : current;
+  },
+  { passive: true }
+);
+

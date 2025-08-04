@@ -95,6 +95,17 @@ html[data-layout="mobile"] .desktop-nav {
 }
 html[data-layout="mobile"] .mobile-nav {
   display: flex;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+}
+html[data-layout="mobile"] .mobile-nav a {
+  transition: padding 0.2s ease;
+}
+html[data-layout="mobile"] .mobile-nav.labels-hidden a {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+html[data-layout="mobile"] .mobile-nav.labels-hidden span {
+  display: none;
 }
 html[data-layout="mobile"] body {
   padding-bottom: 4.5rem;
