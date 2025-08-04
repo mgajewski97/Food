@@ -4,26 +4,32 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Food App</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192x192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Food App">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.10.2/dist/full.min.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body class="min-h-screen bg-base-100">
-    <div id="toast-container" class="toast toast-end toast-top"></div>
-    <div class="corner-icons">
-        <button id="layout-toggle" class="text-xl p-2 bg-transparent border-0"><i id="layout-icon" class="fa-solid fa-mobile-screen-button"></i></button>
-        <button id="lang-toggle" class="text-xl p-2 bg-transparent border-0">PL</button>
-        <button id="theme-toggle" class="text-xl p-2 bg-transparent border-0"><i id="theme-icon" class="fa-solid fa-circle-half-stroke"></i></button>
+<div id="toast-container" class="toast toast-end toast-top"></div>
+<div class="corner-icons">
+    <button id="layout-toggle" class="text-xl p-2 bg-transparent border-0"><i id="layout-icon" class="fa-solid fa-mobile-screen-button"></i></button>
+    <button id="lang-toggle" class="text-xl p-2 bg-transparent border-0">PL</button>
+    <button id="theme-toggle" class="text-xl p-2 bg-transparent border-0"><i id="theme-icon" class="fa-solid fa-circle-half-stroke"></i></button>
+    <button id="install-btn" class="text-xl p-2 bg-transparent border-0" style="display:none;"><i class="fa-solid fa-download"></i></button>
+</div>
+<div class="max-w-screen-lg mx-auto px-4 py-6 main-container">
+    <div class="tabs tabs-bordered flex-nowrap overflow-x-auto whitespace-nowrap mb-6">
+        <a class="tab tab-active font-bold" data-tab-target="tab-products" data-i18n="tab_products">Produkty</a>
+        <a class="tab" data-tab-target="tab-recipes" data-i18n="tab_recipes">Przepisy</a>
+        <a class="tab" data-tab-target="tab-history" data-i18n="tab_history">Historia</a>
+        <a class="tab" data-tab-target="tab-shopping" data-i18n="tab_shopping">Lista zakupów</a>
+        <a class="tab" data-tab-target="tab-settings" data-i18n="tab_settings">Ustawienia</a>
     </div>
-    <div class="max-w-screen-lg mx-auto px-4 py-6 main-container">
-        <div class="tabs tabs-bordered flex-nowrap overflow-x-auto whitespace-nowrap mb-6">
-            <a class="tab tab-active font-bold" data-tab-target="tab-products" data-i18n="tab_products">Produkty</a>
-            <a class="tab" data-tab-target="tab-recipes" data-i18n="tab_recipes">Przepisy</a>
-            <a class="tab" data-tab-target="tab-history" data-i18n="tab_history">Historia</a>
-            <a class="tab" data-tab-target="tab-shopping" data-i18n="tab_shopping">Lista zakupów</a>
-            <a class="tab" data-tab-target="tab-settings" data-i18n="tab_settings">Ustawienia</a>
-        </div>
-
         <div id="tab-products" class="tab-panel">
             <h1 class="text-2xl font-bold mb-4" data-i18n="heading_products">Produkty</h1>
             <div id="controls" class="flex flex-wrap items-center gap-4 mb-4">

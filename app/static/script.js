@@ -260,6 +260,19 @@ function checkLowStockToast() {
     document.documentElement.setAttribute('lang', currentLang);
     UNIT = 'szt';
     applyTranslations();
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js');
+    }
+    const installBtn = document.getElementById('install-btn');
+    if (installBtn) {
+      installBtn.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        installBtn.style.display = 'none';
+      });
+    }
   const html = document.documentElement;
   const icon = document.getElementById('layout-icon');
   if (window.innerWidth < 768) {
