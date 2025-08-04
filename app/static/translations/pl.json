@@ -94,6 +94,8 @@
   "recipe_done_mod_button": "Zrobione (ze zmianami)",
   "ingredient_placeholder": "składnik",
   "quantity_placeholder_ing": "ilość",
+  "toast_low_stock": "Niektóre produkty się kończą! Przejrzyj listę zakupów.",
+  "toast_hide": "Ukryj",
   "product.toast_bread": "Pieczywo tostowe",
   "product.eggs": "Jajka",
   "product.natural_tofu": "Tofu naturalne",
