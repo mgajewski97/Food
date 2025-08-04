@@ -84,6 +84,8 @@
   "recipe_done_mod_button": "Done (modified)",
   "ingredient_placeholder": "ingredient",
   "quantity_placeholder_ing": "quantity",
+  "toast_low_stock": "Some products are running low! Check the shopping list.",
+  "toast_hide": "Hide",
   "product.toast_bread": "Toast bread",
   "product.eggs": "Eggs",
   "product.natural_tofu": "Natural tofu",

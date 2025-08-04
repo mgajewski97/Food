@@ -5,6 +5,7 @@ let pendingDelete = [];
 let currentLang = localStorage.getItem('lang') || 'pl';
 let UNIT = '';
 const LOW_STOCK_CLASS = 'text-error bg-error/10';
+let lowStockToastShown = false;
 
 let shoppingList = JSON.parse(localStorage.getItem('shoppingList') || '[]');
 let pendingRemoveIndex = null;
@@ -163,6 +164,40 @@ function sortProducts(list) {
   });
 }
 
+function showLowStockToast() {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+  container.innerHTML = '';
+  const alert = document.createElement('div');
+  alert.className = 'alert alert-warning';
+  const span = document.createElement('span');
+  span.textContent = t('toast_low_stock');
+  const btn = document.createElement('button');
+  btn.className = 'btn btn-sm ml-4';
+  btn.textContent = t('toast_hide');
+  btn.addEventListener('click', () => {
+    container.innerHTML = '';
+  });
+  alert.appendChild(span);
+  alert.appendChild(btn);
+  container.appendChild(alert);
+}
+
+function checkLowStockToast() {
+  const low = (window.currentProducts || []).some(p => p.main && p.threshold !== null && p.quantity <= p.threshold);
+  const container = document.getElementById('toast-container');
+  if (low) {
+    if (!lowStockToastShown) {
+      lowStockToastShown = true;
+      showLowStockToast();
+    } else if (container && container.childElementCount) {
+      container.querySelector('span').textContent = t('toast_low_stock');
+      const btn = container.querySelector('button');
+      if (btn) btn.textContent = t('toast_hide');
+    }
+  }
+}
+
   document.addEventListener('DOMContentLoaded', async () => {
     await loadTranslations();
     document.documentElement.setAttribute('lang', currentLang);
@@ -197,6 +232,7 @@ function sortProducts(list) {
         loadHistory();
         renderSuggestions();
         renderShoppingList();
+        checkLowStockToast();
       });
     }
 
@@ -458,6 +494,7 @@ async function loadProducts() {
   updateDatalist();
   renderSuggestions();
   renderShoppingList();
+  checkLowStockToast();
 }
 
 function getFilteredProducts() {
