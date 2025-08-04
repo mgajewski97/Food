@@ -16,11 +16,17 @@
 </head>
 <body class="min-h-screen bg-base-100">
 <div id="toast-container" class="toast toast-end toast-top"></div>
-<div class="corner-icons">
-    <button id="layout-toggle" class="text-xl p-2 bg-transparent border-0"><i id="layout-icon" class="fa-solid fa-mobile-screen-button"></i></button>
-    <button id="lang-toggle" class="text-xl p-2 bg-transparent border-0">PL</button>
-    <button id="theme-toggle" class="text-xl p-2 bg-transparent border-0"><i id="theme-icon" class="fa-solid fa-circle-half-stroke"></i></button>
-    <button id="install-btn" class="text-xl p-2 bg-transparent border-0" style="display:none;"><i class="fa-solid fa-download"></i></button>
+<div class="corner-icons flex justify-end gap-3 p-2">
+    <button id="layout-toggle" aria-label="Toggle layout" class="text-xl p-2 bg-transparent border-0">
+        <i id="layout-icon" class="fa-solid fa-mobile-screen-button"></i>
+    </button>
+    <button id="lang-toggle" aria-label="Toggle language" class="text-xl p-2 bg-transparent border-0">PL</button>
+    <button id="theme-toggle" aria-label="Toggle theme" class="text-xl p-2 bg-transparent border-0">
+        <i id="theme-icon" class="fa-solid fa-circle-half-stroke"></i>
+    </button>
+    <button id="install-btn" aria-label="Install app" class="text-xl p-2 bg-transparent border-0" style="display:none;">
+        <i class="fa-solid fa-download"></i>
+    </button>
 </div>
 <div class="max-w-screen-lg mx-auto px-4 py-6 main-container">
     <div class="tabs tabs-bordered flex-nowrap overflow-x-auto whitespace-nowrap mb-6">

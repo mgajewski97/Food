@@ -16,14 +16,12 @@ html[data-layout="desktop"] .main-container {
   position: fixed;
   top: 1rem;
   right: 1rem;
-  display: flex;
-  gap: 1rem;
+  padding: 0.5rem;
 }
 
 html[data-layout="mobile"] .corner-icons {
   top: 0.5rem;
-  left: auto;
-  right: 1rem;
+  right: 0.5rem;
 }
 
 html[data-layout="mobile"] #controls {
