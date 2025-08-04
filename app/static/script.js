@@ -775,12 +775,12 @@ function renderProducts(data) {
   );
   storOrder.forEach((stor, storIndex) => {
     const storageBlock = document.createElement('div');
-    storageBlock.className = 'storage-block border border-base-300 rounded-lg p-4 mb-6';
+    storageBlock.className = 'storage-block border border-base-300 rounded-lg p-4 mb-4';
     storageBlock.id = `storage-${storIndex}`;
 
     const storageHeader = document.createElement('div');
     storageHeader.className =
-      'flex justify-between items-center mb-4 rounded px-2 cursor-pointer md:cursor-default hover:bg-neutral/20 md:hover:bg-transparent';
+      'flex justify-between items-center mb-2 rounded px-2 cursor-pointer md:cursor-default hover:bg-neutral/20 md:hover:bg-transparent';
     storageHeader.id = `storage-header-${storIndex}`;
 
     const h3 = document.createElement('h3');
@@ -788,8 +788,7 @@ function renderProducts(data) {
     h3.textContent = `${STORAGE_ICONS[stor] || ''} ${storageName(stor)}`;
 
     const storToggle = document.createElement('button');
-    storToggle.className =
-      'text-xl cursor-pointer bg-transparent border-0 p-0 transition-transform';
+    storToggle.className = 'text-xl cursor-pointer bg-transparent border-0 p-0 transition-transform';
     const storIcon = document.createElement('i');
     storIcon.className = 'fa-regular fa-caret-down transition-transform';
     storToggle.appendChild(storIcon);
@@ -800,8 +799,7 @@ function renderProducts(data) {
     storageBlock.appendChild(storageHeader);
 
     const storageContent = document.createElement('div');
-    storageContent.className =
-      'space-y-2 overflow-hidden transition-all duration-300';
+    storageContent.className = 'space-y-2 mt-2';
     storageBlock.appendChild(storageContent);
 
     let storOpen = true;
@@ -809,9 +807,7 @@ function renderProducts(data) {
       storOpen = !storOpen;
       storToggle.title = storOpen ? t('collapse') : t('expand');
       storIcon.classList.toggle('rotate-180', storOpen);
-      storageContent.style.maxHeight = storOpen
-        ? storageContent.scrollHeight + 'px'
-        : '0';
+      storageContent.classList.toggle('hidden', !storOpen);
     };
 
     storIcon.classList.add('rotate-180');
@@ -831,21 +827,18 @@ function renderProducts(data) {
         if (!categories[cat].length) return;
 
         const categoryBlock = document.createElement('div');
-        categoryBlock.className =
-          'category-block border border-base-300 rounded mb-4';
+        categoryBlock.className = 'category-block border border-base-300 rounded mb-4';
         categoryBlock.id = `category-${storIndex}-${catIndex}`;
 
         const catHeader = document.createElement('div');
-        catHeader.className =
-          'flex items-center justify-between px-2 py-1 bg-base-100 rounded-t';
+        catHeader.className = 'flex items-center justify-between px-2 py-1 bg-base-100 rounded-t';
         const titleSpan = document.createElement('span');
         titleSpan.textContent = categoryName(cat);
         catHeader.appendChild(titleSpan);
 
         const catBtn = document.createElement('button');
         catBtn.type = 'button';
-        catBtn.className =
-          'text-lg bg-transparent border-0 p-0 md:cursor-pointer cursor-pointer transition-transform';
+        catBtn.className = 'text-lg bg-transparent border-0 p-0 md:cursor-pointer cursor-pointer transition-transform';
         const catIcon = document.createElement('i');
         catIcon.className = 'fa-regular fa-caret-down transition-transform';
         catBtn.appendChild(catIcon);
@@ -855,8 +848,7 @@ function renderProducts(data) {
         categoryBlock.appendChild(catHeader);
 
         const catContent = document.createElement('div');
-        catContent.className =
-          'overflow-hidden transition-all duration-300 rounded-b';
+        catContent.className = 'mt-2 rounded-b';
 
         const table = document.createElement('table');
         table.className = 'table table-zebra w-full';
@@ -919,16 +911,12 @@ function renderProducts(data) {
         categoryBlock.appendChild(catContent);
         storageContent.appendChild(categoryBlock);
 
-        catContent.style.maxHeight = catContent.scrollHeight + 'px';
-
         let catOpen = true;
         const toggleCat = () => {
           catOpen = !catOpen;
           catBtn.title = catOpen ? t('collapse') : t('expand');
           catIcon.classList.toggle('rotate-180', catOpen);
-          catContent.style.maxHeight = catOpen
-            ? catContent.scrollHeight + 'px'
-            : '0';
+          catContent.classList.toggle('hidden', !catOpen);
         };
 
         catIcon.classList.add('rotate-180');
@@ -946,7 +934,6 @@ function renderProducts(data) {
           }
         });
       });
-    storageContent.style.maxHeight = storageContent.scrollHeight + 'px';
     container.appendChild(storageBlock);
   });
 }
