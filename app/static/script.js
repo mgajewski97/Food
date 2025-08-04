@@ -792,7 +792,8 @@ function renderProducts(data) {
     storageBlock.appendChild(storageHeader);
 
     const storageContent = document.createElement('div');
-    storageContent.className = 'mt-2';
+    storageContent.className =
+      'mt-2 overflow-hidden transition-all duration-300';
     storageBlock.appendChild(storageContent);
 
     let storOpen = true;
@@ -832,28 +833,35 @@ function renderProducts(data) {
         if (!categories[cat].length) return;
 
         const categoryBlock = document.createElement('div');
-        categoryBlock.className = 'category-block border border-base-300 rounded';
+        categoryBlock.className =
+          'category-block border border-base-300 rounded mb-4';
         categoryBlock.id = `category-${storIndex}-${catIndex}`;
 
         const catHeader = document.createElement('div');
-        catHeader.className = 'flex items-center justify-between px-2 py-1 sm:px-4 sm:py-2 bg-base-100 rounded-t mb-2';
+        catHeader.className = 'rounded px-2';
+        const h4 = document.createElement('h4');
+        h4.className = 'text-xl font-semibold flex items-center gap-2 mb-0';
         const titleSpan = document.createElement('span');
         titleSpan.textContent = categoryName(cat);
-        catHeader.appendChild(titleSpan);
+        h4.appendChild(titleSpan);
 
         const catBtn = document.createElement('button');
         catBtn.type = 'button';
-        catBtn.className = 'flex items-center text-lg bg-transparent border-0 p-0 md:cursor-pointer cursor-pointer';
+        catBtn.className =
+          'ml-2 text-lg inline-flex items-center cursor-pointer bg-transparent border-0 p-0';
         const catIcon = document.createElement('i');
-        catIcon.className = 'fa-regular fa-caret-up';
+        catIcon.className = 'fa-regular fa-caret-up transition-transform';
         catBtn.appendChild(catIcon);
-        catBtn.title = t('collapse');
-        catHeader.appendChild(catBtn);
-
+        const catInitialTitle = t('collapse');
+        catBtn.title = catInitialTitle;
+        catBtn.setAttribute('aria-label', catInitialTitle);
+        h4.appendChild(catBtn);
+        catHeader.appendChild(h4);
         categoryBlock.appendChild(catHeader);
 
         const catContent = document.createElement('div');
-        catContent.className = 'rounded-b overflow-hidden';
+        catContent.className =
+          'overflow-hidden transition-all duration-300';
 
         const table = document.createElement('table');
         table.className = 'table table-zebra w-full';
@@ -916,13 +924,31 @@ function renderProducts(data) {
         categoryBlock.appendChild(catContent);
         storageContent.appendChild(categoryBlock);
 
+        catContent.style.maxHeight = catContent.scrollHeight + 'px';
+
         let catOpen = true;
         const toggleCat = () => {
           catOpen = !catOpen;
-          catBtn.title = catOpen ? t('collapse') : t('expand');
-          catIcon.classList.toggle('fa-caret-up', catOpen);
-          catIcon.classList.toggle('fa-caret-down', !catOpen);
-          catContent.classList.toggle('hidden', !catOpen);
+          const title = catOpen ? t('collapse') : t('expand');
+          catBtn.title = title;
+          catBtn.setAttribute('aria-label', title);
+          catIcon.classList.add('rotate-180');
+          catIcon.addEventListener(
+            'transitionend',
+            () => {
+              catIcon.classList.remove('rotate-180');
+              catIcon.classList.toggle('fa-caret-up', catOpen);
+              catIcon.classList.toggle('fa-caret-down', !catOpen);
+            },
+            { once: true }
+          );
+          catContent.style.maxHeight = catOpen
+            ? catContent.scrollHeight + 'px'
+            : '0';
+          if (storOpen) {
+            storageContent.style.maxHeight =
+              storageContent.scrollHeight + 'px';
+          }
         };
 
         catBtn.addEventListener('click', e => {
