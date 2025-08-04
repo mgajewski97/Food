@@ -1426,8 +1426,8 @@ function renderSuggestions() {
 
     const acceptTd = document.createElement('td');
     const acceptBtn = document.createElement('button');
-    acceptBtn.className = 'text-success';
-    acceptBtn.innerHTML = '<i class="fa-regular fa-circle-check"></i>';
+    acceptBtn.className = 'text-success text-xl';
+    acceptBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
     acceptBtn.setAttribute('aria-label', t('accept'));
     acceptBtn.addEventListener('click', () => {
       addToShoppingList(p.name, parseInt(qtyInput.value) || 1);
@@ -1438,8 +1438,8 @@ function renderSuggestions() {
 
     const rejectTd = document.createElement('td');
     const rejectBtn = document.createElement('button');
-    rejectBtn.className = 'text-error';
-    rejectBtn.innerHTML = '<i class="fa-regular fa-circle-xmark"></i>';
+    rejectBtn.className = 'text-error text-xl';
+    rejectBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
     rejectBtn.setAttribute('aria-label', t('reject'));
     rejectBtn.addEventListener('click', () => tr.remove());
     rejectTd.appendChild(rejectBtn);
