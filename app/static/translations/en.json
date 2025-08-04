@@ -55,7 +55,7 @@
   "storage_fridge": "Fridge",
   "storage_pantry": "Pantry",
   "storage_freezer": "Freezer",
-  "checkbox_main_label": "Main",
+  "checkbox_main_label": "Main product",
   "heading_edit_json": "Edit products (JSON)",
   "edit_json_placeholder": "JSON",
   "edit_json_submit_button": "Submit JSON",
