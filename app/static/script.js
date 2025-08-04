@@ -318,18 +318,8 @@ function checkLowStockToast() {
 
   document.querySelectorAll('[data-tab-target]').forEach(tab => {
     tab.addEventListener('click', () => {
-      document.querySelectorAll('[data-tab-target]').forEach(t => t.classList.remove('tab-active', 'font-bold'));
-      tab.classList.add('tab-active', 'font-bold');
-      document.querySelectorAll('.tab-panel').forEach(panel => (panel.style.display = 'none'));
       const targetId = tab.dataset.tabTarget;
-      const panel = document.getElementById(targetId);
-      if (panel) panel.style.display = 'block';
-      if (targetId !== 'tab-history') {
-        const overlay = document.getElementById('cooking-overlay');
-        if (overlay) overlay.classList.add('hidden');
-        const modal = document.getElementById('rating-modal');
-        if (modal) modal.close();
-      }
+      activateTab(targetId);
       if (targetId === 'tab-products') {
         loadProducts();
       } else if (targetId === 'tab-recipes') {
@@ -1052,6 +1042,12 @@ function activateTab(targetId) {
   document.querySelectorAll('.tab-panel').forEach(panel => (panel.style.display = 'none'));
   const panel = document.getElementById(targetId);
   if (panel) panel.style.display = 'block';
+  if (targetId !== 'tab-history') {
+    const overlay = document.getElementById('cooking-overlay');
+    if (overlay) overlay.classList.add('hidden');
+    const modal = document.getElementById('rating-modal');
+    if (modal) modal.close();
+  }
 }
 
 function openRatingModal(recipe) {
