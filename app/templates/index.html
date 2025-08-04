@@ -121,30 +121,47 @@
 
         <div id="tab-recipes" class="tab-panel" style="display:none;">
             <h1 class="text-2xl font-bold mb-4" data-i18n="heading_recipes">Przepisy</h1>
+            <div class="mb-4">
+                <label for="recipe-sort" class="mr-2" data-i18n="recipe_sort_label">Sortuj wg:</label>
+                <select id="recipe-sort" class="select select-bordered w-full max-w-xs">
+                    <option value="name" data-i18n="recipe_sort_name">Nazwa</option>
+                    <option value="taste" data-i18n="recipe_sort_taste">Smak</option>
+                    <option value="time" data-i18n="recipe_sort_time">Czas przygotowania</option>
+                </select>
+            </div>
             <ul id="recipe-list" class="list-disc pl-4 mb-8"></ul>
 
-            <form id="history-form" style="display:none;" class="space-y-2">
-                <h2 id="history-title" class="text-xl font-semibold"></h2>
-                <input type="hidden" name="name" id="history-name">
-                <div id="used-ingredients"></div>
-                <button type="button" id="add-ingredient" style="display:none;" class="btn btn-outline btn-primary btn-sm" data-i18n="add_ingredient_button">Dodaj składnik</button>
-                <div class="flex items-center gap-2">
-                    <span data-i18n="label_followed_recipe">Czy przygotowano według przepisu?</span>
-                    <input type="checkbox" id="followed-exactly" class="toggle" checked>
-                </div>
-                <div id="comment-wrapper" style="display:none;">
-                    <textarea id="history-comment" name="comment" class="textarea textarea-bordered w-full" data-i18n="comment_placeholder"></textarea>
-                </div>
-                <div class="flex gap-4">
-                    <label><span data-i18n="label_taste">Smak:</span> <input type="number" name="taste" min="1" max="5" class="input input-bordered w-16"></label>
-                    <label><span data-i18n="label_effort">Wysiłek:</span> <input type="number" name="effort" min="1" max="5" class="input input-bordered w-16"></label>
-                </div>
-                <label class="flex items-center gap-2"><input type="checkbox" name="favorite" class="checkbox"> <span data-i18n="checkbox_favorite_label">Ulubione</span></label>
-                <div class="flex gap-4">
-                    <button type="submit" class="btn btn-success btn-sm" data-i18n="save_button">Zapisz</button>
-                    <button type="button" id="history-cancel" class="btn btn-outline btn-sm" data-i18n="delete_cancel_button">Anuluj</button>
-                </div>
-            </form>
+            <dialog id="rating-modal" class="modal">
+                <form method="dialog" id="rating-form" class="modal-box">
+                    <h3 id="rating-title" class="font-bold text-lg"></h3>
+                    <div class="py-4 space-y-4">
+                        <div>
+                            <span data-i18n="label_taste" class="block mb-2">Smak:</span>
+                            <div class="rating">
+                                <input type="radio" name="taste" value="1" class="mask mask-star-2 bg-orange-400" required />
+                                <input type="radio" name="taste" value="2" class="mask mask-star-2 bg-orange-400" />
+                                <input type="radio" name="taste" value="3" class="mask mask-star-2 bg-orange-400" />
+                                <input type="radio" name="taste" value="4" class="mask mask-star-2 bg-orange-400" />
+                                <input type="radio" name="taste" value="5" class="mask mask-star-2 bg-orange-400" />
+                            </div>
+                        </div>
+                        <div>
+                            <span data-i18n="label_prep_time" class="block mb-2">Czas przygotowania:</span>
+                            <div class="rating">
+                                <input type="radio" name="time" value="1" class="mask mask-star-2 bg-orange-400" required />
+                                <input type="radio" name="time" value="2" class="mask mask-star-2 bg-orange-400" />
+                                <input type="radio" name="time" value="3" class="mask mask-star-2 bg-orange-400" />
+                                <input type="radio" name="time" value="4" class="mask mask-star-2 bg-orange-400" />
+                                <input type="radio" name="time" value="5" class="mask mask-star-2 bg-orange-400" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-action">
+                        <button type="submit" class="btn btn-success btn-sm" data-i18n="save_button">Zapisz</button>
+                        <button type="button" id="rating-cancel" class="btn btn-outline btn-sm" data-i18n="delete_cancel_button">Anuluj</button>
+                    </div>
+                </form>
+            </dialog>
         </div>
 
         <div id="tab-history" class="tab-panel" style="display:none;">
