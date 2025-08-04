@@ -87,38 +87,40 @@
             <hr class="border-t border-base-300 my-6">
 
             <h2 class="text-xl font-semibold mt-6 mb-4" data-i18n="heading_add_edit_product">Dodaj / edytuj produkt</h2>
-            <form id="add-form" class="grid grid-cols-1 sm:grid-cols-8 gap-2 mb-8">
+            <form id="add-form" class="grid grid-cols-1 sm:grid-cols-8 gap-2 mb-8 items-end">
                 <input name="name" placeholder="nazwa" data-i18n="add_form_name_placeholder" required class="input input-bordered w-full">
                 <input name="quantity" placeholder="ilość" data-i18n="add_form_quantity_placeholder" required class="input input-bordered w-full">
                 <input name="package_size" placeholder="w opak." data-i18n="add_form_package_size_placeholder" class="input input-bordered w-full" type="number" value="1">
                 <input name="pack_size" placeholder="paczka" data-i18n="add_form_pack_size_placeholder" class="input input-bordered w-full" type="number">
                 <input name="threshold" placeholder="próg" data-i18n="add_form_threshold_placeholder" class="input input-bordered w-full" type="number">
-                <select name="category" required class="select select-bordered w-full">
-                    <option value="uncategorized" data-i18n="category_uncategorized">brak kategorii</option>
-                    <option value="fresh_veg" data-i18n="category_fresh_veg">Świeże warzywa</option>
-                    <option value="mushrooms" data-i18n="category_mushrooms">Grzyby</option>
-                    <option value="dairy_eggs" data-i18n="category_dairy_eggs">Nabiał i jajka</option>
-                    <option value="opened_preserves" data-i18n="category_opened_preserves">Otwarte konserwy i przetwory</option>
-                    <option value="ready_sauces" data-i18n="category_ready_sauces">Sosy</option>
-                    <option value="dry_veg" data-i18n="category_dry_veg">Warzywa suche</option>
-                    <option value="bread" data-i18n="category_bread">Pieczywo</option>
-                    <option value="pasta" data-i18n="category_pasta">Makarony</option>
-                    <option value="rice" data-i18n="category_rice">Ryże</option>
-                    <option value="grains" data-i18n="category_grains">Kasze</option>
-                    <option value="dried_legumes" data-i18n="category_dried_legumes">Suche rośliny strączkowe</option>
-                    <option value="sauces" data-i18n="category_sauces">Sosy i przyprawy płynne</option>
-                    <option value="oils" data-i18n="category_oils">Oleje</option>
-                    <option value="spreads" data-i18n="category_spreads">Smarowidła i pasty</option>
-                    <option value="frozen_veg" data-i18n="category_frozen_veg">Mrożone warzywa</option>
-                    <option value="frozen_sauces" data-i18n="category_frozen_sauces">Mrożone sosy</option>
-                    <option value="frozen_meals" data-i18n="category_frozen_meals">Mrożone dania / zupy</option>
-                </select>
+                <div class="flex flex-col gap-2 w-full">
+                    <select name="category" required class="select select-bordered w-full">
+                        <option value="uncategorized" data-i18n="category_uncategorized">brak kategorii</option>
+                        <option value="fresh_veg" data-i18n="category_fresh_veg">Świeże warzywa</option>
+                        <option value="mushrooms" data-i18n="category_mushrooms">Grzyby</option>
+                        <option value="dairy_eggs" data-i18n="category_dairy_eggs">Nabiał i jajka</option>
+                        <option value="opened_preserves" data-i18n="category_opened_preserves">Otwarte konserwy i przetwory</option>
+                        <option value="ready_sauces" data-i18n="category_ready_sauces">Sosy</option>
+                        <option value="dry_veg" data-i18n="category_dry_veg">Warzywa suche</option>
+                        <option value="bread" data-i18n="category_bread">Pieczywo</option>
+                        <option value="pasta" data-i18n="category_pasta">Makarony</option>
+                        <option value="rice" data-i18n="category_rice">Ryże</option>
+                        <option value="grains" data-i18n="category_grains">Kasze</option>
+                        <option value="dried_legumes" data-i18n="category_dried_legumes">Suche rośliny strączkowe</option>
+                        <option value="sauces" data-i18n="category_sauces">Sosy i przyprawy płynne</option>
+                        <option value="oils" data-i18n="category_oils">Oleje</option>
+                        <option value="spreads" data-i18n="category_spreads">Smarowidła i pasty</option>
+                        <option value="frozen_veg" data-i18n="category_frozen_veg">Mrożone warzywa</option>
+                        <option value="frozen_sauces" data-i18n="category_frozen_sauces">Mrożone sosy</option>
+                        <option value="frozen_meals" data-i18n="category_frozen_meals">Mrożone dania / zupy</option>
+                    </select>
+                    <label class="flex items-center gap-2 w-full"><input type="checkbox" name="main" class="checkbox"> <span data-i18n="checkbox_main_label">Główny produkt</span></label>
+                </div>
                 <select name="storage" required class="select select-bordered w-full">
                     <option value="fridge" data-i18n="storage_fridge">Lodówka</option>
                     <option value="pantry" selected data-i18n="storage_pantry">Szafka</option>
                     <option value="freezer" data-i18n="storage_freezer">Zamrażarka</option>
                 </select>
-                <label class="flex items-center gap-2"><input type="checkbox" name="main" class="checkbox"> <span data-i18n="checkbox_main_label">Podstawowy</span></label>
                 <button type="submit" class="btn btn-success btn-sm w-full sm:col-span-2" data-i18n="save_button">Zapisz</button>
             </form>
 
@@ -243,7 +245,7 @@
                     </table>
                 </div>
             </div>
-            <div id="manual-add-section" class="mb-8 p-4 border rounded">
+            <div id="manual-add-section" class="mb-8 mt-4 p-4 border-t border-base-300">
                 <h2 class="text-xl font-semibold mb-4" data-i18n="heading_add_product">Dodaj produkt</h2>
                 <div class="flex flex-wrap items-center gap-2">
                     <input id="manual-name" list="product-datalist" class="input input-bordered flex-1" placeholder="nazwa" data-i18n="add_form_name_placeholder">
