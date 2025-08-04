@@ -20,6 +20,7 @@
             <a class="tab" data-tab-target="tab-recipes" data-i18n="tab_recipes">Przepisy</a>
             <a class="tab" data-tab-target="tab-history" data-i18n="tab_history">Historia</a>
             <a class="tab" data-tab-target="tab-shopping" data-i18n="tab_shopping">Lista zakupów</a>
+            <a class="tab" data-tab-target="tab-settings" data-i18n="tab_settings">Ustawienia</a>
         </div>
 
         <div id="tab-products" class="tab-panel">
@@ -224,6 +225,24 @@
                     </div>
                 </form>
             </dialog>
+        </div>
+
+        <div id="tab-settings" class="tab-panel" style="display:none;">
+            <h1 class="text-2xl font-bold mb-4" data-i18n="heading_settings">Ustawienia</h1>
+            <h2 class="text-xl font-semibold mb-4" data-i18n="settings_units_header">Jednostki</h2>
+            <div class="overflow-x-auto">
+                <table id="units-table" class="table w-full">
+                    <thead>
+                        <tr>
+                            <th data-i18n="settings_unit_code">Kod</th>
+                            <th data-i18n="settings_unit_pl">Polski</th>
+                            <th data-i18n="settings_unit_en">Angielski</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <button id="units-save" class="btn btn-primary btn-sm mt-4" data-i18n="save_button">Zapisz</button>
         </div>
 
     </div>

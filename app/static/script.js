@@ -10,7 +10,8 @@ let shoppingList = JSON.parse(localStorage.getItem('shoppingList') || '[]');
 let pendingRemoveIndex = null;
 
 let uiTranslations = { pl: {}, en: {} };
-let translations = { products: {}, units: {} };
+let translations = { products: {} };
+let units = {};
 
 async function loadTranslations() {
   try {
@@ -23,20 +24,26 @@ async function loadTranslations() {
     uiTranslations.pl = pl;
     uiTranslations.en = en;
     translations.products = {};
-    translations.units = {};
     Object.entries(pl).forEach(([k, v]) => {
       if (k.startsWith('product.')) {
         const key = k.slice('product.'.length);
         translations.products[key] = { pl: v, en: en[k] || '(no translation)' };
-      } else if (k.startsWith('unit.')) {
-        const key = k.slice('unit.'.length);
-        translations.units[key] = { pl: v, en: en[k] || '(no translation)' };
       }
     });
   } catch (err) {
     console.error('Failed to load translations', err);
     uiTranslations = { pl: {}, en: {} };
-    translations = { products: {}, units: {} };
+    translations = { products: {} };
+  }
+}
+
+async function loadUnits() {
+  try {
+    const res = await fetch('/api/units');
+    units = await res.json();
+  } catch (err) {
+    console.error('Failed to load units', err);
+    units = {};
   }
 }
 
@@ -85,10 +92,55 @@ function productName(key) {
 }
 
 function unitName(key) {
-  if (!key || !key.startsWith('unit.')) return key;
-  const k = key.slice('unit.'.length);
-  const entry = translations.units[k];
-  return entry ? entry[currentLang] || '(no translation)' : '(no translation)';
+  if (!key) return key;
+  const entry = units[key];
+  return entry ? entry[currentLang] || '(no translation)' : key;
+}
+
+function renderUnitsAdmin() {
+  const tbody = document.querySelector('#units-table tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  Object.entries(units).forEach(([code, names]) => {
+    const tr = document.createElement('tr');
+    tr.dataset.code = code;
+    const codeTd = document.createElement('td');
+    codeTd.textContent = code;
+    tr.appendChild(codeTd);
+    const plTd = document.createElement('td');
+    const plInput = document.createElement('input');
+    plInput.value = names.pl || '';
+    plInput.className = 'input input-bordered w-full';
+    plTd.appendChild(plInput);
+    tr.appendChild(plTd);
+    const enTd = document.createElement('td');
+    const enInput = document.createElement('input');
+    enInput.value = names.en || '';
+    enInput.className = 'input input-bordered w-full';
+    enTd.appendChild(enInput);
+    tr.appendChild(enTd);
+    tbody.appendChild(tr);
+  });
+}
+
+async function saveUnitsFromAdmin() {
+  const tbody = document.querySelector('#units-table tbody');
+  if (!tbody) return;
+  const updated = {};
+  tbody.querySelectorAll('tr').forEach(tr => {
+    const code = tr.dataset.code;
+    const [plInput, enInput] = tr.querySelectorAll('input');
+    updated[code] = { pl: plInput.value.trim(), en: enInput.value.trim() };
+  });
+  await fetch('/api/units', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(updated)
+  });
+  units = updated;
+  renderUnitsAdmin();
+  renderProducts(getFilteredProducts());
+  renderShoppingList();
 }
 
 function applyTranslations() {
@@ -165,8 +217,9 @@ function sortProducts(list) {
 
   document.addEventListener('DOMContentLoaded', async () => {
     await loadTranslations();
+    await loadUnits();
     document.documentElement.setAttribute('lang', currentLang);
-    UNIT = t('unit_piece');
+    UNIT = 'szt';
     applyTranslations();
   const html = document.documentElement;
   const icon = document.getElementById('layout-icon');
@@ -185,8 +238,9 @@ function sortProducts(list) {
         const active = document.querySelector('[data-tab-target].tab-active');
         const activeTarget = active ? active.dataset.tabTarget : null;
         document.documentElement.setAttribute('lang', currentLang);
-        UNIT = t('unit_piece');
+        UNIT = 'szt';
         applyTranslations();
+        renderUnitsAdmin();
         if (activeTarget) {
           document.querySelectorAll('.tab-panel').forEach(panel => (panel.style.display = 'none'));
           const panel = document.getElementById(activeTarget);
@@ -219,9 +273,19 @@ function sortProducts(list) {
       } else if (targetId === 'tab-shopping') {
         renderSuggestions();
         renderShoppingList();
+      } else if (targetId === 'tab-settings') {
+        renderUnitsAdmin();
       }
     });
   });
+
+  const saveUnitsBtn = document.getElementById('units-save');
+  if (saveUnitsBtn) {
+    saveUnitsBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      await saveUnitsFromAdmin();
+    });
+  }
 
   document.getElementById('add-form').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -349,7 +413,7 @@ if (followedToggle && commentWrapper) {
         const newCat = catSelect.value;
         const newStor = storSelect.value;
         const nameChanged = newName !== productName(original.name);
-        const unitChanged = newUnit !== unitName(original.unit);
+        const unitChanged = newUnit !== original.unit;
         const qtyChanged = newQty !== original.quantity;
         const catChanged = newCat !== original.category;
         const storChanged = newStor !== original.storage;
@@ -358,15 +422,10 @@ if (followedToggle && commentWrapper) {
           if (!translations.products[key]) translations.products[key] = {};
           translations.products[key][currentLang] = newName;
         }
-        if (unitChanged) {
-          const key = original.unit.slice('unit.'.length);
-          if (!translations.units[key]) translations.units[key] = {};
-          translations.units[key][currentLang] = newUnit;
-        }
-        if (qtyChanged || catChanged || storChanged) {
+        if (qtyChanged || unitChanged || catChanged || storChanged) {
           updates.push({
             originalName: original.name,
-            updated: { ...original, name: original.name, quantity: newQty, unit: original.unit, category: newCat, storage: newStor }
+            updated: { ...original, name: original.name, quantity: newQty, unit: newUnit, category: newCat, storage: newStor }
           });
         }
       }
@@ -546,8 +605,7 @@ function renderProducts(data) {
       const unitTd = document.createElement('td');
       unitTd.className = 'px-2 py-1 sm:px-4 sm:py-2';
       const unitInput = document.createElement('input');
-      unitInput.value = unitName(p.unit);
-      unitInput.dataset.key = p.unit;
+      unitInput.value = p.unit;
       unitInput.className = 'edit-unit input input-bordered w-full';
       unitTd.appendChild(unitInput);
       tr.appendChild(unitTd);
