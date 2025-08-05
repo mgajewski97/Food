@@ -1555,30 +1555,21 @@ function renderShoppingList() {
 
 function initReceiptImport() {
   const btn = document.getElementById('receipt-btn');
+  const input = document.getElementById('receipt-input');
   const modal = document.getElementById('receipt-modal');
-  const fileInput = document.getElementById('receipt-file');
-  const scanInput = document.getElementById('receipt-scan');
   const tableBody = document.querySelector('#receipt-table tbody');
   const confirm = document.getElementById('receipt-confirm');
-  if (!btn || !modal || !fileInput || !tableBody || !confirm) return;
+  if (!btn || !modal || !input || !tableBody || !confirm) return;
 
   btn.addEventListener('click', () => {
-    tableBody.innerHTML = '';
-    fileInput.value = '';
-    modal.showModal();
+    input.click();
   });
 
-  fileInput.addEventListener('change', () => {
-    const file = fileInput.files[0];
+  input.addEventListener('change', () => {
+    const file = input.files[0];
     if (file) handleReceiptUpload(file);
+    input.value = '';
   });
-
-  if (scanInput) {
-    scanInput.addEventListener('change', () => {
-      const file = scanInput.files[0];
-      if (file) handleReceiptUpload(file);
-    });
-  }
 
   confirm.addEventListener('click', () => {
     const rows = Array.from(tableBody.querySelectorAll('tr'));
@@ -1593,7 +1584,7 @@ function initReceiptImport() {
     renderShoppingList();
     modal.close();
     tableBody.innerHTML = '';
-    fileInput.value = '';
+    input.value = '';
   });
 }
 
