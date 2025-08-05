@@ -99,6 +99,7 @@ html[data-layout="mobile"] .desktop-nav {
 html[data-layout="mobile"] .mobile-nav {
   display: flex;
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  border-top: 1px solid hsl(var(--b3));
 }
 html[data-layout="mobile"] .mobile-nav a {
   transition: padding 0.2s ease;
