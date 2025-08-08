@@ -90,16 +90,20 @@ html[data-layout="mobile"] .btn {
 
 #product-list .category-block {
   margin-bottom: 1rem;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 #product-list .category-block table {
   margin-top: 0;
   margin-bottom: 0;
+  margin-left: 0;
 }
 
 #product-list .grouped-table {
   table-layout: fixed;
   width: 100%;
+  border-spacing: 0;
 }
 
 #product-list .grouped-table col.grouped-col-name {
@@ -116,6 +120,13 @@ html[data-layout="mobile"] .btn {
 
 #product-list .grouped-table col.grouped-col-status {
   width: 15%;
+}
+
+#product-list .grouped-table thead th {
+  position: sticky;
+  top: 0;
+  background-color: hsl(var(--b1));
+  z-index: 1;
 }
 
 /* Recipe detail layout */
@@ -141,7 +152,7 @@ html[data-layout="mobile"] .btn {
 
 #product-list .grouped-table th,
 #product-list .grouped-table td {
-  padding: 0.25rem 0.25rem;
+  padding: 0.5rem 1rem;
 }
 
 #product-list .grouped-table th:first-child,
@@ -149,11 +160,9 @@ html[data-layout="mobile"] .btn {
   padding-left: 0;
 }
 
-@media (min-width: 640px) {
-  #product-list .grouped-table th,
-  #product-list .grouped-table td {
-    padding: 0.5rem 1rem;
-  }
+html[data-layout="mobile"] #product-list .grouped-table th,
+html[data-layout="mobile"] #product-list .grouped-table td {
+  padding: 0.25rem 0.25rem;
 }
 
 /* Navigation positioning for mobile view */
