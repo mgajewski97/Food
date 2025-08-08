@@ -290,6 +290,16 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
+.product-low {
+  outline: 2px solid hsl(var(--wa));
+  background-color: hsl(var(--wa) / 0.1);
+}
+
+.product-missing {
+  outline: 2px solid hsl(var(--er));
+  background-color: hsl(var(--er) / 0.1);
+}
+
 /* Touch-friendly buttons for mobile */
 .touch-btn {
   width: 2.5rem;
