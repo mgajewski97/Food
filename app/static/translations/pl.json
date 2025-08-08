@@ -55,7 +55,7 @@
   "storage_fridge": "Lodówka",
   "storage_pantry": "Szafka",
   "storage_freezer": "Zamrażarka",
-  "checkbox_main_label": "Główny produkt",
+  "checkbox_main_label": "Produkt podstawowy",
   "heading_edit_json": "Edytuj produkty (JSON)",
   "edit_json_placeholder": "JSON",
   "edit_json_submit_button": "Wyślij JSON",
