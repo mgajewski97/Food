@@ -145,12 +145,27 @@
             <h1 class="text-2xl font-bold mb-4" data-i18n="heading_recipes">Przepisy</h1>
             <div id="recipe-controls" class="flex flex-col sm:flex-row flex-wrap gap-4 mb-4">
                 <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                    <label for="recipe-sort" data-i18n="recipe_sort_label">Sortuj wg:</label>
-                    <select id="recipe-sort" class="select select-bordered w-full sm:w-auto">
-                        <option value="name" data-i18n="recipe_sort_name">Nazwa</option>
-                        <option value="taste" data-i18n="recipe_sort_taste">Smak</option>
-                        <option value="time" data-i18n="recipe_sort_time">Czas przygotowania</option>
-                    </select>
+                    <span data-i18n="recipe_sort_label">Sortuj według:</span>
+                    <div id="recipe-sort-mobile-container" class="w-full" style="display:none;">
+                        <select id="recipe-sort-mobile" class="select select-bordered select-sm w-full">
+                            <option value="name-asc" data-i18n="recipe_sort_mobile_name">Nazwy (A→Z)</option>
+                            <option value="time-asc" data-i18n="recipe_sort_mobile_time_asc">Czasu (rosnąco)</option>
+                            <option value="time-desc" data-i18n="recipe_sort_mobile_time_desc">Czasu (malejąco)</option>
+                            <option value="portions-asc" data-i18n="recipe_sort_mobile_portions_asc">Porcji (rosnąco)</option>
+                            <option value="portions-desc" data-i18n="recipe_sort_mobile_portions_desc">Porcji (malejąco)</option>
+                        </select>
+                    </div>
+                    <div id="recipe-sort-desktop-container" class="flex items-center gap-2" style="display:flex;">
+                        <select id="recipe-sort-field" class="select select-bordered select-sm w-full sm:w-auto">
+                            <option value="name" data-i18n="recipe_sort_name">Nazwy</option>
+                            <option value="time" data-i18n="recipe_sort_time">Czasu</option>
+                            <option value="portions" data-i18n="recipe_sort_portions">Porcji</option>
+                        </select>
+                        <div class="join">
+                            <button id="recipe-sort-dir-asc" type="button" class="btn btn-sm join-item" data-i18n="recipe_sort_dir_asc">Rosnąco</button>
+                            <button id="recipe-sort-dir-desc" type="button" class="btn btn-sm join-item" data-i18n="recipe_sort_dir_desc">Malejąco</button>
+                        </div>
+                    </div>
                 </div>
                 <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                     <label for="recipe-time-filter" data-i18n="recipe_filter_time_label">Czas:</label>
