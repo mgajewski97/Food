@@ -27,18 +27,26 @@ export function renderShoppingList() {
   });
   state.shoppingList.forEach((item, idx) => {
     const row = document.createElement('div');
-    row.className = 'shopping-item flex items-center justify-between gap-2 p-2 min-h-10 hover:bg-base-200 transition-colors';
+    row.className = 'shopping-item grid items-center gap-3 p-2 min-h-10 hover:bg-base-200 transition-colors flex-nowrap';
+    row.style.gridTemplateColumns = '1fr auto auto';
     if (item.inCart) row.classList.add('opacity-50', 'italic');
     const nameWrap = document.createElement('div');
-    nameWrap.className = 'flex-1 overflow-hidden';
+    nameWrap.className = 'overflow-hidden';
     const nameEl = document.createElement('div');
     nameEl.textContent = t(item.name);
     nameEl.className = 'truncate';
     if (item.inCart) nameEl.classList.add('line-through');
     nameWrap.appendChild(nameEl);
+    const stock = (window.currentProducts || []).find(p => p.name === item.name);
+    if (stock) {
+      const ownedEl = document.createElement('div');
+      ownedEl.className = 'text-xs text-secondary truncate';
+      ownedEl.textContent = `${t('owned')}: ${stock.quantity}`;
+      nameWrap.appendChild(ownedEl);
+    }
     row.appendChild(nameWrap);
     const qtyWrap = document.createElement('div');
-    qtyWrap.className = 'flex items-center gap-2 mx-2';
+    qtyWrap.className = 'flex items-center gap-2';
     const dec = document.createElement('button');
     dec.type = 'button';
     dec.innerHTML = '<i class="fa-solid fa-minus"></i>';
@@ -76,7 +84,7 @@ export function renderShoppingList() {
     qtyWrap.append(dec, qtyInput, inc);
     row.appendChild(qtyWrap);
     const actions = document.createElement('div');
-    actions.className = 'flex items-center gap-2';
+    actions.className = 'flex items-baseline gap-3';
     const acceptBtn = document.createElement('button');
     acceptBtn.type = 'button';
     acceptBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
