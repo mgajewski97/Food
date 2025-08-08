@@ -1718,18 +1718,14 @@ function renderShoppingList() {
   });
   shoppingList.forEach((item, idx) => {
     const row = document.createElement('div');
-    row.className = 'shopping-item flex items-center justify-between gap-2 p-2 min-h-12 hover:bg-base-200 transition-colors';
+    row.className = 'shopping-item flex items-center justify-between gap-2 p-2 min-h-10 hover:bg-base-200 transition-colors';
     if (item.inCart) row.classList.add('opacity-50', 'italic');
 
     const nameWrap = document.createElement('div');
-    nameWrap.className = 'flex-1';
-    let displayName = productName(item.name);
-    if (displayName === '(no translation)') {
-      const tName = t(item.name);
-      displayName = tName !== '(no translation)' ? tName : item.name;
-    }
+    nameWrap.className = 'flex-1 overflow-hidden';
     const nameEl = document.createElement('div');
-    nameEl.textContent = displayName;
+    nameEl.textContent = t(item.name);
+    nameEl.className = 'truncate';
     if (item.inCart) nameEl.classList.add('line-through');
     nameWrap.appendChild(nameEl);
 
@@ -1753,7 +1749,7 @@ function renderShoppingList() {
     qtyInput.type = 'number';
     qtyInput.min = '1';
     qtyInput.value = item.quantity;
-    qtyInput.className = 'input input-bordered w-12 text-center';
+    qtyInput.className = 'input input-bordered w-12 h-10 text-center no-spinner';
     qtyInput.disabled = item.inCart;
     const inc = document.createElement('button');
     inc.type = 'button';
@@ -1784,12 +1780,12 @@ function renderShoppingList() {
     const actions = document.createElement('div');
     actions.className = 'flex items-center gap-2';
 
-    const cartBtn = document.createElement('button');
-    cartBtn.type = 'button';
-    cartBtn.innerHTML = `<i class="fa-${item.inCart ? 'solid' : 'regular'} fa-cart-shopping"></i>`;
-    cartBtn.className = 'touch-btn';
-    cartBtn.setAttribute('aria-label', t('in_cart'));
-    cartBtn.addEventListener('click', () => {
+    const acceptBtn = document.createElement('button');
+    acceptBtn.type = 'button';
+    acceptBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+    acceptBtn.className = 'touch-btn' + (item.inCart ? ' text-success' : '');
+    acceptBtn.setAttribute('aria-label', t('in_cart'));
+    acceptBtn.addEventListener('click', () => {
       item.inCart = !item.inCart;
       if (item.inCart) {
         item.cartTime = Date.now();
@@ -1799,7 +1795,7 @@ function renderShoppingList() {
       saveShoppingList();
       renderShoppingList();
     });
-    actions.appendChild(cartBtn);
+    actions.appendChild(acceptBtn);
 
     const delBtn = document.createElement('button');
     delBtn.type = 'button';

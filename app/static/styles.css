@@ -193,6 +193,17 @@ input[type="number"] {
   margin: 0 0.25rem;
 }
 
+/* Hide native number input spinners */
+.no-spinner::-webkit-outer-spin-button,
+.no-spinner::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.no-spinner {
+  -moz-appearance: textfield;
+}
+
 /* Suggestion table mobile card layout */
 html[data-layout="mobile"] #suggestion-table thead {
   display: none;
