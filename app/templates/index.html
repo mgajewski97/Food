@@ -143,13 +143,39 @@
 
         <div id="tab-recipes" class="tab-panel" style="display:none;">
             <h1 class="text-2xl font-bold mb-4" data-i18n="heading_recipes">Przepisy</h1>
-            <div class="mb-4">
-                <label for="recipe-sort" class="mr-2" data-i18n="recipe_sort_label">Sortuj wg:</label>
-                <select id="recipe-sort" class="select select-bordered w-full max-w-xs">
-                    <option value="name" data-i18n="recipe_sort_name">Nazwa</option>
-                    <option value="taste" data-i18n="recipe_sort_taste">Smak</option>
-                    <option value="time" data-i18n="recipe_sort_time">Czas przygotowania</option>
-                </select>
+            <div id="recipe-controls" class="flex flex-col sm:flex-row flex-wrap gap-4 mb-4">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                    <label for="recipe-sort" data-i18n="recipe_sort_label">Sortuj wg:</label>
+                    <select id="recipe-sort" class="select select-bordered w-full sm:w-auto">
+                        <option value="name" data-i18n="recipe_sort_name">Nazwa</option>
+                        <option value="taste" data-i18n="recipe_sort_taste">Smak</option>
+                        <option value="time" data-i18n="recipe_sort_time">Czas przygotowania</option>
+                    </select>
+                </div>
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                    <label for="recipe-time-filter" data-i18n="recipe_filter_time_label">Czas:</label>
+                    <select id="recipe-time-filter" class="select select-bordered w-full sm:w-auto">
+                        <option value="" data-i18n="filter_all">Wszystkie</option>
+                        <option value="lt30" data-i18n="recipe_filter_time_lt30">&lt;30min</option>
+                        <option value="30-60" data-i18n="recipe_filter_time_30_60">30–60min</option>
+                        <option value="gt60" data-i18n="recipe_filter_time_gt60">&gt;60min</option>
+                    </select>
+                </div>
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                    <label for="recipe-portions-filter" data-i18n="recipe_filter_portions_label">Porcje</label>
+                    <select id="recipe-portions-filter" class="select select-bordered w-full sm:w-auto">
+                        <option value="" data-i18n="filter_all">Wszystkie</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                    </select>
+                </div>
+                <button id="recipe-clear-filters" class="btn btn-outline btn-sm self-start" data-i18n="recipe_clear_filters">Wyczyść filtry</button>
             </div>
             <ul id="recipe-list" class="list-disc pl-4 mb-8"></ul>
         </div>

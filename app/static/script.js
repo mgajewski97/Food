@@ -48,6 +48,9 @@ let shoppingList = JSON.parse(localStorage.getItem('shoppingList') || '[]');
 let pendingRemoveIndex = null;
 let currentRecipeName = null;
 let currentRecipeSort = 'name';
+let recipeTimeFilter = '';
+let recipePortionsFilter = '';
+let recipesData = [];
 let cookingState = { recipe: null, step: 0 };
 let touchStartX = 0;
 let cornerIconsTop = true;
@@ -523,7 +526,31 @@ function checkLowStockToast() {
   if (recipeSort) {
     recipeSort.addEventListener('change', e => {
       currentRecipeSort = e.target.value;
-      loadRecipes();
+      renderRecipes();
+    });
+  }
+  const recipeTimeFilterEl = document.getElementById('recipe-time-filter');
+  if (recipeTimeFilterEl) {
+    recipeTimeFilterEl.addEventListener('change', e => {
+      recipeTimeFilter = e.target.value;
+      renderRecipes();
+    });
+  }
+  const recipePortionsFilterEl = document.getElementById('recipe-portions-filter');
+  if (recipePortionsFilterEl) {
+    recipePortionsFilterEl.addEventListener('change', e => {
+      recipePortionsFilter = e.target.value;
+      renderRecipes();
+    });
+  }
+  const recipeClearFilters = document.getElementById('recipe-clear-filters');
+  if (recipeClearFilters) {
+    recipeClearFilters.addEventListener('click', () => {
+      recipeTimeFilter = '';
+      recipePortionsFilter = '';
+      if (recipeTimeFilterEl) recipeTimeFilterEl.value = '';
+      if (recipePortionsFilterEl) recipePortionsFilterEl.value = '';
+      renderRecipes();
     });
   }
   document.getElementById('view-toggle').addEventListener('click', () => {
@@ -1122,6 +1149,54 @@ function updateDeleteButton() {
   btn.disabled = !any;
 }
 
+function parseTimeToMinutes(str) {
+  if (!str) return null;
+  let minutes = 0;
+  const h = str.match(/(\d+)\s*h/);
+  if (h) minutes += parseInt(h[1], 10) * 60;
+  const m = str.match(/(\d+)\s*min/);
+  if (m) minutes += parseInt(m[1], 10);
+  return minutes;
+}
+
+function timeToBucket(str) {
+  const mins = parseTimeToMinutes(str);
+  if (mins == null) return null;
+  if (mins < 30) return 'lt30';
+  if (mins <= 60) return '30-60';
+  return 'gt60';
+}
+
+function renderRecipes() {
+  const list = document.getElementById('recipe-list');
+  if (!list) return;
+  list.innerHTML = '';
+  let data = recipesData.slice();
+  data.sort((a, b) => {
+    if (currentRecipeSort === 'taste') return b.avgTaste - a.avgTaste;
+    if (currentRecipeSort === 'time') return b.avgPrepTime - a.avgPrepTime;
+    return a.name.localeCompare(b.name);
+  });
+  if (recipeTimeFilter) data = data.filter(r => r.timeBucket === recipeTimeFilter);
+  if (recipePortionsFilter) data = data.filter(r => String(r.portions) === recipePortionsFilter);
+  data.forEach(r => {
+    const li = document.createElement('li');
+    const avgText = (r.avgTaste || r.avgPrepTime)
+      ? ` [${r.avgTaste.toFixed(1)}★, ${r.avgPrepTime.toFixed(1)}⏱]`
+      : '';
+    li.textContent = `${r.name}${avgText} (${r.ingredients.join(', ')})`;
+    const doneBtn = document.createElement('button');
+    doneBtn.textContent = t('recipe_done_button');
+    doneBtn.addEventListener('click', () => openRatingModal(r));
+    li.appendChild(doneBtn);
+    const cookBtn = document.createElement('button');
+    cookBtn.textContent = t('cooking_mode_button');
+    cookBtn.addEventListener('click', () => openCookingMode(r));
+    li.appendChild(cookBtn);
+    list.appendChild(li);
+  });
+}
+
 async function loadRecipes() {
   const [res, histRes] = await Promise.all([
     fetch('/api/recipes'),
@@ -1147,33 +1222,13 @@ async function loadRecipes() {
     r.avgPrepTime = ratings && ratings.prep_time.length
       ? ratings.prep_time.reduce((a, b) => a + b, 0) / ratings.prep_time.length
       : 0;
+    r.timeBucket = timeToBucket(r.time);
   });
-  data.sort((a, b) => {
-    if (currentRecipeSort === 'taste') return b.avgTaste - a.avgTaste;
-    if (currentRecipeSort === 'time') return b.avgPrepTime - a.avgPrepTime;
-    return a.name.localeCompare(b.name);
-  });
-  const list = document.getElementById('recipe-list');
-  list.innerHTML = '';
-  data.forEach(r => {
-    const li = document.createElement('li');
-    const avgText = (r.avgTaste || r.avgPrepTime)
-      ? ` [${r.avgTaste.toFixed(1)}★, ${r.avgPrepTime.toFixed(1)}⏱]`
-      : '';
-    li.textContent = `${r.name}${avgText} (${r.ingredients.join(', ')})`;
-    const doneBtn = document.createElement('button');
-    doneBtn.textContent = t('recipe_done_button');
-    doneBtn.addEventListener('click', () => openRatingModal(r));
-    li.appendChild(doneBtn);
-    const cookBtn = document.createElement('button');
-    cookBtn.textContent = t('cooking_mode_button');
-    cookBtn.addEventListener('click', () => openCookingMode(r));
-    li.appendChild(cookBtn);
-    list.appendChild(li);
-  });
+  recipesData = data;
+  renderRecipes();
   const saved = JSON.parse(localStorage.getItem('cookingProgress') || '{}');
   if (saved.recipe) {
-    const rec = data.find(r => r.name === saved.recipe);
+    const rec = recipesData.find(r => r.name === saved.recipe);
     if (rec) openCookingMode(rec);
   }
 }
