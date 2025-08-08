@@ -156,8 +156,24 @@ export function renderProducts(data, editable = false) {
       Object.keys(storages[stor])
         .sort((a, b) => categoryName(a).localeCompare(categoryName(b)))
         .forEach(cat => {
+          const categoryBlock = document.createElement('div');
+          categoryBlock.className = 'category-block';
+          const header = document.createElement('h4');
+          header.className = 'text-xl font-semibold mt-4 mb-2';
+          header.textContent = categoryName(cat);
+          categoryBlock.appendChild(header);
+
           const table = document.createElement('table');
           table.className = 'table table-zebra w-full grouped-table';
+
+          const colgroup = document.createElement('colgroup');
+          ['grouped-col-name', 'grouped-col-qty', 'grouped-col-unit', 'grouped-col-status'].forEach(cls => {
+            const col = document.createElement('col');
+            col.className = cls;
+            colgroup.appendChild(col);
+          });
+          table.appendChild(colgroup);
+
           const thead = document.createElement('thead');
           const hr = document.createElement('tr');
           [t('table_header_name'), t('table_header_quantity'), t('table_header_unit'), t('table_header_status')].forEach(txt => {
@@ -167,6 +183,7 @@ export function renderProducts(data, editable = false) {
           });
           thead.appendChild(hr);
           table.appendChild(thead);
+
           const tb = document.createElement('tbody');
           storages[stor][cat].forEach(p => {
             const tr = document.createElement('tr');
@@ -183,11 +200,9 @@ export function renderProducts(data, editable = false) {
             tb.appendChild(tr);
           });
           table.appendChild(tb);
-          const header = document.createElement('h4');
-          header.className = 'text-xl font-semibold mt-4 mb-2';
-          header.textContent = categoryName(cat);
-          content.appendChild(header);
-          content.appendChild(table);
+
+          categoryBlock.appendChild(table);
+          content.appendChild(categoryBlock);
         });
       block.appendChild(content);
       container.appendChild(block);
