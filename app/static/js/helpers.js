@@ -43,6 +43,9 @@ export const state = {
   dismissedSuggestions: new Set(),
   pendingRemoveIndex: null,
   recipesData: [],
+  recipesLoaded: false,
+  recipesLoadQueued: false,
+  recipesLoading: false,
   recipeSortField: 'name',
   recipeSortDir: 'asc',
   recipeTimeFilter: '',
@@ -90,14 +93,16 @@ export function storageName(key) {
   return translated === tKey ? key : translated;
 }
 
-export function parseTimeToMinutes(str) {
-  if (!str) return null;
+export function parseTimeToMinutes(value) {
+  if (value == null) return null;
+  if (typeof value === 'number') return value;
+  const str = String(value);
   let minutes = 0;
   const h = str.match(/(\d+)\s*h/);
   if (h) minutes += parseInt(h[1], 10) * 60;
   const m = str.match(/(\d+)\s*min/);
   if (m) minutes += parseInt(m[1], 10);
-  return minutes;
+  return minutes || null;
 }
 
 export function timeToBucket(str) {
