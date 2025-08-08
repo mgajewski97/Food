@@ -205,7 +205,9 @@ export function normalizeProduct(p = {}) {
     threshold: p.threshold != null ? Number(p.threshold) : 1,
     main: p.main !== false,
     category: p.category || 'uncategorized',
-    storage: p.storage || 'pantry'
+    storage: p.storage || 'pantry',
+    is_spice: p.is_spice === true || p.category === 'spices',
+    level: p.level || null
   };
 }
 
@@ -226,4 +228,27 @@ export function normalizeRecipe(r = {}) {
 
 export function isSpice(p = {}) {
   return p.category === 'spices' || p.is_spice === true;
+}
+
+export function stockLevel(p = {}) {
+  if (isSpice(p)) {
+    return p.level || 'none';
+  }
+  if (p.quantity === 0 && p.main) return 'none';
+  if (p.main && p.threshold != null && p.quantity <= p.threshold) return 'low';
+  return 'ok';
+}
+
+export function matchesFilter(p = {}, filter = 'all') {
+  const level = stockLevel(p);
+  switch (filter) {
+    case 'available':
+      return level === 'ok';
+    case 'low':
+      return level === 'low';
+    case 'missing':
+      return level === 'none';
+    default:
+      return true;
+  }
 }
