@@ -57,7 +57,16 @@
                 <button id="delete-selected" style="display:none;" class="btn btn-error btn-sm" disabled data-i18n="delete_selected_button">Usuń zaznaczone</button>
             </div>
             <div class="overflow-x-auto">
-                <table id="product-table" class="table table-zebra w-full">
+                <table id="product-table" class="table table-zebra table-fixed w-full">
+                    <colgroup>
+                        <col style="width:6%">
+                        <col style="width:24%">
+                        <col style="width:12%">
+                        <col style="width:12%">
+                        <col style="width:17%">
+                        <col style="width:17%">
+                        <col style="width:12%">
+                    </colgroup>
                     <thead>
                         <tr>
                             <th id="select-header" style="display:none;"></th>
@@ -66,7 +75,7 @@
                             <th data-i18n="table_header_unit">Jednostka</th>
                             <th data-i18n="table_header_category">Kategoria</th>
                             <th data-i18n="table_header_storage">Miejsce</th>
-                            <th data-i18n="table_header_status">Status</th>
+                            <th class="status-header text-center"><i class="fa-solid fa-circle-info"></i> <span class="status-label" data-i18n="table_header_status">Status</span></th>
                         </tr>
                     </thead>
                     <tbody></tbody>
