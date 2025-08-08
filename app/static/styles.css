@@ -97,6 +97,44 @@ html[data-layout="mobile"] .btn {
   margin-bottom: 0;
 }
 
+#product-list .grouped-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+#product-list .grouped-table col.grouped-col-name {
+  width: 50%;
+}
+
+#product-list .grouped-table col.grouped-col-qty {
+  width: 20%;
+}
+
+#product-list .grouped-table col.grouped-col-unit {
+  width: 15%;
+}
+
+#product-list .grouped-table col.grouped-col-status {
+  width: 15%;
+}
+
+#product-list .grouped-table th,
+#product-list .grouped-table td {
+  padding: 0.25rem 0.25rem;
+}
+
+#product-list .grouped-table th:first-child,
+#product-list .grouped-table td:first-child {
+  padding-left: 0;
+}
+
+@media (min-width: 640px) {
+  #product-list .grouped-table th,
+  #product-list .grouped-table td {
+    padding: 0.5rem 1rem;
+  }
+}
+
 /* Navigation positioning for mobile view */
 .mobile-nav {
   display: none;
