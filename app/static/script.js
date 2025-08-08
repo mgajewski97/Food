@@ -47,7 +47,8 @@ function showNotification({ type = 'success', title = '', message = '' }) {
 let shoppingList = JSON.parse(localStorage.getItem('shoppingList') || '[]');
 let pendingRemoveIndex = null;
 let currentRecipeName = null;
-let currentRecipeSort = 'name';
+let recipeSortField = 'name';
+let recipeSortDir = 'asc';
 let recipeTimeFilter = '';
 let recipePortionsFilter = '';
 let recipesData = [];
@@ -78,6 +79,40 @@ let state = {
   expandedCategories: {}
 };
 
+function updateRecipeSortControls() {
+  const mobileContainer = document.getElementById('recipe-sort-mobile-container');
+  const desktopContainer = document.getElementById('recipe-sort-desktop-container');
+  const mobileSelect = document.getElementById('recipe-sort-mobile');
+  const fieldSelect = document.getElementById('recipe-sort-field');
+  const dirAsc = document.getElementById('recipe-sort-dir-asc');
+  const dirDesc = document.getElementById('recipe-sort-dir-desc');
+
+  if (state.displayMode === 'mobile') {
+    if (mobileContainer) mobileContainer.style.display = 'block';
+    if (desktopContainer) desktopContainer.style.display = 'none';
+  } else {
+    if (mobileContainer) mobileContainer.style.display = 'none';
+    if (desktopContainer) desktopContainer.style.display = 'flex';
+  }
+
+  if (mobileSelect) mobileSelect.value = `${recipeSortField}-${recipeSortDir}`;
+  if (fieldSelect) fieldSelect.value = recipeSortField;
+
+  if (dirAsc && dirDesc) {
+    if (recipeSortField === 'name') {
+      dirAsc.disabled = true;
+      dirDesc.disabled = true;
+      dirAsc.classList.add('btn-active');
+      dirDesc.classList.remove('btn-active');
+    } else {
+      dirAsc.disabled = false;
+      dirDesc.disabled = false;
+      dirAsc.classList.toggle('btn-active', recipeSortDir === 'asc');
+      dirDesc.classList.toggle('btn-active', recipeSortDir === 'desc');
+    }
+  }
+}
+
 function setDisplayMode(mode) {
   state.displayMode = mode;
   html.setAttribute('data-layout', mode);
@@ -85,6 +120,7 @@ function setDisplayMode(mode) {
     layoutIcon.className = mode === 'desktop' ? 'fa-regular fa-mobile' : 'fa-solid fa-desktop';
   }
   updateCornerIconsVisibility();
+  updateRecipeSortControls();
 }
 
 function detectInitialDisplayMode() {
@@ -98,6 +134,7 @@ function detectInitialDisplayMode() {
 
 detectInitialDisplayMode();
 updateCornerIconsVisibility();
+updateRecipeSortControls();
 
 if (topSentinel && cornerIcons) {
   const observer = new IntersectionObserver(
@@ -522,10 +559,38 @@ function checkLowStockToast() {
     ratingForm.addEventListener('submit', handleRatingSubmit);
     document.getElementById('rating-cancel').addEventListener('click', () => ratingModal.close());
   }
-  const recipeSort = document.getElementById('recipe-sort');
-  if (recipeSort) {
-    recipeSort.addEventListener('change', e => {
-      currentRecipeSort = e.target.value;
+  const recipeSortMobile = document.getElementById('recipe-sort-mobile');
+  if (recipeSortMobile) {
+    recipeSortMobile.addEventListener('change', e => {
+      const [field, dir] = e.target.value.split('-');
+      recipeSortField = field;
+      recipeSortDir = dir || 'asc';
+      updateRecipeSortControls();
+      renderRecipes();
+    });
+  }
+  const recipeSortFieldEl = document.getElementById('recipe-sort-field');
+  if (recipeSortFieldEl) {
+    recipeSortFieldEl.addEventListener('change', e => {
+      recipeSortField = e.target.value;
+      if (recipeSortField === 'name') recipeSortDir = 'asc';
+      updateRecipeSortControls();
+      renderRecipes();
+    });
+  }
+  const recipeSortDirAsc = document.getElementById('recipe-sort-dir-asc');
+  const recipeSortDirDesc = document.getElementById('recipe-sort-dir-desc');
+  if (recipeSortDirAsc && recipeSortDirDesc) {
+    recipeSortDirAsc.addEventListener('click', () => {
+      if (recipeSortField === 'name') return;
+      recipeSortDir = 'asc';
+      updateRecipeSortControls();
+      renderRecipes();
+    });
+    recipeSortDirDesc.addEventListener('click', () => {
+      if (recipeSortField === 'name') return;
+      recipeSortDir = 'desc';
+      updateRecipeSortControls();
       renderRecipes();
     });
   }
@@ -553,6 +618,7 @@ function checkLowStockToast() {
       renderRecipes();
     });
   }
+  updateRecipeSortControls();
   document.getElementById('view-toggle').addEventListener('click', () => {
     if (editMode) {
       editMode = false;
@@ -1172,13 +1238,21 @@ function renderRecipes() {
   if (!list) return;
   list.innerHTML = '';
   let data = recipesData.slice();
-  data.sort((a, b) => {
-    if (currentRecipeSort === 'taste') return b.avgTaste - a.avgTaste;
-    if (currentRecipeSort === 'time') return b.avgPrepTime - a.avgPrepTime;
-    return a.name.localeCompare(b.name);
-  });
   if (recipeTimeFilter) data = data.filter(r => r.timeBucket === recipeTimeFilter);
   if (recipePortionsFilter) data = data.filter(r => String(r.portions) === recipePortionsFilter);
+  data.sort((a, b) => {
+    if (recipeSortField === 'time') {
+      const ta = parseTimeToMinutes(a.time) || 0;
+      const tb = parseTimeToMinutes(b.time) || 0;
+      return recipeSortDir === 'asc' ? ta - tb : tb - ta;
+    }
+    if (recipeSortField === 'portions') {
+      const pa = a.portions || 0;
+      const pb = b.portions || 0;
+      return recipeSortDir === 'asc' ? pa - pb : pb - pa;
+    }
+    return a.name.localeCompare(b.name);
+  });
   data.forEach(r => {
     const li = document.createElement('li');
     const avgText = (r.avgTaste || r.avgPrepTime)
