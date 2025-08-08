@@ -1,3 +1,5 @@
+'use strict';
+
 let groupedView = false;
 let editMode = false;
 let currentFilter = 'available';
