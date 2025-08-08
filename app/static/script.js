@@ -1559,16 +1559,68 @@ function initReceiptImport() {
   const modal = document.getElementById('receipt-modal');
   const tableBody = document.querySelector('#receipt-table tbody');
   const confirm = document.getElementById('receipt-confirm');
+  const sheet = document.getElementById('receipt-sheet');
+  const cameraBtn = document.getElementById('receipt-camera');
+  const uploadBtn = document.getElementById('receipt-upload');
+  const uploadModal = document.getElementById('receipt-upload-modal');
+  const dropArea = document.getElementById('receipt-drop-area');
+  const chooseBtn = document.getElementById('receipt-choose');
   if (!btn || !modal || !input || !tableBody || !confirm) return;
 
   btn.addEventListener('click', () => {
-    input.click();
+    if (html.getAttribute('data-layout') === 'mobile') {
+      if (sheet) sheet.showModal();
+    } else {
+      if (uploadModal) uploadModal.showModal();
+    }
   });
+
+  if (cameraBtn) {
+    cameraBtn.addEventListener('click', () => {
+      sheet.close();
+      input.setAttribute('capture', 'environment');
+      input.click();
+    });
+  }
+
+  if (uploadBtn) {
+    uploadBtn.addEventListener('click', () => {
+      sheet.close();
+      input.removeAttribute('capture');
+      input.click();
+    });
+  }
+
+  if (chooseBtn) {
+    chooseBtn.addEventListener('click', () => {
+      uploadModal.close();
+      input.removeAttribute('capture');
+      input.click();
+    });
+  }
+
+  if (dropArea) {
+    dropArea.addEventListener('dragover', e => {
+      e.preventDefault();
+      dropArea.classList.add('dragover');
+    });
+    dropArea.addEventListener('dragleave', () => {
+      dropArea.classList.remove('dragover');
+    });
+    dropArea.addEventListener('drop', e => {
+      e.preventDefault();
+      dropArea.classList.remove('dragover');
+      uploadModal.close();
+      const file = e.dataTransfer.files[0];
+      if (file) handleReceiptUpload(file);
+    });
+  }
 
   input.addEventListener('change', () => {
     const file = input.files[0];
     if (file) handleReceiptUpload(file);
     input.value = '';
+    input.removeAttribute('capture');
   });
 
   confirm.addEventListener('click', () => {

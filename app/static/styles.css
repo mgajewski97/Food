@@ -198,3 +198,14 @@ html[data-layout="mobile"] #edit-json {
   width: 100%;
   max-width: 100%;
 }
+
+#receipt-drop-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#receipt-drop-area.dragover {
+  background-color: hsl(var(--b3) / 0.1);
+}
