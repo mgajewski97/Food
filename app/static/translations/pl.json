@@ -186,5 +186,12 @@
   "delete_item_question": "Czy na pewno chcesz usunąć ten produkt?",
   "cooking_mode_button": "Tryb gotowania",
   "next_step_button": "Dalej",
-  "cooking_end_title": "Koniec przepisu"
+  "cooking_end_title": "Koniec przepisu",
+  "product.breaded_schnitzel": "Sznycel w chrupiącej panierce",
+  "product.lemon": "Cytryna",
+  "product.green_beans": "Fasolka szparagowa",
+  "product.soup_veg": "Włoszczyzna",
+  "product.ciabatta_roll": "Bułka ciabatta",
+  "product.teriyaki_sauce": "Sos Teriyaki",
+  "product.plant_fat": "Tłuszcz roślinny"
 }

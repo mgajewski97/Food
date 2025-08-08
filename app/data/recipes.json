@@ -16,5 +16,33 @@
       "Rozbij jajka i wymieszaj.",
       "Dodaj ser i usmaż omlet."
     ]
+  },
+  {
+    "name": "recipe.mushroom_oyster_mushroom_cream_soup",
+    "portions": 3,
+    "time": "30min",
+    "ingredients": [
+      { "product": "product.champignons", "quantity": 500, "unit": "g" },
+      { "product": "product.oyster_mushrooms", "quantity": 250, "unit": "g" },
+      { "product": "product.red_onion", "quantity": 1, "unit": "szt" },
+      { "product": "product.garlic", "quantity": 1, "unit": "szt" },
+      { "product": "product.sour_cream_18", "quantity": 2, "unit": "lyzka" },
+      { "product": "product.plant_fat", "quantity": 1, "unit": "lyzka" },
+      { "product": "product.parsley", "quantity": 1, "unit": "szt" },
+      { "product": "product.water", "quantity": 1000, "unit": "ml" },
+      { "product": "product.bay_leaf", "quantity": 1, "unit": "szt" },
+      { "product": "product.thyme", "quantity": 0.5, "unit": "lyzeczka" },
+      { "product": "product.salt", "quantity": 1, "unit": "do_smaczenia" },
+      { "product": "product.black_pepper", "quantity": 1, "unit": "do_smaczenia" }
+    ],
+    "steps": [
+      "W garnku rozgrzej plant fat lub olej.",
+      "Dodaj posiekaną cebulę i czosnek, smaż do zeszklenia.",
+      "Wrzuć pokrojone pieczarki i boczniaki, smaż 5–7 minut, aż puszczą wodę.",
+      "Dodaj wodę lub bulion, liść laurowy, tymianek, sól i pieprz. Gotuj 15 minut.",
+      "Wyjmij liść laurowy i zmiksuj całość blenderem na gładki krem.",
+      "Dodaj śmietanę, wymieszaj i dopraw do smaku.",
+      "Podawaj z natką pietruszki, opcjonalnie z grzankami."
+    ]
   }
 ]

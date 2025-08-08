@@ -307,7 +307,7 @@
   },
   {
     "name": "product.oyster_mushrooms",
-    "quantity": "250",
+    "quantity": "500",
     "unit": "g",
     "category": "mushrooms",
     "storage": "fridge",
@@ -316,7 +316,7 @@
   },
   {
     "name": "product.champignons",
-    "quantity": "500",
+    "quantity": "1000",
     "unit": "g",
     "category": "mushrooms",
     "storage": "fridge",
@@ -538,5 +538,59 @@
     "storage": "pantry",
     "threshold": 1,
     "main": true
+  },
+  {
+    "name": "product.breaded_schnitzel",
+    "quantity": "1",
+    "unit": "szt",
+    "category": "frozen_meals",
+    "storage": "freezer",
+    "threshold": 1,
+    "main": false
+  },
+  {
+    "name": "product.cheese_slices",
+    "quantity": "2",
+    "unit": "szt",
+    "category": "dairy_eggs",
+    "storage": "fridge",
+    "threshold": 1,
+    "main": true
+  },
+  {
+    "name": "product.lemon",
+    "quantity": "1",
+    "unit": "szt",
+    "category": "dry_veg",
+    "storage": "pantry",
+    "threshold": 2,
+    "main": false
+  },
+  {
+    "name": "product.green_beans",
+    "quantity": "400",
+    "unit": "g",
+    "category": "fresh_veg",
+    "storage": "fridge",
+    "threshold": 1,
+    "main": false
+  },
+  {
+    "name": "product.soup_veg",
+    "quantity": "1",
+    "unit": "szt",
+    "category": "fresh_veg",
+    "storage": "fridge",
+    "threshold": 1,
+    "main": false
+  },
+  {
+    "name": "product.plant_fat",
+    "quantity": "2",
+    "unit": "szt",
+    "category": "oils",
+    "storage": "pantry",
+    "threshold": 1,
+    "main": false
   }
 ]

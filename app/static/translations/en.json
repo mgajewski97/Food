@@ -186,6 +186,13 @@
   "delete_item_question": "Are you sure you want to remove this item?",
   "cooking_mode_button": "Cooking mode",
   "next_step_button": "Next",
-  "cooking_end_title": "Recipe complete"
+  "cooking_end_title": "Recipe complete",
+  "product.breaded_schnitzel": "Breaded schnitzel",
+  "product.lemon": "Lemon",
+  "product.green_beans": "Green beans",
+  "product.soup_veg": "Soup vegetables",
+  "product.ciabatta_roll": "Ciabatta roll",
+  "product.teriyaki_sauce": "Teriyaki sauce",
+  "product.plant_fat": "Plant fat"
 }
 
