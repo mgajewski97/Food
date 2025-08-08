@@ -60,6 +60,16 @@ html[data-layout="mobile"] #history-list {
   font-size: 1em;
 }
 
+#recipe-sort-mobile {
+  display: none;
+}
+html[data-layout="mobile"] #recipe-sort-desktop {
+  display: none;
+}
+html[data-layout="mobile"] #recipe-sort-mobile {
+  display: block;
+}
+
 html[data-layout="mobile"] #product-table th,
 html[data-layout="mobile"] #product-table td {
   padding-top: 0.25rem;

@@ -144,11 +144,24 @@
         <div id="tab-recipes" class="tab-panel" style="display:none;">
             <h1 class="text-2xl font-bold mb-4" data-i18n="heading_recipes">Przepisy</h1>
             <div class="mb-4">
-                <label for="recipe-sort" class="mr-2" data-i18n="recipe_sort_label">Sortuj wg:</label>
-                <select id="recipe-sort" class="select select-bordered w-full max-w-xs">
-                    <option value="name" data-i18n="recipe_sort_name">Nazwa</option>
-                    <option value="taste" data-i18n="recipe_sort_taste">Smak</option>
-                    <option value="time" data-i18n="recipe_sort_time">Czas przygotowania</option>
+                <label class="mr-2" data-i18n="recipe_sort_label">Sortuj według:</label>
+                <div id="recipe-sort-desktop" class="flex items-center gap-2">
+                    <select id="recipe-sort-field" class="select select-bordered select-sm w-auto">
+                        <option value="name" data-i18n="recipe_sort_name">Nazwy</option>
+                        <option value="time" data-i18n="recipe_sort_time">Czasu</option>
+                        <option value="portions" data-i18n="recipe_sort_portions">Porcji</option>
+                    </select>
+                    <div class="join">
+                        <button id="recipe-sort-asc" class="btn btn-sm join-item sort-order-btn btn-active" data-order="asc" data-i18n="sort_asc">Rosnąco</button>
+                        <button id="recipe-sort-desc" class="btn btn-sm join-item sort-order-btn" data-order="desc" data-i18n="sort_desc">Malejąco</button>
+                    </div>
+                </div>
+                <select id="recipe-sort-mobile" class="select select-bordered select-sm w-full max-w-xs">
+                    <option value="name-asc" data-i18n="recipe_sort_name_asc">Nazwy (A→Z)</option>
+                    <option value="time-asc" data-i18n="recipe_sort_time_asc">Czasu (rosnąco)</option>
+                    <option value="time-desc" data-i18n="recipe_sort_time_desc">Czasu (malejąco)</option>
+                    <option value="portions-asc" data-i18n="recipe_sort_portions_asc">Porcji (rosnąco)</option>
+                    <option value="portions-desc" data-i18n="recipe_sort_portions_desc">Porcji (malejąco)</option>
                 </select>
             </div>
             <ul id="recipe-list" class="list-disc pl-4 mb-8"></ul>
