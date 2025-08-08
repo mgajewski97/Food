@@ -33,7 +33,7 @@ export function renderShoppingList() {
     const nameWrap = document.createElement('div');
     nameWrap.className = 'overflow-hidden';
     const nameEl = document.createElement('div');
-    nameEl.textContent = t(item.name);
+    nameEl.textContent = productName(item.name);
     nameEl.className = 'truncate';
     if (item.inCart) nameEl.classList.add('line-through');
     nameWrap.appendChild(nameEl);
