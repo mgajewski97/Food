@@ -341,7 +341,6 @@ function showLowStockToast() {
     renderSuggestions();
     renderShoppingList();
     alert.remove();
-    lowStockToastShown = false;
   });
   const close = document.createElement('button');
   close.className = 'btn btn-xs btn-circle btn-ghost absolute top-1 right-1';
@@ -350,7 +349,6 @@ function showLowStockToast() {
   close.innerHTML = '<i class="fa-regular fa-xmark"></i>';
   close.addEventListener('click', () => {
     alert.remove();
-    lowStockToastShown = false;
   });
   alert.appendChild(span);
   alert.appendChild(btn);
@@ -373,8 +371,8 @@ function checkLowStockToast() {
       const close = toast.querySelector('button[data-action="close"]');
       if (close) close.setAttribute('title', t('toast_close'));
     }
-  } else if (toast) {
-    toast.remove();
+  } else {
+    if (toast) toast.remove();
     lowStockToastShown = false;
   }
 }
