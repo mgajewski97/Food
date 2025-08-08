@@ -26,15 +26,11 @@ export function openRecipeDetails(recipe) {
       const li = document.createElement('li');
       const name = document.createElement('span');
       const qty = document.createElement('span');
-      if (typeof ing === 'string') {
-        name.textContent = t(ing);
-      } else {
-        name.textContent = t(ing.product);
-        let text = '';
-        if (ing.quantity != null) text += ing.quantity;
-        if (ing.unit) text += ` ${t(ing.unit)}`;
-        qty.textContent = text.trim();
-      }
+      name.textContent = t(ing.productKey);
+      let text = '';
+      if (ing.quantity != null) text += ing.quantity;
+      if (ing.unit) text += ` ${t(ing.unit)}`;
+      qty.textContent = text.trim();
       li.append(name, qty);
       ingList.appendChild(li);
     });
