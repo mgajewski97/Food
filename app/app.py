@@ -2,7 +2,13 @@ from flask import Flask, render_template, request, jsonify
 from datetime import date
 import os
 
-from utils import DEFAULT_UNIT, load_json, normalize_product, save_json
+from utils import (
+    load_json,
+    normalize_product,
+    normalize_recipe,
+    save_json,
+    validate_file,
+)
 
 """Flask application providing basic CRUD APIs for a pantry manager."""
 
@@ -11,6 +17,8 @@ app = Flask(__name__, static_folder="static", template_folder="templates")
 BASE_DIR = os.path.dirname(__file__)
 PRODUCTS_PATH = os.path.join(BASE_DIR, "data", "products.json")
 RECIPES_PATH = os.path.join(BASE_DIR, "data", "recipes.json")
+PRODUCTS_SCHEMA = os.path.join(BASE_DIR, "data", "products.schema.json")
+RECIPES_SCHEMA = os.path.join(BASE_DIR, "data", "recipes.schema.json")
 UNITS_PATH = os.path.join(BASE_DIR, "data", "units.json")
 HISTORY_PATH = os.path.join(BASE_DIR, "data", "history.json")
 FAVORITES_PATH = os.path.join(BASE_DIR, "data", "favorites.json")
@@ -18,9 +26,9 @@ FAVORITES_PATH = os.path.join(BASE_DIR, "data", "favorites.json")
 
 def remove_used_products(used_ingredients):
     """Remove used ingredients from stored products."""
-    products = load_json(PRODUCTS_PATH, [])
+    products = load_json(PRODUCTS_PATH, [], PRODUCTS_SCHEMA, normalize_product)
     products = [p for p in products if p.get("name") not in used_ingredients]
-    save_json(PRODUCTS_PATH, products)
+    save_json(PRODUCTS_PATH, products, PRODUCTS_SCHEMA, normalize_product)
 
 @app.route('/')
 def index():
@@ -38,7 +46,9 @@ def service_worker():
 def products():
     if request.method == "POST":
         new_product = normalize_product(request.json or {})
-        products = load_json(PRODUCTS_PATH, [])
+        products = load_json(
+            PRODUCTS_PATH, [], PRODUCTS_SCHEMA, normalize_product
+        )
         existing = next(
             (
                 p
@@ -57,13 +67,15 @@ def products():
             existing["quantity"] = existing_qty + new_product["quantity"]
         else:
             products.append(new_product)
-        save_json(PRODUCTS_PATH, products)
+        save_json(PRODUCTS_PATH, products, PRODUCTS_SCHEMA, normalize_product)
         return jsonify(products)
     if request.method == "PUT":
         payload = request.json or []
         if isinstance(payload, dict):
             payload = [payload]
-        products = load_json(PRODUCTS_PATH, [])
+        products = load_json(
+            PRODUCTS_PATH, [], PRODUCTS_SCHEMA, normalize_product
+        )
         for item in payload:
             item = normalize_product(item)
             existing = next(
@@ -80,17 +92,17 @@ def products():
                 existing.update(item)
             else:
                 products.append(item)
-        save_json(PRODUCTS_PATH, products)
+        save_json(PRODUCTS_PATH, products, PRODUCTS_SCHEMA, normalize_product)
         return jsonify(products)
-    products = load_json(PRODUCTS_PATH, [])
+    products = load_json(PRODUCTS_PATH, [], PRODUCTS_SCHEMA, normalize_product)
     return jsonify([normalize_product(p) for p in products])
 
 @app.route("/api/products/<string:name>", methods=["PUT", "DELETE"])
 def modify_product(name):
-    products = load_json(PRODUCTS_PATH, [])
+    products = load_json(PRODUCTS_PATH, [], PRODUCTS_SCHEMA, normalize_product)
     if request.method == "DELETE":
         products = [p for p in products if p.get("name") != name]
-        save_json(PRODUCTS_PATH, products)
+        save_json(PRODUCTS_PATH, products, PRODUCTS_SCHEMA, normalize_product)
         return "", 204
     updated = normalize_product({**(request.json or {}), "name": name})
     for p in products:
@@ -99,7 +111,7 @@ def modify_product(name):
             break
     else:
         products.append(updated)
-    save_json(PRODUCTS_PATH, products)
+    save_json(PRODUCTS_PATH, products, PRODUCTS_SCHEMA, normalize_product)
     return jsonify(products)
 
 
@@ -115,7 +127,7 @@ def units():
 def ocr_match():
     payload = request.json or {}
     items = payload.get("items", [])
-    products = load_json(PRODUCTS_PATH, [])
+    products = load_json(PRODUCTS_PATH, [], PRODUCTS_SCHEMA, normalize_product)
     results = []
     for raw in items:
         text = str(raw).strip().lower()
@@ -135,7 +147,7 @@ def ocr_match():
 
 @app.route("/api/recipes")
 def recipes():
-    products = load_json(PRODUCTS_PATH, [])
+    products = load_json(PRODUCTS_PATH, [], PRODUCTS_SCHEMA, normalize_product)
 
     # Build a set of available product keys, accepting both technical keys
     # ("key"/"name_key") and human readable names.
@@ -151,7 +163,7 @@ def recipes():
         if name and name != key:
             product_keys.add(name)
 
-    recipes = load_json(RECIPES_PATH, [])
+    recipes = load_json(RECIPES_PATH, [], RECIPES_SCHEMA, normalize_recipe)
     available = []
     for r in recipes:
         ingredients = r.get("ingredients", [])
@@ -199,6 +211,21 @@ def favorites():
         save_json(FAVORITES_PATH, favs)
         return jsonify(favs)
     return jsonify(load_json(FAVORITES_PATH, []))
+
+
+@app.route("/api/validate")
+def validate_route():
+    """Run validation for products and recipes data files."""
+    summary = {}
+    count, errors = validate_file(
+        PRODUCTS_PATH, [], PRODUCTS_SCHEMA, normalize_product
+    )
+    summary["products"] = {"valid": count, "errors": errors}
+    count, errors = validate_file(
+        RECIPES_PATH, [], RECIPES_SCHEMA, normalize_recipe
+    )
+    summary["recipes"] = {"valid": count, "errors": errors}
+    return jsonify(summary)
 
 if __name__ == '__main__':
     app.run(debug=True)
