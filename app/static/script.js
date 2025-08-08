@@ -1515,28 +1515,42 @@ function renderSuggestions() {
 }
 
 function renderShoppingList() {
-  const table = document.getElementById('shopping-list');
-  if (!table) return;
-  const tbody = table.querySelector('tbody');
-  tbody.innerHTML = '';
+  const list = document.getElementById('shopping-list');
+  if (!list) return;
+  list.innerHTML = '';
   shoppingList.sort((a, b) => {
     if (a.inCart && b.inCart) return (a.cartTime || 0) - (b.cartTime || 0);
     if (a.inCart !== b.inCart) return a.inCart ? 1 : -1;
     return productName(a.name).localeCompare(productName(b.name));
   });
   shoppingList.forEach((item, idx) => {
-    const tr = document.createElement('tr');
-    tr.className = 'shopping-row';
-    if (item.inCart) tr.classList.add('opacity-50', 'italic');
+    const row = document.createElement('div');
+    row.className = 'shopping-item flex items-center justify-between gap-2 p-2 min-h-12 hover:bg-base-200 transition-colors';
+    if (item.inCart) row.classList.add('opacity-50', 'italic');
 
-    const nameTd = document.createElement('td');
-    nameTd.textContent = productName(item.name);
-    if (item.inCart) nameTd.classList.add('line-through');
-    tr.appendChild(nameTd);
+    const nameWrap = document.createElement('div');
+    nameWrap.className = 'flex-1';
+    let displayName = productName(item.name);
+    if (displayName === '(no translation)') {
+      const tName = t(item.name);
+      displayName = tName !== '(no translation)' ? tName : item.name;
+    }
+    const nameEl = document.createElement('div');
+    nameEl.textContent = displayName;
+    if (item.inCart) nameEl.classList.add('line-through');
+    nameWrap.appendChild(nameEl);
 
-    const qtyTd = document.createElement('td');
+    const owned = (window.currentProducts || []).find(p => p.name === item.name && p.quantity > 0);
+    if (owned) {
+      const ownedEl = document.createElement('div');
+      ownedEl.className = 'text-xs opacity-70';
+      ownedEl.textContent = `${t('owned')}: ${owned.quantity}`;
+      nameWrap.appendChild(ownedEl);
+    }
+    row.appendChild(nameWrap);
+
     const qtyWrap = document.createElement('div');
-    qtyWrap.className = 'flex items-center justify-center gap-2 mx-1';
+    qtyWrap.className = 'flex items-center gap-2 mx-2';
     const dec = document.createElement('button');
     dec.type = 'button';
     dec.innerHTML = '<i class="fa-solid fa-minus"></i>';
@@ -1572,18 +1586,17 @@ function renderShoppingList() {
       saveShoppingList();
     });
     qtyWrap.append(dec, qtyInput, inc);
-    qtyTd.appendChild(qtyWrap);
-    tr.appendChild(qtyTd);
+    row.appendChild(qtyWrap);
 
-    const actionsTd = document.createElement('td');
-    actionsTd.className = 'flex items-center justify-end gap-2';
+    const actions = document.createElement('div');
+    actions.className = 'flex items-center gap-2';
 
-    const acceptBtn = document.createElement('button');
-    acceptBtn.type = 'button';
-    acceptBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
-    acceptBtn.className = (item.inCart ? 'text-success ' : 'text-gray-400 ') + 'touch-btn';
-    acceptBtn.setAttribute('aria-label', t('accept'));
-    acceptBtn.addEventListener('click', () => {
+    const cartBtn = document.createElement('button');
+    cartBtn.type = 'button';
+    cartBtn.innerHTML = `<i class="fa-${item.inCart ? 'solid' : 'regular'} fa-cart-shopping"></i>`;
+    cartBtn.className = 'touch-btn';
+    cartBtn.setAttribute('aria-label', t('in_cart'));
+    cartBtn.addEventListener('click', () => {
       item.inCart = !item.inCart;
       if (item.inCart) {
         item.cartTime = Date.now();
@@ -1593,23 +1606,22 @@ function renderShoppingList() {
       saveShoppingList();
       renderShoppingList();
     });
-    actionsTd.appendChild(acceptBtn);
+    actions.appendChild(cartBtn);
 
-    const rejectBtn = document.createElement('button');
-    rejectBtn.type = 'button';
-    rejectBtn.className = 'text-error touch-btn';
-    rejectBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
-    rejectBtn.setAttribute('aria-label', t('reject'));
-    rejectBtn.addEventListener('click', () => {
+    const delBtn = document.createElement('button');
+    delBtn.type = 'button';
+    delBtn.className = 'text-error touch-btn';
+    delBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+    delBtn.setAttribute('aria-label', t('delete_confirm_button'));
+    delBtn.addEventListener('click', () => {
       pendingRemoveIndex = idx;
       const modal = document.getElementById('shopping-delete-modal');
       if (modal) modal.showModal();
     });
-    actionsTd.appendChild(rejectBtn);
+    actions.appendChild(delBtn);
 
-    tr.appendChild(actionsTd);
-
-    tbody.appendChild(tr);
+    row.appendChild(actions);
+    list.appendChild(row);
   });
 }
 

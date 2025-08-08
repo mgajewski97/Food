@@ -136,14 +136,11 @@ input[type="number"] {
 
 /* Table alignment for shopping sections */
 .suggestion-table th,
-.suggestion-table td,
-.shopping-table th,
-.shopping-table td {
+.suggestion-table td {
   vertical-align: middle;
 }
 
-.suggestion-table,
-.shopping-table {
+.suggestion-table {
   border-radius: 0.5rem;
 }
 
@@ -156,38 +153,6 @@ input[type="number"] {
   justify-content: center;
   font-size: 1.25rem;
   margin: 0 0.25rem;
-}
-
-/* Shopping list mobile card layout */
-html[data-layout="mobile"] #shopping-list thead {
-  display: none;
-}
-
-html[data-layout="mobile"] #shopping-list tbody tr {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.5rem;
-  border-bottom: 1px solid hsl(var(--b3));
-}
-
-html[data-layout="mobile"] #shopping-list tbody td {
-  border: none;
-  padding: 0;
-}
-
-html[data-layout="mobile"] #shopping-list tbody td:nth-child(1) {
-  flex: 1;
-}
-
-html[data-layout="mobile"] #shopping-list tbody td:nth-child(2) {
-  flex: 0 0 auto;
-}
-
-html[data-layout="mobile"] #shopping-list tbody td:nth-child(3) {
-  flex: 0 0 auto;
-  display: flex;
-  gap: 0.5rem;
 }
 
 /* Suggestion table mobile card layout */
