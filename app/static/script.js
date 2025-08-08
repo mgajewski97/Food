@@ -1718,7 +1718,7 @@ async function handleReceiptUpload(file) {
   });
 }
 
-// Hide labels on scroll down, show them on scroll up
+// Show labels when scrolling down, hide them on scroll up
 const mobileNav = document.querySelector('.mobile-nav');
 let lastScroll = 0;
 window.addEventListener(
@@ -1727,9 +1727,9 @@ window.addEventListener(
     if (!mobileNav || html.getAttribute('data-layout') !== 'mobile') return;
     const current = window.pageYOffset || document.documentElement.scrollTop;
     if (current > lastScroll) {
-      mobileNav.classList.add('labels-hidden');
-    } else if (current < lastScroll) {
       mobileNav.classList.remove('labels-hidden');
+    } else if (current < lastScroll) {
+      mobileNav.classList.add('labels-hidden');
     }
     lastScroll = current <= 0 ? 0 : current;
   },
