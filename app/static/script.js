@@ -121,7 +121,8 @@ async function loadTranslations() {
     Object.entries(pl).forEach(([k, v]) => {
       if (k.startsWith('product.')) {
         const key = k.slice('product.'.length);
-        translations.products[key] = { pl: v, en: en[k] || '(no translation)' };
+        translations.products[key] = { pl: v };
+        if (en[k]) translations.products[key].en = en[k];
       }
     });
   } catch (err) {
@@ -174,21 +175,25 @@ const STORAGE_ICONS = {
   freezer: '❄️'
 };
 
-function t(id) {
-  return uiTranslations[currentLang][id] || '(no translation)';
+function t(key) {
+  if (!key) return key;
+  if (key.startsWith('product.')) {
+    const k = key.slice('product.'.length);
+    const entry = translations.products[k];
+    return (entry && entry[currentLang]) || key;
+  }
+  if (units[key] && units[key][currentLang]) {
+    return units[key][currentLang];
+  }
+  return uiTranslations[currentLang][key] || key;
 }
 
 function productName(key) {
-  if (!key || !key.startsWith('product.')) return key;
-  const k = key.slice('product.'.length);
-  const entry = translations.products[k];
-  return entry ? entry[currentLang] || '(no translation)' : '(no translation)';
+  return t(key);
 }
 
 function unitName(key) {
-  if (!key) return key;
-  const entry = units[key];
-  return entry ? entry[currentLang] || '(no translation)' : key;
+  return t(key);
 }
 
 function renderUnitsAdmin() {
@@ -259,11 +264,11 @@ function applyTranslations() {
 }
 
 function categoryName(key) {
-  return t(CATEGORY_KEYS[key]) || key;
+  return t(CATEGORY_KEYS[key] || key);
 }
 
 function storageName(key) {
-  return t(STORAGE_KEYS[key]) || key;
+  return t(STORAGE_KEYS[key] || key);
 }
 
 function formatQuantity(p) {
