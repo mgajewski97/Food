@@ -172,7 +172,7 @@
   },
   {
     "name": "product.bell_peppers",
-    "quantity": "0",
+    "quantity": "1",
     "unit": "szt",
     "category": "fresh_veg",
     "storage": "fridge",
