@@ -135,9 +135,44 @@ def ocr_match():
 @app.route("/api/recipes")
 def recipes():
     products = load_json(PRODUCTS_PATH, [])
-    product_names = {p.get("name") for p in products}
+
+    # Build a set of available product keys, accepting both technical keys
+    # ("key"/"name_key") and human readable names.
+    product_keys = set()
+    key_to_name = {}
+    for p in products:
+        key = p.get("key") or p.get("name_key") or p.get("name")
+        name = p.get("name")
+        if key:
+            product_keys.add(key)
+            if name:
+                key_to_name[key] = name
+        if name and name != key:
+            product_keys.add(name)
+
     recipes = load_json(RECIPES_PATH, [])
-    available = [r for r in recipes if all(ing in product_names for ing in r.get("ingredients", []))]
+    available = []
+    for r in recipes:
+        ingredients = r.get("ingredients", [])
+        recipe_ok = True
+        for ing in ingredients:
+            if isinstance(ing, str):  # legacy format where ingredient is just a key
+                product_key = ing
+            elif isinstance(ing, dict):  # new format with {"product": key, ...}
+                product_key = ing.get("product")
+            else:
+                product_key = None
+
+            if not product_key:
+                app.logger.warning("Malformed ingredient entry: %r", ing)
+                recipe_ok = False
+                break
+            if product_key not in product_keys:
+                recipe_ok = False
+                break
+        if recipe_ok:
+            available.append(r)
+
     return jsonify(available)
 
 
