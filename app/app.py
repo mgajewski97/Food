@@ -13,6 +13,7 @@ PRODUCTS_PATH = os.path.join(BASE_DIR, "data", "products.json")
 RECIPES_PATH = os.path.join(BASE_DIR, "data", "recipes.json")
 UNITS_PATH = os.path.join(BASE_DIR, "data", "units.json")
 HISTORY_PATH = os.path.join(BASE_DIR, "data", "history.json")
+FAVORITES_PATH = os.path.join(BASE_DIR, "data", "favorites.json")
 
 
 def remove_used_products(used_ingredients):
@@ -188,6 +189,16 @@ def history():
             remove_used_products(entry["used_ingredients"])
         return jsonify(history)
     return jsonify(load_json(HISTORY_PATH, []))
+
+
+@app.route("/api/favorites", methods=["GET", "PUT"])
+def favorites():
+    """Store or retrieve favorite recipes."""
+    if request.method == "PUT":
+        favs = request.json or []
+        save_json(FAVORITES_PATH, favs)
+        return jsonify(favs)
+    return jsonify(load_json(FAVORITES_PATH, []))
 
 if __name__ == '__main__':
     app.run(debug=True)

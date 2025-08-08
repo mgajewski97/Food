@@ -52,6 +52,8 @@ let recipeSortDir = 'asc';
 let recipeTimeFilter = '';
 let recipePortionsFilter = '';
 let recipesData = [];
+let favoriteRecipes = new Set(JSON.parse(localStorage.getItem('favoriteRecipes') || '[]'));
+let showFavoritesOnly = false;
 let cookingState = { recipe: null, step: 0 };
 let touchStartX = 0;
 let cornerIconsTop = true;
@@ -179,6 +181,17 @@ async function loadUnits() {
   } catch (err) {
     console.error('Failed to load units', err);
     units = {};
+  }
+}
+
+async function loadFavorites() {
+  try {
+    const res = await fetch('/api/favorites');
+    const data = await res.json();
+    favoriteRecipes = new Set(data);
+    localStorage.setItem('favoriteRecipes', JSON.stringify(Array.from(favoriteRecipes)));
+  } catch (err) {
+    favoriteRecipes = new Set(JSON.parse(localStorage.getItem('favoriteRecipes') || '[]'));
   }
 }
 
@@ -420,6 +433,7 @@ function checkLowStockToast() {
   document.addEventListener('DOMContentLoaded', async () => {
     await loadTranslations();
     await loadUnits();
+    await loadFavorites();
     document.documentElement.setAttribute('lang', currentLang);
     UNIT = 'szt';
     applyTranslations();
@@ -608,13 +622,23 @@ function checkLowStockToast() {
       renderRecipes();
     });
   }
+  const recipeFavoritesToggle = document.getElementById('recipe-favorites-toggle');
+  if (recipeFavoritesToggle) {
+    recipeFavoritesToggle.addEventListener('click', () => {
+      showFavoritesOnly = !showFavoritesOnly;
+      recipeFavoritesToggle.classList.toggle('btn-active', showFavoritesOnly);
+      renderRecipes();
+    });
+  }
   const recipeClearFilters = document.getElementById('recipe-clear-filters');
   if (recipeClearFilters) {
     recipeClearFilters.addEventListener('click', () => {
       recipeTimeFilter = '';
       recipePortionsFilter = '';
+      showFavoritesOnly = false;
       if (recipeTimeFilterEl) recipeTimeFilterEl.value = '';
       if (recipePortionsFilterEl) recipePortionsFilterEl.value = '';
+      if (recipeFavoritesToggle) recipeFavoritesToggle.classList.remove('btn-active');
       renderRecipes();
     });
   }
@@ -1233,6 +1257,22 @@ function timeToBucket(str) {
   return 'gt60';
 }
 
+function toggleFavorite(name) {
+  if (favoriteRecipes.has(name)) {
+    favoriteRecipes.delete(name);
+  } else {
+    favoriteRecipes.add(name);
+  }
+  const arr = Array.from(favoriteRecipes);
+  localStorage.setItem('favoriteRecipes', JSON.stringify(arr));
+  fetch('/api/favorites', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(arr)
+  }).catch(() => {});
+  renderRecipes();
+}
+
 function renderRecipes() {
   const list = document.getElementById('recipe-list');
   if (!list) return;
@@ -1240,6 +1280,7 @@ function renderRecipes() {
   let data = recipesData.slice();
   if (recipeTimeFilter) data = data.filter(r => r.timeBucket === recipeTimeFilter);
   if (recipePortionsFilter) data = data.filter(r => String(r.portions) === recipePortionsFilter);
+  if (showFavoritesOnly) data = data.filter(r => favoriteRecipes.has(r.name));
   data.sort((a, b) => {
     if (recipeSortField === 'time') {
       const ta = parseTimeToMinutes(a.time) || 0;
@@ -1258,7 +1299,19 @@ function renderRecipes() {
     const avgText = (r.avgTaste || r.avgPrepTime)
       ? ` [${r.avgTaste.toFixed(1)}★, ${r.avgPrepTime.toFixed(1)}⏱]`
       : '';
-    li.textContent = `${r.name}${avgText} (${r.ingredients.join(', ')})`;
+    const favBtn = document.createElement('button');
+    favBtn.className = 'btn btn-ghost btn-xs mr-2';
+    favBtn.innerHTML = favoriteRecipes.has(r.name)
+      ? '<i class="fa-solid fa-heart"></i>'
+      : '<i class="fa-regular fa-heart"></i>';
+    favBtn.addEventListener('click', e => {
+      e.preventDefault();
+      toggleFavorite(r.name);
+    });
+    const title = document.createElement('span');
+    title.textContent = `${r.name}${avgText} (${r.ingredients.join(', ')})`;
+    li.appendChild(favBtn);
+    li.appendChild(title);
     const doneBtn = document.createElement('button');
     doneBtn.textContent = t('recipe_done_button');
     doneBtn.addEventListener('click', () => openRatingModal(r));

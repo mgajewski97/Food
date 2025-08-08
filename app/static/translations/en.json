@@ -113,6 +113,7 @@
   "recipe_filter_time_gt60": ">60min",
   "recipe_filter_portions_label": "Portions",
   "recipe_clear_filters": "Clear filters",
+  "recipe_filter_favorites": "Favorite recipes",
   "filter_all": "All",
   "rating_modal_title": "Rate",
   "label_prep_time": "Prep time:",
