@@ -1321,6 +1321,8 @@ function openRecipeDetails(recipe) {
       stepsOl.appendChild(li);
     });
   }
+  const addBtn = document.getElementById('recipe-add-to-shopping');
+  if (addBtn) addBtn.onclick = () => addRecipeIngredientsToShoppingList(recipe);
   modal.showModal();
 }
 
@@ -1678,10 +1680,58 @@ function saveShoppingList() {
 }
 
 function addToShoppingList(name, quantity = 1) {
-  if (shoppingList.some(item => item.name === name)) return;
-  shoppingList.push({ name, quantity, inCart: false });
+  quantity = parseFloat(quantity) || 1;
+  const existing = shoppingList.find(item => item.name === name);
+  if (existing) {
+    existing.quantity += quantity;
+  } else {
+    shoppingList.push({ name, quantity, inCart: false });
+  }
   saveShoppingList();
   renderShoppingList();
+}
+
+function showAddedToShoppingToast() {
+  const container = document.getElementById('notification-container');
+  if (!container) return;
+  const alert = document.createElement('div');
+  alert.className = 'alert alert-success relative';
+  const span = document.createElement('span');
+  span.textContent = t('recipe_added_to_shopping');
+  const btn = document.createElement('button');
+  btn.className = 'btn btn-sm ml-4';
+  btn.textContent = t('toast_go_shopping');
+  btn.addEventListener('click', () => {
+    activateTab('tab-shopping');
+    localStorage.setItem('activeTab', 'tab-shopping');
+    renderShoppingList();
+    alert.remove();
+  });
+  const close = document.createElement('button');
+  close.className = 'btn btn-xs btn-circle btn-ghost absolute top-1 right-1';
+  close.setAttribute('title', t('toast_close'));
+  close.innerHTML = '<i class="fa-regular fa-xmark"></i>';
+  close.addEventListener('click', () => alert.remove());
+  alert.append(span, btn, close);
+  container.appendChild(alert);
+}
+
+function addRecipeIngredientsToShoppingList(recipe) {
+  (recipe.ingredients || []).forEach(ing => {
+    let key;
+    let qty = 1;
+    if (typeof ing === 'string') {
+      key = ing;
+    } else if (ing && typeof ing === 'object') {
+      key = ing.product || ing.name;
+      if (ing.quantity != null) qty = parseFloat(ing.quantity) || 1;
+    }
+    if (!key) return;
+    const product = (window.currentProducts || []).find(p => p.name === key);
+    const name = product ? product.name : key;
+    addToShoppingList(name, qty);
+  });
+  showAddedToShoppingToast();
 }
 
 function handleManualAdd() {
