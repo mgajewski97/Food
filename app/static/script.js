@@ -154,6 +154,70 @@ function unitName(key) {
   return entry ? entry[currentLang] || '(no translation)' : key;
 }
 
+function notify({ type = 'info', title = '', message = '', action } = {}) {
+  const container = document.getElementById('notification-container');
+  if (!container) return;
+  const alert = document.createElement('div');
+  const typeClass =
+    type === 'success'
+      ? 'alert-success'
+      : type === 'error'
+      ? 'alert-error'
+      : type === 'warning'
+      ? 'alert-warning'
+      : 'alert-info';
+  alert.className = `alert ${typeClass} relative`;
+
+  const icon = document.createElement('span');
+  icon.className = 'mr-2';
+  icon.innerHTML =
+    type === 'success'
+      ? '<i class="fa-solid fa-circle-check"></i>'
+      : type === 'error'
+      ? '<i class="fa-solid fa-circle-exclamation"></i>'
+      : type === 'warning'
+      ? '<i class="fa-solid fa-triangle-exclamation"></i>'
+      : '<i class="fa-solid fa-circle-info"></i>';
+
+  const content = document.createElement('div');
+  const titleEl = document.createElement('span');
+  titleEl.className = 'font-bold';
+  titleEl.textContent = title;
+  const msgEl = document.createElement('span');
+  msgEl.className = 'text-sm';
+  msgEl.textContent = message;
+  content.appendChild(titleEl);
+  if (message) content.appendChild(msgEl);
+
+  alert.appendChild(icon);
+  alert.appendChild(content);
+
+  if (action) {
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-sm ml-4';
+    btn.textContent = action.text;
+    btn.addEventListener('click', () => {
+      action.onClick();
+      container.removeChild(alert);
+    });
+    alert.appendChild(btn);
+  }
+
+  const close = document.createElement('button');
+  close.className = 'btn btn-xs btn-circle btn-ghost absolute top-1 right-1';
+  close.setAttribute('title', t('toast_close'));
+  close.innerHTML = '<i class="fa-regular fa-xmark"></i>';
+  close.addEventListener('click', () => {
+    if (alert.parentElement) alert.parentElement.removeChild(alert);
+  });
+  alert.appendChild(close);
+
+  container.appendChild(alert);
+  setTimeout(() => {
+    if (alert.parentElement) alert.parentElement.removeChild(alert);
+  }, 5000);
+}
+
 function renderUnitsAdmin() {
   const tbody = document.querySelector('#units-table tbody');
   if (!tbody) return;
@@ -280,52 +344,27 @@ function sortProducts(list) {
 }
 
 function showLowStockToast() {
-  const container = document.getElementById('toast-container');
-  if (!container) return;
-  container.innerHTML = '';
-  const alert = document.createElement('div');
-  alert.className = 'alert alert-warning relative';
-  const span = document.createElement('span');
-  span.textContent = t('toast_low_stock');
-  const btn = document.createElement('button');
-  btn.className = 'btn btn-sm ml-4';
-  btn.dataset.action = 'shopping';
-  btn.textContent = t('toast_go_shopping');
-  btn.addEventListener('click', () => {
-    activateTab('tab-shopping');
-    localStorage.setItem('activeTab', 'tab-shopping');
-    renderSuggestions();
-    renderShoppingList();
-    container.innerHTML = '';
+  notify({
+    type: 'warning',
+    title: t('toast_low_stock_title'),
+    message: t('toast_low_stock'),
+    action: {
+      text: t('toast_go_shopping'),
+      onClick: () => {
+        activateTab('tab-shopping');
+        localStorage.setItem('activeTab', 'tab-shopping');
+        renderSuggestions();
+        renderShoppingList();
+      }
+    }
   });
-  const close = document.createElement('button');
-  close.className = 'btn btn-xs btn-circle btn-ghost absolute top-1 right-1';
-  close.dataset.action = 'close';
-  close.setAttribute('title', t('toast_close'));
-  close.innerHTML = '<i class="fa-regular fa-xmark"></i>';
-  close.addEventListener('click', () => {
-    container.innerHTML = '';
-  });
-  alert.appendChild(span);
-  alert.appendChild(btn);
-  alert.appendChild(close);
-  container.appendChild(alert);
 }
 
 function checkLowStockToast() {
   const low = (window.currentProducts || []).some(p => p.main && p.threshold !== null && p.quantity <= p.threshold);
-  const container = document.getElementById('toast-container');
-  if (low) {
-    if (!lowStockToastShown) {
-      lowStockToastShown = true;
-      showLowStockToast();
-    } else if (container && container.childElementCount) {
-      container.querySelector('span').textContent = t('toast_low_stock');
-      const btn = container.querySelector('button[data-action="shopping"]');
-      if (btn) btn.textContent = t('toast_go_shopping');
-      const close = container.querySelector('button[data-action="close"]');
-      if (close) close.setAttribute('title', t('toast_close'));
-    }
+  if (low && !lowStockToastShown) {
+    lowStockToastShown = true;
+    showLowStockToast();
   }
 }
 
@@ -611,8 +650,17 @@ function checkLowStockToast() {
       textarea.value = '';
       await loadProducts();
       await loadRecipes();
+      notify({
+        type: 'success',
+        title: t('notification_success_title'),
+        message: t('json_update_success')
+      });
     } catch (err) {
-      console.error(t('invalid_json_alert'));
+      notify({
+        type: 'error',
+        title: t('notification_error_title'),
+        message: t('invalid_json_alert')
+      });
     }
   });
 
