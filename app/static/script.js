@@ -982,7 +982,7 @@ function renderProducts(data) {
         categoryBlock.id = `category-${storIndex}-${catIndex}`;
 
         const catHeader = document.createElement('div');
-        catHeader.className = 'rounded px-2';
+        catHeader.className = 'rounded px-2 mb-1';
         const h4 = document.createElement('h4');
         h4.className = 'text-xl font-semibold flex items-center gap-2 m-0';
         const titleSpan = document.createElement('span');
@@ -1004,10 +1004,18 @@ function renderProducts(data) {
         categoryBlock.appendChild(catHeader);
 
         const catContent = document.createElement('div');
-        catContent.className = 'category-content';
+        catContent.className = 'category-content px-2';
 
         const table = document.createElement('table');
-        table.className = 'table table-zebra w-full';
+        table.className = 'table table-zebra w-full grouped-table';
+
+        const colgroup = document.createElement('colgroup');
+        ['name', 'qty', 'unit', 'status'].forEach(c => {
+          const col = document.createElement('col');
+          col.className = `grouped-col-${c}`;
+          colgroup.appendChild(col);
+        });
+        table.appendChild(colgroup);
         const thead = document.createElement('thead');
         const headRow = document.createElement('tr');
         [
@@ -1017,7 +1025,7 @@ function renderProducts(data) {
           t('table_header_status')
         ].forEach(text => {
           const th = document.createElement('th');
-          th.className = 'px-2 py-1 sm:px-4 sm:py-2';
+          th.className = 'px-1 py-1 sm:px-4 sm:py-2';
           th.textContent = text;
           headRow.appendChild(th);
         });
@@ -1034,12 +1042,12 @@ function renderProducts(data) {
               tr.classList.add(...LOW_STOCK_CLASS.split(' '));
             }
             const nameTd = document.createElement('td');
-            nameTd.className = 'px-2 py-1 sm:px-4 sm:py-2';
+            nameTd.className = 'px-1 py-1 sm:px-4 sm:py-2';
             nameTd.textContent = productName(p.name);
             tr.appendChild(nameTd);
 
             const qtyTd = document.createElement('td');
-            qtyTd.className = 'px-2 py-1 sm:px-4 sm:py-2';
+            qtyTd.className = 'px-1 py-1 sm:px-4 sm:py-2';
             qtyTd.textContent = formatPackQuantity(p);
             if (p.pack_size) {
               qtyTd.title = t('pack_title');
@@ -1047,12 +1055,12 @@ function renderProducts(data) {
             tr.appendChild(qtyTd);
 
             const unitTd = document.createElement('td');
-            unitTd.className = 'px-2 py-1 sm:px-4 sm:py-2';
+            unitTd.className = 'px-1 py-1 sm:px-4 sm:py-2';
             unitTd.textContent = unitName(p.unit);
             tr.appendChild(unitTd);
 
             const statusTd = document.createElement('td');
-            statusTd.className = 'px-2 py-1 sm:px-4 sm:py-2 text-center';
+            statusTd.className = 'px-1 py-1 sm:px-4 sm:py-2 text-center';
             const status = getStatusIcon(p);
             if (status) {
               statusTd.innerHTML = status.html;
