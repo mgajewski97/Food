@@ -1,4 +1,4 @@
-import { loadTranslations, loadUnits, loadFavorites, state, t, normalizeProduct } from './js/helpers.js';
+import { loadTranslations, loadUnits, loadFavorites, state, t, normalizeProduct, unitName } from './js/helpers.js';
 import { renderProducts } from './js/components/product-table.js';
 import { renderRecipes, loadRecipes } from './js/components/recipe-list.js';
 import { renderShoppingList, addToShoppingList, renderSuggestions } from './js/components/shopping-list.js';
@@ -78,6 +78,78 @@ function mountNavigation() {
 window.activateTab = activateTab;
 window.addToShoppingList = addToShoppingList;
 
+function initAddForm() {
+  const form = document.getElementById('add-form');
+  if (!form) return;
+  const nameInput = form.querySelector('input[name="name"]');
+  const qtyInput = form.querySelector('input[name="quantity"]');
+  const catSelect = form.querySelector('select[name="category"]');
+  const storSelect = form.querySelector('select[name="storage"]');
+  const mainLabel = form.querySelector('input[name="main"]')?.closest('label');
+  const submitBtn = form.querySelector('button[type="submit"]');
+  const pkg = form.querySelector('input[name="package_size"]');
+  const pack = form.querySelector('input[name="pack_size"]');
+  const threshold = form.querySelector('input[name="threshold"]');
+
+  pkg?.remove();
+  pack?.remove();
+  threshold?.remove();
+
+  const unitSel = document.createElement('select');
+  unitSel.name = 'unit';
+  unitSel.className = 'select select-bordered w-full';
+  Object.keys(state.units).forEach(u => {
+    const opt = document.createElement('option');
+    opt.value = u;
+    opt.textContent = unitName(u);
+    unitSel.appendChild(opt);
+  });
+  qtyInput.insertAdjacentElement('afterend', unitSel);
+
+  nameInput.classList.add('add-name');
+  qtyInput.classList.add('add-qty', 'no-spinner');
+  unitSel.classList.add('add-unit');
+  catSelect.classList.add('add-category');
+  storSelect.classList.add('add-storage');
+  if (mainLabel) {
+    mainLabel.classList.add('add-main', 'flex', 'items-center', 'gap-2');
+    storSelect.insertAdjacentElement('afterend', mainLabel);
+  }
+  submitBtn.classList.add('add-submit');
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const data = new FormData(form);
+    const payload = {
+      name: (data.get('name') || '').trim(),
+      quantity: parseFloat(data.get('quantity')) || 0,
+      unit: data.get('unit'),
+      category: data.get('category'),
+      storage: data.get('storage'),
+      main: data.get('main') === 'on'
+    };
+    const thr = parseFloat(data.get('threshold'));
+    if (!isNaN(thr)) payload.threshold = thr;
+    submitBtn.disabled = true;
+    try {
+      const res = await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const created = await res.json();
+      APP.state.products.push(normalizeProduct(created));
+      renderProducts();
+      form.reset();
+    } catch (err) {
+      showNotification({ type: 'error', title: t('save_failed'), message: err.message });
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+}
+
 async function saveEdits() {
   const table = document.getElementById('product-table');
   const rows = Array.from(table.querySelectorAll('tbody tr'));
@@ -124,6 +196,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   fetchProducts();
   fetchRecipes();
   fetchHistory();
+  initAddForm();
 
   const editBtn = document.getElementById('edit-toggle');
   const saveBtn = document.getElementById('save-btn');

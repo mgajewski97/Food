@@ -239,7 +239,7 @@ export function stockLevel(p = {}) {
   if (isSpice(p)) {
     return p.level || 'none';
   }
-  if (p.quantity === 0 && p.main) return 'none';
+  if (p.quantity === 0) return 'none';
   if (p.main && p.threshold != null && p.quantity <= p.threshold) return 'low';
   return 'ok';
 }

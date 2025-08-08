@@ -143,7 +143,7 @@ function attachCollapses(root) {
       icon.classList.toggle('fa-caret-right');
     }
     btn.addEventListener('click', e => { e.stopPropagation(); toggle(); });
-    if (state.displayMode === 'mobile' && header) {
+    if (header) {
       header.addEventListener('click', toggle);
     }
   });
