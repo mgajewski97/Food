@@ -18,10 +18,16 @@ html[data-layout="desktop"] .main-container {
   right: 0.5rem;
   display: flex;
   padding: 0.5rem;
+  gap: 0.5rem;
+  align-items: center;
   z-index: 50;
   background-color: hsl(var(--b1) / 0.8);
   backdrop-filter: blur(4px);
   border-radius: 0.5rem;
+}
+
+html[data-layout="desktop"] .corner-icons {
+  gap: 1rem;
 }
 
 #top-sentinel {
