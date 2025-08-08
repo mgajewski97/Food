@@ -116,3 +116,72 @@ export function renderShoppingList() {
     list.appendChild(row);
   });
 }
+
+export function renderSuggestions() {
+  const container = document.getElementById('suggestion-list');
+  if (!container) return;
+  container.innerHTML = '';
+  const suggestions = (window.currentProducts || [])
+    .filter(p => p.main && p.threshold !== null && parseFloat(p.quantity) <= p.threshold)
+    .filter(p => !state.dismissedSuggestions.has(p.name))
+    .sort((a, b) => productName(a.name).localeCompare(productName(b.name)));
+  suggestions.forEach(p => {
+    let qty = 1;
+    const row = document.createElement('div');
+    row.className = 'suggestion-item grid items-center gap-3 p-2 min-h-10 hover:bg-base-200 transition-colors flex-nowrap';
+    row.style.gridTemplateColumns = '1fr auto auto';
+    const nameEl = document.createElement('div');
+    nameEl.className = 'truncate';
+    nameEl.textContent = productName(p.name);
+    row.appendChild(nameEl);
+    const qtyWrap = document.createElement('div');
+    qtyWrap.className = 'flex items-center';
+    const dec = document.createElement('button');
+    dec.type = 'button';
+    dec.innerHTML = '<i class="fa-solid fa-minus"></i>';
+    dec.className = 'touch-btn';
+    const qtySpan = document.createElement('span');
+    qtySpan.textContent = qty;
+    qtySpan.className = 'w-10 h-10 inline-flex items-center justify-center text-center';
+    const inc = document.createElement('button');
+    inc.type = 'button';
+    inc.innerHTML = '<i class="fa-solid fa-plus"></i>';
+    inc.className = 'touch-btn';
+    dec.addEventListener('click', () => {
+      if (qty > 1) {
+        qty -= 1;
+        qtySpan.textContent = qty;
+      }
+    });
+    inc.addEventListener('click', () => {
+      qty += 1;
+      qtySpan.textContent = qty;
+    });
+    qtyWrap.append(dec, qtySpan, inc);
+    row.appendChild(qtyWrap);
+    const actions = document.createElement('div');
+    actions.className = 'flex items-center gap-2';
+    const accept = document.createElement('button');
+    accept.type = 'button';
+    accept.innerHTML = '<i class="fa-solid fa-check"></i>';
+    accept.className = 'touch-btn text-success';
+    accept.setAttribute('aria-label', t('accept_action'));
+    accept.addEventListener('click', () => {
+      state.dismissedSuggestions.add(p.name);
+      addToShoppingList(p.name, qty);
+      row.remove();
+    });
+    const reject = document.createElement('button');
+    reject.type = 'button';
+    reject.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+    reject.className = 'touch-btn text-error';
+    reject.setAttribute('aria-label', t('reject_action'));
+    reject.addEventListener('click', () => {
+      state.dismissedSuggestions.add(p.name);
+      row.remove();
+    });
+    actions.append(accept, reject);
+    row.appendChild(actions);
+    container.appendChild(row);
+  });
+}

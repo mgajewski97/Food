@@ -36,6 +36,7 @@ export const state = {
   expandedStorages: {},
   expandedCategories: {},
   shoppingList: JSON.parse(localStorage.getItem('shoppingList') || '[]'),
+  dismissedSuggestions: new Set(),
   pendingRemoveIndex: null,
   recipesData: [],
   recipeSortField: 'name',
