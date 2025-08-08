@@ -143,13 +143,14 @@
 
         <div id="tab-recipes" class="tab-panel" style="display:none;">
             <h1 class="text-2xl font-bold mb-4" data-i18n="heading_recipes">Przepisy</h1>
-            <div class="mb-4">
+            <div class="mb-4 flex items-center gap-2 flex-wrap">
                 <label for="recipe-sort" class="mr-2" data-i18n="recipe_sort_label">Sortuj wg:</label>
                 <select id="recipe-sort" class="select select-bordered w-full max-w-xs">
                     <option value="name" data-i18n="recipe_sort_name">Nazwa</option>
                     <option value="taste" data-i18n="recipe_sort_taste">Smak</option>
                     <option value="time" data-i18n="recipe_sort_time">Czas przygotowania</option>
                 </select>
+                <button id="recipe-favorites-filter" class="btn btn-outline btn-sm" data-i18n="recipe_favorites_filter">Ulubione przepisy</button>
             </div>
             <ul id="recipe-list" class="list-disc pl-4 mb-8"></ul>
         </div>

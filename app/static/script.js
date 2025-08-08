@@ -48,6 +48,8 @@ let shoppingList = JSON.parse(localStorage.getItem('shoppingList') || '[]');
 let pendingRemoveIndex = null;
 let currentRecipeName = null;
 let currentRecipeSort = 'name';
+let favoriteRecipes = JSON.parse(localStorage.getItem('favoriteRecipes') || '[]');
+let showFavoritesOnly = false;
 let cookingState = { recipe: null, step: 0 };
 let touchStartX = 0;
 let cornerIconsTop = true;
@@ -523,6 +525,14 @@ function checkLowStockToast() {
   if (recipeSort) {
     recipeSort.addEventListener('change', e => {
       currentRecipeSort = e.target.value;
+      loadRecipes();
+    });
+  }
+  const favoritesFilterBtn = document.getElementById('recipe-favorites-filter');
+  if (favoritesFilterBtn) {
+    favoritesFilterBtn.addEventListener('click', () => {
+      showFavoritesOnly = !showFavoritesOnly;
+      favoritesFilterBtn.classList.toggle('btn-active', showFavoritesOnly);
       loadRecipes();
     });
   }
@@ -1155,12 +1165,33 @@ async function loadRecipes() {
   });
   const list = document.getElementById('recipe-list');
   list.innerHTML = '';
-  data.forEach(r => {
+  const favorites = favoriteRecipes;
+  const renderData = showFavoritesOnly ? data.filter(r => favorites.includes(r.name)) : data;
+  renderData.forEach(r => {
     const li = document.createElement('li');
     const avgText = (r.avgTaste || r.avgPrepTime)
       ? ` [${r.avgTaste.toFixed(1)}★, ${r.avgPrepTime.toFixed(1)}⏱]`
       : '';
-    li.textContent = `${r.name}${avgText} (${r.ingredients.join(', ')})`;
+    const favIcon = document.createElement('i');
+    favIcon.className = `${favorites.includes(r.name) ? 'fa-solid' : 'fa-regular'} fa-heart mr-2 cursor-pointer`;
+    favIcon.addEventListener('click', () => {
+      const idx = favoriteRecipes.indexOf(r.name);
+      if (idx >= 0) {
+        favoriteRecipes.splice(idx, 1);
+      } else {
+        favoriteRecipes.push(r.name);
+      }
+      localStorage.setItem('favoriteRecipes', JSON.stringify(favoriteRecipes));
+      if (showFavoritesOnly) {
+        loadRecipes();
+      } else {
+        favIcon.className = `${favoriteRecipes.includes(r.name) ? 'fa-solid' : 'fa-regular'} fa-heart mr-2 cursor-pointer`;
+      }
+    });
+    li.appendChild(favIcon);
+    const textSpan = document.createElement('span');
+    textSpan.textContent = `${r.name}${avgText} (${r.ingredients.join(', ')}) `;
+    li.appendChild(textSpan);
     const doneBtn = document.createElement('button');
     doneBtn.textContent = t('recipe_done_button');
     doneBtn.addEventListener('click', () => openRatingModal(r));

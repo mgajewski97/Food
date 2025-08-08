@@ -100,6 +100,7 @@
   "recipe_sort_name": "Nazwa",
   "recipe_sort_taste": "Smak",
   "recipe_sort_time": "Czas przygotowania",
+  "recipe_favorites_filter": "Ulubione przepisy",
   "rating_modal_title": "Oceń",
   "label_prep_time": "Czas przygotowania:",
   "ingredient_placeholder": "składnik",
