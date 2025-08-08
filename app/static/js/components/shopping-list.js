@@ -1,4 +1,4 @@
-import { t, state, productName } from '../helpers.js';
+import { t, state, productName, isSpice } from '../helpers.js';
 
 function saveShoppingList() {
   localStorage.setItem('shoppingList', JSON.stringify(state.shoppingList));
@@ -27,17 +27,17 @@ export function renderShoppingList() {
   });
   state.shoppingList.forEach((item, idx) => {
     const row = document.createElement('div');
-    row.className = 'shopping-item grid items-center gap-3 p-2 min-h-10 hover:bg-base-200 transition-colors flex-nowrap';
-    row.style.gridTemplateColumns = '1fr auto auto';
+    row.className =
+      'shopping-item flex flex-nowrap items-center gap-3 p-2 min-h-12 hover:bg-base-200 transition-colors';
     if (item.inCart) row.classList.add('opacity-50', 'italic');
     const nameWrap = document.createElement('div');
-    nameWrap.className = 'overflow-hidden';
+    nameWrap.className = 'flex-1 overflow-hidden';
     const nameEl = document.createElement('div');
     nameEl.textContent = productName(item.name);
     nameEl.className = 'truncate';
     if (item.inCart) nameEl.classList.add('line-through');
     nameWrap.appendChild(nameEl);
-    const stock = (window.currentProducts || []).find(p => p.name === item.name);
+    const stock = (window.APP?.state?.products || []).find(p => p.name === item.name);
     if (stock) {
       const ownedEl = document.createElement('div');
       ownedEl.className = 'text-xs text-secondary truncate';
@@ -84,7 +84,7 @@ export function renderShoppingList() {
     qtyWrap.append(dec, qtyInput, inc);
     row.appendChild(qtyWrap);
     const actions = document.createElement('div');
-    actions.className = 'flex items-baseline gap-3';
+    actions.className = 'flex items-center gap-3';
     const acceptBtn = document.createElement('button');
     acceptBtn.type = 'button';
     acceptBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
@@ -121,46 +121,56 @@ export function renderSuggestions() {
   const container = document.getElementById('suggestion-list');
   if (!container) return;
   container.innerHTML = '';
-  const suggestions = (window.currentProducts || [])
-    .filter(p => p.main && p.threshold !== null && parseFloat(p.quantity) <= p.threshold)
+  const products = window.APP?.state?.products || [];
+  const suggestions = products
+    .filter(p => {
+      if (isSpice(p)) {
+        return ['none', 'low'].includes(p.level);
+      }
+      return p.main && (p.quantity === 0 || (p.threshold != null && p.quantity <= p.threshold));
+    })
     .filter(p => !state.dismissedSuggestions.has(p.name))
     .sort((a, b) => productName(a.name).localeCompare(productName(b.name)));
   suggestions.forEach(p => {
     let qty = 1;
     const row = document.createElement('div');
-    row.className = 'suggestion-item grid items-center gap-3 p-2 min-h-10 hover:bg-base-200 transition-colors flex-nowrap';
-    row.style.gridTemplateColumns = '1fr auto auto';
+    row.className =
+      'suggestion-item flex flex-nowrap items-center gap-3 p-2 min-h-12 hover:bg-base-200 transition-colors';
     const nameEl = document.createElement('div');
-    nameEl.className = 'truncate';
+    nameEl.className = 'flex-1 truncate';
     nameEl.textContent = productName(p.name);
     row.appendChild(nameEl);
     const qtyWrap = document.createElement('div');
-    qtyWrap.className = 'flex items-center';
+    qtyWrap.className = 'flex items-center gap-2';
     const dec = document.createElement('button');
     dec.type = 'button';
     dec.innerHTML = '<i class="fa-solid fa-minus"></i>';
     dec.className = 'touch-btn';
-    const qtySpan = document.createElement('span');
-    qtySpan.textContent = qty;
-    qtySpan.className = 'w-10 h-10 inline-flex items-center justify-center text-center';
+    const qtyInput = document.createElement('input');
+    qtyInput.type = 'number';
+    qtyInput.min = '1';
+    qtyInput.value = qty;
+    qtyInput.className = 'input input-bordered w-12 h-10 text-center no-spinner';
     const inc = document.createElement('button');
     inc.type = 'button';
     inc.innerHTML = '<i class="fa-solid fa-plus"></i>';
     inc.className = 'touch-btn';
     dec.addEventListener('click', () => {
-      if (qty > 1) {
-        qty -= 1;
-        qtySpan.textContent = qty;
-      }
+      qty = Math.max(1, qty - 1);
+      qtyInput.value = qty;
     });
     inc.addEventListener('click', () => {
       qty += 1;
-      qtySpan.textContent = qty;
+      qtyInput.value = qty;
     });
-    qtyWrap.append(dec, qtySpan, inc);
+    qtyInput.addEventListener('change', () => {
+      qty = Math.max(1, parseInt(qtyInput.value) || 1);
+      qtyInput.value = qty;
+    });
+    qtyWrap.append(dec, qtyInput, inc);
     row.appendChild(qtyWrap);
     const actions = document.createElement('div');
-    actions.className = 'flex items-center gap-2';
+    actions.className = 'flex items-center gap-3';
     const accept = document.createElement('button');
     accept.type = 'button';
     accept.innerHTML = '<i class="fa-solid fa-check"></i>';
@@ -185,3 +195,13 @@ export function renderSuggestions() {
     container.appendChild(row);
   });
 }
+
+// Handle item removal confirmation once
+document.getElementById('confirm-remove-item')?.addEventListener('click', () => {
+  if (state.pendingRemoveIndex != null) {
+    state.shoppingList.splice(state.pendingRemoveIndex, 1);
+    state.pendingRemoveIndex = null;
+    saveShoppingList();
+    renderShoppingList();
+  }
+});
