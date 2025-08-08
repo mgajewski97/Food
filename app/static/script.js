@@ -1414,20 +1414,20 @@ function renderSuggestions() {
 
     const qtyTd = document.createElement('td');
     const qtyWrap = document.createElement('div');
-    qtyWrap.className = 'flex items-center justify-center';
+    qtyWrap.className = 'flex items-center justify-center gap-2';
     const dec = document.createElement('button');
     dec.type = 'button';
-    dec.textContent = '−';
-    dec.className = 'btn btn-outline btn-xs';
+    dec.innerHTML = '<i class="fa-solid fa-minus"></i>';
+    dec.className = 'touch-btn';
     const qtyInput = document.createElement('input');
     qtyInput.type = 'number';
     qtyInput.min = '1';
     qtyInput.value = '1';
-    qtyInput.className = 'input input-bordered w-16 text-center mx-2';
+    qtyInput.className = 'input input-bordered w-16 text-center';
     const inc = document.createElement('button');
     inc.type = 'button';
-    inc.textContent = '+';
-    inc.className = 'btn btn-outline btn-xs';
+    inc.innerHTML = '<i class="fa-solid fa-plus"></i>';
+    inc.className = 'touch-btn';
     dec.addEventListener('click', () => {
       qtyInput.value = Math.max(1, (parseInt(qtyInput.value) || 1) - 1);
     });
@@ -1438,26 +1438,23 @@ function renderSuggestions() {
     qtyTd.appendChild(qtyWrap);
     tr.appendChild(qtyTd);
 
-    const acceptTd = document.createElement('td');
+    const actionsTd = document.createElement('td');
+    actionsTd.className = 'flex items-center justify-end gap-2';
     const acceptBtn = document.createElement('button');
-    acceptBtn.className = 'text-success text-xl';
+    acceptBtn.className = 'text-success touch-btn';
     acceptBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
     acceptBtn.setAttribute('aria-label', t('accept'));
     acceptBtn.addEventListener('click', () => {
       addToShoppingList(p.name, parseInt(qtyInput.value) || 1);
       renderSuggestions();
     });
-    acceptTd.appendChild(acceptBtn);
-    tr.appendChild(acceptTd);
-
-    const rejectTd = document.createElement('td');
     const rejectBtn = document.createElement('button');
-    rejectBtn.className = 'text-error text-xl';
+    rejectBtn.className = 'text-error touch-btn';
     rejectBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
     rejectBtn.setAttribute('aria-label', t('reject'));
     rejectBtn.addEventListener('click', () => tr.remove());
-    rejectTd.appendChild(rejectBtn);
-    tr.appendChild(rejectTd);
+    actionsTd.append(acceptBtn, rejectBtn);
+    tr.appendChild(actionsTd);
 
     tbody.appendChild(tr);
   });
@@ -1491,27 +1488,36 @@ function renderShoppingList() {
     dec.innerHTML = '<i class="fa-solid fa-minus"></i>';
     dec.className = 'touch-btn';
     dec.disabled = item.inCart;
-    const qtyDisplay = document.createElement('span');
-    qtyDisplay.textContent = item.quantity;
-    qtyDisplay.className = 'w-8 text-center';
+    const qtyInput = document.createElement('input');
+    qtyInput.type = 'number';
+    qtyInput.min = '1';
+    qtyInput.value = item.quantity;
+    qtyInput.className = 'input input-bordered w-16 text-center';
+    qtyInput.disabled = item.inCart;
     const inc = document.createElement('button');
     inc.type = 'button';
     inc.innerHTML = '<i class="fa-solid fa-plus"></i>';
     inc.className = 'touch-btn';
     inc.disabled = item.inCart;
     dec.addEventListener('click', () => {
-      const newVal = Math.max(1, item.quantity - 1);
+      const newVal = Math.max(1, (parseInt(qtyInput.value) || 1) - 1);
       item.quantity = newVal;
-      qtyDisplay.textContent = newVal;
+      qtyInput.value = newVal;
       saveShoppingList();
     });
     inc.addEventListener('click', () => {
-      const newVal = item.quantity + 1;
+      const newVal = (parseInt(qtyInput.value) || 1) + 1;
       item.quantity = newVal;
-      qtyDisplay.textContent = newVal;
+      qtyInput.value = newVal;
       saveShoppingList();
     });
-    qtyWrap.append(dec, qtyDisplay, inc);
+    qtyInput.addEventListener('change', () => {
+      const val = Math.max(1, parseInt(qtyInput.value) || 1);
+      item.quantity = val;
+      qtyInput.value = val;
+      saveShoppingList();
+    });
+    qtyWrap.append(dec, qtyInput, inc);
     qtyTd.appendChild(qtyWrap);
     tr.appendChild(qtyTd);
 

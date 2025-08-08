@@ -181,6 +181,38 @@ html[data-layout="mobile"] #shopping-list tbody td:nth-child(3) {
   gap: 0.5rem;
 }
 
+/* Suggestion table mobile card layout */
+html[data-layout="mobile"] #suggestion-table thead {
+  display: none;
+}
+
+html[data-layout="mobile"] #suggestion-table tbody tr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border-bottom: 1px solid hsl(var(--b3));
+}
+
+html[data-layout="mobile"] #suggestion-table tbody td {
+  border: none;
+  padding: 0;
+}
+
+html[data-layout="mobile"] #suggestion-table tbody td:nth-child(1) {
+  flex: 1;
+}
+
+html[data-layout="mobile"] #suggestion-table tbody td:nth-child(2) {
+  flex: 0 0 auto;
+}
+
+html[data-layout="mobile"] #suggestion-table tbody td:nth-child(3) {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 0.5rem;
+}
+
 html[data-layout="mobile"] .touch-btn {
   width: 3rem;
   height: 3rem;
