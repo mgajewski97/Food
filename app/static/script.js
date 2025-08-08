@@ -438,6 +438,7 @@ function checkLowStockToast() {
     UNIT = 'szt';
     applyTranslations();
     updateThemeToggleLabel();
+    updateHistoryDetailCloseLabel();
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/service-worker.js');
     }
@@ -464,6 +465,7 @@ function checkLowStockToast() {
         UNIT = 'szt';
         applyTranslations();
         updateThemeToggleLabel();
+        updateHistoryDetailCloseLabel();
         renderUnitsAdmin();
         if (activeTarget) {
           document.querySelectorAll('.tab-panel').forEach(panel => (panel.style.display = 'none'));
@@ -1413,6 +1415,61 @@ async function loadRecipes() {
   }
 }
 
+function openHistoryDetails(entry) {
+  const modal = document.getElementById('history-detail-modal');
+  if (!modal) return;
+  const title = document.getElementById('history-detail-title');
+  if (title) title.textContent = `${entry.name} - ${entry.date}`;
+
+  const ingWrap = document.getElementById('history-detail-ingredients-wrap');
+  const ingList = document.getElementById('history-detail-ingredients');
+  if (ingWrap && ingList) {
+    ingList.innerHTML = '';
+    const used = entry.used_ingredients || {};
+    Object.entries(used).forEach(([name, info]) => {
+      const li = document.createElement('li');
+      if (info && typeof info === 'object') {
+        const qty = info.quantity != null ? info.quantity : '';
+        const unit = info.unit ? ` ${info.unit}` : '';
+        li.textContent = `${name}: ${qty}${unit}`.trim();
+      } else {
+        li.textContent = name;
+      }
+      ingList.appendChild(li);
+    });
+    ingWrap.style.display = Object.keys(used).length ? 'block' : 'none';
+  }
+
+  const ratingWrap = document.getElementById('history-detail-rating-wrap');
+  const tasteEl = document.getElementById('history-detail-taste');
+  const prepEl = document.getElementById('history-detail-prep');
+  if (ratingWrap && tasteEl && prepEl) {
+    if (entry.rating) {
+      tasteEl.textContent = entry.rating.taste ?? '';
+      prepEl.textContent = entry.rating.prep_time ?? '';
+      ratingWrap.style.display = 'block';
+    } else {
+      tasteEl.textContent = '';
+      prepEl.textContent = '';
+      ratingWrap.style.display = 'none';
+    }
+  }
+
+  const commentWrap = document.getElementById('history-detail-comment-wrap');
+  const commentEl = document.getElementById('history-detail-comment');
+  if (commentWrap && commentEl) {
+    if (entry.comment) {
+      commentEl.textContent = entry.comment;
+      commentWrap.style.display = 'block';
+    } else {
+      commentEl.textContent = '';
+      commentWrap.style.display = 'none';
+    }
+  }
+
+  modal.showModal();
+}
+
 async function loadHistory() {
   const res = await fetch('/api/history');
   const data = await res.json();
@@ -1420,18 +1477,15 @@ async function loadHistory() {
   list.innerHTML = '';
   data.forEach(h => {
     const li = document.createElement('li');
-    const star = h.favorite ? ' ★' : '';
-    const followedText = h.followed_recipe_exactly ? t('yes') : t('no');
-    let text = `${h.date} - ${h.name} (${t('label_followed_recipe')} ${followedText}`;
-    if (!h.followed_recipe_exactly && h.comment) {
-      text += `, ${h.comment}`;
-    }
-    text += ')';
-    if (h.rating) {
-      text += ` (${t('label_taste')} ${h.rating.taste}, ${t('label_prep_time')} ${h.rating.prep_time})`;
-    }
-    text += star;
-    li.textContent = text;
+    const textSpan = document.createElement('span');
+    textSpan.textContent = `${h.date} - ${h.name}`;
+    if (h.favorite) textSpan.textContent += ' ★';
+    li.appendChild(textSpan);
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-xs btn-outline ml-2';
+    btn.textContent = t('history_show_details');
+    btn.addEventListener('click', () => openHistoryDetails(h));
+    li.appendChild(btn);
     list.appendChild(li);
   });
 }
@@ -1629,6 +1683,21 @@ const recipeDetailClose = document.getElementById('recipe-detail-close');
 const recipeDetailModal = document.getElementById('recipe-detail-modal');
 if (recipeDetailClose && recipeDetailModal) {
   recipeDetailClose.addEventListener('click', () => recipeDetailModal.close());
+}
+
+const historyDetailClose = document.getElementById('history-detail-close');
+const historyDetailModal = document.getElementById('history-detail-modal');
+if (historyDetailClose && historyDetailModal) {
+  historyDetailClose.addEventListener('click', () => historyDetailModal.close());
+}
+
+function updateHistoryDetailCloseLabel() {
+  const btn = document.getElementById('history-detail-close');
+  if (btn) {
+    const label = t('toast_close');
+    btn.setAttribute('aria-label', label);
+    btn.setAttribute('title', label);
+  }
 }
 
 // Theme toggle

@@ -257,6 +257,29 @@
                 </form>
             </dialog>
 
+            <dialog id="history-detail-modal" class="modal" aria-labelledby="history-detail-title">
+                <div class="modal-box max-w-lg">
+                    <h3 id="history-detail-title" class="font-bold text-lg mb-4"></h3>
+                    <div class="space-y-4">
+                        <div id="history-detail-ingredients-wrap">
+                            <h4 class="font-semibold mb-2" data-i18n="recipe_ingredients_header">Składniki</h4>
+                            <ul id="history-detail-ingredients" class="list-disc pl-4"></ul>
+                        </div>
+                        <div id="history-detail-rating-wrap" class="space-y-1">
+                            <div><span data-i18n="label_taste">Smak:</span> <span id="history-detail-taste"></span></div>
+                            <div><span data-i18n="label_prep_time">Czas przygotowania:</span> <span id="history-detail-prep"></span></div>
+                        </div>
+                        <div id="history-detail-comment-wrap">
+                            <h4 class="font-semibold mb-2"><span data-i18n="comment_placeholder">Komentarz</span>:</h4>
+                            <p id="history-detail-comment"></p>
+                        </div>
+                    </div>
+                    <div class="modal-action">
+                        <button id="history-detail-close" class="btn btn-sm" data-i18n="toast_close" aria-label="Close">Zamknij</button>
+                    </div>
+                </div>
+            </dialog>
+
             <div id="cooking-overlay" class="fixed inset-0 bg-base-100 z-50 hidden flex flex-col items-center justify-center p-4">
                 <div id="cooking-step" class="text-xl text-center mb-6"></div>
                 <button id="cooking-next" class="btn btn-primary mb-4" data-i18n="next_step_button">Dalej</button>
