@@ -1,4 +1,4 @@
-import { t } from '../helpers.js';
+import { t, productName, unitName } from '../helpers.js';
 
 export function openRecipeDetails(recipe) {
   const modal = document.getElementById('recipe-detail-modal');
@@ -26,10 +26,10 @@ export function openRecipeDetails(recipe) {
       const li = document.createElement('li');
       const name = document.createElement('span');
       const qty = document.createElement('span');
-      name.textContent = t(ing.productKey);
+      name.textContent = productName(ing.productKey);
       let text = '';
       if (ing.quantity != null) text += ing.quantity;
-      if (ing.unit) text += ` ${t(ing.unit)}`;
+      if (ing.unit) text += ` ${unitName(ing.unit)}`;
       qty.textContent = text.trim();
       li.append(name, qty);
       ingList.appendChild(li);

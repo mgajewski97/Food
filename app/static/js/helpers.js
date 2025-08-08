@@ -63,10 +63,27 @@ export function t(key) {
   return state.uiTranslations[state.currentLang][key] || key;
 }
 
-export function productName(key) { return t(key); }
-export function unitName(key) { return t(key); }
-export function categoryName(key) { return t(CATEGORY_KEYS[key] || key); }
-export function storageName(key) { return t(STORAGE_KEYS[key] || key); }
+export function productName(key) {
+  const translated = t(key);
+  return translated === key ? key.replace(/^product\./, '') : translated;
+}
+
+export function unitName(key) {
+  const translated = t(key);
+  return translated === key ? key : translated;
+}
+
+export function categoryName(key) {
+  const tKey = CATEGORY_KEYS[key] || key;
+  const translated = t(tKey);
+  return translated === tKey ? key : translated;
+}
+
+export function storageName(key) {
+  const tKey = STORAGE_KEYS[key] || key;
+  const translated = t(tKey);
+  return translated === tKey ? key : translated;
+}
 
 export function parseTimeToMinutes(str) {
   if (!str) return null;
