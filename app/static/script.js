@@ -2,6 +2,7 @@ import { loadTranslations, loadUnits, loadFavorites, state } from './js/helpers.
 import { renderProducts } from './js/components/product-table.js';
 import { renderRecipes, loadRecipes } from './js/components/recipe-list.js';
 import { renderShoppingList, addToShoppingList } from './js/components/shopping-list.js';
+import { renderSuggestions } from './js/components/suggestions.js';
 import { showNotification, checkLowStockToast } from './js/components/toast.js';
 import { initReceiptImport } from './js/components/ocr-modal.js';
 
@@ -12,7 +13,8 @@ async function loadProducts() {
   currentProducts = await res.json();
   window.currentProducts = currentProducts;
   renderProducts(currentProducts);
-  checkLowStockToast(currentProducts, activateTab, () => {}, renderShoppingList);
+  renderSuggestions();
+  checkLowStockToast(currentProducts, activateTab, renderSuggestions, renderShoppingList);
 }
 
 function activateTab(targetId) {
