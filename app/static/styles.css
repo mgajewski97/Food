@@ -118,6 +118,27 @@ html[data-layout="mobile"] .btn {
   width: 15%;
 }
 
+/* Recipe detail layout */
+.recipe-ingredients li {
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: 0.25rem;
+}
+
+@media (min-width: 768px) {
+  .recipe-ingredients li {
+    grid-template-columns: 2fr 1fr;
+    column-gap: 1rem;
+  }
+  .recipe-ingredients li span:last-child {
+    text-align: right;
+  }
+}
+
+#recipe-steps li::marker {
+  font-weight: 600;
+}
+
 #product-list .grouped-table th,
 #product-list .grouped-table td {
   padding: 0.25rem 0.25rem;

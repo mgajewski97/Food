@@ -1273,6 +1273,57 @@ function toggleFavorite(name) {
   renderRecipes();
 }
 
+function openRecipeDetails(recipe) {
+  const modal = document.getElementById('recipe-detail-modal');
+  if (!modal) return;
+  const title = document.getElementById('recipe-detail-title');
+  if (title) title.textContent = t(recipe.name);
+  const timeWrap = document.getElementById('recipe-detail-time');
+  const timeSpan = timeWrap ? timeWrap.querySelector('span') : null;
+  if (timeWrap && timeSpan) {
+    timeSpan.textContent = recipe.time || '';
+    timeWrap.style.display = recipe.time ? 'inline-flex' : 'none';
+    timeWrap.setAttribute('aria-label', t('label_time'));
+  }
+  const portionsWrap = document.getElementById('recipe-detail-portions');
+  const portionsSpan = portionsWrap ? portionsWrap.querySelector('span') : null;
+  if (portionsWrap && portionsSpan) {
+    portionsSpan.textContent = recipe.portions ? String(recipe.portions) : '';
+    portionsWrap.style.display = recipe.portions ? 'inline-flex' : 'none';
+    portionsWrap.setAttribute('aria-label', t('label_portions'));
+  }
+  const ingList = document.getElementById('recipe-ingredients');
+  if (ingList) {
+    ingList.innerHTML = '';
+    (recipe.ingredients || []).forEach(ing => {
+      const li = document.createElement('li');
+      const name = document.createElement('span');
+      const qty = document.createElement('span');
+      if (typeof ing === 'string') {
+        name.textContent = t(ing);
+      } else {
+        name.textContent = t(ing.product);
+        let text = '';
+        if (ing.quantity != null) text += ing.quantity;
+        if (ing.unit) text += ` ${t(ing.unit)}`;
+        qty.textContent = text.trim();
+      }
+      li.append(name, qty);
+      ingList.appendChild(li);
+    });
+  }
+  const stepsOl = document.getElementById('recipe-steps');
+  if (stepsOl) {
+    stepsOl.innerHTML = '';
+    (recipe.steps || []).forEach(step => {
+      const li = document.createElement('li');
+      li.textContent = step;
+      stepsOl.appendChild(li);
+    });
+  }
+  modal.showModal();
+}
+
 function renderRecipes() {
   const list = document.getElementById('recipe-list');
   if (!list) return;
@@ -1310,6 +1361,8 @@ function renderRecipes() {
     });
     const title = document.createElement('span');
     title.textContent = `${r.name}${avgText} (${r.ingredients.join(', ')})`;
+    title.className = 'cursor-pointer';
+    title.addEventListener('click', () => openRecipeDetails(r));
     li.appendChild(favBtn);
     li.appendChild(title);
     const doneBtn = document.createElement('button');
@@ -1570,6 +1623,12 @@ if (cookingOverlay) {
       showCookingStep();
     }
   });
+}
+
+const recipeDetailClose = document.getElementById('recipe-detail-close');
+const recipeDetailModal = document.getElementById('recipe-detail-modal');
+if (recipeDetailClose && recipeDetailModal) {
+  recipeDetailClose.addEventListener('click', () => recipeDetailModal.close());
 }
 
 // Theme toggle
