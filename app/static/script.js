@@ -7,6 +7,41 @@ let UNIT = '';
 const LOW_STOCK_CLASS = 'text-error bg-error/10';
 let lowStockToastShown = false;
 
+function showNotification({ type = 'success', title = '', message = '' }) {
+  const container = document.getElementById('notification-container');
+  if (!container) return;
+  const alert = document.createElement('div');
+  alert.className = `alert ${type === 'error' ? 'alert-error' : 'alert-success'} shadow-lg relative`;
+  const body = document.createElement('div');
+  body.className = 'flex gap-2';
+  const icon = document.createElement('span');
+  icon.innerHTML = type === 'error'
+    ? '<i class="fa-solid fa-circle-xmark"></i>'
+    : '<i class="fa-solid fa-circle-check"></i>';
+  const text = document.createElement('div');
+  if (title) {
+    const titleEl = document.createElement('span');
+    titleEl.className = 'font-bold block';
+    titleEl.textContent = title;
+    text.appendChild(titleEl);
+  }
+  if (message) {
+    const msgEl = document.createElement('span');
+    msgEl.textContent = message;
+    text.appendChild(msgEl);
+  }
+  body.appendChild(icon);
+  body.appendChild(text);
+  alert.appendChild(body);
+  const close = document.createElement('button');
+  close.className = 'btn btn-xs btn-circle btn-ghost absolute top-1 right-1';
+  close.innerHTML = '<i class="fa-regular fa-xmark"></i>';
+  close.addEventListener('click', () => alert.remove());
+  alert.appendChild(close);
+  container.appendChild(alert);
+  setTimeout(() => alert.remove(), 5000);
+}
+
 let shoppingList = JSON.parse(localStorage.getItem('shoppingList') || '[]');
 let pendingRemoveIndex = null;
 let currentRecipeName = null;
@@ -280,11 +315,13 @@ function sortProducts(list) {
 }
 
 function showLowStockToast() {
-  const container = document.getElementById('toast-container');
+  const container = document.getElementById('notification-container');
   if (!container) return;
-  container.innerHTML = '';
+  const existing = container.querySelector('[data-toast="low-stock"]');
+  if (existing) existing.remove();
   const alert = document.createElement('div');
   alert.className = 'alert alert-warning relative';
+  alert.dataset.toast = 'low-stock';
   const span = document.createElement('span');
   span.textContent = t('toast_low_stock');
   const btn = document.createElement('button');
@@ -296,7 +333,8 @@ function showLowStockToast() {
     localStorage.setItem('activeTab', 'tab-shopping');
     renderSuggestions();
     renderShoppingList();
-    container.innerHTML = '';
+    alert.remove();
+    lowStockToastShown = false;
   });
   const close = document.createElement('button');
   close.className = 'btn btn-xs btn-circle btn-ghost absolute top-1 right-1';
@@ -304,7 +342,8 @@ function showLowStockToast() {
   close.setAttribute('title', t('toast_close'));
   close.innerHTML = '<i class="fa-regular fa-xmark"></i>';
   close.addEventListener('click', () => {
-    container.innerHTML = '';
+    alert.remove();
+    lowStockToastShown = false;
   });
   alert.appendChild(span);
   alert.appendChild(btn);
@@ -314,18 +353,22 @@ function showLowStockToast() {
 
 function checkLowStockToast() {
   const low = (window.currentProducts || []).some(p => p.main && p.threshold !== null && p.quantity <= p.threshold);
-  const container = document.getElementById('toast-container');
+  const container = document.getElementById('notification-container');
+  const toast = container ? container.querySelector('[data-toast="low-stock"]') : null;
   if (low) {
     if (!lowStockToastShown) {
       lowStockToastShown = true;
       showLowStockToast();
-    } else if (container && container.childElementCount) {
-      container.querySelector('span').textContent = t('toast_low_stock');
-      const btn = container.querySelector('button[data-action="shopping"]');
+    } else if (toast) {
+      toast.querySelector('span').textContent = t('toast_low_stock');
+      const btn = toast.querySelector('button[data-action="shopping"]');
       if (btn) btn.textContent = t('toast_go_shopping');
-      const close = container.querySelector('button[data-action="close"]');
+      const close = toast.querySelector('button[data-action="close"]');
       if (close) close.setAttribute('title', t('toast_close'));
     }
+  } else if (toast) {
+    toast.remove();
+    lowStockToastShown = false;
   }
 }
 
@@ -612,7 +655,11 @@ function checkLowStockToast() {
       await loadProducts();
       await loadRecipes();
     } catch (err) {
-      console.error(t('invalid_json_alert'));
+      showNotification({
+        type: 'error',
+        title: t('notify_error_title'),
+        message: t('invalid_json_alert')
+      });
     }
   });
 
@@ -1396,6 +1443,11 @@ function handleManualAdd() {
   qtyDisplay.textContent = '1';
   renderSuggestions();
   renderShoppingList();
+  showNotification({
+    type: 'success',
+    title: t('notify_success_title'),
+    message: t('manual_add_success')
+  });
 }
 
 function renderSuggestions() {
@@ -1482,7 +1534,7 @@ function renderShoppingList() {
 
     const qtyTd = document.createElement('td');
     const qtyWrap = document.createElement('div');
-    qtyWrap.className = 'flex items-center justify-center gap-2 mx-2';
+    qtyWrap.className = 'flex items-center justify-center gap-2 mx-1';
     const dec = document.createElement('button');
     dec.type = 'button';
     dec.innerHTML = '<i class="fa-solid fa-minus"></i>';
@@ -1492,7 +1544,7 @@ function renderShoppingList() {
     qtyInput.type = 'number';
     qtyInput.min = '1';
     qtyInput.value = item.quantity;
-    qtyInput.className = 'input input-bordered w-16 text-center';
+    qtyInput.className = 'input input-bordered w-12 text-center';
     qtyInput.disabled = item.inCart;
     const inc = document.createElement('button');
     inc.type = 'button';
@@ -1524,12 +1576,12 @@ function renderShoppingList() {
     const actionsTd = document.createElement('td');
     actionsTd.className = 'flex items-center justify-end gap-2';
 
-    const cartBtn = document.createElement('button');
-    cartBtn.type = 'button';
-    cartBtn.innerHTML = '<i class="fa-solid fa-cart-shopping"></i>';
-    cartBtn.className = (item.inCart ? 'text-success ' : 'text-gray-400 ') + 'touch-btn';
-    cartBtn.setAttribute('aria-label', t('in_cart'));
-    cartBtn.addEventListener('click', () => {
+    const acceptBtn = document.createElement('button');
+    acceptBtn.type = 'button';
+    acceptBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+    acceptBtn.className = (item.inCart ? 'text-success ' : 'text-gray-400 ') + 'touch-btn';
+    acceptBtn.setAttribute('aria-label', t('accept'));
+    acceptBtn.addEventListener('click', () => {
       item.inCart = !item.inCart;
       if (item.inCart) {
         item.cartTime = Date.now();
@@ -1539,19 +1591,19 @@ function renderShoppingList() {
       saveShoppingList();
       renderShoppingList();
     });
-    actionsTd.appendChild(cartBtn);
+    actionsTd.appendChild(acceptBtn);
 
-    const removeBtn = document.createElement('button');
-    removeBtn.type = 'button';
-    removeBtn.className = 'text-error touch-btn';
-    removeBtn.innerHTML = '<i class="fa-regular fa-trash-can"></i>';
-    removeBtn.setAttribute('aria-label', t('remove'));
-    removeBtn.addEventListener('click', () => {
+    const rejectBtn = document.createElement('button');
+    rejectBtn.type = 'button';
+    rejectBtn.className = 'text-error touch-btn';
+    rejectBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+    rejectBtn.setAttribute('aria-label', t('reject'));
+    rejectBtn.addEventListener('click', () => {
       pendingRemoveIndex = idx;
       const modal = document.getElementById('shopping-delete-modal');
       if (modal) modal.showModal();
     });
-    actionsTd.appendChild(removeBtn);
+    actionsTd.appendChild(rejectBtn);
 
     tr.appendChild(actionsTd);
 
