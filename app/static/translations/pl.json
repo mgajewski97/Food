@@ -98,6 +98,8 @@
   "recipe_done_mod_button": "Zrobione (ze zmianami)",
   "recipe_ingredients_header": "Składniki",
   "recipe_steps_header": "Kroki",
+  "recipe_add_to_shopping": "Dodaj składniki do listy zakupów",
+  "recipe_added_to_shopping": "Dodano do listy zakupów",
   "label_time": "Czas",
   "label_portions": "Porcje",
   "recipe_sort_label": "Sortuj według:",
