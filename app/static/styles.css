@@ -48,6 +48,39 @@ html[data-layout="mobile"] #product-table:not(.edit-mode) td:nth-child(n+4) {
   display: none;
 }
 
+/* Add-product form layout */
+#add-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+#add-form .add-name {
+  flex: 2 1 12rem;
+}
+#add-form .add-qty,
+#add-form .add-unit,
+#add-form .add-category,
+#add-form .add-storage,
+#add-form .add-main,
+#add-form .add-submit {
+  flex: 1 1 8rem;
+}
+#add-form .add-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#add-form [name="package_size"],
+#add-form [name="pack_size"],
+#add-form [name="threshold"] {
+  display: none;
+}
+@media (max-width: 639px) {
+  #add-form .add-name {
+    flex-basis: 100%;
+  }
+}
+
 html[data-layout="mobile"] {
   font-size: 150%;
 }
