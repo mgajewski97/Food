@@ -62,12 +62,14 @@ html[data-layout="mobile"] #product-table td {
   padding-right: 0.5rem;
 }
 
-html[data-layout="mobile"] button {
+html[data-layout="mobile"] button,
+html[data-layout="mobile"] .btn {
   font-size: 1em;
   padding: 0.75rem 1rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  line-height: 1;
 }
 
 /* Product view spacing adjustments */
