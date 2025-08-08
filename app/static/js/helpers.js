@@ -1,3 +1,7 @@
+// CHANGELOG:
+// - Added normalization helpers and spice detector.
+// - Guaranteed translation fallback returns key when missing.
+
 export const CATEGORY_KEYS = {
   uncategorized: 'category_uncategorized',
   fresh_veg: 'category_fresh_veg',
@@ -188,4 +192,38 @@ export function toggleFavorite(name) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(arr)
   }).catch(() => {});
+}
+
+// Normalize product object ensuring required fields and defaults.
+export function normalizeProduct(p = {}) {
+  return {
+    name: p.name || '',
+    unit: p.unit || 'szt',
+    quantity: Number(p.quantity) || 0,
+    package_size: Number(p.package_size) || 1,
+    pack_size: p.pack_size != null ? Number(p.pack_size) : null,
+    threshold: p.threshold != null ? Number(p.threshold) : 1,
+    main: p.main !== false,
+    category: p.category || 'uncategorized',
+    storage: p.storage || 'pantry'
+  };
+}
+
+// Normalize recipe object and ensure ingredients are objects.
+export function normalizeRecipe(r = {}) {
+  const ingredients = Array.isArray(r.ingredients)
+    ? r.ingredients.map(ing => {
+        if (typeof ing === 'string') return { product: ing };
+        return {
+          product: ing.product || '',
+          quantity: ing.quantity != null ? Number(ing.quantity) : undefined,
+          unit: ing.unit || undefined
+        };
+      })
+    : [];
+  return { ...r, ingredients };
+}
+
+export function isSpice(p = {}) {
+  return p.category === 'spices' || p.is_spice === true;
 }

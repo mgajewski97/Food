@@ -1,6 +1,9 @@
 import { t, state } from '../helpers.js';
 
-export function showNotification({ type = 'success', title = '', message = '' }) {
+// CHANGELOG:
+// - Added optional retry button to ``showNotification`` for non-blocking error toasts.
+
+export function showNotification({ type = 'success', title = '', message = '', retry = null }) {
   const container = document.getElementById('notification-container');
   if (!container) return;
   const alert = document.createElement('div');
@@ -26,6 +29,16 @@ export function showNotification({ type = 'success', title = '', message = '' })
   body.appendChild(icon);
   body.appendChild(text);
   alert.appendChild(body);
+  if (retry) {
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-sm ml-4';
+    btn.textContent = t('retry');
+    btn.addEventListener('click', () => {
+      alert.remove();
+      retry();
+    });
+    alert.appendChild(btn);
+  }
   const close = document.createElement('button');
   close.className = 'btn btn-xs btn-circle btn-ghost absolute top-1 right-1';
   close.innerHTML = '<i class="fa-regular fa-xmark"></i>';

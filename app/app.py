@@ -12,16 +12,30 @@ from utils import (
 
 """Flask application providing basic CRUD APIs for a pantry manager."""
 
+# CHANGELOG:
+# - Moved JSON schemas to ``app/schemas`` and wired validation through utils.
+# - Hardened API handlers with fail-soft data loading and ingredient normalization.
+# - Added validation summary endpoint returning counts and warnings.
+
 app = Flask(__name__, static_folder="static", template_folder="templates")
 
 BASE_DIR = os.path.dirname(__file__)
-PRODUCTS_PATH = os.path.join(BASE_DIR, "data", "products.json")
-RECIPES_PATH = os.path.join(BASE_DIR, "data", "recipes.json")
-PRODUCTS_SCHEMA = os.path.join(BASE_DIR, "data", "products.schema.json")
-RECIPES_SCHEMA = os.path.join(BASE_DIR, "data", "recipes.schema.json")
-UNITS_PATH = os.path.join(BASE_DIR, "data", "units.json")
-HISTORY_PATH = os.path.join(BASE_DIR, "data", "history.json")
-FAVORITES_PATH = os.path.join(BASE_DIR, "data", "favorites.json")
+SCHEMA_DIR = os.path.join(BASE_DIR, "schemas")
+DATA_DIR = os.path.join(BASE_DIR, "data")
+PRODUCTS_PATH = os.path.join(DATA_DIR, "products.json")
+RECIPES_PATH = os.path.join(DATA_DIR, "recipes.json")
+PRODUCTS_SCHEMA = os.path.join(SCHEMA_DIR, "products.schema.json")
+RECIPES_SCHEMA = os.path.join(SCHEMA_DIR, "recipes.schema.json")
+UNITS_PATH = os.path.join(DATA_DIR, "units.json")
+HISTORY_PATH = os.path.join(DATA_DIR, "history.json")
+FAVORITES_PATH = os.path.join(DATA_DIR, "favorites.json")
+
+# Run initial validation on startup to surface warnings without blocking app.
+for _path, _schema, _norm in [
+    (PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize_product),
+    (RECIPES_PATH, RECIPES_SCHEMA, normalize_recipe),
+]:
+    validate_file(_path, [], _schema, _norm)
 
 
 def remove_used_products(used_ingredients):
@@ -152,14 +166,11 @@ def recipes():
     # Build a set of available product keys, accepting both technical keys
     # ("key"/"name_key") and human readable names.
     product_keys = set()
-    key_to_name = {}
     for p in products:
         key = p.get("key") or p.get("name_key") or p.get("name")
         name = p.get("name")
         if key:
             product_keys.add(key)
-            if name:
-                key_to_name[key] = name
         if name and name != key:
             product_keys.add(name)
 
@@ -168,11 +179,20 @@ def recipes():
     for r in recipes:
         ingredients = r.get("ingredients", [])
         recipe_ok = True
+        normalized_ings = []
         for ing in ingredients:
-            if isinstance(ing, str):  # legacy format where ingredient is just a key
+            if isinstance(ing, str):
                 product_key = ing
-            elif isinstance(ing, dict):  # new format with {"product": key, ...}
+                normalized_ings.append({"product": ing})
+            elif isinstance(ing, dict):
                 product_key = ing.get("product")
+                normalized_ings.append(
+                    {
+                        "product": product_key,
+                        "quantity": ing.get("quantity"),
+                        "unit": ing.get("unit"),
+                    }
+                )
             else:
                 product_key = None
 
@@ -184,7 +204,9 @@ def recipes():
                 recipe_ok = False
                 break
         if recipe_ok:
-            available.append(r)
+            recipe_copy = dict(r)
+            recipe_copy["ingredients"] = normalized_ings
+            available.append(recipe_copy)
 
     return jsonify(available)
 
@@ -215,16 +237,18 @@ def favorites():
 
 @app.route("/api/validate")
 def validate_route():
-    """Run validation for products and recipes data files."""
+    """Return validation summary for core datasets."""
     summary = {}
     count, errors = validate_file(
         PRODUCTS_PATH, [], PRODUCTS_SCHEMA, normalize_product
     )
-    summary["products"] = {"valid": count, "errors": errors}
+    summary["products"] = {"count": count, "errors": errors[:5]}
     count, errors = validate_file(
         RECIPES_PATH, [], RECIPES_SCHEMA, normalize_recipe
     )
-    summary["recipes"] = {"valid": count, "errors": errors}
+    summary["recipes"] = {"count": count, "errors": errors[:5]}
+    count, errors = validate_file(HISTORY_PATH, [], None)
+    summary["history"] = {"count": count, "errors": errors[:5]}
     return jsonify(summary)
 
 if __name__ == '__main__':

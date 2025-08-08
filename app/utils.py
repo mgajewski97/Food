@@ -1,4 +1,8 @@
 """Utility helpers for JSON storage, validation and product normalization."""
+
+# CHANGELOG:
+# - Corrected list validation to check items against schema definitions.
+
 import json
 import logging
 import os
@@ -61,12 +65,16 @@ def _validate(
         return data, []
 
     validator = jsonschema.Draft7Validator(schema)
+    item_validator = None
+    if schema.get("type") == "array" and "items" in schema:
+        item_validator = jsonschema.Draft7Validator(schema["items"])
     errors: List[str] = []
 
     if isinstance(data, list):
         valid_items = []
         for idx, item in enumerate(data):
-            item_errors = sorted(validator.iter_errors(item), key=lambda e: e.path)
+            validator_to_use = item_validator or validator
+            item_errors = sorted(validator_to_use.iter_errors(item), key=lambda e: e.path)
             if item_errors:
                 for err in item_errors:
                     path = ".".join(str(p) for p in err.path)
