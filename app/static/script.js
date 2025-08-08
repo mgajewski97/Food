@@ -1534,7 +1534,7 @@ function renderShoppingList() {
 
     const qtyTd = document.createElement('td');
     const qtyWrap = document.createElement('div');
-    qtyWrap.className = 'flex items-center justify-center gap-2 mx-2';
+    qtyWrap.className = 'flex items-center justify-center gap-2 mx-1';
     const dec = document.createElement('button');
     dec.type = 'button';
     dec.innerHTML = '<i class="fa-solid fa-minus"></i>';
@@ -1544,7 +1544,7 @@ function renderShoppingList() {
     qtyInput.type = 'number';
     qtyInput.min = '1';
     qtyInput.value = item.quantity;
-    qtyInput.className = 'input input-bordered w-16 text-center';
+    qtyInput.className = 'input input-bordered w-12 text-center';
     qtyInput.disabled = item.inCart;
     const inc = document.createElement('button');
     inc.type = 'button';
@@ -1576,12 +1576,12 @@ function renderShoppingList() {
     const actionsTd = document.createElement('td');
     actionsTd.className = 'flex items-center justify-end gap-2';
 
-    const cartBtn = document.createElement('button');
-    cartBtn.type = 'button';
-    cartBtn.innerHTML = '<i class="fa-solid fa-cart-shopping"></i>';
-    cartBtn.className = (item.inCart ? 'text-success ' : 'text-gray-400 ') + 'touch-btn';
-    cartBtn.setAttribute('aria-label', t('in_cart'));
-    cartBtn.addEventListener('click', () => {
+    const acceptBtn = document.createElement('button');
+    acceptBtn.type = 'button';
+    acceptBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+    acceptBtn.className = (item.inCart ? 'text-success ' : 'text-gray-400 ') + 'touch-btn';
+    acceptBtn.setAttribute('aria-label', t('accept'));
+    acceptBtn.addEventListener('click', () => {
       item.inCart = !item.inCart;
       if (item.inCart) {
         item.cartTime = Date.now();
@@ -1591,19 +1591,19 @@ function renderShoppingList() {
       saveShoppingList();
       renderShoppingList();
     });
-    actionsTd.appendChild(cartBtn);
+    actionsTd.appendChild(acceptBtn);
 
-    const removeBtn = document.createElement('button');
-    removeBtn.type = 'button';
-    removeBtn.className = 'text-error touch-btn';
-    removeBtn.innerHTML = '<i class="fa-regular fa-trash-can"></i>';
-    removeBtn.setAttribute('aria-label', t('remove'));
-    removeBtn.addEventListener('click', () => {
+    const rejectBtn = document.createElement('button');
+    rejectBtn.type = 'button';
+    rejectBtn.className = 'text-error touch-btn';
+    rejectBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+    rejectBtn.setAttribute('aria-label', t('reject'));
+    rejectBtn.addEventListener('click', () => {
       pendingRemoveIndex = idx;
       const modal = document.getElementById('shopping-delete-modal');
       if (modal) modal.showModal();
     });
-    actionsTd.appendChild(removeBtn);
+    actionsTd.appendChild(rejectBtn);
 
     tr.appendChild(actionsTd);
 
