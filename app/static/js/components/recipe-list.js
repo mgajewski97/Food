@@ -1,6 +1,10 @@
 import { t, state, parseTimeToMinutes, timeToBucket, toggleFavorite } from '../helpers.js';
 import { openRecipeDetails } from './recipe-detail.js';
 
+// CHANGELOG:
+// - Exposed ``loadRecipes`` without internal catch to allow caller-side retry/toast handling.
+// - Added defensive rendering and normalization of ingredient structures.
+
 export function renderRecipes() {
   const list = document.getElementById('recipe-list');
   if (!list) return;
@@ -87,41 +91,36 @@ export function renderRecipes() {
 }
 
 export async function loadRecipes() {
-  try {
-    const res = await fetch('/api/recipes');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    const processed = [];
-    data.forEach(r => {
-      try {
-        if (!r || !r.name || !Array.isArray(r.ingredients)) throw new Error('invalid structure');
-        const ingredients = r.ingredients.map(ing => {
-          if (typeof ing === 'string') {
-            return { productKey: ing, quantity: null, unit: null };
-          }
-          if (ing && typeof ing === 'object' && typeof ing.product === 'string') {
-            return {
-              productKey: ing.product,
-              quantity: ing.quantity != null ? ing.quantity : null,
-              unit: ing.unit || null
-            };
-          }
-          throw new Error('invalid ingredient');
-        });
-        processed.push({
-          ...r,
-          ingredients,
-          timeBucket: timeToBucket(r.time)
-        });
-      } catch (err) {
-        console.warn(`Skipping recipe ${r && r.name ? r.name : '(unknown)'}`, err.message);
-      }
-    });
-    state.recipesData = processed;
-    renderRecipes();
-  } catch (err) {
-    console.error('Failed to load recipes', err);
-    state.recipesData = [];
-    renderRecipes();
-  }
+  const res = await fetch('/api/recipes');
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = await res.json();
+  const processed = [];
+  data.forEach(r => {
+    try {
+      if (!r || !r.name || !Array.isArray(r.ingredients)) throw new Error('invalid structure');
+      const ingredients = r.ingredients.map(ing => {
+        if (typeof ing === 'string') {
+          return { productKey: ing, quantity: null, unit: null };
+        }
+        if (ing && typeof ing === 'object' && typeof ing.product === 'string') {
+          return {
+            productKey: ing.product,
+            quantity: ing.quantity != null ? ing.quantity : null,
+            unit: ing.unit || null
+          };
+        }
+        throw new Error('invalid ingredient');
+      });
+      processed.push({
+        ...r,
+        ingredients,
+        timeBucket: timeToBucket(r.time)
+      });
+    } catch (err) {
+      console.warn(`Skipping recipe ${r && r.name ? r.name : '(unknown)'}`, err.message);
+    }
+  });
+  state.recipesData = processed;
+  renderRecipes();
+  return processed;
 }
