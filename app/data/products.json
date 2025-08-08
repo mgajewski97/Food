@@ -19,7 +19,7 @@
   },
   {
     "name": "product.natural_tofu",
-    "quantity": "2",
+    "quantity": "1",
     "unit": "szt",
     "category": "dairy_eggs",
     "storage": "fridge",
@@ -126,6 +126,15 @@
     "main": true
   },
   {
+    "name": "product.radish",
+    "quantity": "0.5",
+    "unit": "szt",
+    "category": "fresh_veg",
+    "storage": "fridge",
+    "threshold": 1,
+    "main": true
+  },
+  {
     "name": "product.fries",
     "quantity": "1",
     "unit": "szt",
@@ -136,7 +145,7 @@
   },
   {
     "name": "product.chinese_cabbage",
-    "quantity": "1",
+    "quantity": "0.5",
     "unit": "szt",
     "category": "fresh_veg",
     "storage": "fridge",
@@ -289,7 +298,7 @@
   },
   {
     "name": "product.rice_basmati",
-    "quantity": "5",
+    "quantity": "4",
     "unit": "szt",
     "category": "grains",
     "storage": "pantry",

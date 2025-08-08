@@ -1,23 +1,5 @@
 [
   {
-    "name": "Sałatka z tofu",
-    "ingredients": ["tofu", "cebula czerwona", "feta"],
-    "tags": ["wegetariańskie"],
-    "steps": [
-      "Pokrój tofu i cebulę.",
-      "Wymieszaj z fetą i podawaj."
-    ]
-  },
-  {
-    "name": "Omlet",
-    "ingredients": ["jajka", "ser"],
-    "tags": ["śniadanie"],
-    "steps": [
-      "Rozbij jajka i wymieszaj.",
-      "Dodaj ser i usmaż omlet."
-    ]
-  },
-  {
     "name": "recipe.mushroom_oyster_mushroom_cream_soup",
     "portions": 3,
     "time": "30min",
@@ -43,6 +25,37 @@
       "Wyjmij liść laurowy i zmiksuj całość blenderem na gładki krem.",
       "Dodaj śmietanę, wymieszaj i dopraw do smaku.",
       "Podawaj z natką pietruszki, opcjonalnie z grzankami."
+    ]
+  },
+  {
+    "name": "recipe.stir_fry_peking_cabbage_tofu_pepper_radish",
+    "portions": 3,
+    "ingredients": [
+      { "product": "product.tofu", "quantity": 180, "unit": "g" },
+      { "product": "product.peking_cabbage", "quantity": 0.5, "unit": "szt" },
+      { "product": "product.red_pepper", "quantity": 2, "unit": "szt" },
+      { "product": "product.red_onion", "quantity": 1, "unit": "szt" },
+      { "product": "product.garlic", "quantity": 2, "unit": "szt" },
+      { "product": "product.ginger_fresh", "quantity": 10, "unit": "g" },
+      { "product": "product.radish", "quantity": 5, "unit": "szt" },
+      { "product": "product.soy_sauce", "quantity": 2, "unit": "łyżka" },
+      { "product": "product.sesame_oil", "quantity": 1, "unit": "łyżeczka" },
+      { "product": "product.sesame", "quantity": 1, "unit": "łyżka" },
+      { "product": "product.parsley", "quantity": 10, "unit": "g" },
+      { "product": "product.lime", "quantity": 0.5, "unit": "szt" },
+      { "product": "product.rice_basmati", "quantity": 90, "unit": "g" },
+      { "product": "product.chili", "quantity": 0.5, "unit": "łyżeczka" },
+      { "product": "product.pepper", "quantity": 0.25, "unit": "łyżeczka" }
+    ],
+    "steps": [
+      "Ugotuj ryż zgodnie z instrukcją na opakowaniu i odstaw.",
+      "Tofu pokrój w kostkę i usmaż na oliwie z 1 łyżką sosu sojowego do zrumienienia. Odstaw.",
+      "Rzodkiewki pokrój w plasterki, podsmaż osobno na oliwie z odrobiną pieprzu i chili, odstaw.",
+      "Na tej samej patelni podsmaż cebulę, czosnek i starty imbir przez 1 minutę.",
+      "Dodaj paprykę i smaż 2–3 minuty, następnie dodaj kapustę pekińską i smaż kolejne 3 minuty.",
+      "Dodaj tofu i rzodkiewkę, wlej pozostały sos sojowy, dopraw pieprzem, chili i szczyptą przyprawy kolendry (opcjonalnie).",
+      "Wyłącz ogień, dodaj natkę pietruszki, olej sezamowy i sok z limonki, wymieszaj.",
+      "Posyp sezamem. Podziel na 3 porcje."
     ]
   }
 ]
