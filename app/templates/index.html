@@ -200,29 +200,6 @@
                 <button id="recipe-clear-filters" class="btn btn-outline btn-sm self-start" data-i18n="recipe_clear_filters">Wyczyść filtry</button>
             </div>
             <div id="recipe-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"></div>
-            <dialog id="recipe-detail-modal" class="modal">
-                <div class="modal-box max-w-lg">
-                    <h3 id="recipe-detail-title" class="font-bold text-lg mb-2"></h3>
-                    <div class="flex items-center gap-4 text-sm mb-4">
-                        <div id="recipe-detail-time" class="inline-flex items-center gap-1" aria-label="Time">
-                            <i class="fa-regular fa-clock" aria-hidden="true"></i>
-                            <span></span>
-                        </div>
-                        <div id="recipe-detail-portions" class="inline-flex items-center gap-1" aria-label="Portions">
-                            <i class="fa-solid fa-users" aria-hidden="true"></i>
-                            <span></span>
-                        </div>
-                    </div>
-                    <h4 class="font-semibold mb-2" data-i18n="recipe_ingredients_header">Składniki</h4>
-                    <ul id="recipe-ingredients" class="recipe-ingredients mb-4"></ul>
-                    <h4 class="font-semibold mb-2" data-i18n="recipe_steps_header">Kroki</h4>
-                    <ol id="recipe-steps" class="recipe-steps list-decimal pl-5 space-y-2"></ol>
-                    <div class="modal-action">
-                        <button id="recipe-add-to-shopping" class="btn btn-primary btn-sm" data-i18n="recipe_add_to_shopping">Dodaj składniki do listy zakupów</button>
-                        <button id="recipe-detail-close" class="btn btn-sm">OK</button>
-                    </div>
-                </div>
-            </dialog>
         </div>
 
         <div id="tab-history" class="tab-panel" style="display:none;">
