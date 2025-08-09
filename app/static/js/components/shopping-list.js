@@ -1,4 +1,5 @@
 import { t, state, isSpice, stockLevel, fetchJson } from '../helpers.js';
+import { toast } from './toast.js';
 
 function saveShoppingList() {
   localStorage.setItem('shoppingList', JSON.stringify(state.shoppingList));
@@ -14,6 +15,16 @@ export function addToShoppingList(name, quantity = 1) {
   }
   saveShoppingList();
   renderShoppingList();
+  toast.success(t('manual_add_success'), '', {
+    label: t('toast_go_shopping'),
+    onClick: () => {
+      window.activateTab('tab-shopping');
+      localStorage.setItem('activeTab', 'tab-shopping');
+      history.pushState({ tab: 'tab-shopping' }, '');
+      renderSuggestions();
+      renderShoppingList();
+    }
+  });
 }
 
 export function renderShoppingList() {

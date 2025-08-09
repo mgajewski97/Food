@@ -13,7 +13,7 @@ import {
   fetchJson,
   isSpice
 } from '../helpers.js';
-import { showToast } from './toast.js';
+import { toast } from './toast.js';
 
 const APP = (window.APP = window.APP || {});
 
@@ -63,7 +63,7 @@ confirmDeleteBtn?.addEventListener('click', async e => {
     );
     await refreshProducts();
   } catch (err) {
-    showToast(t('notify_error_title'), 'error');
+    toast.error(t('notify_error_title'));
   } finally {
     deleteModal.close();
     updateDeleteButton();
@@ -264,7 +264,7 @@ export async function refreshProducts() {
     APP.state.products = data.map(normalizeProduct);
     renderProducts();
   } catch (err) {
-    showToast(t('notify_error_title'), 'error');
+    toast.error(t('notify_error_title'));
   }
 }
 
@@ -275,9 +275,16 @@ export async function saveProduct(payload) {
       body: payload
     });
     await refreshProducts();
-    showToast(t('save_success'));
+    toast.success(t('save_success'), '', {
+      label: t('toast_go_products'),
+      onClick: () => {
+        window.activateTab('tab-products');
+        localStorage.setItem('activeTab', 'tab-products');
+        history.pushState({ tab: 'tab-products' }, '');
+      }
+    });
   } catch (err) {
-    showToast(t('notify_error_title'), 'error');
+    toast.error(t('notify_error_title'));
   }
 }
 
