@@ -153,22 +153,19 @@ export function renderSuggestions() {
     let qty = p.threshold != null ? p.threshold : 1;
     const row = document.createElement('div');
     row.className =
-      'suggestion-item flex flex-col sm:flex-row sm:items-center gap-3 p-2 min-h-12 hover:bg-base-200 transition-colors';
+      'suggestion-item flex flex-wrap sm:flex-nowrap items-center gap-3 p-2 min-h-12 hover:bg-base-200 transition-colors';
     const level = stockLevel(p);
     if (level === 'low') row.classList.add('product-low');
     if (level === 'none') row.classList.add('product-missing');
 
     const nameWrap = document.createElement('div');
-    nameWrap.className = 'flex-1 overflow-hidden';
+    nameWrap.className = 'w-full sm:flex-1 overflow-hidden';
     const nameEl = document.createElement('div');
     nameEl.className = 'truncate';
     nameEl.textContent = productName(p.name);
     nameEl.title = productName(p.name);
     nameWrap.appendChild(nameEl);
     row.appendChild(nameWrap);
-
-    const controls = document.createElement('div');
-    controls.className = 'flex items-center gap-3 w-full sm:w-auto';
 
     const qtyWrap = document.createElement('div');
     qtyWrap.className = 'flex items-center gap-2';
@@ -198,7 +195,7 @@ export function renderSuggestions() {
       qtyInput.value = qty;
     });
     qtyWrap.append(dec, qtyInput, inc);
-    controls.appendChild(qtyWrap);
+    row.appendChild(qtyWrap);
 
     const actions = document.createElement('div');
     actions.className = 'flex items-center gap-2 ml-auto';
@@ -207,6 +204,7 @@ export function renderSuggestions() {
     accept.innerHTML = '<i class="fa-solid fa-check"></i>';
     accept.className = 'touch-btn text-success';
     accept.setAttribute('aria-label', t('accept_action'));
+    accept.setAttribute('title', t('accept_action'));
     accept.addEventListener('click', () => {
       state.dismissedSuggestions.add(p.name);
       addToShoppingList(p.name, qty);
@@ -217,14 +215,14 @@ export function renderSuggestions() {
     reject.innerHTML = '<i class="fa-solid fa-xmark"></i>';
     reject.className = 'touch-btn text-error';
     reject.setAttribute('aria-label', t('reject_action'));
+    reject.setAttribute('title', t('reject_action'));
     reject.addEventListener('click', () => {
       state.dismissedSuggestions.add(p.name);
       row.remove();
     });
     actions.append(accept, reject);
-    controls.appendChild(actions);
+    row.appendChild(actions);
 
-    row.appendChild(controls);
     container.appendChild(row);
   });
 }
