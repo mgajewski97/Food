@@ -1,6 +1,8 @@
 {
   "name": "Food App",
   "short_name": "Food",
+  "lang": "en",
+  "scope": "/",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

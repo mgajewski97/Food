@@ -1,6 +1,6 @@
 // CHANGELOG:
 // - Added normalization helpers and spice detector.
-// - Guaranteed translation fallback returns key when missing.
+// - Single translation helper with English fallback.
 
 export const CATEGORY_KEYS = {
   uncategorized: 'category_uncategorized',
@@ -59,16 +59,46 @@ export const state = {
   lowStockToastShown: false
 };
 
+export async function fetchJson(url, options = {}) {
+  const opts = { method: 'GET', headers: { Accept: 'application/json', ...(options.headers || {}) }, ...options };
+  if (opts.body && typeof opts.body !== 'string') {
+    opts.headers['Content-Type'] ||= 'application/json';
+    opts.body = JSON.stringify(opts.body);
+  }
+  try {
+    const res = await fetch(url, opts);
+    const text = await res.text();
+    let data = null;
+    if (text) {
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw { url, status: res.status, body: text };
+      }
+    }
+    if (!res.ok) {
+      throw { url, status: res.status, body: data };
+    }
+    return data;
+  } catch (err) {
+    const info = err && err.url ? err : { url, status: err?.status || 0, body: err?.body || null };
+    console.error('[fetchJson]', info);
+    throw info;
+  }
+}
+
 export function t(key) {
   if (!key) return key;
   if (key.startsWith('product.')) {
     const k = key.slice('product.'.length);
     const entry = state.translations.products[k];
-    return (entry && entry[state.currentLang]) || key;
+    return entry?.[state.currentLang] ?? entry?.en ?? key;
   }
   const unit = state.units[key];
-  if (unit && unit[state.currentLang]) return unit[state.currentLang];
-  return state.uiTranslations[state.currentLang][key] || key;
+  if (unit) {
+    return unit[state.currentLang] ?? unit.en ?? key;
+  }
+  return state.uiTranslations[state.currentLang]?.[key] ?? state.uiTranslations.en?.[key] ?? key;
 }
 
 export function productName(key) {
@@ -91,6 +121,18 @@ export function storageName(key) {
   const tKey = STORAGE_KEYS[key] || key;
   const translated = t(tKey);
   return translated === tKey ? key : translated;
+}
+
+export function applyTranslations() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const txt = t(key);
+    if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
+      if (el.placeholder !== undefined) el.placeholder = txt;
+    } else {
+      el.textContent = txt;
+    }
+  });
 }
 
 export function parseTimeToMinutes(value) {
@@ -142,20 +184,20 @@ export function getStatusIcon(p) {
 
 export async function loadTranslations() {
   try {
-    const [plRes, enRes] = await Promise.all([
-      fetch('/static/translations/pl.json'),
-      fetch('/static/translations/en.json')
+    const [pl, en] = await Promise.all([
+      fetchJson('/static/translations/pl.json'),
+      fetchJson('/static/translations/en.json')
     ]);
-    const pl = await plRes.json();
-    const en = await enRes.json();
     state.uiTranslations.pl = pl;
     state.uiTranslations.en = en;
     state.translations.products = {};
-    Object.entries(pl).forEach(([k, v]) => {
+    const keys = new Set([...Object.keys(pl), ...Object.keys(en)]);
+    keys.forEach(k => {
       if (k.startsWith('product.')) {
-        const key = k.slice('product.'.length);
-        state.translations.products[key] = { pl: v };
-        if (en[k]) state.translations.products[key].en = en[k];
+        const id = k.slice('product.'.length);
+        state.translations.products[id] = {};
+        if (pl[k]) state.translations.products[id].pl = pl[k];
+        if (en[k]) state.translations.products[id].en = en[k];
       }
     });
   } catch (err) {
@@ -165,8 +207,7 @@ export async function loadTranslations() {
 
 export async function loadUnits() {
   try {
-    const res = await fetch('/api/units');
-    state.units = await res.json();
+    state.units = await fetchJson('/api/units');
   } catch (err) {
     console.error('Failed to load units', err);
     state.units = {};
@@ -175,8 +216,7 @@ export async function loadUnits() {
 
 export async function loadFavorites() {
   try {
-    const res = await fetch('/api/favorites');
-    const data = await res.json();
+    const data = await fetchJson('/api/favorites');
     state.favoriteRecipes = new Set(data);
     localStorage.setItem('favoriteRecipes', JSON.stringify(Array.from(state.favoriteRecipes)));
   } catch (err) {
@@ -192,11 +232,7 @@ export function toggleFavorite(name) {
   }
   const arr = Array.from(state.favoriteRecipes);
   localStorage.setItem('favoriteRecipes', JSON.stringify(arr));
-  fetch('/api/favorites', {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(arr)
-  }).catch(() => {});
+  fetchJson('/api/favorites', { method: 'PUT', body: arr }).catch(() => {});
 }
 
 // Normalize product object ensuring required fields and defaults.

@@ -31,6 +31,10 @@
         <i class="fa-solid fa-gear"></i>
     </button>
 </div>
+<div id="health-banner" class="hidden bg-error text-error-content text-center py-2 flex justify-center items-center gap-4">
+    <span data-i18n="notify_error_title">Error</span>
+    <button id="health-retry" class="btn btn-sm" data-i18n="retry">Retry</button>
+</div>
 <div id="notification-container" class="toast toast-end top-auto bottom-[4.5rem] z-40"></div>
 <div class="max-w-screen-lg mx-auto px-4 py-6 main-container">
     <div class="tabs tabs-bordered flex-nowrap overflow-x-auto whitespace-nowrap mb-6 desktop-nav">
@@ -411,5 +415,18 @@
     </nav>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.5/dist/tesseract.min.js"></script>
     <script type="module" src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+    if ('serviceWorker' in navigator) {
+      let refreshing;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        refreshing = true;
+        window.location.reload();
+      });
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js');
+      });
+    }
+    </script>
 </body>
 </html>

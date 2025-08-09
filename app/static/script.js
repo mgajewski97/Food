@@ -1,4 +1,4 @@
-import { loadTranslations, loadUnits, loadFavorites, state, t, normalizeProduct, unitName } from './js/helpers.js';
+import { loadTranslations, loadUnits, loadFavorites, state, t, normalizeProduct, unitName, applyTranslations, fetchJson } from './js/helpers.js';
 import { renderProducts } from './js/components/product-table.js';
 import { renderRecipes, loadRecipes } from './js/components/recipe-list.js';
 import { renderShoppingList, addToShoppingList, renderSuggestions } from './js/components/shopping-list.js';
@@ -23,9 +23,7 @@ APP.editBackup = APP.editBackup || null;
 
 async function fetchProducts() {
   try {
-    const res = await fetch('/api/products');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    const data = await fetchJson('/api/products');
     APP.state.products = data.map(normalizeProduct);
     renderProducts();
     renderSuggestions();
@@ -33,7 +31,7 @@ async function fetchProducts() {
   } catch (err) {
     APP.state.products = [];
     renderProducts();
-    showNotification({ type: 'error', title: t('products_load_failed'), message: err.message, retry: fetchProducts });
+    showNotification({ type: 'error', title: t('products_load_failed'), message: err.body?.error || String(err.status), retry: fetchProducts });
   }
 }
 
@@ -41,18 +39,16 @@ async function fetchRecipes() {
   try {
     await loadRecipes();
   } catch (err) {
-    showNotification({ type: 'error', title: t('recipes_load_failed'), message: err.message, retry: fetchRecipes });
+    showNotification({ type: 'error', title: t('recipes_load_failed'), message: err.body?.error || String(err.status), retry: fetchRecipes });
   }
 }
 
 async function fetchHistory() {
   try {
-    const res = await fetch('/api/history');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    state.historyData = await res.json();
+    state.historyData = await fetchJson('/api/history');
   } catch (err) {
     state.historyData = [];
-    showNotification({ type: 'error', title: t('history_load_failed'), message: err.message, retry: fetchHistory });
+    showNotification({ type: 'error', title: t('history_load_failed'), message: err.body?.error || String(err.status), retry: fetchHistory });
   }
 }
 
@@ -188,18 +184,12 @@ function initAddForm() {
     if (!isNaN(thr)) payload.threshold = thr;
     submitBtn.disabled = true;
     try {
-      const res = await fetch('/api/products', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      await res.json();
+      await fetchJson('/api/products', { method: 'POST', body: payload });
       await fetchProducts();
       form.reset();
       document.getElementById('product-search')?.focus();
     } catch (err) {
-      showNotification({ type: 'error', title: t('save_failed'), message: err.message });
+      showNotification({ type: 'error', title: t('save_failed'), message: err.body?.error || String(err.status) });
     } finally {
       submitBtn.disabled = false;
     }
@@ -227,24 +217,32 @@ async function saveEdits() {
   const btn = document.getElementById('save-btn');
   btn.disabled = true;
   try {
-    const res = await fetch('/api/products', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updates)
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    await fetchJson('/api/products', { method: 'PUT', body: updates });
     showNotification({ type: 'success', title: t('save_success') });
     await fetchProducts();
   } catch (err) {
-    showNotification({ type: 'error', title: t('save_failed'), message: err.message });
+    showNotification({ type: 'error', title: t('save_failed'), message: err.body?.error || String(err.status) });
   } finally {
     btn.disabled = false;
+  }
+}
+
+async function checkHealth() {
+  try {
+    const res = await fetchJson('/api/health');
+    if (!res?.ok) throw res;
+    document.getElementById('health-banner')?.classList.add('hidden');
+  } catch (err) {
+    document.getElementById('health-banner')?.classList.remove('hidden');
   }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
   await loadTranslations();
   await loadUnits();
+  applyTranslations();
+  document.documentElement.setAttribute('lang', state.currentLang);
+  checkHealth();
   mountNavigation();
   await loadFavorites();
   renderShoppingList();
@@ -254,6 +252,22 @@ document.addEventListener('DOMContentLoaded', async () => {
   fetchRecipes();
   fetchHistory();
   initAddForm();
+
+  const langBtn = document.getElementById('lang-toggle');
+  langBtn.textContent = state.currentLang.toUpperCase();
+  langBtn.addEventListener('click', () => {
+    const scroll = window.scrollY;
+    state.currentLang = state.currentLang === 'pl' ? 'en' : 'pl';
+    localStorage.setItem('lang', state.currentLang);
+    langBtn.textContent = state.currentLang.toUpperCase();
+    document.documentElement.setAttribute('lang', state.currentLang);
+    applyTranslations();
+    renderProducts();
+    renderRecipes();
+    renderShoppingList();
+    renderSuggestions();
+    window.scrollTo(0, scroll);
+  });
 
   const editBtn = document.getElementById('edit-toggle');
   const saveBtn = document.getElementById('save-btn');
@@ -317,5 +331,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     a.download = 'products.json';
     a.click();
     URL.revokeObjectURL(url);
+  });
+
+  document.getElementById('health-retry')?.addEventListener('click', () => {
+    document.getElementById('health-banner')?.classList.add('hidden');
+    checkHealth();
   });
 });

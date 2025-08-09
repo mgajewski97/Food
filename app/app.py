@@ -1,13 +1,19 @@
-from flask import Flask, render_template, request, jsonify
-from datetime import date
+import logging
 import os
+from datetime import date
+
+from flask import Flask, render_template, request, jsonify
 
 from utils import (
     load_json,
+    load_json_validated,
     normalize_product,
     normalize_recipe,
-    save_json,
+    safe_write,
     validate_file,
+    validate_items,
+    file_lock,
+    save_json,
 )
 
 """Flask application providing basic CRUD APIs for a pantry manager."""
@@ -17,6 +23,7 @@ from utils import (
 # - Hardened API handlers with fail-soft data loading and ingredient normalization.
 # - Added validation summary endpoint returning counts and warnings.
 
+logger = logging.getLogger(__name__)
 app = Flask(__name__, static_folder="static", template_folder="templates")
 
 BASE_DIR = os.path.dirname(__file__)
@@ -24,8 +31,8 @@ SCHEMA_DIR = os.path.join(BASE_DIR, "schemas")
 DATA_DIR = os.path.join(BASE_DIR, "data")
 PRODUCTS_PATH = os.path.join(DATA_DIR, "products.json")
 RECIPES_PATH = os.path.join(DATA_DIR, "recipes.json")
-PRODUCTS_SCHEMA = os.path.join(SCHEMA_DIR, "products.schema.json")
-RECIPES_SCHEMA = os.path.join(SCHEMA_DIR, "recipes.schema.json")
+PRODUCTS_SCHEMA = os.path.join(SCHEMA_DIR, "product.schema.json")
+RECIPES_SCHEMA = os.path.join(SCHEMA_DIR, "recipe.schema.json")
 UNITS_PATH = os.path.join(DATA_DIR, "units.json")
 HISTORY_PATH = os.path.join(DATA_DIR, "history.json")
 FAVORITES_PATH = os.path.join(DATA_DIR, "favorites.json")
@@ -40,9 +47,12 @@ for _path, _schema, _norm in [
 
 def remove_used_products(used_ingredients):
     """Remove used ingredients from stored products."""
-    products = load_json(PRODUCTS_PATH, [], PRODUCTS_SCHEMA, normalize_product)
-    products = [p for p in products if p.get("name") not in used_ingredients]
-    save_json(PRODUCTS_PATH, products, PRODUCTS_SCHEMA, normalize_product)
+    with file_lock(PRODUCTS_PATH):
+        products = load_json_validated(
+            PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
+        )
+        products = [p for p in products if p.get("name") not in used_ingredients]
+        safe_write(PRODUCTS_PATH, products)
 
 @app.route('/')
 def index():
@@ -58,75 +68,54 @@ def service_worker():
 
 @app.route("/api/products", methods=["GET", "POST", "PUT"])
 def products():
-    if request.method == "POST":
-        new_product = normalize_product(request.json or {})
-        products = load_json(
-            PRODUCTS_PATH, [], PRODUCTS_SCHEMA, normalize_product
-        )
-        existing = next(
-            (
-                p
-                for p in products
-                if p.get("name") == new_product["name"]
-                and p.get("category", "uncategorized") == new_product["category"]
-                and p.get("storage", "pantry") == new_product["storage"]
-            ),
-            None,
-        )
-        if existing:
-            try:
-                existing_qty = float(existing.get("quantity", 0))
-            except (TypeError, ValueError):
-                existing_qty = 0
-            existing["quantity"] = existing_qty + new_product["quantity"]
-        else:
-            products.append(new_product)
-        save_json(PRODUCTS_PATH, products, PRODUCTS_SCHEMA, normalize_product)
-        return jsonify(products)
-    if request.method == "PUT":
-        payload = request.json or []
-        if isinstance(payload, dict):
-            payload = [payload]
-        products = load_json(
-            PRODUCTS_PATH, [], PRODUCTS_SCHEMA, normalize_product
-        )
-        for item in payload:
-            item = normalize_product(item)
-            existing = next(
-                (
-                    p
-                    for p in products
-                    if p.get("name") == item["name"]
-                    and p.get("category", "uncategorized") == item["category"]
-                    and p.get("storage", "pantry") == item["storage"]
-                ),
-                None,
+    if request.method == "GET":
+        try:
+            products = load_json_validated(
+                PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
             )
-            if existing:
-                existing.update(item)
-            else:
-                products.append(item)
-        save_json(PRODUCTS_PATH, products, PRODUCTS_SCHEMA, normalize_product)
+        except ValueError as exc:
+            logger.error(str(exc))
+            return jsonify({"error": str(exc)}), 500
         return jsonify(products)
-    products = load_json(PRODUCTS_PATH, [], PRODUCTS_SCHEMA, normalize_product)
-    return jsonify([normalize_product(p) for p in products])
 
-@app.route("/api/products/<string:name>", methods=["PUT", "DELETE"])
-def modify_product(name):
-    products = load_json(PRODUCTS_PATH, [], PRODUCTS_SCHEMA, normalize_product)
-    if request.method == "DELETE":
-        products = [p for p in products if p.get("name") != name]
-        save_json(PRODUCTS_PATH, products, PRODUCTS_SCHEMA, normalize_product)
-        return "", 204
-    updated = normalize_product({**(request.json or {}), "name": name})
-    for p in products:
-        if p.get("name") == name:
-            p.update(updated)
-            break
-    else:
-        products.append(updated)
-    save_json(PRODUCTS_PATH, products, PRODUCTS_SCHEMA, normalize_product)
+    payload = request.get_json(silent=True) or []
+    if isinstance(payload, dict):
+        payload = [payload]
+    items = [normalize_product(p) for p in payload]
+    try:
+        validate_items(items, PRODUCTS_SCHEMA)
+    except ValueError as exc:
+        logger.error("request: %s", exc)
+        return jsonify({"error": str(exc)}), 400
+
+    with file_lock(PRODUCTS_PATH):
+        try:
+            products = load_json_validated(
+                PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
+            )
+        except ValueError as exc:
+            logger.error(str(exc))
+            return jsonify({"error": str(exc)}), 500
+        existing = {p["name"]: p for p in products}
+        for item in items:
+            existing[item["name"]] = item
+        products = list(existing.values())
+        safe_write(PRODUCTS_PATH, products)
     return jsonify(products)
+
+@app.route("/api/products/<string:name>", methods=["DELETE"])
+def delete_product(name):
+    with file_lock(PRODUCTS_PATH):
+        try:
+            products = load_json_validated(
+                PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
+            )
+        except ValueError as exc:
+            logger.error(str(exc))
+            return jsonify({"error": str(exc)}), 500
+        products = [p for p in products if p.get("name") != name]
+        safe_write(PRODUCTS_PATH, products)
+    return "", 204
 
 
 @app.route("/api/units", methods=["GET", "PUT"])
@@ -141,7 +130,9 @@ def units():
 def ocr_match():
     payload = request.json or {}
     items = payload.get("items", [])
-    products = load_json(PRODUCTS_PATH, [], PRODUCTS_SCHEMA, normalize_product)
+    products = load_json_validated(
+        PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
+    )
     results = []
     for raw in items:
         text = str(raw).strip().lower()
@@ -171,7 +162,13 @@ def recipes():
     load and normalize the recipes here.
     """
 
-    recipes = load_json(RECIPES_PATH, [], RECIPES_SCHEMA, normalize_recipe)
+    try:
+        recipes = load_json_validated(
+            RECIPES_PATH, RECIPES_SCHEMA, normalize=normalize_recipe
+        )
+    except ValueError as exc:
+        logger.error(str(exc))
+        return jsonify({"error": str(exc)}), 500
     return jsonify(recipes)
 
 
@@ -197,6 +194,22 @@ def favorites():
         save_json(FAVORITES_PATH, favs)
         return jsonify(favs)
     return jsonify(load_json(FAVORITES_PATH, []))
+
+
+@app.route("/api/health")
+def health():
+    """Basic health check ensuring data files validate."""
+    try:
+        load_json_validated(
+            PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
+        )
+        load_json_validated(
+            RECIPES_PATH, RECIPES_SCHEMA, normalize=normalize_recipe
+        )
+    except ValueError as exc:
+        logger.error("health check failed: %s", exc)
+        return jsonify({"ok": False, "error": str(exc)}), 500
+    return jsonify({"ok": True})
 
 
 @app.route("/api/validate")

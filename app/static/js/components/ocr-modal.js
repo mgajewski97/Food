@@ -1,5 +1,6 @@
-import { t, state } from '../helpers.js';
+import { t, state, fetchJson } from '../helpers.js';
 import { addToShoppingList, renderShoppingList } from './shopping-list.js';
+import { showNotification } from './toast.js';
 
 export function initReceiptImport() {
   const btn = document.getElementById('receipt-btn');
@@ -39,62 +40,62 @@ export async function handleReceiptUpload(file) {
   if (!modal.open) modal.showModal();
   const { data: { text } } = await Tesseract.recognize(file, state.currentLang === 'pl' ? 'pol' : 'eng');
   const lines = text.split('\n').map(l => l.trim()).filter(l => l);
-  const res = await fetch('/api/ocr-match', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ items: lines })
-  });
-  const data = await res.json();
-  tableBody.innerHTML = '';
-  data.forEach(item => {
-    const tr = document.createElement('tr');
-    const nameTd = document.createElement('td');
-    const nameInput = document.createElement('input');
-    nameInput.type = 'text';
-    const firstMatch = item.matches[0];
-    nameInput.value = firstMatch ? firstMatch.name : item.original;
-    if (firstMatch) nameInput.dataset.key = firstMatch.name;
-    nameInput.className = 'input input-bordered w-full';
-    nameTd.appendChild(nameInput);
-    tr.appendChild(nameTd);
-    const qtyTd = document.createElement('td');
-    const qtyInput = document.createElement('input');
-    qtyInput.type = 'number';
-    qtyInput.min = '1';
-    qtyInput.value = '1';
-    qtyInput.className = 'input input-bordered w-20';
-    qtyTd.appendChild(qtyInput);
-    tr.appendChild(qtyTd);
-    const statusTd = document.createElement('td');
-    if (item.matches.length > 1) {
-      const select = document.createElement('select');
-      select.className = 'select select-bordered w-full';
-      item.matches.forEach(m => {
-        const opt = document.createElement('option');
-        opt.value = m.name;
-        opt.textContent = m.name;
-        select.appendChild(opt);
-      });
-      select.addEventListener('change', () => {
-        nameInput.value = select.value;
-        nameInput.dataset.key = select.value;
-      });
-      statusTd.appendChild(select);
-    } else {
-      const span = document.createElement('span');
-      span.className = 'badge ' + (item.matches.length ? 'badge-success' : 'badge-warning');
-      span.textContent = item.matches.length ? 'OK' : t('ocr_not_recognized');
-      statusTd.appendChild(span);
-    }
-    tr.appendChild(statusTd);
-    const removeTd = document.createElement('td');
-    const removeBtn = document.createElement('button');
-    removeBtn.type = 'button';
-    removeBtn.className = 'text-error';
-    removeBtn.innerHTML = '<i class="fa-regular fa-circle-minus"></i>';
-    removeBtn.addEventListener('click', () => tr.remove());
-    removeTd.appendChild(removeBtn);
-    tr.appendChild(removeTd);
-    tableBody.appendChild(tr);
-  });
+  try {
+    const data = await fetchJson('/api/ocr-match', { method: 'POST', body: { items: lines } });
+    tableBody.innerHTML = '';
+    data.forEach(item => {
+      const tr = document.createElement('tr');
+      const nameTd = document.createElement('td');
+      const nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      const firstMatch = item.matches[0];
+      nameInput.value = firstMatch ? firstMatch.name : item.original;
+      if (firstMatch) nameInput.dataset.key = firstMatch.name;
+      nameInput.className = 'input input-bordered w-full';
+      nameTd.appendChild(nameInput);
+      tr.appendChild(nameTd);
+      const qtyTd = document.createElement('td');
+      const qtyInput = document.createElement('input');
+      qtyInput.type = 'number';
+      qtyInput.min = '1';
+      qtyInput.value = '1';
+      qtyInput.className = 'input input-bordered w-20';
+      qtyTd.appendChild(qtyInput);
+      tr.appendChild(qtyTd);
+      const statusTd = document.createElement('td');
+      if (item.matches.length > 1) {
+        const select = document.createElement('select');
+        select.className = 'select select-bordered w-full';
+        item.matches.forEach(m => {
+          const opt = document.createElement('option');
+          opt.value = m.name;
+          opt.textContent = m.name;
+          select.appendChild(opt);
+        });
+        select.addEventListener('change', () => {
+          nameInput.value = select.value;
+          nameInput.dataset.key = select.value;
+        });
+        statusTd.appendChild(select);
+      } else {
+        const span = document.createElement('span');
+        span.className = 'badge ' + (item.matches.length ? 'badge-success' : 'badge-warning');
+        span.textContent = item.matches.length ? t('ok') : t('ocr_not_recognized');
+        statusTd.appendChild(span);
+      }
+      tr.appendChild(statusTd);
+      const removeTd = document.createElement('td');
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'text-error';
+      removeBtn.innerHTML = '<i class="fa-regular fa-circle-minus"></i>';
+      removeBtn.addEventListener('click', () => tr.remove());
+      removeTd.appendChild(removeBtn);
+      tr.appendChild(removeTd);
+      tableBody.appendChild(tr);
+    });
+  } catch (err) {
+    tableBody.innerHTML = '';
+    showNotification({ type: 'error', title: t('notify_error_title'), message: err.body?.error || String(err.status) });
+  }
 }

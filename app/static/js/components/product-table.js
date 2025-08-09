@@ -12,9 +12,10 @@ import {
   STORAGE_KEYS,
   matchesFilter,
   stockLevel,
-  normalizeProduct
+  normalizeProduct,
+  fetchJson
 } from '../helpers.js';
-import { showToast } from './toast.js';
+import { showToast, showNotification } from './toast.js';
 
 const APP = (window.APP = window.APP || {});
 
@@ -60,9 +61,11 @@ confirmDeleteBtn?.addEventListener('click', async e => {
   const names = selected.map(cb => cb.dataset.name);
   try {
     await Promise.all(
-      names.map(name => fetch(`/api/products/${encodeURIComponent(name)}`, { method: 'DELETE' }))
+      names.map(name => fetchJson(`/api/products/${encodeURIComponent(name)}`, { method: 'DELETE' }))
     );
     await refreshProducts();
+  } catch (err) {
+    showNotification({ type: 'error', title: t('delete_selected_button'), message: err.body?.error || String(err.status) });
   } finally {
     deleteModal.close();
     updateDeleteButton();
@@ -222,22 +225,23 @@ function buildQtyCell(p, tr) {
 }
 
 export async function refreshProducts() {
-  const res = await fetch('/api/products');
-  if (!res.ok) throw new Error('Fetch failed');
-  const data = await res.json();
-  APP.state.products = data.map(normalizeProduct);
-  renderProducts();
+  try {
+    const data = await fetchJson('/api/products');
+    APP.state.products = data.map(normalizeProduct);
+    renderProducts();
+  } catch (err) {
+    showNotification({ type: 'error', title: t('products_load_failed'), message: err.body?.error || String(err.status), retry: refreshProducts });
+  }
 }
 
 export async function saveProduct(payload) {
-  const res = await fetch('/api/products', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
-  if (!res.ok) throw new Error('Save failed');
-  await refreshProducts();
-  showToast(t('save_success'));
+  try {
+    await fetchJson('/api/products', { method: 'POST', body: payload });
+    await refreshProducts();
+    showToast(t('save_success'));
+  } catch (err) {
+    showNotification({ type: 'error', title: t('save_failed'), message: err.body?.error || String(err.status) });
+  }
 }
 
 function createFlatRow(p, idx, editable) {
