@@ -16,6 +16,11 @@ document.addEventListener('click', (e) => {
   if (e.target.id === 'end-edit') { /* leaving edit mode */ updateDeleteButton(); }
 });
 
+document.addEventListener('click', (e) => {
+  if (e.target.closest('.qty-inc')) adjustRow(e.target.closest('tr'), 1);
+  if (e.target.closest('.qty-dec')) adjustRow(e.target.closest('tr'), -1);
+});
+
 // --- expand/collapse state
 const storageState = new Map(); // storageId -> true/false
 const categoryState = new Map(); // storageId::categoryId -> true/false
@@ -76,10 +81,13 @@ function highlightRow(tr, p) {
   if (level === 'none') tr.classList.add('product-missing');
 }
 
-function adjustRow(input, product, delta) {
-  const newVal = Math.max(0, (parseFloat(input.value) || 0) + delta);
-  input.value = newVal;
-  product.quantity = newVal;
+function adjustRow(tr, delta) {
+  const input = tr.querySelector('.qty-input');
+  if (!input) return;
+  const val = Number(input.value || 0);
+  const next = Math.max(0, val + delta);
+  input.value = next;
+  input.dispatchEvent(new Event('change', { bubbles: true }));
 }
 
 export async function refreshProducts() {
@@ -130,11 +138,7 @@ function createFlatRow(p, idx, editable) {
       </div>
     `;
     const input = qtyTd.querySelector('.qty-input');
-    const dec = qtyTd.querySelector('.qty-dec');
-    const inc = qtyTd.querySelector('.qty-inc');
     input.value = p.quantity;
-    dec.addEventListener('click', () => adjustRow(input, p, -1));
-    inc.addEventListener('click', () => adjustRow(input, p, 1));
     input.addEventListener('change', () => {
       p.quantity = parseFloat(input.value) || 0;
     });
@@ -291,49 +295,95 @@ export function renderProducts() {
         Object.keys(storages[stor])
           .sort((a, b) => categoryName(a).localeCompare(categoryName(b)))
           .forEach(cat => {
-            const catBlock = document.createElement('div');
-            catBlock.className = 'category-section category-block';
-            catBlock.dataset.storage = stor;
-            catBlock.dataset.category = cat;
+          const catBlock = document.createElement('div');
+          catBlock.className = 'category-section category-block';
+          catBlock.dataset.storage = stor;
+          catBlock.dataset.category = cat;
 
-            const catHeader = document.createElement('header');
-            catHeader.className = 'category-header flex items-center gap-2';
-            if (state.displayMode === 'mobile') catHeader.classList.add('cursor-pointer');
-            const catSpan = document.createElement('span');
-            catSpan.className = 'font-medium';
-            catSpan.textContent = categoryName(cat);
-            const catBtn = document.createElement('button');
-            catBtn.type = 'button';
-            catBtn.className = 'toggle-category ml-auto h-8 w-8 flex items-center justify-center';
-            catBtn.setAttribute('aria-expanded', 'true');
-            catBtn.setAttribute('title', t('collapse'));
-            catBtn.innerHTML = '<i class="fa-regular fa-caret-up"></i>';
-            catHeader.append(catSpan, catBtn);
-            catBlock.appendChild(catHeader);
+          const catHeader = document.createElement('header');
+          catHeader.className = 'category-header flex items-center gap-2';
+          if (state.displayMode === 'mobile') catHeader.classList.add('cursor-pointer');
+          const catSpan = document.createElement('span');
+          catSpan.className = 'font-medium';
+          catSpan.textContent = categoryName(cat);
+          const catBtn = document.createElement('button');
+          catBtn.type = 'button';
+          catBtn.className = 'toggle-category ml-auto h-8 w-8 flex items-center justify-center';
+          catBtn.setAttribute('aria-expanded', 'true');
+          catBtn.setAttribute('title', t('collapse'));
+          catBtn.innerHTML = '<i class="fa-regular fa-caret-up"></i>';
+          catHeader.append(catSpan, catBtn);
+          catBlock.appendChild(catHeader);
 
-            const body = document.createElement('div');
-            body.className = 'category-body';
-            const table = document.createElement('table');
-            table.className = 'table table-zebra w-full grouped-table';
-            const colgroup = document.createElement('colgroup');
-            ['grouped-col-name', 'grouped-col-qty', 'grouped-col-unit', 'grouped-col-status'].forEach(cls => {
-              const col = document.createElement('col');
-              col.className = cls;
-              colgroup.appendChild(col);
-            });
-            table.appendChild(colgroup);
-            const thead = document.createElement('thead');
-            const hr = document.createElement('tr');
-            [t('table_header_name'), t('table_header_quantity'), t('table_header_unit'), t('table_header_status')].forEach(txt => {
-              const th = document.createElement('th');
-              th.textContent = txt;
-              hr.appendChild(th);
-            });
-            thead.appendChild(hr);
-            table.appendChild(thead);
-            const tb = document.createElement('tbody');
-            storages[stor][cat].forEach(p => {
-              const tr = document.createElement('tr');
+          const body = document.createElement('div');
+          body.className = 'category-body';
+          const table = document.createElement('table');
+          table.className = 'table table-zebra w-full grouped-table';
+          const colgroup = document.createElement('colgroup');
+          const cols = editing
+            ? ['grouped-col-select', 'grouped-col-name', 'grouped-col-qty', 'grouped-col-unit', 'grouped-col-status']
+            : ['grouped-col-name', 'grouped-col-qty', 'grouped-col-unit', 'grouped-col-status'];
+          cols.forEach(cls => {
+            const col = document.createElement('col');
+            col.className = cls;
+            colgroup.appendChild(col);
+          });
+          table.appendChild(colgroup);
+          const thead = document.createElement('thead');
+          const hr = document.createElement('tr');
+          const headers = editing
+            ? ['', t('table_header_name'), t('table_header_quantity'), t('table_header_unit'), t('table_header_status')]
+            : [t('table_header_name'), t('table_header_quantity'), t('table_header_unit'), t('table_header_status')];
+          headers.forEach(txt => {
+            const th = document.createElement('th');
+            th.textContent = txt;
+            hr.appendChild(th);
+          });
+          thead.appendChild(hr);
+          table.appendChild(thead);
+          const tb = document.createElement('tbody');
+          storages[stor][cat].forEach(p => {
+            const tr = document.createElement('tr');
+            const idx = data.indexOf(p);
+            tr.dataset.index = idx;
+            tr.dataset.productId = p.id != null ? p.id : idx;
+            if (editing) {
+              const cbTd = document.createElement('td');
+              const cb = document.createElement('input');
+              cb.type = 'checkbox';
+              cb.className = 'checkbox checkbox-sm row-select';
+              cb.dataset.name = p.name;
+              cbTd.appendChild(cb);
+              tr.appendChild(cbTd);
+              const n = document.createElement('td');
+              n.textContent = productName(p.name);
+              tr.appendChild(n);
+              const q = document.createElement('td');
+              q.className = 'qty-cell';
+              q.innerHTML = `
+                <div class="qty-wrap">
+                  <button type="button" class="btn-qty qty-dec">−</button>
+                  <input class="qty-input" type="number" step="1" inputmode="numeric" />
+                  <button type="button" class="btn-qty qty-inc">+</button>
+                </div>
+              `;
+              const input = q.querySelector('.qty-input');
+              input.value = p.quantity;
+              input.addEventListener('change', () => {
+                p.quantity = parseFloat(input.value) || 0;
+              });
+              tr.appendChild(q);
+              const u = document.createElement('td');
+              u.textContent = unitName(p.unit);
+              tr.appendChild(u);
+              const s = document.createElement('td');
+              const ic = getStatusIcon(p);
+              if (ic) {
+                s.innerHTML = ic.html;
+                s.title = ic.title;
+              }
+              tr.appendChild(s);
+            } else {
               const n = document.createElement('td');
               n.textContent = productName(p.name);
               const q = document.createElement('td');
@@ -347,14 +397,15 @@ export function renderProducts() {
                 s.title = ic.title;
               }
               tr.append(n, q, u, s);
-              highlightRow(tr, p);
-              tb.appendChild(tr);
-            });
-            table.appendChild(tb);
-            body.appendChild(table);
-            catBlock.appendChild(body);
-            block.appendChild(catBlock);
+            }
+            highlightRow(tr, p);
+            tb.appendChild(tr);
           });
+          table.appendChild(tb);
+          body.appendChild(table);
+          catBlock.appendChild(body);
+          block.appendChild(catBlock);
+        });
 
         list.appendChild(block);
       });

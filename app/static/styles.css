@@ -251,8 +251,12 @@ html[data-layout="mobile"] #product-table .status-label {
   border-spacing: 0;
 }
 
+#products-by-category .grouped-table col.grouped-col-select {
+  width: 5%;
+}
+
 #products-by-category .grouped-table col.grouped-col-name {
-  width: 50%;
+  width: 45%;
 }
 
 #products-by-category .grouped-table col.grouped-col-qty {
