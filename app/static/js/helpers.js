@@ -105,6 +105,39 @@ export function timeToBucket(str) {
   return 'gt60';
 }
 
+export async function fetchJson(url, options = {}) {
+  const opts = {
+    headers: {
+      Accept: 'application/json',
+      ...(options.headers || {})
+    },
+    ...options
+  };
+  if (opts.body && typeof opts.body !== 'string' && !(opts.body instanceof FormData)) {
+    opts.body = JSON.stringify(opts.body);
+    opts.headers['Content-Type'] = 'application/json';
+  }
+  try {
+    const res = await fetch(url, opts);
+    const text = await res.text();
+    let data = null;
+    try {
+      data = text ? JSON.parse(text) : null;
+    } catch (_) {
+      /* ignore parse error */
+    }
+    if (!res.ok) {
+      const err = { url, status: res.status, body: data ?? text };
+      console.error('[fetchJson]', err);
+      throw err;
+    }
+    return data;
+  } catch (err) {
+    console.error('[fetchJson]', err);
+    throw err;
+  }
+}
+
 export function formatPackQuantity(p) {
   if (p.pack_size) {
     const total = Math.ceil(p.quantity / p.pack_size) * p.pack_size;
@@ -159,8 +192,7 @@ export async function loadTranslations() {
 
 export async function loadUnits() {
   try {
-    const res = await fetch('/api/units');
-    state.units = await res.json();
+    state.units = await fetchJson('/api/units');
   } catch (err) {
     console.error('Failed to load units', err);
     state.units = {};
@@ -169,8 +201,7 @@ export async function loadUnits() {
 
 export async function loadFavorites() {
   try {
-    const res = await fetch('/api/favorites');
-    const data = await res.json();
+    const data = await fetchJson('/api/favorites');
     state.favoriteRecipes = new Set(data);
     localStorage.setItem('favoriteRecipes', JSON.stringify(Array.from(state.favoriteRecipes)));
   } catch (err) {
@@ -182,14 +213,13 @@ export function toggleFavorite(name) {
   if (state.favoriteRecipes.has(name)) {
     state.favoriteRecipes.delete(name);
   } else {
-    state.favoriteRecipes.add(name);
+  state.favoriteRecipes.add(name);
   }
   const arr = Array.from(state.favoriteRecipes);
   localStorage.setItem('favoriteRecipes', JSON.stringify(arr));
-  fetch('/api/favorites', {
+  fetchJson('/api/favorites', {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(arr)
+    body: arr
   }).catch(() => {});
 }
 
