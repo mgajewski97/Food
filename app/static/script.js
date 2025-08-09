@@ -95,6 +95,16 @@ function mountNavigation() {
   });
 }
 
+window.addEventListener('pageshow', e => {
+  if (e.persisted) {
+    const target = localStorage.getItem('activeTab') || 'tab-products';
+    if (target === 'tab-products') {
+      resetProductFilter();
+      renderProducts();
+    }
+  }
+});
+
 window.activateTab = activateTab;
 window.addToShoppingList = addToShoppingList;
 
