@@ -1,4 +1,4 @@
-import { t, state, productName, isSpice } from '../helpers.js';
+import { t, state, productName, isSpice, stockLevel } from '../helpers.js';
 
 function saveShoppingList() {
   localStorage.setItem('shoppingList', JSON.stringify(state.shoppingList));
@@ -132,14 +132,26 @@ export function renderSuggestions() {
     .filter(p => !state.dismissedSuggestions.has(p.name))
     .sort((a, b) => productName(a.name).localeCompare(productName(b.name)));
   suggestions.forEach(p => {
-    let qty = 1;
+    let qty = p.threshold != null ? p.threshold : 1;
     const row = document.createElement('div');
     row.className =
-      'suggestion-item flex flex-nowrap items-center gap-3 p-2 min-h-12 hover:bg-base-200 transition-colors';
+      'suggestion-item flex flex-col sm:flex-row sm:items-center gap-3 p-2 min-h-12 hover:bg-base-200 transition-colors';
+    const level = stockLevel(p);
+    if (level === 'low') row.classList.add('product-low');
+    if (level === 'none') row.classList.add('product-missing');
+
+    const nameWrap = document.createElement('div');
+    nameWrap.className = 'flex-1 overflow-hidden';
     const nameEl = document.createElement('div');
-    nameEl.className = 'flex-1 truncate';
+    nameEl.className = 'truncate';
     nameEl.textContent = productName(p.name);
-    row.appendChild(nameEl);
+    nameEl.title = productName(p.name);
+    nameWrap.appendChild(nameEl);
+    row.appendChild(nameWrap);
+
+    const controls = document.createElement('div');
+    controls.className = 'flex items-center gap-3 w-full sm:w-auto';
+
     const qtyWrap = document.createElement('div');
     qtyWrap.className = 'flex items-center gap-2';
     const dec = document.createElement('button');
@@ -168,9 +180,10 @@ export function renderSuggestions() {
       qtyInput.value = qty;
     });
     qtyWrap.append(dec, qtyInput, inc);
-    row.appendChild(qtyWrap);
+    controls.appendChild(qtyWrap);
+
     const actions = document.createElement('div');
-    actions.className = 'flex items-center gap-3';
+    actions.className = 'flex items-center gap-2 ml-auto';
     const accept = document.createElement('button');
     accept.type = 'button';
     accept.innerHTML = '<i class="fa-solid fa-check"></i>';
@@ -191,7 +204,9 @@ export function renderSuggestions() {
       row.remove();
     });
     actions.append(accept, reject);
-    row.appendChild(actions);
+    controls.appendChild(actions);
+
+    row.appendChild(controls);
     container.appendChild(row);
   });
 }
