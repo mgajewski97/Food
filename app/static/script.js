@@ -1,10 +1,14 @@
 // FIX: Render & responsive boot (2025-08-09)
-import { loadTranslations, loadUnits, loadFavorites, state, t, normalizeProduct, applyTranslations, fetchJSON, isSpice, debounce } from './js/helpers.js';
-import { renderProducts, refreshProducts } from './js/components/product-table.js';
-import { renderRecipes, loadRecipes as fetchRecipes } from './js/components/recipe-list.js';
-import { renderShoppingList, addToShoppingList, renderSuggestions } from './js/components/shopping-list.js';
-import { toast, showNotification, checkLowStockToast, showTopBanner } from './js/components/toast.js';
-import { initReceiptImport } from './js/components/ocr-modal.js';
+import { t, fetchJSON, showTopBanner } from './js/helpers.js';
+import { loadTranslations, loadUnits, loadFavorites, state, normalizeProduct, applyTranslations, isSpice, debounce } from './js/helpers.js';
+import * as ProductTable from './js/components/product-table.js';
+import * as Shopping from './js/components/shopping-list.js';
+import * as Recipes from './js/components/recipe-list.js';
+import './js/components/recipe-detail.js';
+import './js/components/ocr-modal.js';
+import './js/components/toast.js';
+
+const { toast, showNotification, checkLowStockToast, initReceiptImport } = window;
 
 window.__BOOT_TRACE = [];
 function trace(p){
@@ -20,7 +24,7 @@ window.trace = trace;
 // - Added retry-capable fetch helpers and mounted navigation before data fetching.
 
 
-window.APP = window.APP || {};
+window.APP = window.APP || { state: {}, ui: {} };
 const APP = window.APP;
 APP.state = APP.state || {
   products: [],
@@ -29,6 +33,7 @@ APP.state = APP.state || {
   search: '',
   editing: false
 };
+APP.ui = APP.ui || {};
 APP.activeTab = APP.activeTab || null;
 APP.editBackup = APP.editBackup || null;
 
@@ -37,9 +42,9 @@ async function loadProducts() {
   try {
     const data = await fetchJSON('/api/products');
     APP.state.products = Array.isArray(data) ? data.map(normalizeProduct) : [];
-    renderProducts();
-    renderSuggestions();
-    checkLowStockToast(APP.state.products, activateTab, renderSuggestions, renderShoppingList);
+    ProductTable.renderProducts();
+    Shopping.renderSuggestions();
+    checkLowStockToast(APP.state.products, activateTab, Shopping.renderSuggestions, Shopping.renderShoppingList);
     if (!APP._productsLoaded) {
       console.info('Products loaded:', APP.state.products.length);
       APP._productsLoaded = true;
@@ -55,7 +60,7 @@ async function loadProducts() {
 async function loadRecipes() {
   trace('loadRecipes:enter');
   try {
-    await fetchRecipes();
+    await Recipes.loadRecipes();
     trace('loadRecipes:ok');
   } catch (e) {
     console.error(e);
@@ -92,6 +97,20 @@ async function checkHealth() {
       };
     }
     return false;
+  }
+}
+
+function registerServiceWorker() {
+  if ('serviceWorker' in navigator) {
+    let refreshing;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing) return;
+      refreshing = true;
+      window.location.reload();
+    });
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/service-worker.js');
+    });
   }
 }
 
@@ -141,10 +160,10 @@ async function activateTab(targetId) {
     if (!APP.state.products || APP.state.products.length === 0) {
       try { await loadProducts(); } catch (e) {}
     }
-    renderProducts();
+    ProductTable.renderProducts();
   } else if (targetId === 'tab-recipes') {
     resetRecipeFilters();
-    renderRecipes();
+    Recipes.renderRecipes();
   }
   APP.activeTab = targetId;
 }
@@ -173,13 +192,13 @@ window.addEventListener('pageshow', e => {
     const target = localStorage.getItem('activeTab') || 'tab-products';
     if (target === 'tab-products') {
       resetProductFilters();
-      renderProducts();
+      ProductTable.renderProducts();
     }
   }
 });
 
 window.activateTab = activateTab;
-window.addToShoppingList = addToShoppingList;
+window.addToShoppingList = Shopping.addToShoppingList;
 
 function initAddForm() {
   const form = document.getElementById('add-form');
@@ -274,8 +293,8 @@ function initAddForm() {
     try {
       await fetchJson('/api/products', { method: 'POST', body: payload });
       await loadProducts();
-      renderProducts();
-      renderShoppingList();
+      ProductTable.renderProducts();
+      Shopping.renderShoppingList();
       form.reset();
       syncSpiceUI();
       nameInput.focus();
@@ -341,8 +360,10 @@ async function saveEdits() {
 }
 
 function initNavigationAndEvents() {
+  ProductTable.bindProductEvents();
+  Recipes.bindRecipeEvents();
   mountNavigation();
-  renderShoppingList();
+  Shopping.renderShoppingList();
   initReceiptImport();
   initAddForm();
 
@@ -355,10 +376,10 @@ function initNavigationAndEvents() {
     langBtn.textContent = state.currentLang.toUpperCase();
     document.documentElement.setAttribute('lang', state.currentLang);
     applyTranslations();
-    renderProducts();
-    renderRecipes();
-    renderShoppingList();
-    renderSuggestions();
+    ProductTable.renderProducts();
+    Recipes.renderRecipes();
+    Shopping.renderShoppingList();
+    Shopping.renderSuggestions();
     updateAriaLabels();
     const unitSel = document.querySelector('#add-form select[name="unit"]');
     if (unitSel) {
@@ -384,7 +405,7 @@ function initNavigationAndEvents() {
     deleteBtn.textContent = t('delete_selected_button');
     selectHeader.style.display = '';
     if (addSection) addSection.style.display = '';
-    renderProducts();
+    ProductTable.renderProducts();
     updateAriaLabels();
   }
 
@@ -401,7 +422,7 @@ function initNavigationAndEvents() {
     deleteBtn.textContent = t('delete_selected_button');
     selectHeader.style.display = 'none';
     if (addSection) addSection.style.display = 'none';
-    renderProducts();
+    ProductTable.renderProducts();
     updateAriaLabels();
   }
 
@@ -413,7 +434,7 @@ function initNavigationAndEvents() {
   saveBtn?.addEventListener('click', async () => {
     const ok = await saveEdits();
     if (ok) {
-      await refreshProducts();
+      await ProductTable.refreshProducts();
       exitEditMode(false);
     }
   });
@@ -447,25 +468,25 @@ function initNavigationAndEvents() {
     if (APP.state.editing) exitEditMode(true);
     APP.state.view = APP.state.view === 'flat' ? 'grouped' : 'flat';
     viewBtn.textContent = APP.state.view === 'grouped' ? t('change_view_toggle_flat') : t('change_view_toggle_grouped');
-    renderProducts();
+    ProductTable.renderProducts();
     updateAriaLabels();
   });
   const filterSel = document.getElementById('state-filter');
   filterSel?.addEventListener('change', () => {
     APP.state.filter = filterSel.value;
-    renderProducts();
+    ProductTable.renderProducts();
   });
   const filterSelMobile = document.getElementById('state-filter-mobile');
   filterSelMobile?.addEventListener('change', () => {
     APP.state.filter = filterSelMobile.value;
-    renderProducts();
+    ProductTable.renderProducts();
   });
   const searchInput = document.getElementById('product-search');
   searchInput?.addEventListener(
     'input',
     debounce(() => {
       APP.state.search = searchInput.value.trim().toLowerCase();
-      renderProducts();
+      ProductTable.renderProducts();
     }, 150)
   );
   const searchInputMobile = document.getElementById('product-search-mobile');
@@ -473,7 +494,7 @@ function initNavigationAndEvents() {
     'input',
     debounce(() => {
       APP.state.search = searchInputMobile.value.trim().toLowerCase();
-      renderProducts();
+      ProductTable.renderProducts();
     }, 150)
   );
   const copyBtn = document.getElementById('copy-btn');
@@ -539,6 +560,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     trace('DOMContentLoaded');
     await boot();
     trace('boot:done');
+    registerServiceWorker();
   } catch (e) {
     console.error(e);
     showTopBanner(t('init_failed'), { actionLabel: t('retry'), onAction: () => location.reload() });

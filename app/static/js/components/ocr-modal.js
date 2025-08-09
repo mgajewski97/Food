@@ -103,3 +103,6 @@ export async function handleReceiptUpload(file) {
     tableBody.appendChild(tr);
   });
 }
+
+window.initReceiptImport = initReceiptImport;
+window.handleReceiptUpload = handleReceiptUpload;

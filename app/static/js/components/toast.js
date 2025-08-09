@@ -64,6 +64,11 @@ export const toast = {
     createToast({ type: 'error', title, message, action })
 };
 
+export function showNotification({ type = 'info', title = '', message = '', action = null }) {
+  const fn = toast[type] || toast.info;
+  fn(title, message, action);
+}
+
 export function showLowStockToast(activateTab, renderSuggestions, renderShoppingList) {
   const container = document.getElementById('notification-container');
   if (!container) return;
@@ -152,3 +157,8 @@ export function showTopBanner(message, { actionLabel, onAction } = {}) {
   banner.appendChild(close);
   container.appendChild(banner);
 }
+
+window.toast = toast;
+window.showNotification = showNotification;
+window.checkLowStockToast = checkLowStockToast;
+window.showTopBanner = showTopBanner;
