@@ -143,6 +143,7 @@
   "notify_success_title": "Success",
   "notify_error_title": "Error",
   "retry": "Retry",
+  "init_failed": "Failed to initialize app. Retry",
   "manual_add_success": "Added to shopping list",
   "product_added": "Product added",
   "product.toast_bread": "Toast bread",

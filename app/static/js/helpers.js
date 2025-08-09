@@ -3,6 +3,8 @@
 // - Added normalization helpers and spice detector.
 // - Single translation helper with English fallback.
 
+import { showTopBanner } from './components/toast.js';
+
 export const CATEGORY_KEYS = {
   uncategorized: 'category_uncategorized',
   fresh_veg: 'category_fresh_veg',
@@ -202,6 +204,7 @@ export function getStatusIcon(p) {
 }
 
 export async function loadTranslations() {
+  window.trace?.('loadTranslations:enter');
   try {
     const [plRes, enRes] = await Promise.all([
       fetch('/static/translations/pl.json'),
@@ -232,25 +235,40 @@ export async function loadTranslations() {
         if (en[k]) state.translations.products[id].en = en[k];
       }
     });
+    window.trace?.('loadTranslations:ok');
   } catch (err) {
     console.error('Failed to load translations', err);
+    showTopBanner('Failed to load translations', {
+      actionLabel: t('retry'),
+      onAction: loadTranslations
+    });
+    throw err;
   }
 }
 
 export async function loadUnits() {
+  window.trace?.('loadUnits:enter');
   try {
     state.units = await fetchJson('/api/units');
+    window.trace?.('loadUnits:ok');
   } catch (err) {
     console.error('Failed to load units', err);
     state.units = {};
+    showTopBanner('Failed to load units', {
+      actionLabel: t('retry'),
+      onAction: loadUnits
+    });
+    throw err;
   }
 }
 
 export async function loadFavorites() {
+  window.trace?.('loadFavorites:enter');
   try {
     const data = await fetchJson('/api/favorites');
     state.favoriteRecipes = new Set(data);
     localStorage.setItem('favoriteRecipes', JSON.stringify(Array.from(state.favoriteRecipes)));
+    window.trace?.('loadFavorites:ok');
   } catch (err) {
     let localFavs = [];
     try {
@@ -259,6 +277,11 @@ export async function loadFavorites() {
       localFavs = [];
     }
     state.favoriteRecipes = new Set(localFavs);
+    showTopBanner('Failed to load favorites', {
+      actionLabel: t('retry'),
+      onAction: loadFavorites
+    });
+    throw err;
   }
 }
 
