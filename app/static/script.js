@@ -77,8 +77,12 @@ function resetProductFilter() {
   APP.state.search = '';
   const sel = document.getElementById('state-filter');
   if (sel) sel.value = 'available';
+  const selMobile = document.getElementById('state-filter-mobile');
+  if (selMobile) selMobile.value = 'available';
   const search = document.getElementById('product-search');
   if (search) search.value = '';
+  const searchMobile = document.getElementById('product-search-mobile');
+  if (searchMobile) searchMobile.value = '';
 }
 
 function resetRecipeFilters() {
@@ -109,14 +113,10 @@ function activateTab(targetId) {
   document.querySelectorAll('.tab-panel').forEach(panel => (panel.style.display = 'none'));
   const panel = document.getElementById(targetId);
   if (panel) panel.style.display = 'block';
-  if (APP.activeTab === 'tab-products' && targetId !== 'tab-products') {
-    resetProductFilter();
-  }
-  if (targetId === 'tab-products' && APP.activeTab !== 'tab-products') {
+  if (targetId === 'tab-products') {
     resetProductFilter();
     renderProducts();
-  }
-  if (targetId === 'tab-recipes' && APP.activeTab !== 'tab-recipes') {
+  } else if (targetId === 'tab-recipes') {
     resetRecipeFilters();
     renderRecipes();
   }
@@ -398,9 +398,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     APP.state.filter = filterSel.value;
     renderProducts();
   });
+  const filterSelMobile = document.getElementById('state-filter-mobile');
+  filterSelMobile?.addEventListener('change', () => {
+    APP.state.filter = filterSelMobile.value;
+    renderProducts();
+  });
   const searchInput = document.getElementById('product-search');
   searchInput?.addEventListener('input', () => {
     APP.state.search = searchInput.value.trim().toLowerCase();
+    renderProducts();
+  });
+  const searchInputMobile = document.getElementById('product-search-mobile');
+  searchInputMobile?.addEventListener('input', () => {
+    APP.state.search = searchInputMobile.value.trim().toLowerCase();
     renderProducts();
   });
   const copyBtn = document.getElementById('copy-btn');
