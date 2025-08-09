@@ -175,11 +175,11 @@ export async function loadRecipes() {
   }
 }
 
-document.addEventListener('favorites-changed', () => {
-  renderRecipes();
-});
+export function bindRecipeEvents() {
+  document.addEventListener('favorites-changed', () => {
+    renderRecipes();
+  });
 
-document.addEventListener('DOMContentLoaded', () => {
   const sortField = document.getElementById('recipe-sort-field');
   const sortAsc = document.getElementById('recipe-sort-dir-asc');
   const sortDesc = document.getElementById('recipe-sort-dir-desc');
@@ -249,4 +249,4 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   updateSortButtons();
-});
+}

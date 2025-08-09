@@ -4,6 +4,7 @@
 // - Single translation helper with English fallback.
 
 import { showTopBanner } from './components/toast.js';
+export { showTopBanner };
 
 export const CATEGORY_KEYS = {
   uncategorized: 'category_uncategorized',
