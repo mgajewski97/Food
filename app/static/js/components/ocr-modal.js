@@ -1,4 +1,4 @@
-import { t, state, fetchJson } from '../helpers.js';
+import { t, state, fetchJSON } from '../helpers.js';
 import { addToShoppingList, renderShoppingList } from './shopping-list.js';
 import { toast } from './toast.js';
 
@@ -38,11 +38,12 @@ export async function handleReceiptUpload(file) {
   const tableBody = document.querySelector('#receipt-table tbody');
   if (!modal || !tableBody || !file) return;
   if (!modal.open) modal.showModal();
+  const { default: Tesseract } = await import('https://cdn.jsdelivr.net/npm/tesseract.js@2.1.5/dist/tesseract.esm.min.js');
   const { data: { text } } = await Tesseract.recognize(file, state.currentLang === 'pl' ? 'pol' : 'eng');
   const lines = text.split('\n').map(l => l.trim()).filter(l => l);
   let data;
   try {
-    data = await fetchJson('/api/ocr-match', {
+    data = await fetchJSON('/api/ocr-match', {
       method: 'POST',
       body: { items: lines }
     });
@@ -103,6 +104,3 @@ export async function handleReceiptUpload(file) {
     tableBody.appendChild(tr);
   });
 }
-
-window.initReceiptImport = initReceiptImport;
-window.handleReceiptUpload = handleReceiptUpload;

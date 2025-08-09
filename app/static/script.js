@@ -1,14 +1,23 @@
 // FIX: Render & responsive boot (2025-08-09)
-import { t, fetchJSON, showTopBanner } from './js/helpers.js';
-import { loadTranslations, loadUnits, loadFavorites, state, normalizeProduct, applyTranslations, isSpice, debounce } from './js/helpers.js';
+import {
+  t,
+  fetchJSON,
+  showTopBanner,
+  loadTranslations,
+  loadUnits,
+  loadFavorites,
+  state,
+  normalizeProduct,
+  applyTranslations,
+  isSpice,
+  debounce
+} from './js/helpers.js';
 import * as ProductTable from './js/components/product-table.js';
 import * as Shopping from './js/components/shopping-list.js';
 import * as Recipes from './js/components/recipe-list.js';
+import { initReceiptImport } from './js/components/ocr-modal.js';
+import { toast, showNotification, checkLowStockToast } from './js/components/toast.js';
 import './js/components/recipe-detail.js';
-import './js/components/ocr-modal.js';
-import './js/components/toast.js';
-
-const { toast, showNotification, checkLowStockToast, initReceiptImport } = window;
 
 window.__BOOT_TRACE = [];
 function trace(p){
@@ -291,7 +300,7 @@ function initAddForm() {
     }
     submitBtn.disabled = true;
     try {
-      await fetchJson('/api/products', { method: 'POST', body: payload });
+      await fetchJSON('/api/products', { method: 'POST', body: payload });
       await loadProducts();
       ProductTable.renderProducts();
       Shopping.renderShoppingList();
@@ -345,7 +354,7 @@ async function saveEdits() {
   const btn = document.getElementById('save-btn');
   btn.disabled = true;
   try {
-    await fetchJson('/api/products', {
+    await fetchJSON('/api/products', {
       method: 'PUT',
       body: updates
     });
