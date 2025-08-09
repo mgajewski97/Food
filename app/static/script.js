@@ -291,7 +291,6 @@ async function saveEdits() {
       body: updates
     });
     showNotification({ type: 'success', title: t('save_success') });
-    await refreshProducts();
     return true;
   } catch (err) {
     showNotification({ type: 'error', title: t('save_failed'), message: err.status || err.message });
@@ -346,6 +345,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const saveBtn = document.getElementById('save-btn');
   const deleteBtn = document.getElementById('delete-selected');
   const selectHeader = document.getElementById('select-header');
+  const addSection = document.getElementById('add-section');
   function enterEditMode() {
     APP.editBackup = JSON.parse(JSON.stringify(APP.state.products));
     APP.state.editing = true;
@@ -355,6 +355,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     deleteBtn.disabled = true;
     deleteBtn.textContent = t('delete_selected_button');
     selectHeader.style.display = '';
+    if (addSection) addSection.style.display = '';
     renderProducts();
     updateAriaLabels();
   }
@@ -371,6 +372,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     deleteBtn.disabled = true;
     deleteBtn.textContent = t('delete_selected_button');
     selectHeader.style.display = 'none';
+    if (addSection) addSection.style.display = 'none';
     renderProducts();
     updateAriaLabels();
   }
@@ -382,7 +384,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   saveBtn?.addEventListener('click', async () => {
     const ok = await saveEdits();
-    if (ok) exitEditMode(false);
+    if (ok) {
+      await refreshProducts();
+      exitEditMode(false);
+    }
   });
 
   deleteBtn?.addEventListener('click', async () => {

@@ -15,7 +15,7 @@
   "theme_light": "Light mode",
   "theme_dark": "Dark mode",
   "edit_mode_button_on": "Edit mode",
-  "edit_mode_button_off": "Cancel edit",
+  "edit_mode_button_off": "Cancel",
   "save_button": "Save",
   "delete_selected_button": "Delete selected",
   "table_header_name": "Name",

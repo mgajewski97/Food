@@ -56,7 +56,7 @@
                     </select>
                 </div>
                 <button id="view-toggle" class="btn btn-outline btn-primary btn-sm" role="switch" aria-pressed="false" aria-label="Widok z podziałem" data-i18n="change_view_toggle_grouped">Widok z podziałem</button>
-                <button id="edit-toggle" class="btn btn-outline btn-warning btn-sm" role="switch" aria-pressed="false" aria-label="Edytuj" data-i18n="edit_mode_button_on">Edytuj</button>
+                <button id="edit-toggle" class="btn btn-outline btn-warning btn-sm" role="switch" aria-pressed="false" aria-label="Tryb edycji" data-i18n="edit_mode_button_on">Tryb edycji</button>
                 <button id="save-btn" style="display:none;" class="btn btn-success btn-sm" aria-label="Zapisz" data-i18n="save_button">Zapisz</button>
                 <button id="delete-selected" style="display:none;" class="btn btn-error btn-sm" disabled aria-label="Usuń zaznaczone" data-i18n="delete_selected_button">Usuń zaznaczone</button>
             </div>
@@ -99,6 +99,7 @@
                 </form>
             </dialog>
 
+            <div id="add-section" style="display:none;">
             <hr class="border-t border-base-300 my-6">
 
             <h2 class="text-xl font-semibold mt-6 mb-4" data-i18n="heading_add_edit_product">Dodaj / edytuj produkt</h2>
@@ -144,8 +145,8 @@
                 </select>
                 <button type="submit" class="btn btn-success btn-sm w-full sm:col-span-2" data-i18n="save_button">Zapisz</button>
             </form>
-
             <hr class="border-t border-base-300 my-6">
+            </div>
 
             <h3 class="text-lg font-semibold mt-6 mb-2" data-i18n="heading_edit_json">Edytuj produkty (JSON)</h3>
             <textarea id="edit-json" rows="10" placeholder='JSON' data-i18n="edit_json_placeholder" class="textarea textarea-bordered w-full max-w-full mb-4 h-60 overflow-y-auto overflow-x-hidden resize-none p-4"></textarea>
