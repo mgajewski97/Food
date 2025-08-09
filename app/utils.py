@@ -1,5 +1,7 @@
 """Utility helpers for JSON storage, validation and product normalization."""
 
+# FIX: 2024-05-06
+
 # CHANGELOG:
 # - Corrected list validation to check items against schema definitions.
 
@@ -8,6 +10,7 @@ import logging
 import os
 import threading
 from typing import Any, Callable, Dict, List, Optional, Tuple
+import math
 
 import jsonschema
 
@@ -18,7 +21,10 @@ logger = logging.getLogger(__name__)
 def _safe_float(value: Any, default: float = 0.0) -> float:
     """Convert value to float or return default on failure."""
     try:
-        return float(value)
+        val = float(value)
+        if not math.isfinite(val):
+            return default
+        return val
     except (TypeError, ValueError):
         return default
 
@@ -244,7 +250,7 @@ def load_json(
         data = default
     validated, errors = _validate(data, schema_path, coerce=coerce)
     for err in errors:
-        logger.warning("%s: %s", os.path.basename(path), err)
+        logger.info("%s: %s", os.path.basename(path), err)
     if return_errors:
         return validated if validated is not None else default, errors
     return validated if validated is not None else default
@@ -258,7 +264,7 @@ def save_json(
     """Persist JSON data to path creating directories when necessary."""
     validated, errors = _validate(data, schema_path, coerce=coerce)
     for err in errors:
-        logger.warning("%s: %s", os.path.basename(path), err)
+        logger.info("%s: %s", os.path.basename(path), err)
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(validated, f, ensure_ascii=False, indent=2)

@@ -1,3 +1,4 @@
+// FIX: 2024-05-06
 import {
   t,
   state,
@@ -12,7 +13,8 @@ import {
   normalizeProduct,
   fetchJson,
   isSpice,
-  debounce
+  debounce,
+  dlog
 } from '../helpers.js';
 import { toast } from './toast.js';
 
@@ -350,6 +352,8 @@ export function renderProducts() {
   const filtered = data.filter(
     p => matchesFilter(p, filter) && (!term || t(p.name).toLowerCase().includes(term) || p.name.toLowerCase().includes(term))
   );
+
+  dlog('renderProducts', filtered.length);
 
   const table = document.getElementById('product-table');
   const list = document.getElementById('products-by-category');

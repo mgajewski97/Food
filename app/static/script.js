@@ -1,3 +1,4 @@
+// FIX: 2024-05-06
 import { loadTranslations, loadUnits, loadFavorites, state, t, normalizeProduct, applyTranslations, fetchJson, isSpice, debounce } from './js/helpers.js';
 import { renderProducts, refreshProducts } from './js/components/product-table.js';
 import { renderRecipes, loadRecipes } from './js/components/recipe-list.js';
@@ -25,10 +26,26 @@ APP.editBackup = APP.editBackup || null;
 async function fetchProducts() {
   try {
     const data = await fetchJson('/api/products');
-    APP.state.products = data.map(normalizeProduct);
+    APP.state.products = Array.isArray(data) ? data.map(normalizeProduct) : [];
     renderProducts();
     renderSuggestions();
     checkLowStockToast(APP.state.products, activateTab, renderSuggestions, renderShoppingList);
+    const banner = document.getElementById('products-empty-banner');
+    if (banner) {
+      if (APP.state.products.length === 0) {
+        banner.classList.remove('hidden');
+        const btn = banner.querySelector('button');
+        if (btn && !btn._reloadBound) {
+          btn._reloadBound = true;
+          btn.addEventListener('click', () => {
+            banner.classList.add('hidden');
+            fetchProducts();
+          });
+        }
+      } else {
+        banner.classList.add('hidden');
+      }
+    }
   } catch (err) {
     APP.state.products = [];
     renderProducts();
@@ -322,16 +339,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.documentElement.setAttribute('lang', state.currentLang);
   mountNavigation();
   await loadFavorites();
+  const healthy = await checkHealth();
+  if (!healthy) return;
+  await fetchHistory();
+  await fetchProducts();
+  await fetchRecipes();
   renderShoppingList();
   initReceiptImport();
-  renderProducts();
-  const healthy = await checkHealth();
-  if (healthy) {
-    fetchProducts();
-    fetchRecipes();
-    fetchHistory();
-    initAddForm();
-  }
+  initAddForm();
 
   const langBtn = document.getElementById('lang-toggle');
   langBtn.textContent = state.currentLang.toUpperCase();
