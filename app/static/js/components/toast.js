@@ -48,6 +48,10 @@ export function showNotification({ type = 'success', title = '', message = '', r
   setTimeout(() => alert.remove(), 5000);
 }
 
+export function showToast(message, type = 'success') {
+  showNotification({ type, message });
+}
+
 export function showLowStockToast(activateTab, renderSuggestions, renderShoppingList) {
   const container = document.getElementById('notification-container');
   if (!container) return;
