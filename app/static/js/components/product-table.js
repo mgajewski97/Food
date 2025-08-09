@@ -2,6 +2,60 @@ import { t, state, productName, unitName, categoryName, storageName, formatPackQ
 
 const APP = (window.APP = window.APP || {});
 
+// --- expand/collapse state
+const storageState = new Map(); // storageId -> true/false
+const categoryState = new Map(); // storageId::categoryId -> true/false
+
+// ensure default: everything expanded on first render
+function initExpandDefaults(container) {
+  container.querySelectorAll('.storage-section').forEach(sec => {
+    const storage = sec.dataset.storage;
+    if (!storageState.has(storage)) storageState.set(storage, true);
+    sec.querySelectorAll('.category-section').forEach(cat => {
+      const key = `${storage}::${cat.dataset.category}`;
+      if (!categoryState.has(key)) categoryState.set(key, true);
+    });
+  });
+  syncAllToggles(container);
+}
+
+function syncAllToggles(container) {
+  container.querySelectorAll('.storage-section').forEach(sec => {
+    const storage = sec.dataset.storage;
+    const storageOpen = !!storageState.get(storage);
+    setStorageUI(sec, storageOpen);
+    sec.querySelectorAll('.category-section').forEach(cat => {
+      const key = `${storage}::${cat.dataset.category}`;
+      const catOpen = !!categoryState.get(key);
+      setCategoryUI(cat, storageOpen && catOpen);
+    });
+  });
+}
+
+function setStorageUI(storageSection, open) {
+  const btn = storageSection.querySelector('.toggle-storage');
+  btn.setAttribute('aria-expanded', String(open));
+  btn.title = open ? t('collapse') : t('expand');
+  const icon = btn.querySelector('i');
+  icon.classList.toggle('fa-caret-up', open);
+  icon.classList.toggle('fa-caret-down', !open);
+
+  storageSection.querySelectorAll('.category-section').forEach(cat => {
+    const key = `${storageSection.dataset.storage}::${cat.dataset.category}`;
+    const catOpen = !!categoryState.get(key);
+    setCategoryUI(cat, open && catOpen);
+  });
+}
+
+function setCategoryUI(categorySection, open) {
+  const btn = categorySection.querySelector('.toggle-category');
+  btn.setAttribute('aria-expanded', String(open));
+  btn.title = open ? t('collapse') : t('expand');
+  const icon = btn.querySelector('i');
+  icon.classList.toggle('fa-caret-up', open);
+  icon.classList.toggle('fa-caret-down', !open);
+  categorySection.querySelector('.category-body').classList.toggle('hidden', !open);
+}
 function highlightRow(tr, p) {
   const level = stockLevel(p);
   if (level === 'low') tr.classList.add('product-low');
@@ -136,47 +190,13 @@ function createFlatRow(p, idx, editable) {
   return tr;
 }
 
-function attachCollapses(root) {
-  root.querySelectorAll('[data-collapse]').forEach(btn => {
-    const targetId = btn.getAttribute('aria-controls');
-    const target = root.querySelector(`#${targetId}`);
-    const icon = btn.querySelector('i');
-    const header = btn.parentElement;
-    const parts = targetId.split('-').slice(1); // drop leading "storage"
-    const isStorage = parts.length === 1;
-    const key = isStorage ? parts[0] : parts.join('-');
-    const store = isStorage ? state.expandedStorages : state.expandedCategories;
-    if (store[key] === false) {
-      target?.classList.add('hidden');
-      icon.classList.remove('fa-caret-up');
-      icon.classList.add('fa-caret-down');
-      btn.setAttribute('title', t('expand'));
-    } else {
-      btn.setAttribute('title', t('collapse'));
-    }
-
-    function toggle() {
-      const isHidden = target?.classList.toggle('hidden');
-      icon.classList.toggle('fa-caret-up', !isHidden);
-      icon.classList.toggle('fa-caret-down', isHidden);
-      btn.setAttribute('title', t(isHidden ? 'expand' : 'collapse'));
-      store[key] = !isHidden;
-    }
-
-    btn.addEventListener('click', e => { e.stopPropagation(); toggle(); });
-    if (header && state.displayMode === 'mobile') {
-      header.addEventListener('click', toggle);
-    }
-  });
-}
-
 export function renderProducts() {
   const { products = [], view = 'flat', filter = 'all', editing = false } = APP.state || {};
   const data = Array.isArray(products) ? products.filter(p => p && p.name) : [];
   const filtered = data.filter(p => matchesFilter(p, filter));
 
   const table = document.getElementById('product-table');
-  const list = document.getElementById('product-list');
+  const list = document.getElementById('products-by-category');
   if (!table || !list) return;
   const tbody = table.querySelector('tbody');
   tbody.innerHTML = '';
@@ -221,47 +241,50 @@ export function renderProducts() {
     Object.keys(storages)
       .sort((a, b) => storageName(a).localeCompare(storageName(b)))
       .forEach(stor => {
-        const block = document.createElement('div');
-        block.className = 'storage-block border border-base-300 rounded-lg p-4 mb-4';
-        const header = document.createElement('h3');
-        header.className = 'text-2xl font-bold flex items-center gap-2';
+        const block = document.createElement('section');
+        block.className = 'storage-section storage-block border border-base-300 rounded-lg p-4 mb-4';
+        block.dataset.storage = stor;
+
+        const header = document.createElement('header');
+        header.className = 'storage-header flex items-center gap-2';
         if (state.displayMode === 'mobile') header.classList.add('cursor-pointer');
         const nameSpan = document.createElement('span');
+        nameSpan.className = 'inline-flex items-center text-xl font-semibold';
         nameSpan.textContent = `${STORAGE_ICONS[stor] || ''} ${storageName(stor)}`;
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = 'ml-auto';
-        btn.innerHTML = '<i class="fa-regular fa-caret-up"></i>';
-        btn.setAttribute('data-collapse', '');
-        const contentId = `storage-${stor}`;
-        btn.setAttribute('aria-controls', contentId);
+        btn.className = 'toggle-storage ml-auto h-8 w-8 flex items-center justify-center';
+        btn.setAttribute('aria-expanded', 'true');
         btn.setAttribute('title', t('collapse'));
+        btn.innerHTML = '<i class="fa-regular fa-caret-up"></i>';
         header.append(nameSpan, btn);
         block.appendChild(header);
-        const content = document.createElement('div');
-        content.id = contentId;
+
         Object.keys(storages[stor])
           .sort((a, b) => categoryName(a).localeCompare(categoryName(b)))
           .forEach(cat => {
             const catBlock = document.createElement('div');
-            catBlock.className = 'category-block';
-            const catHeader = document.createElement('h4');
-            catHeader.className = 'text-xl font-semibold mt-4 mb-2 flex items-center gap-2';
+            catBlock.className = 'category-section category-block';
+            catBlock.dataset.storage = stor;
+            catBlock.dataset.category = cat;
+
+            const catHeader = document.createElement('header');
+            catHeader.className = 'category-header flex items-center gap-2';
             if (state.displayMode === 'mobile') catHeader.classList.add('cursor-pointer');
             const catSpan = document.createElement('span');
+            catSpan.className = 'font-medium';
             catSpan.textContent = categoryName(cat);
             const catBtn = document.createElement('button');
             catBtn.type = 'button';
-            catBtn.className = 'ml-auto';
-            catBtn.innerHTML = '<i class="fa-regular fa-caret-up"></i>';
-            const catId = `${contentId}-${cat}`;
-            catBtn.setAttribute('data-collapse', '');
-            catBtn.setAttribute('aria-controls', catId);
+            catBtn.className = 'toggle-category ml-auto h-8 w-8 flex items-center justify-center';
+            catBtn.setAttribute('aria-expanded', 'true');
             catBtn.setAttribute('title', t('collapse'));
+            catBtn.innerHTML = '<i class="fa-regular fa-caret-up"></i>';
             catHeader.append(catSpan, catBtn);
             catBlock.appendChild(catHeader);
-            const tableWrap = document.createElement('div');
-            tableWrap.id = catId;
+
+            const body = document.createElement('div');
+            body.className = 'category-body';
             const table = document.createElement('table');
             table.className = 'table table-zebra w-full grouped-table';
             const colgroup = document.createElement('colgroup');
@@ -291,19 +314,59 @@ export function renderProducts() {
               u.textContent = unitName(p.unit);
               const s = document.createElement('td');
               const ic = getStatusIcon(p);
-              if (ic) { s.innerHTML = ic.html; s.title = ic.title; }
+              if (ic) {
+                s.innerHTML = ic.html;
+                s.title = ic.title;
+              }
               tr.append(n, q, u, s);
               highlightRow(tr, p);
               tb.appendChild(tr);
             });
             table.appendChild(tb);
-            tableWrap.appendChild(table);
-            catBlock.appendChild(tableWrap);
-            content.appendChild(catBlock);
+            body.appendChild(table);
+            catBlock.appendChild(body);
+            block.appendChild(catBlock);
           });
-        block.appendChild(content);
+
         list.appendChild(block);
       });
-    attachCollapses(list);
+    initExpandDefaults(list);
   }
+}
+
+const groupedRoot = document.getElementById('products-by-category');
+if (groupedRoot) {
+  initExpandDefaults(groupedRoot);
+
+  groupedRoot.addEventListener('click', e => {
+    const storageBtn = e.target.closest('.toggle-storage');
+    const catBtn = e.target.closest('.toggle-category');
+
+    if (storageBtn) {
+      e.stopPropagation();
+      const section = storageBtn.closest('.storage-section');
+      const id = section.dataset.storage;
+      storageState.set(id, !storageState.get(id));
+      setStorageUI(section, storageState.get(id));
+    }
+
+    if (catBtn) {
+      e.stopPropagation();
+      const section = catBtn.closest('.category-section');
+      const storage = section.dataset.storage;
+      const cat = section.dataset.category;
+      const key = `${storage}::${cat}`;
+      categoryState.set(key, !categoryState.get(key));
+      const parentOpen = !!storageState.get(storage);
+      setCategoryUI(section, parentOpen && categoryState.get(key));
+    }
+  });
+
+  // Mobile: tap entire header toggles
+  groupedRoot.addEventListener('click', e => {
+    const hdr = e.target.closest('.category-header, .storage-header');
+    if (!hdr) return;
+    const btn = hdr.querySelector('.toggle-category, .toggle-storage');
+    if (btn && window.matchMedia('(max-width: 768px)').matches) btn.click();
+  });
 }
