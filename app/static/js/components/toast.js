@@ -65,6 +65,7 @@ export function showLowStockToast(activateTab, renderSuggestions, renderShopping
   btn.addEventListener('click', () => {
     activateTab('tab-shopping');
     localStorage.setItem('activeTab', 'tab-shopping');
+    history.pushState({ tab: 'tab-shopping' }, '');
     renderSuggestions();
     renderShoppingList();
     alert.remove();

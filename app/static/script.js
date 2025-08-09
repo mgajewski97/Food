@@ -18,6 +18,7 @@ APP.state = APP.state || {
   filter: 'available',
   editing: false
 };
+APP.activeTab = APP.activeTab || null;
 
 async function fetchProducts() {
   try {
@@ -54,6 +55,12 @@ async function fetchHistory() {
   }
 }
 
+function resetProductFilter() {
+  APP.state.filter = 'available';
+  const sel = document.getElementById('state-filter');
+  if (sel) sel.value = 'available';
+}
+
 function activateTab(targetId) {
   document.querySelectorAll('[data-tab-target]').forEach(t => t.classList.remove('tab-active', 'font-bold'));
   const tab = document.querySelector(`[data-tab-target="${targetId}"]`);
@@ -61,18 +68,31 @@ function activateTab(targetId) {
   document.querySelectorAll('.tab-panel').forEach(panel => (panel.style.display = 'none'));
   const panel = document.getElementById(targetId);
   if (panel) panel.style.display = 'block';
+  if (targetId === 'tab-products' && APP.activeTab !== 'tab-products') {
+    resetProductFilter();
+    renderProducts();
+  }
+  APP.activeTab = targetId;
 }
 
 function mountNavigation() {
   document.querySelectorAll('[data-tab-target]').forEach(tab => {
     tab.addEventListener('click', () => {
       const target = tab.dataset.tabTarget;
+      if (target === APP.activeTab) return;
       activateTab(target);
       localStorage.setItem('activeTab', target);
+      history.pushState({ tab: target }, '');
     });
   });
   const initial = localStorage.getItem('activeTab') || 'tab-products';
+  history.replaceState({ tab: initial }, '');
   activateTab(initial);
+  window.addEventListener('popstate', e => {
+    const target = e.state?.tab || 'tab-products';
+    activateTab(target);
+    localStorage.setItem('activeTab', target);
+  });
 }
 
 window.activateTab = activateTab;
