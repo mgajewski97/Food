@@ -139,6 +139,7 @@
   "toast_low_stock": "Some products are running low! Check the shopping list.",
   "toast_go_shopping": "Go to shopping list",
   "toast_close": "Close",
+  "close": "Close",
   "notify_success_title": "Success",
   "notify_error_title": "Error",
   "retry": "Retry",

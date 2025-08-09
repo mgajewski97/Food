@@ -349,10 +349,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     APP.editBackup = JSON.parse(JSON.stringify(APP.state.products));
     APP.state.editing = true;
     editBtn.textContent = t('edit_mode_button_off');
+    editBtn.setAttribute('aria-label', t('edit_mode_button_off'));
+    editBtn.setAttribute('aria-pressed', 'true');
     saveBtn.style.display = '';
+    saveBtn.setAttribute('aria-label', t('save_button'));
     deleteBtn.style.display = '';
     deleteBtn.disabled = true;
     deleteBtn.textContent = t('delete_selected_button');
+    deleteBtn.setAttribute('aria-label', t('delete_selected_button'));
     selectHeader.style.display = '';
     renderProducts();
   }
@@ -364,10 +368,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     APP.editBackup = null;
     APP.state.editing = false;
     editBtn.textContent = t('edit_mode_button_on');
+    editBtn.setAttribute('aria-label', t('edit_mode_button_on'));
+    editBtn.setAttribute('aria-pressed', 'false');
     saveBtn.style.display = 'none';
     deleteBtn.style.display = 'none';
     deleteBtn.disabled = true;
     deleteBtn.textContent = t('delete_selected_button');
+    deleteBtn.setAttribute('aria-label', t('delete_selected_button'));
     selectHeader.style.display = 'none';
     renderProducts();
   }
@@ -383,12 +390,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   const viewBtn = document.getElementById('view-toggle');
-  viewBtn?.addEventListener('click', () => {
-    if (APP.state.editing) exitEditMode(true);
-    APP.state.view = APP.state.view === 'flat' ? 'grouped' : 'flat';
-    viewBtn.textContent = APP.state.view === 'grouped' ? t('change_view_toggle_flat') : t('change_view_toggle_grouped');
-    renderProducts();
-  });
+  if (viewBtn) {
+    viewBtn.setAttribute('aria-pressed', APP.state.view === 'grouped' ? 'true' : 'false');
+    viewBtn.addEventListener('click', () => {
+      if (APP.state.editing) exitEditMode(true);
+      APP.state.view = APP.state.view === 'flat' ? 'grouped' : 'flat';
+      const label = APP.state.view === 'grouped' ? t('change_view_toggle_flat') : t('change_view_toggle_grouped');
+      viewBtn.textContent = label;
+      viewBtn.setAttribute('aria-label', label);
+      viewBtn.setAttribute('aria-pressed', APP.state.view === 'grouped' ? 'true' : 'false');
+      renderProducts();
+    });
+  }
   const filterSel = document.getElementById('state-filter');
   filterSel?.addEventListener('change', () => {
     APP.state.filter = filterSel.value;

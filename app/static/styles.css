@@ -395,7 +395,25 @@ html[data-layout="mobile"] .touch-btn {
 
 .owned-info {
   font-size: 0.75rem;
-  color: hsl(var(--bc) / 0.7);
+  color: hsl(var(--bc) / 0.8);
+}
+
+button:focus-visible,
+[role="button"]:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid hsl(var(--p));
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* JSON editor adjustments */

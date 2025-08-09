@@ -35,13 +35,13 @@
         <i class="fa-solid fa-gear"></i>
     </button>
 </div>
-<div id="notification-container" class="toast toast-end top-auto bottom-[4.5rem] z-40"></div>
+<div id="notification-container" class="toast toast-end top-auto bottom-[4.5rem] z-40" aria-live="polite"></div>
 <div class="max-w-screen-lg mx-auto px-4 py-6 main-container">
     <div class="tabs tabs-bordered flex-nowrap overflow-x-auto whitespace-nowrap mb-6 desktop-nav">
-        <a class="tab tab-active font-bold" data-tab-target="tab-products" data-i18n="tab_products">Produkty</a>
-        <a class="tab" data-tab-target="tab-recipes" data-i18n="tab_recipes">Przepisy</a>
-        <a class="tab" data-tab-target="tab-history" data-i18n="tab_history">Historia dań</a>
-        <a class="tab" data-tab-target="tab-shopping" data-i18n="tab_shopping">Lista zakupów</a>
+        <button class="tab tab-active font-bold" data-tab-target="tab-products" data-i18n="tab_products">Produkty</button>
+        <button class="tab" data-tab-target="tab-recipes" data-i18n="tab_recipes">Przepisy</button>
+        <button class="tab" data-tab-target="tab-history" data-i18n="tab_history">Historia dań</button>
+        <button class="tab" data-tab-target="tab-shopping" data-i18n="tab_shopping">Lista zakupów</button>
     </div>
         <div id="tab-products" class="tab-panel">
             <h1 class="text-2xl font-bold mb-4" data-i18n="heading_products">Produkty</h1>
@@ -55,10 +55,10 @@
                         <option value="all" data-i18n="state_filter_all">Wszystkie</option>
                     </select>
                 </div>
-                <button id="view-toggle" class="btn btn-outline btn-primary btn-sm" data-i18n="change_view_toggle_grouped">Widok z podziałem</button>
-                <button id="edit-toggle" class="btn btn-outline btn-warning btn-sm" data-i18n="edit_mode_button_on">Edytuj</button>
-                <button id="save-btn" style="display:none;" class="btn btn-success btn-sm" data-i18n="save_button">Zapisz</button>
-                <button id="delete-selected" style="display:none;" class="btn btn-error btn-sm" disabled data-i18n="delete_selected_button">Usuń zaznaczone</button>
+                <button id="view-toggle" class="btn btn-outline btn-primary btn-sm" data-i18n="change_view_toggle_grouped" data-i18n-aria-label="change_view_toggle_grouped" aria-pressed="false">Widok z podziałem</button>
+                <button id="edit-toggle" class="btn btn-outline btn-warning btn-sm" data-i18n="edit_mode_button_on" data-i18n-aria-label="edit_mode_button_on" aria-pressed="false">Edytuj</button>
+                <button id="save-btn" style="display:none;" class="btn btn-success btn-sm" data-i18n="save_button" data-i18n-aria-label="save_button">Zapisz</button>
+                <button id="delete-selected" style="display:none;" class="btn btn-error btn-sm" disabled data-i18n="delete_selected_button" data-i18n-aria-label="delete_selected_button">Usuń zaznaczone</button>
             </div>
             <div class="overflow-x-auto">
                 <table id="product-table" class="table table-zebra table-fixed w-full">
@@ -93,8 +93,8 @@
                     <p class="py-4" data-i18n="delete_modal_question">Czy na pewno chcesz usunąć zaznaczone produkty?</p>
                     <div id="delete-summary" class="space-y-1"></div>
                     <div class="modal-action">
-                        <button id="confirm-delete" class="btn btn-error btn-sm" data-i18n="delete_confirm_button">Usuń</button>
-                        <button id="cancel-delete" class="btn btn-outline btn-sm" data-i18n="delete_cancel_button">Anuluj</button>
+                        <button id="confirm-delete" class="btn btn-error btn-sm" data-i18n="delete_confirm_button" data-i18n-aria-label="delete_confirm_button">Usuń</button>
+                        <button id="cancel-delete" class="btn btn-outline btn-sm" data-i18n="delete_cancel_button" data-i18n-aria-label="delete_cancel_button">Anuluj</button>
                     </div>
                 </form>
             </dialog>
@@ -397,22 +397,22 @@
 
     </div>
     <nav class="mobile-nav fixed bottom-0 left-0 w-full z-50 bg-base-100 flex">
-        <a class="tab tab-active font-bold flex flex-col items-center justify-center flex-1 py-3 px-2 border-r border-base-300" data-tab-target="tab-products">
+        <button class="tab tab-active font-bold flex flex-col items-center justify-center flex-1 py-3 px-2 border-r border-base-300" data-tab-target="tab-products">
             <i class="fa-solid fa-box text-xl"></i>
             <span class="text-xs" data-i18n="tab_products">Produkty</span>
-        </a>
-        <a class="tab flex flex-col items-center justify-center flex-1 py-3 px-2 border-r border-base-300" data-tab-target="tab-recipes">
+        </button>
+        <button class="tab flex flex-col items-center justify-center flex-1 py-3 px-2 border-r border-base-300" data-tab-target="tab-recipes">
             <i class="fa-solid fa-utensils text-xl"></i>
             <span class="text-xs" data-i18n="tab_recipes">Przepisy</span>
-        </a>
-        <a class="tab flex flex-col items-center justify-center flex-1 py-3 px-2 border-r border-base-300" data-tab-target="tab-history">
+        </button>
+        <button class="tab flex flex-col items-center justify-center flex-1 py-3 px-2 border-r border-base-300" data-tab-target="tab-history">
             <i class="fa-solid fa-clock-rotate-left text-xl"></i>
             <span class="text-xs" data-i18n="tab_history">Historia dań</span>
-        </a>
-        <a class="tab flex flex-col items-center justify-center flex-1 py-3 px-2" data-tab-target="tab-shopping">
+        </button>
+        <button class="tab flex flex-col items-center justify-center flex-1 py-3 px-2" data-tab-target="tab-shopping">
             <i class="fa-solid fa-cart-shopping text-xl"></i>
             <span class="text-xs" data-i18n="tab_shopping">Lista zakupów</span>
-        </a>
+        </button>
     </nav>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.5/dist/tesseract.min.js"></script>
     <script type="module" src="{{ url_for('static', filename='script.js') }}"></script>

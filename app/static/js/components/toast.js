@@ -41,6 +41,7 @@ export function showNotification({ type = 'success', title = '', message = '', r
   }
   const close = document.createElement('button');
   close.className = 'btn btn-xs btn-circle btn-ghost absolute top-1 right-1';
+  close.setAttribute('aria-label', t('close'));
   close.innerHTML = '<i class="fa-regular fa-xmark"></i>';
   close.addEventListener('click', () => alert.remove());
   alert.appendChild(close);
@@ -78,6 +79,7 @@ export function showLowStockToast(activateTab, renderSuggestions, renderShopping
   close.className = 'btn btn-xs btn-circle btn-ghost absolute top-1 right-1';
   close.dataset.action = 'close';
   close.setAttribute('title', t('toast_close'));
+  close.setAttribute('aria-label', t('close'));
   close.innerHTML = '<i class="fa-regular fa-xmark"></i>';
   close.addEventListener('click', () => {
     alert.remove();
