@@ -73,7 +73,7 @@ export function t(key) {
 
 export function productName(key) {
   const translated = t(key);
-  return translated === key ? key.replace(/^product\./, '') : translated;
+  return translated;
 }
 
 export function unitName(key) {

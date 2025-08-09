@@ -161,54 +161,18 @@ def ocr_match():
 
 @app.route("/api/recipes")
 def recipes():
-    products = load_json(PRODUCTS_PATH, [], PRODUCTS_SCHEMA, normalize_product)
+    """Return all recipes with normalized ingredient structures.
 
-    # Build a set of available product keys, accepting both technical keys
-    # ("key"/"name_key") and human readable names.
-    product_keys = set()
-    for p in products:
-        key = p.get("key") or p.get("name_key") or p.get("name")
-        name = p.get("name")
-        if key:
-            product_keys.add(key)
-        if name and name != key:
-            product_keys.add(name)
+    Older iterations of the backend attempted to filter out recipes whose
+    ingredients were not present in ``products.json``. This proved too strict
+    and resulted in an empty recipe list whenever the pantry data was out of
+    sync with the recipes file.  The front-end expects the raw recipe dataset
+    and performs its own availability checks if needed, therefore we simply
+    load and normalize the recipes here.
+    """
 
     recipes = load_json(RECIPES_PATH, [], RECIPES_SCHEMA, normalize_recipe)
-    available = []
-    for r in recipes:
-        ingredients = r.get("ingredients", [])
-        recipe_ok = True
-        normalized_ings = []
-        for ing in ingredients:
-            if isinstance(ing, str):
-                product_key = ing
-                normalized_ings.append({"product": ing})
-            elif isinstance(ing, dict):
-                product_key = ing.get("product")
-                normalized_ings.append(
-                    {
-                        "product": product_key,
-                        "quantity": ing.get("quantity"),
-                        "unit": ing.get("unit"),
-                    }
-                )
-            else:
-                product_key = None
-
-            if not product_key:
-                app.logger.warning("Malformed ingredient entry: %r", ing)
-                recipe_ok = False
-                break
-            if product_key not in product_keys:
-                recipe_ok = False
-                break
-        if recipe_ok:
-            recipe_copy = dict(r)
-            recipe_copy["ingredients"] = normalized_ings
-            available.append(recipe_copy)
-
-    return jsonify(available)
+    return jsonify(recipes)
 
 
 @app.route("/api/history", methods=["GET", "POST"])
