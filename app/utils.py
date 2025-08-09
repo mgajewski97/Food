@@ -88,17 +88,45 @@ def _validate(
 def normalize_product(data: Dict[str, Any]) -> Dict[str, Any]:
     """Return product dict with defaults and sanitized numeric fields."""
     pack = data.get("pack_size")
+    category = data.get("category", "uncategorized")
+    is_spice = data.get("is_spice") is True or category == "spices"
+    quantity = _safe_float(data.get("quantity", 0))
+    level = data.get("level")
+    if is_spice:
+        if level not in {"none", "low", "medium", "high"}:
+            if quantity <= 0:
+                level = "none"
+            elif quantity == 1:
+                level = "low"
+            else:
+                level = "medium"
+        return {
+            "name": data.get("name"),
+            "quantity": 0,
+            "unit": data.get("unit", DEFAULT_UNIT),
+            "category": "spices",
+            "storage": data.get("storage", "pantry"),
+            "threshold": 1,
+            "main": True,
+            "package_size": _safe_float(data.get("package_size", 1), 1),
+            "pack_size": _safe_float(pack) if pack is not None else None,
+            "tags": [str(t) for t in data.get("tags", []) if isinstance(t, str)],
+            "level": level,
+            "is_spice": True,
+        }
     return {
         "name": data.get("name"),
-        "quantity": _safe_float(data.get("quantity", 0)),
+        "quantity": quantity,
         "unit": data.get("unit", DEFAULT_UNIT),
-        "category": data.get("category", "uncategorized"),
+        "category": category,
         "storage": data.get("storage", "pantry"),
         "threshold": _safe_float(data.get("threshold", 1), 1) or 1,
         "main": bool(data.get("main", True)),
         "package_size": _safe_float(data.get("package_size", 1), 1),
         "pack_size": _safe_float(pack) if pack is not None else None,
         "tags": [str(t) for t in data.get("tags", []) if isinstance(t, str)],
+        "level": level if level in {"none", "low", "medium", "high"} else None,
+        "is_spice": False,
     }
 
 

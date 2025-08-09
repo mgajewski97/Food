@@ -1,4 +1,4 @@
-import { t, state } from '../helpers.js';
+import { t, state, isSpice } from '../helpers.js';
 
 // CHANGELOG:
 // - Added optional retry button to ``showNotification`` for non-blocking error toasts.
@@ -90,7 +90,10 @@ export function showLowStockToast(activateTab, renderSuggestions, renderShopping
 }
 
 export function checkLowStockToast(currentProducts, activateTab, renderSuggestions, renderShoppingList) {
-  const low = (currentProducts || []).some(p => p.main && p.threshold !== null && p.quantity <= p.threshold);
+  const low = (currentProducts || []).some(p => {
+    if (isSpice(p)) return ['none', 'low'].includes(p.level);
+    return p.main && p.threshold !== null && p.quantity <= p.threshold;
+  });
   const container = document.getElementById('notification-container');
   const toast = container ? container.querySelector('[data-toast="low-stock"]') : null;
   if (low) {

@@ -5,11 +5,13 @@ import {
   getStatusIcon,
   STORAGE_ICONS,
   CATEGORY_KEYS,
+  CATEGORY_ORDER,
   STORAGE_KEYS,
   matchesFilter,
   stockLevel,
   normalizeProduct,
-  fetchJson
+  fetchJson,
+  isSpice
 } from '../helpers.js';
 import { showToast } from './toast.js';
 
@@ -195,6 +197,31 @@ function adjustRow(tr, delta) {
 function buildQtyCell(p, tr) {
   const td = document.createElement('td');
   td.className = 'qty-cell';
+  if (isSpice(p)) {
+    const wrap = document.createElement('div');
+    wrap.className = 'flex gap-2';
+    ['none', 'low', 'medium', 'high'].forEach(l => {
+      const label = document.createElement('label');
+      label.className = 'cursor-pointer flex items-center gap-1';
+      const input = document.createElement('input');
+      input.type = 'radio';
+      input.name = `level-${p.name}`;
+      input.value = l;
+      if (p.level === l) input.checked = true;
+      input.addEventListener('change', () => {
+        p.level = l;
+        highlightRow(tr, p);
+      });
+      const span = document.createElement('span');
+      span.dataset.i18n = `level.${l}`;
+      span.textContent = t(`level.${l}`);
+      label.appendChild(input);
+      label.appendChild(span);
+      wrap.appendChild(label);
+    });
+    td.appendChild(wrap);
+    return td;
+  }
   const wrap = document.createElement('div');
   wrap.className = 'qty-wrap';
   const dec = document.createElement('button');
@@ -273,16 +300,20 @@ function createFlatRow(p, idx, editable) {
     // unit select
     const unitTd = document.createElement('td');
     unitTd.className = 'unit-cell';
-    const unitSel = document.createElement('select');
-    unitSel.className = 'select select-bordered w-full';
-    Object.keys(state.units).forEach(u => {
-      const opt = document.createElement('option');
-      opt.value = u;
-      opt.textContent = t(u);
-      if (u === p.unit) opt.selected = true;
-      unitSel.appendChild(opt);
-    });
-    unitTd.appendChild(unitSel);
+    if (isSpice(p)) {
+      unitTd.textContent = '';
+    } else {
+      const unitSel = document.createElement('select');
+      unitSel.className = 'select select-bordered w-full';
+      Object.keys(state.units).forEach(u => {
+        const opt = document.createElement('option');
+        opt.value = u;
+        opt.textContent = t(u);
+        if (u === p.unit) opt.selected = true;
+        unitSel.appendChild(opt);
+      });
+      unitTd.appendChild(unitSel);
+    }
     tr.appendChild(unitTd);
     // category select
     const catTd = document.createElement('td');
@@ -329,7 +360,7 @@ function createFlatRow(p, idx, editable) {
     qtyTd.textContent = formatPackQuantity(p);
     tr.appendChild(qtyTd);
     const unitTd = document.createElement('td');
-    unitTd.textContent = t(p.unit);
+    unitTd.textContent = isSpice(p) ? '' : t(p.unit);
     tr.appendChild(unitTd);
     const catTd = document.createElement('td');
     catTd.textContent = t(CATEGORY_KEYS[p.category] || p.category);
@@ -420,7 +451,7 @@ export function renderProducts() {
         block.appendChild(header);
 
         Object.keys(storages[stor])
-          .sort((a, b) => t(CATEGORY_KEYS[a] || a).localeCompare(t(CATEGORY_KEYS[b] || b)))
+          .sort((a, b) => (CATEGORY_ORDER[a] || 0) - (CATEGORY_ORDER[b] || 0) || t(CATEGORY_KEYS[a] || a).localeCompare(t(CATEGORY_KEYS[b] || b)))
           .forEach(cat => {
           const catBlock = document.createElement('div');
           catBlock.className = 'category-section category-block';

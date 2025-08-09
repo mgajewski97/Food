@@ -1,4 +1,4 @@
-import { loadTranslations, loadUnits, loadFavorites, state, t, normalizeProduct, applyTranslations, fetchJson } from './js/helpers.js';
+import { loadTranslations, loadUnits, loadFavorites, state, t, normalizeProduct, applyTranslations, fetchJson, isSpice } from './js/helpers.js';
 import { renderProducts, refreshProducts } from './js/components/product-table.js';
 import { renderRecipes, loadRecipes } from './js/components/recipe-list.js';
 import { renderShoppingList, addToShoppingList, renderSuggestions } from './js/components/shopping-list.js';
@@ -177,6 +177,24 @@ function initAddForm() {
   });
   qtyInput.insertAdjacentElement('afterend', unitSel);
 
+  const levelWrap = document.createElement('div');
+  levelWrap.className = 'flex gap-2 hidden';
+  ['none', 'low', 'medium', 'high'].forEach(l => {
+    const label = document.createElement('label');
+    label.className = 'cursor-pointer flex items-center gap-1';
+    const input = document.createElement('input');
+    input.type = 'radio';
+    input.name = 'level';
+    input.value = l;
+    if (l === 'high') input.checked = true;
+    const span = document.createElement('span');
+    span.dataset.i18n = `level.${l}`;
+    span.textContent = t(`level.${l}`);
+    label.append(input, span);
+    levelWrap.appendChild(label);
+  });
+  unitSel.insertAdjacentElement('afterend', levelWrap);
+
   nameInput.classList.add('add-name');
   qtyInput.classList.add('add-qty', 'no-spinner');
   unitSel.classList.add('add-unit');
@@ -188,19 +206,38 @@ function initAddForm() {
   }
   submitBtn.classList.add('add-submit');
 
+  function syncSpiceUI() {
+    const isSp = catSelect.value === 'spices';
+    qtyInput.classList.toggle('hidden', isSp);
+    unitSel.classList.toggle('hidden', isSp);
+    levelWrap.classList.toggle('hidden', !isSp);
+    if (mainLabel) mainLabel.classList.toggle('hidden', isSp);
+  }
+  catSelect.addEventListener('change', syncSpiceUI);
+  syncSpiceUI();
+
   form.addEventListener('submit', async e => {
     e.preventDefault();
     const data = new FormData(form);
+    const category = data.get('category');
     const payload = {
       name: (data.get('name') || '').trim(),
-      quantity: parseFloat(data.get('quantity')) || 0,
-      unit: data.get('unit'),
-      category: data.get('category'),
-      storage: data.get('storage'),
-      main: data.get('main') === 'on'
+      category,
+      storage: data.get('storage')
     };
-    const thr = parseFloat(data.get('threshold'));
-    if (!isNaN(thr)) payload.threshold = thr;
+    if (category === 'spices') {
+      payload.level = data.get('level') || 'none';
+      payload.is_spice = true;
+      payload.main = true;
+      payload.quantity = 0;
+      payload.unit = 'szt';
+    } else {
+      payload.quantity = parseFloat(data.get('quantity')) || 0;
+      payload.unit = data.get('unit');
+      payload.main = data.get('main') === 'on';
+      const thr = parseFloat(data.get('threshold'));
+      if (!isNaN(thr)) payload.threshold = thr;
+    }
     submitBtn.disabled = true;
     try {
       await fetchJson('/api/products', { method: 'POST', body: payload });
@@ -224,11 +261,17 @@ async function saveEdits() {
     const idx = Number(r.dataset.index);
     const orig = APP.editBackup?.[idx];
     if (!orig) return;
-    const qty = parseFloat(r.querySelector('.qty-cell input')?.value) || orig.quantity;
+    const level = r.querySelector('.qty-cell input[type="radio"]:checked')?.value || orig.level;
+    const qtyInput = r.querySelector('.qty-cell input[type="number"]');
+    const qty = qtyInput ? parseFloat(qtyInput.value) || 0 : 0;
     const unit = r.querySelector('.unit-cell select')?.value || orig.unit;
     const cat = r.querySelector('.category-cell select')?.value || orig.category;
     const stor = r.querySelector('.storage-cell select')?.value || orig.storage;
-    if (qty !== orig.quantity || unit !== orig.unit || cat !== orig.category || stor !== orig.storage) {
+    if (isSpice(orig)) {
+      if (level !== orig.level || cat !== orig.category || stor !== orig.storage) {
+        updates.push({ ...orig, level, category: cat, storage: stor });
+      }
+    } else if (qty !== orig.quantity || unit !== orig.unit || cat !== orig.category || stor !== orig.storage) {
       updates.push({ ...orig, quantity: qty, unit, category: cat, storage: stor });
     }
   });
