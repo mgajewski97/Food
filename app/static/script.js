@@ -2,7 +2,7 @@ import { loadTranslations, loadUnits, loadFavorites, state, t, normalizeProduct,
 import { renderProducts, refreshProducts } from './js/components/product-table.js';
 import { renderRecipes, loadRecipes } from './js/components/recipe-list.js';
 import { renderShoppingList, addToShoppingList, renderSuggestions } from './js/components/shopping-list.js';
-import { showNotification, checkLowStockToast } from './js/components/toast.js';
+import { toast, showNotification, checkLowStockToast } from './js/components/toast.js';
 import { initReceiptImport } from './js/components/ocr-modal.js';
 
 // CHANGELOG:
@@ -249,8 +249,23 @@ function initAddForm() {
     try {
       await fetchJson('/api/products', { method: 'POST', body: payload });
       await fetchProducts();
+      renderProducts();
+      renderShoppingList();
       form.reset();
-      document.getElementById('product-search')?.focus();
+      syncSpiceUI();
+      nameInput.focus();
+      const container = document.getElementById('notification-container');
+      if (container) {
+        container.classList.remove('toast-end', 'top-auto', 'bottom-[4.5rem]');
+        container.classList.add('toast-center', 'top-[4.5rem]', 'bottom-auto');
+      }
+      toast.success(t('product_added'));
+      setTimeout(() => {
+        if (container) {
+          container.classList.remove('toast-center', 'top-[4.5rem]', 'bottom-auto');
+          container.classList.add('toast-end', 'top-auto', 'bottom-[4.5rem]');
+        }
+      }, 5000);
     } catch (err) {
       showNotification({ type: 'error', title: t('save_failed'), message: err.status || err.message });
     } finally {
