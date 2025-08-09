@@ -332,6 +332,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderRecipes();
     renderShoppingList();
     renderSuggestions();
+    updateAriaLabels();
     const unitSel = document.querySelector('#add-form select[name="unit"]');
     if (unitSel) {
       Array.from(unitSel.options).forEach(opt => {
@@ -355,6 +356,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     deleteBtn.textContent = t('delete_selected_button');
     selectHeader.style.display = '';
     renderProducts();
+    updateAriaLabels();
   }
 
   function exitEditMode(discard) {
@@ -370,6 +372,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     deleteBtn.textContent = t('delete_selected_button');
     selectHeader.style.display = 'none';
     renderProducts();
+    updateAriaLabels();
   }
 
   editBtn?.addEventListener('click', () => {
@@ -388,6 +391,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     APP.state.view = APP.state.view === 'flat' ? 'grouped' : 'flat';
     viewBtn.textContent = APP.state.view === 'grouped' ? t('change_view_toggle_flat') : t('change_view_toggle_grouped');
     renderProducts();
+    updateAriaLabels();
   });
   const filterSel = document.getElementById('state-filter');
   filterSel?.addEventListener('change', () => {
@@ -409,4 +413,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     a.click();
     URL.revokeObjectURL(url);
   });
+
+  function updateAriaLabels() {
+    viewBtn?.setAttribute('aria-label', t(APP.state.view === 'grouped' ? 'change_view_toggle_flat' : 'change_view_toggle_grouped'));
+    viewBtn?.setAttribute('aria-pressed', APP.state.view === 'grouped');
+    editBtn?.setAttribute('aria-label', t(APP.state.editing ? 'edit_mode_button_off' : 'edit_mode_button_on'));
+    editBtn?.setAttribute('aria-pressed', APP.state.editing);
+    saveBtn?.setAttribute('aria-label', t('save_button'));
+    deleteBtn?.setAttribute('aria-label', t('delete_selected_button'));
+    document.getElementById('confirm-delete')?.setAttribute('aria-label', t('delete_confirm_button'));
+    document.getElementById('cancel-delete')?.setAttribute('aria-label', t('delete_cancel_button'));
+    document.getElementById('confirm-remove-item')?.setAttribute('aria-label', t('confirm_button'));
+    document.querySelector('#shopping-delete-modal .btn-outline')?.setAttribute('aria-label', t('delete_cancel_button'));
+    document.getElementById('history-detail-close')?.setAttribute('aria-label', t('close'));
+  }
+
+  updateAriaLabels();
 });

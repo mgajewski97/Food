@@ -35,7 +35,7 @@
         <i class="fa-solid fa-gear"></i>
     </button>
 </div>
-<div id="notification-container" class="toast toast-end top-auto bottom-[4.5rem] z-40"></div>
+<div id="notification-container" class="toast toast-end top-auto bottom-[4.5rem] z-40" aria-live="polite"></div>
 <div class="max-w-screen-lg mx-auto px-4 py-6 main-container">
     <div class="tabs tabs-bordered flex-nowrap overflow-x-auto whitespace-nowrap mb-6 desktop-nav">
         <a class="tab tab-active font-bold" data-tab-target="tab-products" data-i18n="tab_products">Produkty</a>
@@ -55,10 +55,10 @@
                         <option value="all" data-i18n="state_filter_all">Wszystkie</option>
                     </select>
                 </div>
-                <button id="view-toggle" class="btn btn-outline btn-primary btn-sm" data-i18n="change_view_toggle_grouped">Widok z podziałem</button>
-                <button id="edit-toggle" class="btn btn-outline btn-warning btn-sm" data-i18n="edit_mode_button_on">Edytuj</button>
-                <button id="save-btn" style="display:none;" class="btn btn-success btn-sm" data-i18n="save_button">Zapisz</button>
-                <button id="delete-selected" style="display:none;" class="btn btn-error btn-sm" disabled data-i18n="delete_selected_button">Usuń zaznaczone</button>
+                <button id="view-toggle" class="btn btn-outline btn-primary btn-sm" role="switch" aria-pressed="false" aria-label="Widok z podziałem" data-i18n="change_view_toggle_grouped">Widok z podziałem</button>
+                <button id="edit-toggle" class="btn btn-outline btn-warning btn-sm" role="switch" aria-pressed="false" aria-label="Edytuj" data-i18n="edit_mode_button_on">Edytuj</button>
+                <button id="save-btn" style="display:none;" class="btn btn-success btn-sm" aria-label="Zapisz" data-i18n="save_button">Zapisz</button>
+                <button id="delete-selected" style="display:none;" class="btn btn-error btn-sm" disabled aria-label="Usuń zaznaczone" data-i18n="delete_selected_button">Usuń zaznaczone</button>
             </div>
             <div class="overflow-x-auto">
                 <table id="product-table" class="table table-zebra table-fixed w-full">
@@ -93,8 +93,8 @@
                     <p class="py-4" data-i18n="delete_modal_question">Czy na pewno chcesz usunąć zaznaczone produkty?</p>
                     <div id="delete-summary" class="space-y-1"></div>
                     <div class="modal-action">
-                        <button id="confirm-delete" class="btn btn-error btn-sm" data-i18n="delete_confirm_button">Usuń</button>
-                        <button id="cancel-delete" class="btn btn-outline btn-sm" data-i18n="delete_cancel_button">Anuluj</button>
+                        <button id="confirm-delete" class="btn btn-error btn-sm" data-i18n="delete_confirm_button" aria-label="Usuń">Usuń</button>
+                        <button id="cancel-delete" class="btn btn-outline btn-sm" data-i18n="delete_cancel_button" aria-label="Anuluj">Anuluj</button>
                     </div>
                 </form>
             </dialog>
@@ -264,7 +264,7 @@
                         </div>
                     </div>
                     <div class="modal-action">
-                        <button id="history-detail-close" class="btn btn-sm" data-i18n="toast_close" aria-label="Close">Zamknij</button>
+                        <button id="history-detail-close" class="btn btn-sm" data-i18n="close" aria-label="Zamknij">Zamknij</button>
                     </div>
                 </div>
             </dialog>
@@ -365,8 +365,8 @@
                     <h3 class="font-bold text-lg" data-i18n="delete_modal_title">Potwierdź usunięcie</h3>
                     <p class="py-4" data-i18n="delete_item_question">Czy na pewno chcesz usunąć ten produkt?</p>
                     <div class="modal-action">
-                        <button id="confirm-remove-item" class="btn btn-error btn-sm" data-i18n="confirm_button">Potwierdź</button>
-                        <button class="btn btn-outline btn-sm" data-i18n="delete_cancel_button">Anuluj</button>
+                        <button id="confirm-remove-item" class="btn btn-error btn-sm" data-i18n="confirm_button" aria-label="Potwierdź">Potwierdź</button>
+                        <button class="btn btn-outline btn-sm" data-i18n="delete_cancel_button" aria-label="Anuluj">Anuluj</button>
                     </div>
                 </form>
             </dialog>
