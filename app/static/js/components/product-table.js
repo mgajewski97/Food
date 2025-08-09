@@ -8,6 +8,12 @@ function highlightRow(tr, p) {
   if (level === 'none') tr.classList.add('product-missing');
 }
 
+function adjustRow(input, product, delta) {
+  const newVal = Math.max(0, (parseFloat(input.value) || 0) + delta);
+  input.value = newVal;
+  product.quantity = newVal;
+}
+
 function createFlatRow(p, idx, editable) {
   const tr = document.createElement('tr');
   tr.dataset.index = idx;
@@ -29,33 +35,22 @@ function createFlatRow(p, idx, editable) {
     // quantity with steppers
     const qtyTd = document.createElement('td');
     qtyTd.className = 'qty-cell';
-    const wrap = document.createElement('div');
-    wrap.className = 'quantity-control flex items-center gap-2 h-10';
-    const minus = document.createElement('button');
-    minus.type = 'button';
-    minus.innerHTML = '<i class="fa-solid fa-minus"></i>';
-    minus.className = 'touch-btn';
-    const input = document.createElement('input');
-    input.type = 'number';
-    input.className = 'input input-bordered w-12 h-10 text-center no-spinner';
+    qtyTd.innerHTML = `
+      <div class="qty-wrap">
+        <button type="button" class="btn-qty qty-dec">−</button>
+        <input class="qty-input" type="number" step="1" inputmode="numeric" />
+        <button type="button" class="btn-qty qty-inc">+</button>
+      </div>
+    `;
+    const input = qtyTd.querySelector('.qty-input');
+    const dec = qtyTd.querySelector('.qty-dec');
+    const inc = qtyTd.querySelector('.qty-inc');
     input.value = p.quantity;
-    const plus = document.createElement('button');
-    plus.type = 'button';
-    plus.innerHTML = '<i class="fa-solid fa-plus"></i>';
-    plus.className = 'touch-btn';
-    minus.addEventListener('click', () => {
-      input.value = Math.max(0, (parseFloat(input.value) || 0) - 1);
-      p.quantity = parseFloat(input.value) || 0;
-    });
-    plus.addEventListener('click', () => {
-      input.value = (parseFloat(input.value) || 0) + 1;
-      p.quantity = parseFloat(input.value) || 0;
-    });
+    dec.addEventListener('click', () => adjustRow(input, p, -1));
+    inc.addEventListener('click', () => adjustRow(input, p, 1));
     input.addEventListener('change', () => {
       p.quantity = parseFloat(input.value) || 0;
     });
-    wrap.append(minus, input, plus);
-    qtyTd.appendChild(wrap);
     tr.appendChild(qtyTd);
     // unit select
     const unitTd = document.createElement('td');
