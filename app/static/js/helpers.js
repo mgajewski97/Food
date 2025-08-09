@@ -1,6 +1,6 @@
 // CHANGELOG:
 // - Added normalization helpers and spice detector.
-// - Guaranteed translation fallback returns key when missing.
+// - Single translation helper with English fallback.
 
 export const CATEGORY_KEYS = {
   uncategorized: 'category_uncategorized',
@@ -64,11 +64,13 @@ export function t(key) {
   if (key.startsWith('product.')) {
     const k = key.slice('product.'.length);
     const entry = state.translations.products[k];
-    return (entry && entry[state.currentLang]) || key;
+    return entry?.[state.currentLang] ?? entry?.en ?? key;
   }
   const unit = state.units[key];
-  if (unit && unit[state.currentLang]) return unit[state.currentLang];
-  return state.uiTranslations[state.currentLang][key] || key;
+  if (unit) {
+    return unit[state.currentLang] ?? unit.en ?? key;
+  }
+  return state.uiTranslations[state.currentLang]?.[key] ?? state.uiTranslations.en?.[key] ?? key;
 }
 
 export function productName(key) {
@@ -91,6 +93,18 @@ export function storageName(key) {
   const tKey = STORAGE_KEYS[key] || key;
   const translated = t(tKey);
   return translated === tKey ? key : translated;
+}
+
+export function applyTranslations() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const txt = t(key);
+    if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
+      if (el.placeholder !== undefined) el.placeholder = txt;
+    } else {
+      el.textContent = txt;
+    }
+  });
 }
 
 export function parseTimeToMinutes(value) {
@@ -151,11 +165,13 @@ export async function loadTranslations() {
     state.uiTranslations.pl = pl;
     state.uiTranslations.en = en;
     state.translations.products = {};
-    Object.entries(pl).forEach(([k, v]) => {
+    const keys = new Set([...Object.keys(pl), ...Object.keys(en)]);
+    keys.forEach(k => {
       if (k.startsWith('product.')) {
-        const key = k.slice('product.'.length);
-        state.translations.products[key] = { pl: v };
-        if (en[k]) state.translations.products[key].en = en[k];
+        const id = k.slice('product.'.length);
+        state.translations.products[id] = {};
+        if (pl[k]) state.translations.products[id].pl = pl[k];
+        if (en[k]) state.translations.products[id].en = en[k];
       }
     });
   } catch (err) {

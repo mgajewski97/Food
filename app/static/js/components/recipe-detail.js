@@ -1,6 +1,4 @@
-import { state } from '../helpers.js';
-
-function t(key){ return window.t?.(key) ?? key; }
+import { state, t } from '../helpers.js';
 
 export function renderRecipeDetail(r){
   const favIcon = state.favoriteRecipes.has(r.name)
@@ -14,7 +12,7 @@ export function renderRecipeDetail(r){
     </div>
   `;
   const ing = (r.ingredients||[]).map(i=>{
-    const nameTr = window.t?.(i.product);
+    const nameTr = t(i.product);
     const name = nameTr && nameTr.trim() !== '' ? nameTr : i.product;
     const qty  = (i.quantity ?? '').toString();
     const unit = t(i.unit ?? '');

@@ -1,4 +1,4 @@
-import { loadTranslations, loadUnits, loadFavorites, state, t, normalizeProduct, unitName } from './js/helpers.js';
+import { loadTranslations, loadUnits, loadFavorites, state, t, normalizeProduct, unitName, applyTranslations } from './js/helpers.js';
 import { renderProducts } from './js/components/product-table.js';
 import { renderRecipes, loadRecipes } from './js/components/recipe-list.js';
 import { renderShoppingList, addToShoppingList, renderSuggestions } from './js/components/shopping-list.js';
@@ -245,6 +245,8 @@ async function saveEdits() {
 document.addEventListener('DOMContentLoaded', async () => {
   await loadTranslations();
   await loadUnits();
+  applyTranslations();
+  document.documentElement.setAttribute('lang', state.currentLang);
   mountNavigation();
   await loadFavorites();
   renderShoppingList();
@@ -254,6 +256,22 @@ document.addEventListener('DOMContentLoaded', async () => {
   fetchRecipes();
   fetchHistory();
   initAddForm();
+
+  const langBtn = document.getElementById('lang-toggle');
+  langBtn.textContent = state.currentLang.toUpperCase();
+  langBtn.addEventListener('click', () => {
+    const scroll = window.scrollY;
+    state.currentLang = state.currentLang === 'pl' ? 'en' : 'pl';
+    localStorage.setItem('lang', state.currentLang);
+    langBtn.textContent = state.currentLang.toUpperCase();
+    document.documentElement.setAttribute('lang', state.currentLang);
+    applyTranslations();
+    renderProducts();
+    renderRecipes();
+    renderShoppingList();
+    renderSuggestions();
+    window.scrollTo(0, scroll);
+  });
 
   const editBtn = document.getElementById('edit-toggle');
   const saveBtn = document.getElementById('save-btn');
