@@ -2,6 +2,22 @@ import { t, state, productName, unitName, categoryName, storageName, formatPackQ
 
 const APP = (window.APP = window.APP || {});
 
+const deleteBtn = document.getElementById('delete-selected');
+function updateDeleteButton() {
+  const selected = document.querySelectorAll('input.row-select:checked').length;
+  const label = t('delete_selected_button');
+  deleteBtn.disabled = selected === 0;
+  deleteBtn.textContent = selected > 0 ? `${label} (${selected})` : label;
+}
+
+document.addEventListener('change', e => {
+  if (e.target.matches('input.row-select')) updateDeleteButton();
+});
+
+document.addEventListener('click', e => {
+  if (e.target.id === 'edit-toggle') updateDeleteButton();
+});
+
 function highlightRow(tr, p) {
   const level = stockLevel(p);
   if (level === 'low') tr.classList.add('product-low');
@@ -17,7 +33,7 @@ function createFlatRow(p, idx, editable) {
     cbTd.className = 'checkbox-cell';
     const cb = document.createElement('input');
     cb.type = 'checkbox';
-    cb.className = 'checkbox checkbox-sm product-select';
+    cb.className = 'checkbox checkbox-sm row-select';
     cb.dataset.name = p.name;
     cbTd.appendChild(cb);
     tr.appendChild(cbTd);
@@ -306,4 +322,5 @@ export function renderProducts() {
       });
     attachCollapses(list);
   }
+  updateDeleteButton();
 }
