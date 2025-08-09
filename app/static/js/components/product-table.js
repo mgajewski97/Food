@@ -199,13 +199,19 @@ function buildQtyCell(p, tr) {
   dec.className = 'btn-qty qty-dec';
   dec.textContent = '−';
   const input = document.createElement('input');
-  input.className = 'qty-input';
+  input.className = 'qty-input no-spinner';
   input.type = 'number';
   input.step = '1';
   input.inputMode = 'numeric';
+  input.min = '0';
   input.value = p.quantity;
+  input.addEventListener('input', () => {
+    if (input.value !== '' && parseFloat(input.value) < 0) input.value = '0';
+  });
   input.addEventListener('change', () => {
-    p.quantity = parseFloat(input.value) || 0;
+    const val = Math.max(0, parseFloat(input.value) || 0);
+    p.quantity = val;
+    input.value = val;
     highlightRow(tr, p);
   });
   const inc = document.createElement('button');
