@@ -1,4 +1,5 @@
-import { t, state, isSpice, stockLevel, fetchJson } from '../helpers.js';
+import { t, state, isSpice, stockLevel, fetchJson, debounce } from '../helpers.js';
+import { showToast } from './toast.js';
 
 function saveShoppingList() {
   localStorage.setItem('shoppingList', JSON.stringify(state.shoppingList));
@@ -13,13 +14,13 @@ export function addToShoppingList(name, quantity = 1) {
     state.shoppingList.push({ name, quantity, inCart: false });
   }
   saveShoppingList();
-  renderShoppingList();
+  scheduleRender();
 }
 
 export function renderShoppingList() {
   const list = document.getElementById('shopping-list');
   if (!list) return;
-  list.innerHTML = '';
+  const frag = document.createDocumentFragment();
   state.shoppingList.sort((a, b) => {
     if (a.inCart && b.inCart) return (a.cartTime || 0) - (b.cartTime || 0);
     if (a.inCart !== b.inCart) return a.inCart ? 1 : -1;
@@ -102,6 +103,9 @@ export function renderShoppingList() {
     cartBtn.setAttribute('aria-label', t('in_cart'));
     cartBtn.setAttribute('title', t('in_cart'));
     cartBtn.addEventListener('click', async () => {
+      cartBtn.disabled = true;
+      const prev = cartBtn.innerHTML;
+      cartBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
       item.inCart = !item.inCart;
       if (item.inCart) {
         item.cartTime = Date.now();
@@ -110,14 +114,25 @@ export function renderShoppingList() {
             await fetchJson('/api/products', { method: 'POST', body: { ...stock, level: 'high', quantity: 0 } });
             stock.level = 'high';
           } catch (e) {
-            // ignore
+            showToast(t('notify_error_title'), 'error');
           }
         }
       } else {
         delete item.cartTime;
       }
       saveShoppingList();
-      renderShoppingList();
+      cartBtn.disabled = false;
+      cartBtn.innerHTML = prev;
+      cartBtn.classList.toggle('text-primary', item.inCart);
+      [qtyInput, inc, dec].forEach(el => (el.disabled = item.inCart));
+      nameEl.classList.toggle('line-through', item.inCart);
+      row.classList.toggle('in-cart', item.inCart);
+      if (item.inCart) {
+        list.appendChild(row);
+      } else {
+        const first = list.querySelector('.in-cart');
+        list.insertBefore(row, first);
+      }
     });
     actions.appendChild(cartBtn);
 
@@ -135,14 +150,20 @@ export function renderShoppingList() {
     actions.appendChild(delBtn);
     row.appendChild(actions);
 
-    list.appendChild(row);
+    frag.appendChild(row);
+  });
+  requestAnimationFrame(() => {
+    list.innerHTML = '';
+    list.appendChild(frag);
   });
 }
+
+const scheduleRender = debounce(renderShoppingList, 50);
 
 export function renderSuggestions() {
   const container = document.getElementById('suggestion-list');
   if (!container) return;
-  container.innerHTML = '';
+  const frag = document.createDocumentFragment();
   const products = window.APP?.state?.products || [];
   const suggestions = products
     .filter(p => {
@@ -233,7 +254,11 @@ export function renderSuggestions() {
     actions.append(accept, reject);
     row.appendChild(actions);
 
-    container.appendChild(row);
+    frag.appendChild(row);
+  });
+  requestAnimationFrame(() => {
+    container.innerHTML = '';
+    container.appendChild(frag);
   });
 }
 
@@ -243,6 +268,6 @@ document.getElementById('confirm-remove-item')?.addEventListener('click', () => 
     state.shoppingList.splice(state.pendingRemoveIndex, 1);
     state.pendingRemoveIndex = null;
     saveShoppingList();
-    renderShoppingList();
+    scheduleRender();
   }
 });

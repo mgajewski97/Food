@@ -290,3 +290,36 @@ export function matchesFilter(p = {}, filter = 'all') {
       return true;
   }
 }
+export function debounce(fn, delay = 200) {
+  let timer;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delay);
+  };
+}
+
+export function throttle(fn, limit = 200) {
+  let inThrottle, lastFn, lastTime;
+  return function (...args) {
+    const context = this;
+    if (!inThrottle) {
+      fn.apply(context, args);
+      lastTime = Date.now();
+      inThrottle = true;
+    } else {
+      clearTimeout(lastFn);
+      lastFn = setTimeout(() => {
+        if (Date.now() - lastTime >= limit) {
+          fn.apply(context, args);
+          lastTime = Date.now();
+        }
+      }, Math.max(limit - (Date.now() - lastTime), 0));
+    }
+  };
+}
+
+export function withRaf(fn) {
+  return function (...args) {
+    requestAnimationFrame(() => fn.apply(this, args));
+  };
+}

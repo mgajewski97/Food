@@ -11,7 +11,9 @@ import {
   stockLevel,
   normalizeProduct,
   fetchJson,
-  isSpice
+  isSpice,
+  debounce,
+  withRaf
 } from '../helpers.js';
 import { showToast } from './toast.js';
 
@@ -55,6 +57,11 @@ deleteBtn?.addEventListener('click', () => {
 
 confirmDeleteBtn?.addEventListener('click', async e => {
   e.preventDefault();
+  const btn = confirmDeleteBtn;
+  if (!btn) return;
+  btn.disabled = true;
+  const prev = btn.innerHTML;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
   const selected = Array.from(document.querySelectorAll('input.row-select:checked'));
   const names = selected.map(cb => cb.dataset.name);
   try {
@@ -65,6 +72,8 @@ confirmDeleteBtn?.addEventListener('click', async e => {
   } catch (err) {
     showToast(t('notify_error_title'), 'error');
   } finally {
+    btn.disabled = false;
+    btn.innerHTML = prev;
     deleteModal.close();
     updateDeleteButton();
   }
@@ -240,9 +249,12 @@ function buildQtyCell(p, tr) {
   input.inputMode = 'numeric';
   input.min = '0';
   input.value = p.quantity;
-  input.addEventListener('input', () => {
-    if (input.value !== '' && parseFloat(input.value) < 0) input.value = '0';
-  });
+  input.addEventListener(
+    'input',
+    debounce(() => {
+      if (input.value !== '' && parseFloat(input.value) < 0) input.value = '0';
+    }, 100)
+  );
   input.addEventListener('change', () => {
     const val = Math.max(0, parseFloat(input.value) || 0);
     p.quantity = val;
@@ -402,175 +414,179 @@ export function renderProducts() {
   const table = document.getElementById('product-table');
   const list = document.getElementById('products-by-category');
   if (!table || !list) return;
-  const tbody = table.querySelector('tbody');
-  tbody.innerHTML = '';
-  list.innerHTML = '';
+  withRaf(() => {
+    const tbody = table.querySelector('tbody');
+    tbody.innerHTML = '';
+    list.innerHTML = '';
 
-  if (view === 'flat') {
-    table.style.display = '';
-    list.style.display = 'none';
-    table.classList.toggle('edit-mode', editing);
-    if (filtered.length === 0) {
-      const tr = document.createElement('tr');
-      const td = document.createElement('td');
-      td.colSpan = editing ? 7 : 6;
-      td.className = 'text-center';
-      td.textContent = t('products_empty');
-      tr.appendChild(td);
-      tbody.appendChild(tr);
-      return;
-    }
-    filtered.forEach((p, idx) => {
-      const tr = createFlatRow(p, idx, editing);
-      tbody.appendChild(tr);
-    });
-  } else {
-    table.style.display = 'none';
-    list.style.display = '';
-    if (filtered.length === 0) {
-      const empty = document.createElement('div');
-      empty.className = 'p-4 text-center text-base-content/70';
-      empty.textContent = t('products_empty');
-      list.appendChild(empty);
-      return;
-    }
-    const storages = {};
-    filtered.forEach(p => {
-      const s = p.storage || 'pantry';
-      const c = p.category || 'uncategorized';
-      storages[s] = storages[s] || {};
-      storages[s][c] = storages[s][c] || [];
-      storages[s][c].push(p);
-    });
-    Object.keys(storages)
-      .sort((a, b) => t(STORAGE_KEYS[a] || a).localeCompare(t(STORAGE_KEYS[b] || b)))
-      .forEach(stor => {
-        const block = document.createElement('section');
-        block.className = 'storage-section storage-block border border-base-300 rounded-lg p-4 mb-4';
-        block.dataset.storage = stor;
-
-        const header = document.createElement('header');
-        header.className = 'storage-header flex items-center gap-2';
-        if (state.displayMode === 'mobile') header.classList.add('cursor-pointer');
-        const nameSpan = document.createElement('span');
-        nameSpan.className = 'inline-flex items-center text-xl font-semibold';
-        nameSpan.textContent = `${STORAGE_ICONS[stor] || ''} ${t(STORAGE_KEYS[stor] || stor)}`;
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'toggle-storage ml-auto h-8 w-8 flex items-center justify-center';
-        btn.setAttribute('aria-expanded', 'true');
-        btn.setAttribute('title', t('collapse'));
-        btn.innerHTML = '<i class="fa-regular fa-caret-down transition-transform rotate-180"></i>';
-        header.append(nameSpan, btn);
-        block.appendChild(header);
-
-        Object.keys(storages[stor])
-          .sort((a, b) => (CATEGORY_ORDER[a] || 0) - (CATEGORY_ORDER[b] || 0) || t(CATEGORY_KEYS[a] || a).localeCompare(t(CATEGORY_KEYS[b] || b)))
-          .forEach(cat => {
-          const catBlock = document.createElement('div');
-          catBlock.className = 'category-section category-block';
-          catBlock.dataset.storage = stor;
-          catBlock.dataset.category = cat;
-
-          const catHeader = document.createElement('header');
-          catHeader.className = 'category-header flex items-center gap-2';
-          if (state.displayMode === 'mobile') catHeader.classList.add('cursor-pointer');
-          const catSpan = document.createElement('span');
-          catSpan.className = 'font-medium';
-          catSpan.textContent = t(CATEGORY_KEYS[cat] || cat);
-          const catBtn = document.createElement('button');
-          catBtn.type = 'button';
-          catBtn.className = 'toggle-category ml-auto h-8 w-8 flex items-center justify-center';
-          catBtn.setAttribute('aria-expanded', 'true');
-          catBtn.setAttribute('title', t('collapse'));
-          catBtn.innerHTML = '<i class="fa-regular fa-caret-down transition-transform rotate-180"></i>';
-          catHeader.append(catSpan, catBtn);
-          catBlock.appendChild(catHeader);
-
-          const body = document.createElement('div');
-          body.className = 'category-body';
-          const table = document.createElement('table');
-          table.className = 'table table-zebra w-full grouped-table';
-          const colgroup = document.createElement('colgroup');
-          const cols = editing
-            ? ['grouped-col-select', 'grouped-col-name', 'grouped-col-qty', 'grouped-col-unit', 'grouped-col-status']
-            : ['grouped-col-name', 'grouped-col-qty', 'grouped-col-unit', 'grouped-col-status'];
-          cols.forEach(cls => {
-            const col = document.createElement('col');
-            col.className = cls;
-            colgroup.appendChild(col);
-          });
-          table.appendChild(colgroup);
-          const thead = document.createElement('thead');
-          const hr = document.createElement('tr');
-          const headers = editing
-            ? ['', t('table_header_name'), t('table_header_quantity'), t('table_header_unit'), t('table_header_status')]
-            : [t('table_header_name'), t('table_header_quantity'), t('table_header_unit'), t('table_header_status')];
-          headers.forEach(txt => {
-            const th = document.createElement('th');
-            th.textContent = txt;
-            hr.appendChild(th);
-          });
-          thead.appendChild(hr);
-          table.appendChild(thead);
-          const tb = document.createElement('tbody');
-          storages[stor][cat].forEach(p => {
-            const tr = document.createElement('tr');
-            const idx = data.indexOf(p);
-            tr.dataset.index = idx;
-            tr.dataset.productId = p.id != null ? p.id : idx;
-            if (editing) {
-              const cbTd = document.createElement('td');
-              const cb = document.createElement('input');
-              cb.type = 'checkbox';
-              cb.className = 'checkbox checkbox-sm row-select';
-              cb.dataset.name = p.name;
-              cbTd.appendChild(cb);
-              tr.appendChild(cbTd);
-              const n = document.createElement('td');
-            n.textContent = t(p.name);
-              tr.appendChild(n);
-              const q = buildQtyCell(p, tr);
-              tr.appendChild(q);
-              const u = document.createElement('td');
-              u.textContent = t(p.unit);
-              tr.appendChild(u);
-              const s = document.createElement('td');
-              const ic = getStatusIcon(p);
-              if (ic) {
-                s.innerHTML = ic.html;
-                s.title = ic.title;
-              }
-              tr.appendChild(s);
-            } else {
-              const n = document.createElement('td');
-            n.textContent = t(p.name);
-              const q = document.createElement('td');
-              q.textContent = formatPackQuantity(p);
-              const u = document.createElement('td');
-              u.textContent = t(p.unit);
-              const s = document.createElement('td');
-              const ic = getStatusIcon(p);
-              if (ic) {
-                s.innerHTML = ic.html;
-                s.title = ic.title;
-              }
-              tr.append(n, q, u, s);
-            }
-            highlightRow(tr, p);
-            tb.appendChild(tr);
-          });
-          table.appendChild(tb);
-          body.appendChild(table);
-          catBlock.appendChild(body);
-          block.appendChild(catBlock);
-        });
-
-        list.appendChild(block);
+    if (view === 'flat') {
+      table.style.display = '';
+      list.style.display = 'none';
+      table.classList.toggle('edit-mode', editing);
+      if (filtered.length === 0) {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = editing ? 7 : 6;
+        td.className = 'text-center';
+        td.textContent = t('products_empty');
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+        updateDeleteButton();
+        return;
+      }
+      filtered.forEach((p, idx) => {
+        const tr = createFlatRow(p, idx, editing);
+        tbody.appendChild(tr);
       });
-    initExpandDefaults(list);
-  }
-  updateDeleteButton();
+    } else {
+      table.style.display = 'none';
+      list.style.display = '';
+      if (filtered.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'p-4 text-center text-base-content/70';
+        empty.textContent = t('products_empty');
+        list.appendChild(empty);
+        updateDeleteButton();
+        return;
+      }
+      const storages = {};
+      filtered.forEach(p => {
+        const s = p.storage || 'pantry';
+        const c = p.category || 'uncategorized';
+        storages[s] = storages[s] || {};
+        storages[s][c] = storages[s][c] || [];
+        storages[s][c].push(p);
+      });
+      Object.keys(storages)
+        .sort((a, b) => t(STORAGE_KEYS[a] || a).localeCompare(t(STORAGE_KEYS[b] || b)))
+        .forEach(stor => {
+          const block = document.createElement('section');
+          block.className = 'storage-section storage-block border border-base-300 rounded-lg p-4 mb-4';
+          block.dataset.storage = stor;
+
+          const header = document.createElement('header');
+          header.className = 'storage-header flex items-center gap-2';
+          if (state.displayMode === 'mobile') header.classList.add('cursor-pointer');
+          const nameSpan = document.createElement('span');
+          nameSpan.className = 'inline-flex items-center text-xl font-semibold';
+          nameSpan.textContent = `${STORAGE_ICONS[stor] || ''} ${t(STORAGE_KEYS[stor] || stor)}`;
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'toggle-storage ml-auto h-8 w-8 flex items-center justify-center';
+          btn.setAttribute('aria-expanded', 'true');
+          btn.setAttribute('title', t('collapse'));
+          btn.innerHTML = '<i class="fa-regular fa-caret-down transition-transform rotate-180"></i>';
+          header.append(nameSpan, btn);
+          block.appendChild(header);
+
+          Object.keys(storages[stor])
+            .sort((a, b) => (CATEGORY_ORDER[a] || 0) - (CATEGORY_ORDER[b] || 0) || t(CATEGORY_KEYS[a] || a).localeCompare(t(CATEGORY_KEYS[b] || b)))
+            .forEach(cat => {
+            const catBlock = document.createElement('div');
+            catBlock.className = 'category-section category-block';
+            catBlock.dataset.storage = stor;
+            catBlock.dataset.category = cat;
+
+            const catHeader = document.createElement('header');
+            catHeader.className = 'category-header flex items-center gap-2';
+            if (state.displayMode === 'mobile') catHeader.classList.add('cursor-pointer');
+            const catSpan = document.createElement('span');
+            catSpan.className = 'font-medium';
+            catSpan.textContent = t(CATEGORY_KEYS[cat] || cat);
+            const catBtn = document.createElement('button');
+            catBtn.type = 'button';
+            catBtn.className = 'toggle-category ml-auto h-8 w-8 flex items-center justify-center';
+            catBtn.setAttribute('aria-expanded', 'true');
+            catBtn.setAttribute('title', t('collapse'));
+            catBtn.innerHTML = '<i class="fa-regular fa-caret-down transition-transform rotate-180"></i>';
+            catHeader.append(catSpan, catBtn);
+            catBlock.appendChild(catHeader);
+
+            const body = document.createElement('div');
+            body.className = 'category-body';
+            const table = document.createElement('table');
+            table.className = 'table table-zebra w-full grouped-table';
+            const colgroup = document.createElement('colgroup');
+            const cols = editing
+              ? ['grouped-col-select', 'grouped-col-name', 'grouped-col-qty', 'grouped-col-unit', 'grouped-col-status']
+              : ['grouped-col-name', 'grouped-col-qty', 'grouped-col-unit', 'grouped-col-status'];
+            cols.forEach(cls => {
+              const col = document.createElement('col');
+              col.className = cls;
+              colgroup.appendChild(col);
+            });
+            table.appendChild(colgroup);
+            const thead = document.createElement('thead');
+            const hr = document.createElement('tr');
+            const headers = editing
+              ? ['', t('table_header_name'), t('table_header_quantity'), t('table_header_unit'), t('table_header_status')]
+              : [t('table_header_name'), t('table_header_quantity'), t('table_header_unit'), t('table_header_status')];
+            headers.forEach(txt => {
+              const th = document.createElement('th');
+              th.textContent = txt;
+              hr.appendChild(th);
+            });
+            thead.appendChild(hr);
+            table.appendChild(thead);
+            const tb = document.createElement('tbody');
+            storages[stor][cat].forEach(p => {
+              const tr = document.createElement('tr');
+              const idx = data.indexOf(p);
+              tr.dataset.index = idx;
+              tr.dataset.productId = p.id != null ? p.id : idx;
+              if (editing) {
+                const cbTd = document.createElement('td');
+                const cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.className = 'checkbox checkbox-sm row-select';
+                cb.dataset.name = p.name;
+                cbTd.appendChild(cb);
+                tr.appendChild(cbTd);
+                const n = document.createElement('td');
+              n.textContent = t(p.name);
+                tr.appendChild(n);
+                const q = buildQtyCell(p, tr);
+                tr.appendChild(q);
+                const u = document.createElement('td');
+                u.textContent = t(p.unit);
+                tr.appendChild(u);
+                const s = document.createElement('td');
+                const ic = getStatusIcon(p);
+                if (ic) {
+                  s.innerHTML = ic.html;
+                  s.title = ic.title;
+                }
+                tr.appendChild(s);
+              } else {
+                const n = document.createElement('td');
+              n.textContent = t(p.name);
+                const q = document.createElement('td');
+                q.textContent = formatPackQuantity(p);
+                const u = document.createElement('td');
+                u.textContent = t(p.unit);
+                const s = document.createElement('td');
+                const ic = getStatusIcon(p);
+                if (ic) {
+                  s.innerHTML = ic.html;
+                  s.title = ic.title;
+                }
+                tr.append(n, q, u, s);
+              }
+              highlightRow(tr, p);
+              tb.appendChild(tr);
+            });
+            table.appendChild(tb);
+            body.appendChild(table);
+            catBlock.appendChild(body);
+            block.appendChild(catBlock);
+          });
+
+          list.appendChild(block);
+        });
+      initExpandDefaults(list);
+    }
+    updateDeleteButton();
+  })();
 }
 
 const groupedRoot = document.getElementById('products-by-category');

@@ -5,7 +5,9 @@ import {
   timeToBucket,
   toggleFavorite,
   normalizeRecipe,
-  fetchJson
+  fetchJson,
+  debounce,
+  withRaf
 } from '../helpers.js';
 import { showNotification } from './toast.js';
 import { renderRecipeDetail } from './recipe-detail.js';
@@ -37,7 +39,7 @@ document.addEventListener('click', async e => {
 export function renderRecipes() {
   const list = document.getElementById('recipe-list');
   if (!list) return;
-  list.innerHTML = '';
+  const frag = document.createDocumentFragment();
   let data = state.recipesData.slice();
   if (state.recipeTimeFilter) data = data.filter(r => r.timeBucket === state.recipeTimeFilter);
   if (state.recipePortionsFilter) {
@@ -70,76 +72,84 @@ export function renderRecipes() {
     body.className = 'card-body';
     body.textContent = t('recipes_empty_state');
     empty.appendChild(body);
-    list.appendChild(empty);
-    return;
-  }
-  data.forEach(r => {
-    const card = document.createElement('div');
-    card.className = 'card bg-base-200 shadow';
-    const body = document.createElement('div');
-    body.className = 'card-body';
-    const header = document.createElement('div');
-    header.className = 'flex justify-between items-start';
-    const titleWrap = document.createElement('div');
-    titleWrap.className = 'flex items-center gap-2';
-    const title = document.createElement('h3');
-    title.className = 'card-title';
-    const nameTr = t(r.name);
-    title.textContent = nameTr && nameTr.trim() !== '' ? nameTr : r.name;
-    titleWrap.appendChild(title);
-    if (r.available) {
-      const badge = document.createElement('span');
-      badge.className = 'badge badge-sm badge-outline';
-      badge.textContent = t('recipe_available');
-      titleWrap.appendChild(badge);
-    }
-    const favBtn = document.createElement('button');
-    favBtn.className = 'btn btn-ghost btn-xs';
-    favBtn.innerHTML = state.favoriteRecipes.has(r.name)
-      ? '<i class="fa-solid fa-heart"></i>'
-      : '<i class="fa-regular fa-heart"></i>';
-    favBtn.addEventListener('click', e => {
-      e.preventDefault();
-      toggleFavorite(r.name);
-      renderRecipes();
+    frag.appendChild(empty);
+  } else {
+    data.forEach(r => {
+      const card = document.createElement('div');
+      card.className = 'card bg-base-200 shadow';
+      const body = document.createElement('div');
+      body.className = 'card-body';
+      const header = document.createElement('div');
+      header.className = 'flex justify-between items-start';
+      const titleWrap = document.createElement('div');
+      titleWrap.className = 'flex items-center gap-2';
+      const title = document.createElement('h3');
+      title.className = 'card-title';
+      const nameTr = t(r.name);
+      title.textContent = nameTr && nameTr.trim() !== '' ? nameTr : r.name;
+      titleWrap.appendChild(title);
+      if (r.available) {
+        const badge = document.createElement('span');
+        badge.className = 'badge badge-sm badge-outline';
+        badge.textContent = t('recipe_available');
+        titleWrap.appendChild(badge);
+      }
+      const favBtn = document.createElement('button');
+      favBtn.className = 'btn btn-ghost btn-xs';
+      favBtn.innerHTML = state.favoriteRecipes.has(r.name)
+        ? '<i class="fa-solid fa-heart"></i>'
+        : '<i class="fa-regular fa-heart"></i>';
+      favBtn.addEventListener('click', e => {
+        e.preventDefault();
+        toggleFavorite(r.name);
+        favBtn.innerHTML = state.favoriteRecipes.has(r.name)
+          ? '<i class="fa-solid fa-heart"></i>'
+          : '<i class="fa-regular fa-heart"></i>';
+      });
+      header.appendChild(titleWrap);
+      header.appendChild(favBtn);
+      body.appendChild(header);
+      const meta = document.createElement('div');
+      meta.className = 'flex justify-between items-center text-sm';
+      if (r.time) {
+        const timeDiv = document.createElement('div');
+        timeDiv.className = 'flex items-center gap-1';
+        timeDiv.innerHTML = '<i class="fa-regular fa-clock"></i>';
+        const span = document.createElement('span');
+        span.textContent = r.time;
+        timeDiv.appendChild(span);
+        meta.appendChild(timeDiv);
+      }
+      if (r.portions != null) {
+        const portionsDiv = document.createElement('div');
+        portionsDiv.className = 'flex items-center gap-1';
+        portionsDiv.innerHTML = '<i class="fa-solid fa-users"></i>';
+        const span = document.createElement('span');
+        span.textContent = String(r.portions);
+        portionsDiv.appendChild(span);
+        meta.appendChild(portionsDiv);
+      }
+      if (meta.children.length) body.appendChild(meta);
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-primary show-recipe';
+      btn.dataset.recipeId = r.name;
+      btn.textContent = t('recipe_show_details');
+      const panel = document.createElement('div');
+      panel.id = `recipe-detail-${r.name}`;
+      panel.className = 'recipe-detail hidden';
+      body.appendChild(btn);
+      body.appendChild(panel);
+      card.appendChild(body);
+      frag.appendChild(card);
     });
-    header.appendChild(titleWrap);
-    header.appendChild(favBtn);
-    body.appendChild(header);
-    const meta = document.createElement('div');
-    meta.className = 'flex justify-between items-center text-sm';
-    if (r.time) {
-      const timeDiv = document.createElement('div');
-      timeDiv.className = 'flex items-center gap-1';
-      timeDiv.innerHTML = '<i class="fa-regular fa-clock"></i>';
-      const span = document.createElement('span');
-      span.textContent = r.time;
-      timeDiv.appendChild(span);
-      meta.appendChild(timeDiv);
-    }
-    if (r.portions != null) {
-      const portionsDiv = document.createElement('div');
-      portionsDiv.className = 'flex items-center gap-1';
-      portionsDiv.innerHTML = '<i class="fa-solid fa-users"></i>';
-      const span = document.createElement('span');
-      span.textContent = String(r.portions);
-      portionsDiv.appendChild(span);
-      meta.appendChild(portionsDiv);
-    }
-    if (meta.children.length) body.appendChild(meta);
-    const btn = document.createElement('button');
-    btn.className = 'btn btn-primary show-recipe';
-    btn.dataset.recipeId = r.name;
-    btn.textContent = t('recipe_show_details');
-    const panel = document.createElement('div');
-    panel.id = `recipe-detail-${r.name}`;
-    panel.className = 'recipe-detail hidden';
-    body.appendChild(btn);
-    body.appendChild(panel);
-    card.appendChild(body);
-    list.appendChild(card);
-  });
+  }
+  withRaf(() => {
+    list.innerHTML = '';
+    list.appendChild(frag);
+  })();
 }
+
+const scheduleRender = debounce(renderRecipes, 50);
 
 export async function loadRecipes() {
   if (state.recipesLoaded || state.recipesLoading) return state.recipesData;
@@ -164,7 +174,7 @@ export async function loadRecipes() {
       }));
     state.recipesData = processed;
     state.recipesLoaded = true;
-    renderRecipes();
+    scheduleRender();
     return processed;
   } catch (err) {
     showNotification({ type: 'error', title: t('recipes_load_failed'), message: err.status || err.message, retry: loadRecipes });
@@ -193,39 +203,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
   sortField?.addEventListener('change', () => {
     state.recipeSortField = sortField.value;
-    renderRecipes();
+    scheduleRender();
   });
   sortAsc?.addEventListener('click', () => {
     state.recipeSortDir = 'asc';
     updateSortButtons();
-    renderRecipes();
+    scheduleRender();
   });
   sortDesc?.addEventListener('click', () => {
     state.recipeSortDir = 'desc';
     updateSortButtons();
-    renderRecipes();
+    scheduleRender();
   });
   sortMobile?.addEventListener('change', () => {
     const [field, dir] = sortMobile.value.split('-');
     state.recipeSortField = field;
     state.recipeSortDir = dir;
     updateSortButtons();
-    renderRecipes();
+    scheduleRender();
   });
 
   timeFilter?.addEventListener('change', () => {
     state.recipeTimeFilter = timeFilter.value;
-    renderRecipes();
+    scheduleRender();
   });
   portionsFilter?.addEventListener('change', () => {
     state.recipePortionsFilter = portionsFilter.value;
-    renderRecipes();
+    scheduleRender();
   });
   favToggle?.addEventListener('click', () => {
     state.showFavoritesOnly = !state.showFavoritesOnly;
     favToggle.classList.toggle('btn-primary', state.showFavoritesOnly);
     favToggle.classList.toggle('btn-outline', !state.showFavoritesOnly);
-    renderRecipes();
+    scheduleRender();
   });
   clearBtn?.addEventListener('click', () => {
     state.recipeSortField = 'name';
@@ -240,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
     favToggle?.classList.remove('btn-primary');
     favToggle?.classList.add('btn-outline');
     updateSortButtons();
-    renderRecipes();
+    scheduleRender();
   });
 
   updateSortButtons();
