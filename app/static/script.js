@@ -1,4 +1,4 @@
-import { loadTranslations, loadUnits, loadFavorites, state, t, normalizeProduct, unitName, applyTranslations } from './js/helpers.js';
+import { loadTranslations, loadUnits, loadFavorites, state, t, normalizeProduct, applyTranslations } from './js/helpers.js';
 import { renderProducts } from './js/components/product-table.js';
 import { renderRecipes, loadRecipes } from './js/components/recipe-list.js';
 import { renderShoppingList, addToShoppingList, renderSuggestions } from './js/components/shopping-list.js';
@@ -157,7 +157,7 @@ function initAddForm() {
   Object.keys(state.units).forEach(u => {
     const opt = document.createElement('option');
     opt.value = u;
-    opt.textContent = unitName(u);
+    opt.textContent = t(u);
     unitSel.appendChild(opt);
   });
   qtyInput.insertAdjacentElement('afterend', unitSel);
@@ -270,6 +270,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderRecipes();
     renderShoppingList();
     renderSuggestions();
+    const unitSel = document.querySelector('#add-form select[name="unit"]');
+    if (unitSel) {
+      Array.from(unitSel.options).forEach(opt => {
+        opt.textContent = t(opt.value);
+      });
+    }
     window.scrollTo(0, scroll);
   });
 

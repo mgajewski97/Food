@@ -1,4 +1,4 @@
-import { t, state, productName, isSpice, stockLevel } from '../helpers.js';
+import { t, state, isSpice, stockLevel } from '../helpers.js';
 
 function saveShoppingList() {
   localStorage.setItem('shoppingList', JSON.stringify(state.shoppingList));
@@ -23,7 +23,7 @@ export function renderShoppingList() {
   state.shoppingList.sort((a, b) => {
     if (a.inCart && b.inCart) return (a.cartTime || 0) - (b.cartTime || 0);
     if (a.inCart !== b.inCart) return a.inCart ? 1 : -1;
-    return productName(a.name).localeCompare(productName(b.name));
+    return t(a.name).localeCompare(t(b.name));
   });
   state.shoppingList.forEach((item, idx) => {
     const row = document.createElement('div');
@@ -40,7 +40,7 @@ export function renderShoppingList() {
 
     const nameEl = document.createElement('span');
     nameEl.className = 'truncate max-w-[10rem]';
-    nameEl.textContent = productName(item.name);
+    nameEl.textContent = t(item.name);
     if (item.inCart) nameEl.classList.add('line-through');
     row.appendChild(nameEl);
 
@@ -133,7 +133,7 @@ export function renderSuggestions() {
       return p.main && (p.quantity === 0 || (p.threshold != null && p.quantity <= p.threshold));
     })
     .filter(p => !state.dismissedSuggestions.has(p.name))
-    .sort((a, b) => productName(a.name).localeCompare(productName(b.name)));
+    .sort((a, b) => t(a.name).localeCompare(t(b.name)));
   suggestions.forEach(p => {
     let qty = p.threshold != null ? p.threshold : 1;
     const row = document.createElement('div');
@@ -147,8 +147,8 @@ export function renderSuggestions() {
     nameWrap.className = 'w-full sm:flex-1 overflow-hidden';
     const nameEl = document.createElement('div');
     nameEl.className = 'truncate';
-    nameEl.textContent = productName(p.name);
-    nameEl.title = productName(p.name);
+    nameEl.textContent = t(p.name);
+    nameEl.title = t(p.name);
     nameWrap.appendChild(nameEl);
     row.appendChild(nameWrap);
 

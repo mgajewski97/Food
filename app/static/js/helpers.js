@@ -73,28 +73,6 @@ export function t(key) {
   return state.uiTranslations[state.currentLang]?.[key] ?? state.uiTranslations.en?.[key] ?? key;
 }
 
-export function productName(key) {
-  const translated = t(key);
-  return translated;
-}
-
-export function unitName(key) {
-  const translated = t(key);
-  return translated === key ? key : translated;
-}
-
-export function categoryName(key) {
-  const tKey = CATEGORY_KEYS[key] || key;
-  const translated = t(tKey);
-  return translated === tKey ? key : translated;
-}
-
-export function storageName(key) {
-  const tKey = STORAGE_KEYS[key] || key;
-  const translated = t(tKey);
-  return translated === tKey ? key : translated;
-}
-
 export function applyTranslations() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
