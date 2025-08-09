@@ -1,21 +1,69 @@
 [
   {
     "name": "recipe.mushroom_oyster_mushroom_cream_soup",
-    "portions": 3,
+    "portions": 3.0,
     "time": "30min",
     "ingredients": [
-      { "product": "product.champignons", "quantity": 500, "unit": "g" },
-      { "product": "product.oyster_mushrooms", "quantity": 250, "unit": "g" },
-      { "product": "product.red_onion", "quantity": 1, "unit": "szt" },
-      { "product": "product.garlic", "quantity": 1, "unit": "szt" },
-      { "product": "product.sour_cream_18", "quantity": 2, "unit": "lyzka" },
-      { "product": "product.plant_fat", "quantity": 1, "unit": "lyzka" },
-      { "product": "product.parsley", "quantity": 1, "unit": "szt" },
-      { "product": "product.water", "quantity": 1000, "unit": "ml" },
-      { "product": "product.bay_leaf", "quantity": 1, "unit": "szt" },
-      { "product": "product.thyme", "quantity": 0.5, "unit": "lyzeczka" },
-      { "product": "product.salt", "quantity": 1, "unit": "do_smaczenia" },
-      { "product": "product.black_pepper", "quantity": 1, "unit": "do_smaczenia" }
+      {
+        "product": "product.champignons",
+        "quantity": 500.0,
+        "unit": "g"
+      },
+      {
+        "product": "product.oyster_mushrooms",
+        "quantity": 250.0,
+        "unit": "g"
+      },
+      {
+        "product": "product.red_onion",
+        "quantity": 1.0,
+        "unit": "szt"
+      },
+      {
+        "product": "product.garlic",
+        "quantity": 1.0,
+        "unit": "szt"
+      },
+      {
+        "product": "product.sour_cream_18",
+        "quantity": 2.0,
+        "unit": "lyzka"
+      },
+      {
+        "product": "product.plant_fat",
+        "quantity": 1.0,
+        "unit": "lyzka"
+      },
+      {
+        "product": "product.parsley",
+        "quantity": 1.0,
+        "unit": "szt"
+      },
+      {
+        "product": "product.water",
+        "quantity": 1000.0,
+        "unit": "ml"
+      },
+      {
+        "product": "product.bay_leaf",
+        "quantity": 1.0,
+        "unit": "szt"
+      },
+      {
+        "product": "product.thyme",
+        "quantity": 0.5,
+        "unit": "lyzeczka"
+      },
+      {
+        "product": "product.salt",
+        "quantity": 1.0,
+        "unit": "do_smaczenia"
+      },
+      {
+        "product": "product.black_pepper",
+        "quantity": 1.0,
+        "unit": "do_smaczenia"
+      }
     ],
     "steps": [
       "W garnku rozgrzej plant fat lub olej.",
@@ -25,34 +73,109 @@
       "Wyjmij liść laurowy i zmiksuj całość blenderem na gładki krem.",
       "Dodaj śmietanę, wymieszaj i dopraw do smaku.",
       "Podawaj z natką pietruszki, opcjonalnie z grzankami."
-    ]
+    ],
+    "tags": []
   },
   {
     "name": "recipe.stir_fry_peking_cabbage_tofu_pepper_radish_rice_cashew",
-    "portions": 3,
+    "portions": 3.0,
+    "time": "",
     "ingredients": [
-      { "product": "product.tofu", "quantity": 180, "unit": "g" },
-      { "product": "product.peking_cabbage", "quantity": 0.5, "unit": "szt" },
-      { "product": "product.red_pepper", "quantity": 1, "unit": "szt" },
-      { "product": "product.red_onion", "quantity": 1, "unit": "szt" },
-      { "product": "product.garlic", "quantity": 2, "unit": "szt" },
-      { "product": "product.ginger_fresh", "quantity": 10, "unit": "g" },
-      { "product": "product.radish", "quantity": 5, "unit": "szt" },
-      { "product": "product.rice_basmati", "quantity": 90, "unit": "g" },
-      { "product": "product.teriyaki_sauce", "quantity": 4, "unit": "łyżka" },
-      { "product": "product.soy_sauce", "quantity": 3, "unit": "łyżka" },
-      { "product": "product.sesame_oil", "quantity": 1, "unit": "łyżeczka" },
-      { "product": "product.sesame", "quantity": 1, "unit": "łyżka" },
-      { "product": "product.parsley", "quantity": 10, "unit": "g" },
-      { "product": "product.lime", "quantity": 0.5, "unit": "szt" },
-      { "product": "product.chili", "quantity": 0.5, "unit": "łyżeczka" },
-      { "product": "product.pepper", "quantity": 0.25, "unit": "łyżeczka" },
-      { "product": "product.coriander_ground", "quantity": 0.25, "unit": "łyżeczka" },
-      { "product": "product.cashew", "quantity": 20, "unit": "g" },
-      { "product": "product.sugar", "quantity": 0.5, "unit": "łyżeczka" }
-    ],
-    "optionalIngredients": [
-      { "product": "product.coriander_fresh", "quantity": 10, "unit": "g" }
+      {
+        "product": "product.tofu",
+        "quantity": 180.0,
+        "unit": "g"
+      },
+      {
+        "product": "product.peking_cabbage",
+        "quantity": 0.5,
+        "unit": "szt"
+      },
+      {
+        "product": "product.red_pepper",
+        "quantity": 1.0,
+        "unit": "szt"
+      },
+      {
+        "product": "product.red_onion",
+        "quantity": 1.0,
+        "unit": "szt"
+      },
+      {
+        "product": "product.garlic",
+        "quantity": 2.0,
+        "unit": "szt"
+      },
+      {
+        "product": "product.ginger_fresh",
+        "quantity": 10.0,
+        "unit": "g"
+      },
+      {
+        "product": "product.radish",
+        "quantity": 5.0,
+        "unit": "szt"
+      },
+      {
+        "product": "product.rice_basmati",
+        "quantity": 90.0,
+        "unit": "g"
+      },
+      {
+        "product": "product.teriyaki_sauce",
+        "quantity": 4.0,
+        "unit": "łyżka"
+      },
+      {
+        "product": "product.soy_sauce",
+        "quantity": 3.0,
+        "unit": "łyżka"
+      },
+      {
+        "product": "product.sesame_oil",
+        "quantity": 1.0,
+        "unit": "łyżeczka"
+      },
+      {
+        "product": "product.sesame",
+        "quantity": 1.0,
+        "unit": "łyżka"
+      },
+      {
+        "product": "product.parsley",
+        "quantity": 10.0,
+        "unit": "g"
+      },
+      {
+        "product": "product.lime",
+        "quantity": 0.5,
+        "unit": "szt"
+      },
+      {
+        "product": "product.chili",
+        "quantity": 0.5,
+        "unit": "łyżeczka"
+      },
+      {
+        "product": "product.pepper",
+        "quantity": 0.25,
+        "unit": "łyżeczka"
+      },
+      {
+        "product": "product.coriander_ground",
+        "quantity": 0.25,
+        "unit": "łyżeczka"
+      },
+      {
+        "product": "product.cashew",
+        "quantity": 20.0,
+        "unit": "g"
+      },
+      {
+        "product": "product.sugar",
+        "quantity": 0.5,
+        "unit": "łyżeczka"
+      }
     ],
     "steps": [
       "Ugotuj ryż zgodnie z instrukcją i odstaw.",
@@ -64,6 +187,14 @@
       "Dodaj ugotowany ryż, wymieszaj całość.",
       "Wyłącz ogień, dodaj natkę pietruszki, olej sezamowy, sok z limonki, pokruszone nerkowce i ewentualnie świeżą kolendrę. Wymieszaj.",
       "Posyp sezamem i podziel na 3 porcje."
+    ],
+    "tags": [],
+    "optionalIngredients": [
+      {
+        "product": "product.coriander_fresh",
+        "quantity": 10.0,
+        "unit": "g"
+      }
     ]
   }
 ]

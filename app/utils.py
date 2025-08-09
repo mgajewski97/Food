@@ -6,7 +6,8 @@
 import json
 import logging
 import os
-from typing import Any, Dict, Optional, Tuple, List, Callable
+import threading
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import jsonschema
 
@@ -20,14 +21,6 @@ def _safe_float(value: Any, default: float = 0.0) -> float:
         return float(value)
     except (TypeError, ValueError):
         return default
-
-def _safe_int(value: Any) -> Optional[int]:
-    """Convert value to int if possible."""
-    try:
-        return int(value) if value is not None else None
-    except (TypeError, ValueError):
-        return None
-
 
 def _load_schema(schema_path: str) -> Optional[Dict[str, Any]]:
     """Load JSON schema from path if it exists."""
@@ -94,26 +87,26 @@ def _validate(
 
 def normalize_product(data: Dict[str, Any]) -> Dict[str, Any]:
     """Return product dict with defaults and sanitized numeric fields."""
+    pack = data.get("pack_size")
     return {
         "name": data.get("name"),
-        "unit": data.get("unit", DEFAULT_UNIT),
         "quantity": _safe_float(data.get("quantity", 0)),
-        "package_size": _safe_float(data.get("package_size", 1)) or 1,
-        "pack_size": _safe_int(data.get("pack_size")),
-        "threshold": _safe_float(data.get("threshold", 1)) or 1,
-        "main": bool(data.get("main", True)),
+        "unit": data.get("unit", DEFAULT_UNIT),
         "category": data.get("category", "uncategorized"),
         "storage": data.get("storage", "pantry"),
+        "threshold": _safe_float(data.get("threshold", 1), 1) or 1,
+        "main": bool(data.get("main", True)),
+        "package_size": _safe_float(data.get("package_size", 1), 1),
+        "pack_size": _safe_float(pack) if pack is not None else None,
+        "tags": [str(t) for t in data.get("tags", []) if isinstance(t, str)],
     }
 
 
 def normalize_recipe(data: Dict[str, Any]) -> Dict[str, Any]:
-    """Return recipe dict with sanitized ingredient entries."""
-    recipe = dict(data)
-    ingredients = recipe.get("ingredients", [])
-    if isinstance(ingredients, list):
-        cleaned: List[Any] = []
-        for ing in ingredients:
+    """Return recipe dict with defaults and cleaned ingredients."""
+    def _clean_list(items: List[Any]) -> List[Dict[str, Any]]:
+        cleaned: List[Dict[str, Any]] = []
+        for ing in items:
             if isinstance(ing, dict):
                 cleaned.append(
                     {
@@ -123,9 +116,89 @@ def normalize_recipe(data: Dict[str, Any]) -> Dict[str, Any]:
                     }
                 )
             else:
-                cleaned.append(ing)
-        recipe["ingredients"] = cleaned
+                cleaned.append(
+                    {
+                        "product": ing,
+                        "quantity": 0,
+                        "unit": DEFAULT_UNIT,
+                    }
+                )
+        return cleaned
+
+    recipe = {
+        "name": data.get("name"),
+        "portions": _safe_float(data.get("portions", 1), 1) or 1,
+        "time": str(data.get("time", "")),
+        "ingredients": _clean_list(data.get("ingredients", [])),
+        "steps": [str(s) for s in data.get("steps", []) if isinstance(s, str)],
+        "tags": [str(t) for t in data.get("tags", []) if isinstance(t, str)],
+    }
+    optional = data.get("optionalIngredients") or []
+    if optional:
+        recipe["optionalIngredients"] = _clean_list(optional)
     return recipe
+
+
+# --- Concurrency primitives -------------------------------------------------
+
+_LOCKS: Dict[str, threading.Lock] = {}
+
+
+def file_lock(path: str) -> threading.Lock:
+    """Return a lock object for the given file path."""
+    abs_path = os.path.abspath(path)
+    lock = _LOCKS.get(abs_path)
+    if lock is None:
+        lock = threading.Lock()
+        _LOCKS[abs_path] = lock
+    return lock
+
+
+# --- Validation & IO helpers -------------------------------------------------
+
+def load_json_validated(
+    path: str, schema_path: str, *, normalize: Optional[Callable[[Dict[str, Any]], Dict[str, Any]]] = None
+) -> List[Dict[str, Any]]:
+    """Load JSON file, normalize entries and validate against schema."""
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    if not isinstance(data, list):
+        raise ValueError(f"{os.path.basename(path)}: root is not an array")
+    schema = _load_schema(schema_path) or {}
+    validator = jsonschema.Draft7Validator(schema.get("items", schema))
+    result: List[Dict[str, Any]] = []
+    for idx, raw in enumerate(data):
+        item = normalize(raw) if normalize else raw
+        errors = sorted(validator.iter_errors(item), key=lambda e: e.path)
+        if errors:
+            err = errors[0]
+            field = ".".join(str(p) for p in err.path) or "(root)"
+            raise ValueError(
+                f"{os.path.basename(path)}[{idx}].{field}: {err.message}"
+            )
+        result.append(item)
+    return result
+
+
+def validate_items(items: List[Dict[str, Any]], schema_path: str) -> None:
+    """Validate list of items against schema raising ValueError on failure."""
+    schema = _load_schema(schema_path) or {}
+    validator = jsonschema.Draft7Validator(schema.get("items", schema))
+    for idx, item in enumerate(items):
+        errors = sorted(validator.iter_errors(item), key=lambda e: e.path)
+        if errors:
+            err = errors[0]
+            field = ".".join(str(p) for p in err.path) or "(root)"
+            raise ValueError(f"item {idx}.{field}: {err.message}")
+
+
+def safe_write(path: str, data: Any) -> None:
+    """Atomically persist JSON data to path."""
+    tmp = f"{path}.tmp"
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    os.replace(tmp, path)
 
 def load_json(
     path: str,
