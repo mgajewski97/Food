@@ -1,4 +1,4 @@
-import { t, state, isSpice, stockLevel, fetchJson } from '../helpers.js';
+import { t, state, isSpice, stockLevel, fetchJson, debounce } from '../helpers.js';
 import { toast } from './toast.js';
 
 function saveShoppingList() {
@@ -6,15 +6,22 @@ function saveShoppingList() {
 }
 
 export function addToShoppingList(name, quantity = 1) {
+  if (!name) {
+    toast.error(t('notify_error_title'));
+    return;
+  }
   quantity = parseFloat(quantity) || 1;
   const existing = state.shoppingList.find(item => item.name === name);
   if (existing) {
     existing.quantity += quantity;
+    saveShoppingList();
+    const row = document.querySelector(`#shopping-list .shopping-item[data-name="${CSS.escape(name)}"] input`);
+    if (row) row.value = existing.quantity;
   } else {
     state.shoppingList.push({ name, quantity, inCart: false });
+    saveShoppingList();
+    renderShoppingList();
   }
-  saveShoppingList();
-  renderShoppingList();
   toast.success(t('manual_add_success'), '', {
     label: t('toast_go_shopping'),
     onClick: () => {
@@ -26,130 +33,160 @@ export function addToShoppingList(name, quantity = 1) {
     }
   });
 }
-
-export function renderShoppingList() {
-  const list = document.getElementById('shopping-list');
-  if (!list) return;
-  list.innerHTML = '';
+function sortShoppingList() {
   state.shoppingList.sort((a, b) => {
     if (a.inCart && b.inCart) return (a.cartTime || 0) - (b.cartTime || 0);
     if (a.inCart !== b.inCart) return a.inCart ? 1 : -1;
     return t(a.name).localeCompare(t(b.name));
   });
-  state.shoppingList.forEach((item, idx) => {
-    const row = document.createElement('div');
-    row.className =
-      'shopping-item flex items-center gap-2 py-2 min-h-11 hover:bg-base-200 transition-colors';
-    if (item.inCart) row.classList.add('in-cart');
+}
 
-    const stock = (window.APP?.state?.products || []).find(p => p.name === item.name);
-    if (stock) {
-      const level = stockLevel(stock);
-      if (level === 'low') row.classList.add('product-low');
-      if (level === 'none') row.classList.add('product-missing');
-    }
+function renderShoppingItem(item, idx) {
+  const row = document.createElement('div');
+  row.className = 'shopping-item flex items-center gap-2 py-2 min-h-11 hover:bg-base-200 transition-colors';
+  row.dataset.index = idx;
+  row.dataset.name = item.name;
+  if (item.inCart) row.classList.add('in-cart');
 
-    const nameWrap = document.createElement('div');
-    nameWrap.className = 'flex items-center gap-1 flex-1 overflow-hidden';
-    const nameEl = document.createElement('span');
-    nameEl.className = 'truncate';
-    nameEl.textContent = t(item.name);
-    if (item.inCart) nameEl.classList.add('line-through');
-    nameWrap.appendChild(nameEl);
-    if (stock && stock.quantity > 0) {
-      const ownedEl = document.createElement('span');
-      ownedEl.className = 'owned-info';
-      ownedEl.textContent = `${t('owned')}: ${stock.quantity}`;
-      nameWrap.appendChild(ownedEl);
-    }
-    row.appendChild(nameWrap);
+  const stock = (window.APP?.state?.products || []).find(p => p.name === item.name);
+  if (stock) {
+    const level = stockLevel(stock);
+    if (level === 'low') row.classList.add('product-low');
+    if (level === 'none') row.classList.add('product-missing');
+  }
 
-    const qtyWrap = document.createElement('div');
-    qtyWrap.className = 'flex items-center gap-2';
-    const dec = document.createElement('button');
-    dec.type = 'button';
-    dec.innerHTML = '<i class="fa-solid fa-minus"></i>';
-    dec.className = 'touch-btn';
-    dec.disabled = item.inCart;
-    const qtyInput = document.createElement('input');
-    qtyInput.type = 'number';
-    qtyInput.min = '1';
-    qtyInput.value = item.quantity;
-    qtyInput.className = 'input input-bordered w-16 h-11 text-center no-spinner';
-    qtyInput.disabled = item.inCart;
-    const inc = document.createElement('button');
-    inc.type = 'button';
-    inc.innerHTML = '<i class="fa-solid fa-plus"></i>';
-    inc.className = 'touch-btn';
-    inc.disabled = item.inCart;
-    dec.addEventListener('click', () => {
-      const newVal = Math.max(1, (parseInt(qtyInput.value) || 1) - 1);
-      item.quantity = newVal;
-      qtyInput.value = newVal;
-      saveShoppingList();
-    });
-    inc.addEventListener('click', () => {
-      const newVal = (parseInt(qtyInput.value) || 1) + 1;
-      item.quantity = newVal;
-      qtyInput.value = newVal;
-      saveShoppingList();
-    });
-    qtyInput.addEventListener('change', () => {
+  const nameWrap = document.createElement('div');
+  nameWrap.className = 'flex items-center gap-1 flex-1 overflow-hidden';
+  const nameEl = document.createElement('span');
+  nameEl.className = 'truncate';
+  nameEl.textContent = t(item.name);
+  if (item.inCart) nameEl.classList.add('line-through');
+  nameWrap.appendChild(nameEl);
+  if (stock && stock.quantity > 0) {
+    const ownedEl = document.createElement('span');
+    ownedEl.className = 'owned-info';
+    ownedEl.textContent = `${t('owned')}: ${stock.quantity}`;
+    nameWrap.appendChild(ownedEl);
+  }
+  row.appendChild(nameWrap);
+
+  const qtyWrap = document.createElement('div');
+  qtyWrap.className = 'flex items-center gap-2';
+  const dec = document.createElement('button');
+  dec.type = 'button';
+  dec.innerHTML = '<i class="fa-solid fa-minus"></i>';
+  dec.className = 'touch-btn';
+  dec.disabled = item.inCart;
+  const qtyInput = document.createElement('input');
+  qtyInput.type = 'number';
+  qtyInput.min = '1';
+  qtyInput.value = item.quantity;
+  qtyInput.className = 'input input-bordered w-16 h-11 text-center no-spinner';
+  qtyInput.disabled = item.inCart;
+  const inc = document.createElement('button');
+  inc.type = 'button';
+  inc.innerHTML = '<i class="fa-solid fa-plus"></i>';
+  inc.className = 'touch-btn';
+  inc.disabled = item.inCart;
+  dec.addEventListener('click', () => {
+    const newVal = Math.max(1, (parseInt(qtyInput.value) || 1) - 1);
+    item.quantity = newVal;
+    qtyInput.value = newVal;
+    saveShoppingList();
+  });
+  inc.addEventListener('click', () => {
+    const newVal = (parseInt(qtyInput.value) || 1) + 1;
+    item.quantity = newVal;
+    qtyInput.value = newVal;
+    saveShoppingList();
+  });
+  qtyInput.addEventListener(
+    'input',
+    debounce(() => {
       const val = Math.max(1, parseInt(qtyInput.value) || 1);
       item.quantity = val;
       qtyInput.value = val;
       saveShoppingList();
-    });
-    qtyWrap.append(dec, qtyInput, inc);
-    row.appendChild(qtyWrap);
+    }, 150)
+  );
+  qtyWrap.append(dec, qtyInput, inc);
+  row.appendChild(qtyWrap);
 
-    const actions = document.createElement('div');
-    actions.className = 'flex items-center gap-2 ml-auto';
-    const cartBtn = document.createElement('button');
-    cartBtn.type = 'button';
-    cartBtn.innerHTML = '<i class="fa-solid fa-cart-shopping"></i>';
-    cartBtn.className = 'touch-btn';
-    cartBtn.classList.toggle('text-primary', item.inCart);
-    cartBtn.setAttribute('aria-label', t('in_cart'));
-    cartBtn.setAttribute('title', t('in_cart'));
-    cartBtn.setAttribute('aria-pressed', item.inCart);
-    cartBtn.addEventListener('click', async () => {
-      item.inCart = !item.inCart;
-      cartBtn.classList.toggle('text-primary', item.inCart);
-      cartBtn.setAttribute('aria-pressed', item.inCart);
-      if (item.inCart) {
-        item.cartTime = Date.now();
-        if (stock && isSpice(stock)) {
-          try {
-            await fetchJson('/api/products', { method: 'POST', body: { ...stock, level: 'high', quantity: 0 } });
-            stock.level = 'high';
-          } catch (e) {
-            // ignore
-          }
-        }
-      } else {
-        delete item.cartTime;
+  const actions = document.createElement('div');
+  actions.className = 'flex items-center gap-2 ml-auto';
+  const cartBtn = document.createElement('button');
+  cartBtn.type = 'button';
+  cartBtn.innerHTML = '<i class="fa-solid fa-cart-shopping"></i>';
+  cartBtn.className = 'touch-btn';
+  cartBtn.classList.toggle('text-primary', item.inCart);
+  cartBtn.setAttribute('aria-label', t('in_cart'));
+  cartBtn.setAttribute('title', t('in_cart'));
+  cartBtn.setAttribute('aria-pressed', item.inCart);
+  cartBtn.addEventListener('click', async () => {
+    const list = document.getElementById('shopping-list');
+    const oldRow = cartBtn.closest('.shopping-item');
+    item.inCart = !item.inCart;
+    if (item.inCart) {
+      item.cartTime = Date.now();
+    } else {
+      delete item.cartTime;
+    }
+    cartBtn.disabled = true;
+    const prev = cartBtn.innerHTML;
+    if (item.inCart && stock && isSpice(stock)) {
+      cartBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+      try {
+        await fetchJson('/api/products', { method: 'POST', body: { ...stock, level: 'high', quantity: 0 } });
+        stock.level = 'high';
+      } catch (e) {
+        toast.error(t('notify_error_title'));
       }
-      saveShoppingList();
-      renderShoppingList();
+    }
+    saveShoppingList();
+    sortShoppingList();
+    const newIndex = state.shoppingList.indexOf(item);
+    const newRow = renderShoppingItem(item, newIndex);
+    requestAnimationFrame(() => {
+      cartBtn.disabled = false;
+      cartBtn.innerHTML = prev;
+      const ref = list.children[newIndex];
+      if (ref && ref !== oldRow) {
+        list.insertBefore(newRow, ref);
+        oldRow.remove();
+      } else {
+        oldRow.replaceWith(newRow);
+      }
+      [...list.children].forEach((el, i) => (el.dataset.index = i));
     });
-    actions.appendChild(cartBtn);
+  });
+  actions.appendChild(cartBtn);
 
-    const delBtn = document.createElement('button');
-    delBtn.type = 'button';
-    delBtn.className = 'text-error touch-btn';
-    delBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
-    delBtn.setAttribute('aria-label', t('delete_confirm_button'));
-    delBtn.setAttribute('title', t('delete_confirm_button'));
-    delBtn.addEventListener('click', () => {
-      state.pendingRemoveIndex = idx;
-      const modal = document.getElementById('shopping-delete-modal');
-      if (modal) modal.showModal();
-    });
-    actions.appendChild(delBtn);
-    row.appendChild(actions);
+  const delBtn = document.createElement('button');
+  delBtn.type = 'button';
+  delBtn.className = 'text-error touch-btn';
+  delBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+  delBtn.setAttribute('aria-label', t('delete_confirm_button'));
+  delBtn.setAttribute('title', t('delete_confirm_button'));
+  delBtn.addEventListener('click', () => {
+    state.pendingRemoveIndex = idx;
+    const modal = document.getElementById('shopping-delete-modal');
+    modal?.showModal();
+  });
+  actions.appendChild(delBtn);
+  row.appendChild(actions);
 
-    list.appendChild(row);
+  return row;
+}
+
+export function renderShoppingList() {
+  const list = document.getElementById('shopping-list');
+  if (!list) return;
+  sortShoppingList();
+  const frag = document.createDocumentFragment();
+  state.shoppingList.forEach((item, idx) => frag.appendChild(renderShoppingItem(item, idx)));
+  requestAnimationFrame(() => {
+    list.innerHTML = '';
+    list.appendChild(frag);
   });
 }
 
@@ -167,6 +204,7 @@ export function renderSuggestions() {
     })
     .filter(p => !state.dismissedSuggestions.has(p.name))
     .sort((a, b) => t(a.name).localeCompare(t(b.name)));
+  const frag = document.createDocumentFragment();
   suggestions.forEach(p => {
     let qty = p.threshold != null ? p.threshold : 1;
     const row = document.createElement('div');
@@ -214,10 +252,13 @@ export function renderSuggestions() {
       qty += 1;
       qtyInput.value = qty;
     });
-    qtyInput.addEventListener('change', () => {
-      qty = Math.max(1, parseInt(qtyInput.value) || 1);
-      qtyInput.value = qty;
-    });
+    qtyInput.addEventListener(
+      'input',
+      debounce(() => {
+        qty = Math.max(1, parseInt(qtyInput.value) || 1);
+        qtyInput.value = qty;
+      }, 150)
+    );
     qtyWrap.append(dec, qtyInput, inc);
     row.appendChild(qtyWrap);
 
@@ -247,16 +288,24 @@ export function renderSuggestions() {
     actions.append(accept, reject);
     row.appendChild(actions);
 
-    container.appendChild(row);
+    frag.appendChild(row);
+  });
+  requestAnimationFrame(() => {
+    container.innerHTML = '';
+    container.appendChild(frag);
   });
 }
 
 // Handle item removal confirmation once
 document.getElementById('confirm-remove-item')?.addEventListener('click', () => {
-  if (state.pendingRemoveIndex != null) {
-    state.shoppingList.splice(state.pendingRemoveIndex, 1);
-    state.pendingRemoveIndex = null;
+  const idx = state.pendingRemoveIndex;
+  if (idx != null) {
+    const list = document.getElementById('shopping-list');
+    state.shoppingList.splice(idx, 1);
+    const row = list?.querySelector(`.shopping-item[data-index="${idx}"]`);
+    row?.remove();
     saveShoppingList();
-    renderShoppingList();
+    if (list) [...list.children].forEach((el, i) => (el.dataset.index = i));
+    state.pendingRemoveIndex = null;
   }
 });
