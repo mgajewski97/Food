@@ -1,10 +1,19 @@
 // FIX: Render & responsive boot (2025-08-09)
 import { loadTranslations, loadUnits, loadFavorites, state, t, normalizeProduct, applyTranslations, fetchJSON, isSpice, debounce } from './js/helpers.js';
 import { renderProducts, refreshProducts } from './js/components/product-table.js';
-import { renderRecipes, loadRecipes } from './js/components/recipe-list.js';
+import { renderRecipes, loadRecipes as fetchRecipes } from './js/components/recipe-list.js';
 import { renderShoppingList, addToShoppingList, renderSuggestions } from './js/components/shopping-list.js';
 import { toast, showNotification, checkLowStockToast, showTopBanner } from './js/components/toast.js';
 import { initReceiptImport } from './js/components/ocr-modal.js';
+
+window.__BOOT_TRACE = [];
+function trace(p){
+  window.__BOOT_TRACE.push(p);
+  console.info('[BOOT]', p);
+  const el=document.getElementById('boot-trace');
+  if(el){ el.textContent = window.__BOOT_TRACE.join(' › ');} 
+}
+window.trace = trace;
 
 // CHANGELOG:
 // - Refactored app boot sequence for deterministic init and fail-soft data loading.
@@ -23,33 +32,48 @@ APP.state = APP.state || {
 APP.activeTab = APP.activeTab || null;
 APP.editBackup = APP.editBackup || null;
 
-async function safeFetch(fn, message) {
-  try {
-    return await fn();
-  } catch (err) {
-    console.error(err);
-    showTopBanner(message, { actionLabel: t('retry'), onAction: () => safeFetch(fn, message) });
-  }
-}
-
 async function loadProducts() {
-  const data = await fetchJSON('/api/products');
-  APP.state.products = Array.isArray(data) ? data.map(normalizeProduct) : [];
-  renderProducts();
-  renderSuggestions();
-  checkLowStockToast(APP.state.products, activateTab, renderSuggestions, renderShoppingList);
-  if (!APP._productsLoaded) {
-    console.info('Products loaded:', APP.state.products.length);
-    APP._productsLoaded = true;
+  trace('loadProducts:enter');
+  try {
+    const data = await fetchJSON('/api/products');
+    APP.state.products = Array.isArray(data) ? data.map(normalizeProduct) : [];
+    renderProducts();
+    renderSuggestions();
+    checkLowStockToast(APP.state.products, activateTab, renderSuggestions, renderShoppingList);
+    if (!APP._productsLoaded) {
+      console.info('Products loaded:', APP.state.products.length);
+      APP._productsLoaded = true;
+    }
+    trace('loadProducts:ok');
+  } catch (e) {
+    console.error(e);
+    showTopBanner('Failed to load products', { actionLabel: t('retry'), onAction: loadProducts });
+    throw e;
   }
 }
 
-async function loadRecipesData() {
-  await loadRecipes();
+async function loadRecipes() {
+  trace('loadRecipes:enter');
+  try {
+    await fetchRecipes();
+    trace('loadRecipes:ok');
+  } catch (e) {
+    console.error(e);
+    showTopBanner('Failed to load recipes', { actionLabel: t('retry'), onAction: loadRecipes });
+    throw e;
+  }
 }
 
 async function loadHistory() {
-  state.historyData = await fetchJSON('/api/history');
+  trace('loadHistory:enter');
+  try {
+    state.historyData = await fetchJSON('/api/history');
+    trace('loadHistory:ok');
+  } catch (e) {
+    console.error(e);
+    showTopBanner('Failed to load history', { actionLabel: t('retry'), onAction: loadHistory });
+    throw e;
+  }
 }
 
 async function checkHealth() {
@@ -115,7 +139,7 @@ async function activateTab(targetId) {
   if (targetId === 'tab-products') {
     resetProductFilters();
     if (!APP.state.products || APP.state.products.length === 0) {
-      await safeFetch(loadProducts, t('products_load_failed'));
+      try { await loadProducts(); } catch (e) {}
     }
     renderProducts();
   } else if (targetId === 'tab-recipes') {
@@ -489,23 +513,34 @@ function initialRender() {
 }
 
 async function boot() {
-  await safeFetch(loadTranslations, 'Failed to load translations.');
-  await safeFetch(loadUnits, 'Failed to load units.');
+  trace('boot:start');
+  await loadTranslations();
+  trace('i18n');
+  await loadUnits();
+  trace('units');
   applyTranslations();
   document.documentElement.setAttribute('lang', state.currentLang);
-  await safeFetch(loadFavorites, 'Failed to load favorites.');
-  const healthy = await checkHealth();
-  if (!healthy) return;
-  await safeFetch(loadHistory, 'Failed to load history.');
-  await safeFetch(
-    loadProducts,
-    state.currentLang === 'pl'
-      ? 'Nie udało się wczytać produktów. Spróbuj ponownie.'
-      : 'Failed to load products. Try again.'
-  );
-  await safeFetch(loadRecipesData, 'Failed to load recipes.');
+  await loadFavorites();
+  trace('favorites');
+  await loadHistory();
+  trace('history');
+  await loadProducts();
+  trace('products');
+  await loadRecipes();
+  trace('recipes');
   initNavigationAndEvents();
+  trace('events');
   initialRender();
+  trace('render');
 }
 
-document.addEventListener('DOMContentLoaded', boot);
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    trace('DOMContentLoaded');
+    await boot();
+    trace('boot:done');
+  } catch (e) {
+    console.error(e);
+    showTopBanner(t('init_failed'), { actionLabel: t('retry'), onAction: () => location.reload() });
+  }
+});
