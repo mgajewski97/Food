@@ -146,22 +146,25 @@ function attachCollapses(root) {
     const isStorage = parts.length === 1;
     const key = isStorage ? parts[0] : parts.join('-');
     const store = isStorage ? state.expandedStorages : state.expandedCategories;
-
     if (store[key] === false) {
       target?.classList.add('hidden');
-      icon.classList.remove('fa-caret-down');
-      icon.classList.add('fa-caret-right');
+      icon.classList.remove('fa-caret-up');
+      icon.classList.add('fa-caret-down');
+      btn.setAttribute('title', t('expand'));
+    } else {
+      btn.setAttribute('title', t('collapse'));
     }
 
     function toggle() {
       const isHidden = target?.classList.toggle('hidden');
-      icon.classList.toggle('fa-caret-down', !isHidden);
-      icon.classList.toggle('fa-caret-right', isHidden);
+      icon.classList.toggle('fa-caret-up', !isHidden);
+      icon.classList.toggle('fa-caret-down', isHidden);
+      btn.setAttribute('title', t(isHidden ? 'expand' : 'collapse'));
       store[key] = !isHidden;
     }
 
     btn.addEventListener('click', e => { e.stopPropagation(); toggle(); });
-    if (header) {
+    if (header && state.displayMode === 'mobile') {
       header.addEventListener('click', toggle);
     }
   });
@@ -221,17 +224,19 @@ export function renderProducts() {
         const block = document.createElement('div');
         block.className = 'storage-block border border-base-300 rounded-lg p-4 mb-4';
         const header = document.createElement('h3');
-        header.className = 'text-2xl font-bold flex items-center gap-2 cursor-pointer';
+        header.className = 'text-2xl font-bold flex items-center gap-2';
+        if (state.displayMode === 'mobile') header.classList.add('cursor-pointer');
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = `${STORAGE_ICONS[stor] || ''} ${storageName(stor)}`;
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.innerHTML = '<i class="fa-solid fa-caret-down"></i>';
+        btn.className = 'ml-auto';
+        btn.innerHTML = '<i class="fa-regular fa-caret-up"></i>';
         btn.setAttribute('data-collapse', '');
         const contentId = `storage-${stor}`;
         btn.setAttribute('aria-controls', contentId);
-        header.appendChild(btn);
-        const nameSpan = document.createElement('span');
-        nameSpan.textContent = `${STORAGE_ICONS[stor] || ''} ${storageName(stor)}`;
-        header.appendChild(nameSpan);
+        btn.setAttribute('title', t('collapse'));
+        header.append(nameSpan, btn);
         block.appendChild(header);
         const content = document.createElement('div');
         content.id = contentId;
@@ -241,16 +246,19 @@ export function renderProducts() {
             const catBlock = document.createElement('div');
             catBlock.className = 'category-block';
             const catHeader = document.createElement('h4');
-            catHeader.className = 'text-xl font-semibold mt-4 mb-2 flex items-center gap-2 cursor-pointer';
+            catHeader.className = 'text-xl font-semibold mt-4 mb-2 flex items-center gap-2';
+            if (state.displayMode === 'mobile') catHeader.classList.add('cursor-pointer');
+            const catSpan = document.createElement('span');
+            catSpan.textContent = categoryName(cat);
             const catBtn = document.createElement('button');
             catBtn.type = 'button';
-            catBtn.innerHTML = '<i class="fa-solid fa-caret-down"></i>';
+            catBtn.className = 'ml-auto';
+            catBtn.innerHTML = '<i class="fa-regular fa-caret-up"></i>';
             const catId = `${contentId}-${cat}`;
             catBtn.setAttribute('data-collapse', '');
             catBtn.setAttribute('aria-controls', catId);
-            const catSpan = document.createElement('span');
-            catSpan.textContent = categoryName(cat);
-            catHeader.append(catBtn, catSpan);
+            catBtn.setAttribute('title', t('collapse'));
+            catHeader.append(catSpan, catBtn);
             catBlock.appendChild(catHeader);
             const tableWrap = document.createElement('div');
             tableWrap.id = catId;
