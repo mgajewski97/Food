@@ -83,7 +83,7 @@ export async function handleReceiptUpload(file) {
     } else {
       const span = document.createElement('span');
       span.className = 'badge ' + (item.matches.length ? 'badge-success' : 'badge-warning');
-      span.textContent = item.matches.length ? 'OK' : t('ocr_not_recognized');
+      span.textContent = item.matches.length ? t('ok') : t('ocr_not_recognized');
       statusTd.appendChild(span);
     }
     tr.appendChild(statusTd);
