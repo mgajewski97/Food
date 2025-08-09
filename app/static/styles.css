@@ -144,6 +144,7 @@ html[data-layout="mobile"] .btn {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  height: 2.5rem;
 }
 
 #product-table.edit-mode .quantity-control .touch-btn {
