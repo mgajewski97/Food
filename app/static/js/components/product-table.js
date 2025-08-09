@@ -447,9 +447,10 @@ export function renderProducts() {
               const headers = editing
                 ? ['', t('table_header_name'), t('table_header_quantity'), t('table_header_unit'), t('table_header_status')]
                 : [t('table_header_name'), t('table_header_quantity'), t('table_header_unit'), t('table_header_status')];
-              headers.forEach(txt => {
+              headers.forEach((txt, i) => {
                 const th = document.createElement('th');
                 th.textContent = txt;
+                if (editing && i === 0) th.className = 'checkbox-cell';
                 hr.appendChild(th);
               });
               thead.appendChild(hr);
@@ -462,6 +463,7 @@ export function renderProducts() {
                 tr.dataset.productId = p.id != null ? p.id : idx;
                 if (editing) {
                   const cbTd = document.createElement('td');
+                  cbTd.className = 'checkbox-cell';
                   const cb = document.createElement('input');
                   cb.type = 'checkbox';
                   cb.className = 'checkbox checkbox-sm product-select';
@@ -522,6 +524,7 @@ function attachCollapses(root) {
   if (root._headerHandler) root.removeEventListener('click', root._headerHandler);
 
   const collapseHandler = e => {
+    if (APP.state && APP.state.editing) return;
     const storageBtn = e.target.closest('.toggle-storage');
     const catBtn = e.target.closest('.toggle-category');
 
@@ -548,6 +551,7 @@ function attachCollapses(root) {
   };
 
   const headerHandler = e => {
+    if (APP.state && APP.state.editing) return;
     const hdr = e.target.closest('.category-header, .storage-header');
     if (!hdr) return;
     if (!window.matchMedia('(max-width: 768px)').matches) return;
