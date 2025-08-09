@@ -12,9 +12,6 @@ function updateDeleteButton() {
 document.addEventListener('change', (e) => {
   if (e.target.matches('input.row-select')) updateDeleteButton();
 });
-document.addEventListener('click', (e) => {
-  if (e.target.id === 'end-edit') { /* leaving edit mode */ updateDeleteButton(); }
-});
 
 document.addEventListener('click', (e) => {
   if (e.target.closest('.qty-inc')) adjustRow(e.target.closest('tr'), 1);
@@ -135,6 +132,34 @@ function adjustRow(tr, delta) {
   input.dispatchEvent(new Event('change', { bubbles: true }));
 }
 
+function buildQtyCell(p, tr) {
+  const td = document.createElement('td');
+  td.className = 'qty-cell';
+  const wrap = document.createElement('div');
+  wrap.className = 'qty-wrap';
+  const dec = document.createElement('button');
+  dec.type = 'button';
+  dec.className = 'btn-qty qty-dec';
+  dec.textContent = '−';
+  const input = document.createElement('input');
+  input.className = 'qty-input';
+  input.type = 'number';
+  input.step = '1';
+  input.inputMode = 'numeric';
+  input.value = p.quantity;
+  input.addEventListener('change', () => {
+    p.quantity = parseFloat(input.value) || 0;
+    highlightRow(tr, p);
+  });
+  const inc = document.createElement('button');
+  inc.type = 'button';
+  inc.className = 'btn-qty qty-inc';
+  inc.textContent = '+';
+  wrap.append(dec, input, inc);
+  td.appendChild(wrap);
+  return td;
+}
+
 export async function refreshProducts() {
   const res = await fetch('/api/products');
   if (!res.ok) throw new Error('Fetch failed');
@@ -173,21 +198,7 @@ function createFlatRow(p, idx, editable) {
     nameTd.textContent = productName(p.name);
     tr.appendChild(nameTd);
     // quantity with steppers
-    const qtyTd = document.createElement('td');
-    qtyTd.className = 'qty-cell';
-    qtyTd.innerHTML = `
-      <div class="qty-wrap">
-        <button type="button" class="btn-qty qty-dec">−</button>
-        <input class="qty-input" type="number" step="1" inputmode="numeric" />
-        <button type="button" class="btn-qty qty-inc">+</button>
-      </div>
-    `;
-    const input = qtyTd.querySelector('.qty-input');
-    input.value = p.quantity;
-    input.addEventListener('change', () => {
-      p.quantity = parseFloat(input.value) || 0;
-      highlightRow(tr, p);
-    });
+    const qtyTd = buildQtyCell(p, tr);
     tr.appendChild(qtyTd);
     // unit select
     const unitTd = document.createElement('td');
@@ -404,21 +415,7 @@ export function renderProducts() {
               const n = document.createElement('td');
               n.textContent = productName(p.name);
               tr.appendChild(n);
-              const q = document.createElement('td');
-              q.className = 'qty-cell';
-              q.innerHTML = `
-                <div class="qty-wrap">
-                  <button type="button" class="btn-qty qty-dec">−</button>
-                  <input class="qty-input" type="number" step="1" inputmode="numeric" />
-                  <button type="button" class="btn-qty qty-inc">+</button>
-                </div>
-              `;
-              const input = q.querySelector('.qty-input');
-              input.value = p.quantity;
-              input.addEventListener('change', () => {
-                p.quantity = parseFloat(input.value) || 0;
-                highlightRow(tr, p);
-              });
+              const q = buildQtyCell(p, tr);
               tr.appendChild(q);
               const u = document.createElement('td');
               u.textContent = unitName(p.unit);

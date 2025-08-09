@@ -19,6 +19,7 @@ APP.state = APP.state || {
   editing: false
 };
 APP.activeTab = APP.activeTab || null;
+APP.editBackup = APP.editBackup || null;
 
 async function fetchProducts() {
   try {
@@ -212,7 +213,7 @@ async function saveEdits() {
   const updates = [];
   rows.forEach(r => {
     const idx = Number(r.dataset.index);
-    const orig = APP.state.products[idx];
+    const orig = APP.editBackup?.[idx];
     if (!orig) return;
     const qty = parseFloat(r.querySelector('.qty-cell input')?.value) || orig.quantity;
     const unit = r.querySelector('.unit-cell select')?.value || orig.unit;
@@ -258,17 +259,46 @@ document.addEventListener('DOMContentLoaded', async () => {
   const saveBtn = document.getElementById('save-btn');
   const deleteBtn = document.getElementById('delete-selected');
   const selectHeader = document.getElementById('select-header');
-  editBtn?.addEventListener('click', () => {
-    APP.state.editing = !APP.state.editing;
-    editBtn.textContent = APP.state.editing ? t('edit_mode_button_off') : t('edit_mode_button_on');
-    saveBtn.style.display = APP.state.editing ? '' : 'none';
-    deleteBtn.style.display = APP.state.editing ? '' : 'none';
-    selectHeader.style.display = APP.state.editing ? '' : 'none';
+  function enterEditMode() {
+    APP.editBackup = JSON.parse(JSON.stringify(APP.state.products));
+    APP.state.editing = true;
+    editBtn.textContent = t('edit_mode_button_off');
+    saveBtn.style.display = '';
+    deleteBtn.style.display = '';
+    deleteBtn.disabled = true;
+    deleteBtn.textContent = t('delete_selected_button');
+    selectHeader.style.display = '';
     renderProducts();
+  }
+
+  function exitEditMode(discard) {
+    if (discard && APP.editBackup) {
+      APP.state.products = APP.editBackup;
+    }
+    APP.editBackup = null;
+    APP.state.editing = false;
+    editBtn.textContent = t('edit_mode_button_on');
+    saveBtn.style.display = 'none';
+    deleteBtn.style.display = 'none';
+    deleteBtn.disabled = true;
+    deleteBtn.textContent = t('delete_selected_button');
+    selectHeader.style.display = 'none';
+    renderProducts();
+  }
+
+  editBtn?.addEventListener('click', () => {
+    if (APP.state.editing) exitEditMode(true);
+    else enterEditMode();
   });
-  saveBtn?.addEventListener('click', saveEdits);
+
+  saveBtn?.addEventListener('click', async () => {
+    await saveEdits();
+    exitEditMode(false);
+  });
+
   const viewBtn = document.getElementById('view-toggle');
   viewBtn?.addEventListener('click', () => {
+    if (APP.state.editing) exitEditMode(true);
     APP.state.view = APP.state.view === 'flat' ? 'grouped' : 'flat';
     viewBtn.textContent = APP.state.view === 'grouped' ? t('change_view_toggle_flat') : t('change_view_toggle_grouped');
     renderProducts();
