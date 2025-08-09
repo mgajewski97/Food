@@ -9,31 +9,13 @@ import {
   debounce
 } from '../helpers.js';
 import { toast } from './toast.js';
-import { renderRecipeDetail } from './recipe-detail.js';
+import { openRecipeDetails } from './recipe-detail.js';
 
 // CHANGELOG:
 // - Exposed ``loadRecipes`` without internal catch to allow caller-side retry/toast handling.
 // - Added defensive rendering and normalization of ingredient structures.
 // - Inline recipe details with expandable cards and single-shot event bindings.
 
-function getRecipeById(id) {
-  return state.recipesData.find(r => r.name === id);
-}
-
-document.addEventListener('click', async e => {
-  const btn = e.target.closest('.show-recipe');
-  if (!btn) return;
-  const id = btn.dataset.recipeId;
-  const panel = document.getElementById(`recipe-detail-${id}`);
-  if (!panel) return;
-  const open = panel.classList.toggle('hidden') === false;
-  btn.textContent = open ? t('recipe_hide_details') : t('recipe_show_details');
-  if (open && !panel.dataset.hydrated) {
-    const recipe = getRecipeById(id);
-    panel.innerHTML = renderRecipeDetail(recipe);
-    panel.dataset.hydrated = '1';
-  }
-});
 
 export function renderRecipes() {
   const list = document.getElementById('recipe-list');
@@ -143,14 +125,10 @@ export function renderRecipes() {
       }
       if (meta.children.length) body.appendChild(meta);
       const btn = document.createElement('button');
-      btn.className = 'btn btn-primary show-recipe';
-      btn.dataset.recipeId = r.name;
+      btn.className = 'btn btn-primary';
       btn.textContent = t('recipe_show_details');
-      const panel = document.createElement('div');
-      panel.id = `recipe-detail-${r.name}`;
-      panel.className = 'recipe-detail hidden';
+      btn.addEventListener('click', () => openRecipeDetails(r));
       body.appendChild(btn);
-      body.appendChild(panel);
       card.appendChild(body);
       frag.appendChild(card);
     });
@@ -196,6 +174,10 @@ export async function loadRecipes() {
     state.recipesLoading = false;
   }
 }
+
+document.addEventListener('favorites-changed', () => {
+  renderRecipes();
+});
 
 document.addEventListener('DOMContentLoaded', () => {
   const sortField = document.getElementById('recipe-sort-field');
