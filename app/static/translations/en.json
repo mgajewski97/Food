@@ -202,7 +202,7 @@
   "unit_piece": "pcs",
   "accept": "accept",
   "reject": "reject",
-  "in_cart": "in cart",
+    "in_cart": "In cart",
   "owned": "Owned",
   "expand": "Expand",
   "collapse": "Collapse",
