@@ -28,7 +28,7 @@ export function renderShoppingList() {
   state.shoppingList.forEach((item, idx) => {
     const row = document.createElement('div');
     row.className =
-      'shopping-item flex flex-col sm:flex-row sm:items-center gap-3 p-2 min-h-12 hover:bg-base-200 transition-colors';
+      'shopping-item flex items-center flex-wrap gap-2 py-1 min-h-9 hover:bg-base-200 transition-colors';
     if (item.inCart) row.classList.add('opacity-50', 'italic');
 
     const stock = (window.APP?.state?.products || []).find(p => p.name === item.name);
@@ -38,63 +38,27 @@ export function renderShoppingList() {
       if (level === 'none') row.classList.add('product-missing');
     }
 
-    const nameWrap = document.createElement('div');
-    nameWrap.className = 'flex-1 overflow-hidden';
-    const nameRow = document.createElement('div');
-    nameRow.className = 'flex items-baseline gap-2 truncate';
     const nameEl = document.createElement('span');
+    nameEl.className = 'truncate max-w-[10rem]';
     nameEl.textContent = productName(item.name);
     if (item.inCart) nameEl.classList.add('line-through');
-    nameRow.appendChild(nameEl);
-    if (stock && stock.quantity > 0) {
-      const ownedEl = document.createElement('span');
-      ownedEl.className = 'text-xs text-secondary';
-      ownedEl.textContent = `(${t('owned')}: ${stock.quantity})`;
-      nameRow.appendChild(ownedEl);
-    }
-    nameWrap.appendChild(nameRow);
-    row.appendChild(nameWrap);
+    row.appendChild(nameEl);
 
-    const controls = document.createElement('div');
-    controls.className = 'flex items-center gap-3 w-full sm:w-auto';
-
-    const cartLabel = document.createElement('label');
-    cartLabel.className = 'flex items-center gap-2 h-10 whitespace-nowrap';
-    const cartCheckbox = document.createElement('input');
-    cartCheckbox.type = 'checkbox';
-    cartCheckbox.className = 'checkbox';
-    cartCheckbox.checked = item.inCart;
-    cartCheckbox.addEventListener('change', () => {
-      item.inCart = cartCheckbox.checked;
-      if (item.inCart) {
-        item.cartTime = Date.now();
-      } else {
-        delete item.cartTime;
-      }
-      saveShoppingList();
-      renderShoppingList();
-    });
-    const cartText = document.createElement('span');
-    cartText.textContent = t('in_cart');
-    cartLabel.append(cartCheckbox, cartText);
-
-    const qtyWrap = document.createElement('div');
-    qtyWrap.className = 'flex items-center gap-2 h-10';
     const dec = document.createElement('button');
     dec.type = 'button';
     dec.innerHTML = '<i class="fa-solid fa-minus"></i>';
-    dec.className = 'touch-btn';
+    dec.className = 'touch-btn h-9 w-9';
     dec.disabled = item.inCart;
     const qtyInput = document.createElement('input');
     qtyInput.type = 'number';
     qtyInput.min = '1';
     qtyInput.value = item.quantity;
-    qtyInput.className = 'input input-bordered w-12 h-10 text-center no-spinner';
+    qtyInput.className = 'input input-bordered w-12 h-9 text-center no-spinner';
     qtyInput.disabled = item.inCart;
     const inc = document.createElement('button');
     inc.type = 'button';
     inc.innerHTML = '<i class="fa-solid fa-plus"></i>';
-    inc.className = 'touch-btn';
+    inc.className = 'touch-btn h-9 w-9';
     inc.disabled = item.inCart;
     dec.addEventListener('click', () => {
       const newVal = Math.max(1, (parseInt(qtyInput.value) || 1) - 1);
@@ -114,11 +78,35 @@ export function renderShoppingList() {
       qtyInput.value = val;
       saveShoppingList();
     });
-    qtyWrap.append(dec, qtyInput, inc);
+    row.append(dec, qtyInput, inc);
+
+    if (stock && stock.quantity > 0) {
+      const ownedEl = document.createElement('span');
+      ownedEl.className = 'text-xs text-secondary';
+      ownedEl.textContent = `(${t('owned')}: ${stock.quantity})`;
+      row.appendChild(ownedEl);
+    }
+
+    const cartBtn = document.createElement('button');
+    cartBtn.type = 'button';
+    cartBtn.innerHTML = '<i class="fa-solid fa-cart-shopping"></i>';
+    cartBtn.className = 'touch-btn h-9 w-9';
+    cartBtn.classList.toggle('text-primary', item.inCart);
+    cartBtn.addEventListener('click', () => {
+      item.inCart = !item.inCart;
+      if (item.inCart) {
+        item.cartTime = Date.now();
+      } else {
+        delete item.cartTime;
+      }
+      saveShoppingList();
+      renderShoppingList();
+    });
+    row.appendChild(cartBtn);
 
     const delBtn = document.createElement('button');
     delBtn.type = 'button';
-    delBtn.className = 'text-error touch-btn ml-auto';
+    delBtn.className = 'text-error touch-btn h-9 w-9';
     delBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
     delBtn.setAttribute('aria-label', t('delete_confirm_button'));
     delBtn.addEventListener('click', () => {
@@ -126,10 +114,8 @@ export function renderShoppingList() {
       const modal = document.getElementById('shopping-delete-modal');
       if (modal) modal.showModal();
     });
+    row.appendChild(delBtn);
 
-    controls.append(cartLabel, qtyWrap, delBtn);
-
-    row.appendChild(controls);
     list.appendChild(row);
   });
 }
@@ -152,7 +138,7 @@ export function renderSuggestions() {
     let qty = p.threshold != null ? p.threshold : 1;
     const row = document.createElement('div');
     row.className =
-      'suggestion-item flex flex-wrap sm:flex-nowrap items-center gap-3 p-2 min-h-12 hover:bg-base-200 transition-colors';
+      'suggestion-item flex items-center flex-wrap gap-2 py-1 min-h-9 hover:bg-base-200 transition-colors';
     const level = stockLevel(p);
     if (level === 'low') row.classList.add('product-low');
     if (level === 'none') row.classList.add('product-missing');
@@ -167,20 +153,20 @@ export function renderSuggestions() {
     row.appendChild(nameWrap);
 
     const qtyWrap = document.createElement('div');
-    qtyWrap.className = 'flex items-center gap-2 h-10';
+    qtyWrap.className = 'flex items-center gap-2 h-9';
     const dec = document.createElement('button');
     dec.type = 'button';
     dec.innerHTML = '<i class="fa-solid fa-minus"></i>';
-    dec.className = 'touch-btn';
+    dec.className = 'touch-btn h-9 w-9';
     const qtyInput = document.createElement('input');
     qtyInput.type = 'number';
     qtyInput.min = '1';
     qtyInput.value = qty;
-    qtyInput.className = 'input input-bordered w-12 h-10 text-center no-spinner';
+    qtyInput.className = 'input input-bordered w-12 h-9 text-center no-spinner';
     const inc = document.createElement('button');
     inc.type = 'button';
     inc.innerHTML = '<i class="fa-solid fa-plus"></i>';
-    inc.className = 'touch-btn';
+    inc.className = 'touch-btn h-9 w-9';
     dec.addEventListener('click', () => {
       qty = Math.max(1, qty - 1);
       qtyInput.value = qty;
@@ -201,7 +187,7 @@ export function renderSuggestions() {
     const accept = document.createElement('button');
     accept.type = 'button';
     accept.innerHTML = '<i class="fa-solid fa-check"></i>';
-    accept.className = 'touch-btn text-success';
+    accept.className = 'touch-btn h-9 w-9 text-success';
     accept.setAttribute('aria-label', t('accept_action'));
     accept.setAttribute('title', t('accept_action'));
     accept.addEventListener('click', () => {
@@ -212,7 +198,7 @@ export function renderSuggestions() {
     const reject = document.createElement('button');
     reject.type = 'button';
     reject.innerHTML = '<i class="fa-solid fa-xmark"></i>';
-    reject.className = 'touch-btn text-error';
+    reject.className = 'touch-btn h-9 w-9 text-error';
     reject.setAttribute('aria-label', t('reject_action'));
     reject.setAttribute('title', t('reject_action'));
     reject.addEventListener('click', () => {
