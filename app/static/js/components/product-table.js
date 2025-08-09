@@ -1,10 +1,6 @@
 import {
   t,
   state,
-  productName,
-  unitName,
-  categoryName,
-  storageName,
   formatPackQuantity,
   getStatusIcon,
   STORAGE_ICONS,
@@ -47,7 +43,7 @@ deleteBtn?.addEventListener('click', () => {
   const list = document.createElement('ul');
   selected.forEach(cb => {
     const li = document.createElement('li');
-    li.textContent = productName(cb.dataset.name);
+    li.textContent = t(cb.dataset.name);
     list.appendChild(li);
   });
   deleteSummary.appendChild(list);
@@ -256,7 +252,7 @@ function createFlatRow(p, idx, editable) {
     // name
     const nameTd = document.createElement('td');
     nameTd.className = 'name-cell';
-    nameTd.textContent = productName(p.name);
+    nameTd.textContent = t(p.name);
     tr.appendChild(nameTd);
     // quantity with steppers
     const qtyTd = buildQtyCell(p, tr);
@@ -269,7 +265,7 @@ function createFlatRow(p, idx, editable) {
     Object.keys(state.units).forEach(u => {
       const opt = document.createElement('option');
       opt.value = u;
-      opt.textContent = unitName(u);
+      opt.textContent = t(u);
       if (u === p.unit) opt.selected = true;
       unitSel.appendChild(opt);
     });
@@ -283,7 +279,7 @@ function createFlatRow(p, idx, editable) {
     Object.keys(CATEGORY_KEYS).forEach(c => {
       const opt = document.createElement('option');
       opt.value = c;
-      opt.textContent = categoryName(c);
+      opt.textContent = t(CATEGORY_KEYS[c] || c);
       if (c === (p.category || 'uncategorized')) opt.selected = true;
       catSel.appendChild(opt);
     });
@@ -297,7 +293,7 @@ function createFlatRow(p, idx, editable) {
     Object.keys(STORAGE_KEYS).forEach(s => {
       const opt = document.createElement('option');
       opt.value = s;
-      opt.textContent = storageName(s);
+      opt.textContent = t(STORAGE_KEYS[s] || s);
       if (s === (p.storage || 'pantry')) opt.selected = true;
       storSel.appendChild(opt);
     });
@@ -314,19 +310,19 @@ function createFlatRow(p, idx, editable) {
     tr.appendChild(statusTd);
   } else {
     const nameTd = document.createElement('td');
-    nameTd.textContent = productName(p.name);
+    nameTd.textContent = t(p.name);
     tr.appendChild(nameTd);
     const qtyTd = document.createElement('td');
     qtyTd.textContent = formatPackQuantity(p);
     tr.appendChild(qtyTd);
     const unitTd = document.createElement('td');
-    unitTd.textContent = unitName(p.unit);
+    unitTd.textContent = t(p.unit);
     tr.appendChild(unitTd);
     const catTd = document.createElement('td');
-    catTd.textContent = categoryName(p.category);
+    catTd.textContent = t(CATEGORY_KEYS[p.category] || p.category);
     tr.appendChild(catTd);
     const storTd = document.createElement('td');
-    storTd.textContent = storageName(p.storage);
+    storTd.textContent = t(STORAGE_KEYS[p.storage] || p.storage);
     tr.appendChild(storTd);
     const statusTd = document.createElement('td');
     const status = getStatusIcon(p);
@@ -389,7 +385,7 @@ export function renderProducts() {
       storages[s][c].push(p);
     });
     Object.keys(storages)
-      .sort((a, b) => storageName(a).localeCompare(storageName(b)))
+      .sort((a, b) => t(STORAGE_KEYS[a] || a).localeCompare(t(STORAGE_KEYS[b] || b)))
       .forEach(stor => {
         const block = document.createElement('section');
         block.className = 'storage-section storage-block border border-base-300 rounded-lg p-4 mb-4';
@@ -400,7 +396,7 @@ export function renderProducts() {
         if (state.displayMode === 'mobile') header.classList.add('cursor-pointer');
         const nameSpan = document.createElement('span');
         nameSpan.className = 'inline-flex items-center text-xl font-semibold';
-        nameSpan.textContent = `${STORAGE_ICONS[stor] || ''} ${storageName(stor)}`;
+        nameSpan.textContent = `${STORAGE_ICONS[stor] || ''} ${t(STORAGE_KEYS[stor] || stor)}`;
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'toggle-storage ml-auto h-8 w-8 flex items-center justify-center';
@@ -411,7 +407,7 @@ export function renderProducts() {
         block.appendChild(header);
 
         Object.keys(storages[stor])
-          .sort((a, b) => categoryName(a).localeCompare(categoryName(b)))
+          .sort((a, b) => t(CATEGORY_KEYS[a] || a).localeCompare(t(CATEGORY_KEYS[b] || b)))
           .forEach(cat => {
           const catBlock = document.createElement('div');
           catBlock.className = 'category-section category-block';
@@ -423,7 +419,7 @@ export function renderProducts() {
           if (state.displayMode === 'mobile') catHeader.classList.add('cursor-pointer');
           const catSpan = document.createElement('span');
           catSpan.className = 'font-medium';
-          catSpan.textContent = categoryName(cat);
+          catSpan.textContent = t(CATEGORY_KEYS[cat] || cat);
           const catBtn = document.createElement('button');
           catBtn.type = 'button';
           catBtn.className = 'toggle-category ml-auto h-8 w-8 flex items-center justify-center';
@@ -474,12 +470,12 @@ export function renderProducts() {
               cbTd.appendChild(cb);
               tr.appendChild(cbTd);
               const n = document.createElement('td');
-              n.textContent = productName(p.name);
+            n.textContent = t(p.name);
               tr.appendChild(n);
               const q = buildQtyCell(p, tr);
               tr.appendChild(q);
               const u = document.createElement('td');
-              u.textContent = unitName(p.unit);
+              u.textContent = t(p.unit);
               tr.appendChild(u);
               const s = document.createElement('td');
               const ic = getStatusIcon(p);
@@ -490,11 +486,11 @@ export function renderProducts() {
               tr.appendChild(s);
             } else {
               const n = document.createElement('td');
-              n.textContent = productName(p.name);
+            n.textContent = t(p.name);
               const q = document.createElement('td');
               q.textContent = formatPackQuantity(p);
               const u = document.createElement('td');
-              u.textContent = unitName(p.unit);
+              u.textContent = t(p.unit);
               const s = document.createElement('td');
               const ic = getStatusIcon(p);
               if (ic) {
