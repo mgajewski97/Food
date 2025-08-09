@@ -1,5 +1,6 @@
-import { t, state } from '../helpers.js';
+import { t, state, fetchJson } from '../helpers.js';
 import { addToShoppingList, renderShoppingList } from './shopping-list.js';
+import { showNotification } from './toast.js';
 
 export function initReceiptImport() {
   const btn = document.getElementById('receipt-btn');
@@ -39,12 +40,16 @@ export async function handleReceiptUpload(file) {
   if (!modal.open) modal.showModal();
   const { data: { text } } = await Tesseract.recognize(file, state.currentLang === 'pl' ? 'pol' : 'eng');
   const lines = text.split('\n').map(l => l.trim()).filter(l => l);
-  const res = await fetch('/api/ocr-match', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ items: lines })
-  });
-  const data = await res.json();
+  let data;
+  try {
+    data = await fetchJson('/api/ocr-match', {
+      method: 'POST',
+      body: { items: lines }
+    });
+  } catch (err) {
+    showNotification({ type: 'error', title: t('notify_error_title') });
+    return;
+  }
   tableBody.innerHTML = '';
   data.forEach(item => {
     const tr = document.createElement('tr');
