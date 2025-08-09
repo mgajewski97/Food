@@ -76,6 +76,7 @@ function setCategoryUI(categorySection, open) {
   categorySection.querySelector('.category-body').classList.toggle('hidden', !open);
 }
 function highlightRow(tr, p) {
+  tr.classList.remove('product-low', 'product-missing');
   const level = stockLevel(p);
   if (level === 'low') tr.classList.add('product-low');
   if (level === 'none') tr.classList.add('product-missing');
@@ -141,6 +142,7 @@ function createFlatRow(p, idx, editable) {
     input.value = p.quantity;
     input.addEventListener('change', () => {
       p.quantity = parseFloat(input.value) || 0;
+      highlightRow(tr, p);
     });
     tr.appendChild(qtyTd);
     // unit select
@@ -371,6 +373,7 @@ export function renderProducts() {
               input.value = p.quantity;
               input.addEventListener('change', () => {
                 p.quantity = parseFloat(input.value) || 0;
+                highlightRow(tr, p);
               });
               tr.appendChild(q);
               const u = document.createElement('td');
