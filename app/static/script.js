@@ -61,6 +61,27 @@ function resetProductFilter() {
   if (sel) sel.value = 'available';
 }
 
+function resetRecipeFilters() {
+  state.recipeSortField = 'name';
+  state.recipeSortDir = 'asc';
+  state.recipeTimeFilter = '';
+  state.recipePortionsFilter = '';
+  state.showFavoritesOnly = false;
+  const sortField = document.getElementById('recipe-sort-field');
+  const sortMobile = document.getElementById('recipe-sort-mobile');
+  const timeFilter = document.getElementById('recipe-time-filter');
+  const portionsFilter = document.getElementById('recipe-portions-filter');
+  const favToggle = document.getElementById('recipe-favorites-toggle');
+  sortField && (sortField.value = 'name');
+  sortMobile && (sortMobile.value = 'name-asc');
+  timeFilter && (timeFilter.value = '');
+  portionsFilter && (portionsFilter.value = '');
+  if (favToggle) {
+    favToggle.classList.remove('btn-primary');
+    favToggle.classList.add('btn-outline');
+  }
+}
+
 function activateTab(targetId) {
   document.querySelectorAll('[data-tab-target]').forEach(t => t.classList.remove('tab-active', 'font-bold'));
   const tab = document.querySelector(`[data-tab-target="${targetId}"]`);
@@ -71,6 +92,10 @@ function activateTab(targetId) {
   if (targetId === 'tab-products' && APP.activeTab !== 'tab-products') {
     resetProductFilter();
     renderProducts();
+  }
+  if (targetId === 'tab-recipes' && APP.activeTab !== 'tab-recipes') {
+    resetRecipeFilters();
+    renderRecipes();
   }
   APP.activeTab = targetId;
 }
