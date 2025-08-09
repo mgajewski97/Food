@@ -30,19 +30,19 @@ function createFlatRow(p, idx, editable) {
     const qtyTd = document.createElement('td');
     qtyTd.className = 'qty-cell';
     const wrap = document.createElement('div');
-    wrap.className = 'quantity-control';
+    wrap.className = 'quantity-control flex items-center gap-2';
     const minus = document.createElement('button');
     minus.type = 'button';
-    minus.className = 'btn btn-xs';
-    minus.textContent = '−';
+    minus.innerHTML = '<i class="fa-solid fa-minus"></i>';
+    minus.className = 'touch-btn';
     const input = document.createElement('input');
     input.type = 'number';
-    input.className = 'input input-bordered w-full text-center no-spinner';
+    input.className = 'input input-bordered w-12 h-10 text-center no-spinner';
     input.value = p.quantity;
     const plus = document.createElement('button');
     plus.type = 'button';
-    plus.className = 'btn btn-xs';
-    plus.textContent = '+';
+    plus.innerHTML = '<i class="fa-solid fa-plus"></i>';
+    plus.className = 'touch-btn';
     minus.addEventListener('click', () => {
       input.value = Math.max(0, (parseFloat(input.value) || 0) - 1);
     });

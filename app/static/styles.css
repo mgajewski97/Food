@@ -143,11 +143,12 @@ html[data-layout="mobile"] .btn {
 #product-table.edit-mode .quantity-control {
   display: flex;
   align-items: center;
+  gap: 0.5rem;
 }
 
-#product-table.edit-mode .quantity-control .btn {
-  min-width: 2rem;
-  height: 2rem;
+#product-table.edit-mode .quantity-control .touch-btn {
+  width: 2.5rem;
+  height: 2.5rem;
 }
 
 #product-table.edit-mode select,
