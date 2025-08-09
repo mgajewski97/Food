@@ -28,8 +28,8 @@ export function renderShoppingList() {
   state.shoppingList.forEach((item, idx) => {
     const row = document.createElement('div');
     row.className =
-      'shopping-item flex items-center flex-wrap gap-2 py-1 min-h-9 hover:bg-base-200 transition-colors';
-    if (item.inCart) row.classList.add('opacity-50', 'italic');
+      'shopping-item flex items-center gap-2 py-2 min-h-11 hover:bg-base-200 transition-colors';
+    if (item.inCart) row.classList.add('in-cart');
 
     const stock = (window.APP?.state?.products || []).find(p => p.name === item.name);
     if (stock) {
@@ -38,27 +38,38 @@ export function renderShoppingList() {
       if (level === 'none') row.classList.add('product-missing');
     }
 
+    const nameWrap = document.createElement('div');
+    nameWrap.className = 'flex items-center gap-1 flex-1 overflow-hidden';
     const nameEl = document.createElement('span');
-    nameEl.className = 'truncate max-w-[10rem]';
+    nameEl.className = 'truncate';
     nameEl.textContent = t(item.name);
     if (item.inCart) nameEl.classList.add('line-through');
-    row.appendChild(nameEl);
+    nameWrap.appendChild(nameEl);
+    if (stock && stock.quantity > 0) {
+      const ownedEl = document.createElement('span');
+      ownedEl.className = 'owned-info';
+      ownedEl.textContent = `${t('owned')}: ${stock.quantity}`;
+      nameWrap.appendChild(ownedEl);
+    }
+    row.appendChild(nameWrap);
 
+    const qtyWrap = document.createElement('div');
+    qtyWrap.className = 'flex items-center gap-2';
     const dec = document.createElement('button');
     dec.type = 'button';
     dec.innerHTML = '<i class="fa-solid fa-minus"></i>';
-    dec.className = 'touch-btn h-9 w-9';
+    dec.className = 'touch-btn';
     dec.disabled = item.inCart;
     const qtyInput = document.createElement('input');
     qtyInput.type = 'number';
     qtyInput.min = '1';
     qtyInput.value = item.quantity;
-    qtyInput.className = 'input input-bordered w-12 h-9 text-center no-spinner';
+    qtyInput.className = 'input input-bordered w-16 h-11 text-center no-spinner';
     qtyInput.disabled = item.inCart;
     const inc = document.createElement('button');
     inc.type = 'button';
     inc.innerHTML = '<i class="fa-solid fa-plus"></i>';
-    inc.className = 'touch-btn h-9 w-9';
+    inc.className = 'touch-btn';
     inc.disabled = item.inCart;
     dec.addEventListener('click', () => {
       const newVal = Math.max(1, (parseInt(qtyInput.value) || 1) - 1);
@@ -78,20 +89,18 @@ export function renderShoppingList() {
       qtyInput.value = val;
       saveShoppingList();
     });
-    row.append(dec, qtyInput, inc);
+    qtyWrap.append(dec, qtyInput, inc);
+    row.appendChild(qtyWrap);
 
-    if (stock && stock.quantity > 0) {
-      const ownedEl = document.createElement('span');
-      ownedEl.className = 'text-xs text-secondary';
-      ownedEl.textContent = `(${t('owned')}: ${stock.quantity})`;
-      row.appendChild(ownedEl);
-    }
-
+    const actions = document.createElement('div');
+    actions.className = 'flex items-center gap-2 ml-auto';
     const cartBtn = document.createElement('button');
     cartBtn.type = 'button';
     cartBtn.innerHTML = '<i class="fa-solid fa-cart-shopping"></i>';
-    cartBtn.className = 'touch-btn h-9 w-9';
+    cartBtn.className = 'touch-btn';
     cartBtn.classList.toggle('text-primary', item.inCart);
+    cartBtn.setAttribute('aria-label', t('in_cart'));
+    cartBtn.setAttribute('title', t('in_cart'));
     cartBtn.addEventListener('click', async () => {
       item.inCart = !item.inCart;
       if (item.inCart) {
@@ -110,19 +119,21 @@ export function renderShoppingList() {
       saveShoppingList();
       renderShoppingList();
     });
-    row.appendChild(cartBtn);
+    actions.appendChild(cartBtn);
 
     const delBtn = document.createElement('button');
     delBtn.type = 'button';
-    delBtn.className = 'text-error touch-btn h-9 w-9';
+    delBtn.className = 'text-error touch-btn';
     delBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
     delBtn.setAttribute('aria-label', t('delete_confirm_button'));
+    delBtn.setAttribute('title', t('delete_confirm_button'));
     delBtn.addEventListener('click', () => {
       state.pendingRemoveIndex = idx;
       const modal = document.getElementById('shopping-delete-modal');
       if (modal) modal.showModal();
     });
-    row.appendChild(delBtn);
+    actions.appendChild(delBtn);
+    row.appendChild(actions);
 
     list.appendChild(row);
   });
@@ -146,35 +157,41 @@ export function renderSuggestions() {
     let qty = p.threshold != null ? p.threshold : 1;
     const row = document.createElement('div');
     row.className =
-      'suggestion-item flex items-center flex-wrap gap-2 py-1 min-h-9 hover:bg-base-200 transition-colors';
+      'suggestion-item flex items-center gap-2 py-2 min-h-11 hover:bg-base-200 transition-colors';
     const level = stockLevel(p);
     if (level === 'low') row.classList.add('product-low');
     if (level === 'none') row.classList.add('product-missing');
 
     const nameWrap = document.createElement('div');
-    nameWrap.className = 'w-full sm:flex-1 overflow-hidden';
-    const nameEl = document.createElement('div');
+    nameWrap.className = 'flex items-center gap-1 flex-1 overflow-hidden';
+    const nameEl = document.createElement('span');
     nameEl.className = 'truncate';
     nameEl.textContent = t(p.name);
     nameEl.title = t(p.name);
     nameWrap.appendChild(nameEl);
+    if (p.quantity > 0) {
+      const owned = document.createElement('span');
+      owned.className = 'owned-info';
+      owned.textContent = `${t('owned')}: ${p.quantity}`;
+      nameWrap.appendChild(owned);
+    }
     row.appendChild(nameWrap);
 
     const qtyWrap = document.createElement('div');
-    qtyWrap.className = 'flex items-center gap-2 h-9';
+    qtyWrap.className = 'flex items-center gap-2';
     const dec = document.createElement('button');
     dec.type = 'button';
     dec.innerHTML = '<i class="fa-solid fa-minus"></i>';
-    dec.className = 'touch-btn h-9 w-9';
+    dec.className = 'touch-btn';
     const qtyInput = document.createElement('input');
     qtyInput.type = 'number';
     qtyInput.min = '1';
     qtyInput.value = qty;
-    qtyInput.className = 'input input-bordered w-12 h-9 text-center no-spinner';
+    qtyInput.className = 'input input-bordered w-16 h-11 text-center no-spinner';
     const inc = document.createElement('button');
     inc.type = 'button';
     inc.innerHTML = '<i class="fa-solid fa-plus"></i>';
-    inc.className = 'touch-btn h-9 w-9';
+    inc.className = 'touch-btn';
     dec.addEventListener('click', () => {
       qty = Math.max(1, qty - 1);
       qtyInput.value = qty;
@@ -195,7 +212,7 @@ export function renderSuggestions() {
     const accept = document.createElement('button');
     accept.type = 'button';
     accept.innerHTML = '<i class="fa-solid fa-check"></i>';
-    accept.className = 'touch-btn h-9 w-9 text-success';
+    accept.className = 'touch-btn text-success';
     accept.setAttribute('aria-label', t('accept_action'));
     accept.setAttribute('title', t('accept_action'));
     accept.addEventListener('click', () => {
@@ -206,7 +223,7 @@ export function renderSuggestions() {
     const reject = document.createElement('button');
     reject.type = 'button';
     reject.innerHTML = '<i class="fa-solid fa-xmark"></i>';
-    reject.className = 'touch-btn h-9 w-9 text-error';
+    reject.className = 'touch-btn text-error';
     reject.setAttribute('aria-label', t('reject_action'));
     reject.setAttribute('title', t('reject_action'));
     reject.addEventListener('click', () => {
