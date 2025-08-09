@@ -86,9 +86,12 @@ const categoryState = new Map(); // storageId::categoryId -> true/false
 
 function animateSection(el, show) {
   if (!el) return;
+  const mb = el.dataset.mb || getComputedStyle(el).marginBottom;
+  el.dataset.mb = mb;
   el.style.overflow = 'hidden';
   if (show) {
     el.classList.remove('hidden');
+    el.style.marginBottom = mb;
     const h = el.scrollHeight;
     el.style.maxHeight = '0px';
     requestAnimationFrame(() => {
@@ -101,12 +104,14 @@ function animateSection(el, show) {
         el.style.maxHeight = '';
         el.style.transition = '';
         el.style.overflow = '';
+        el.style.marginBottom = '';
       },
       { once: true }
     );
   } else {
     const h = el.scrollHeight;
     el.style.maxHeight = `${h}px`;
+    el.style.marginBottom = '0px';
     requestAnimationFrame(() => {
       el.style.transition = 'max-height 0.3s ease';
       el.style.maxHeight = '0px';
@@ -150,8 +155,8 @@ function setStorageUI(storageSection, open, animate = true) {
   btn.setAttribute('aria-expanded', String(open));
   btn.title = open ? t('collapse') : t('expand');
   const icon = btn.querySelector('i');
-  icon.classList.toggle('fa-caret-up', open);
-  icon.classList.toggle('fa-caret-down', !open);
+  icon.classList.add('transition-transform');
+  icon.classList.toggle('rotate-180', open);
 
   storageSection.querySelectorAll('.category-section').forEach(cat => {
     const key = `${storageSection.dataset.storage}::${cat.dataset.category}`;
@@ -172,8 +177,8 @@ function setCategoryUI(categorySection, open, animate = true) {
   btn.setAttribute('aria-expanded', String(open));
   btn.title = open ? t('collapse') : t('expand');
   const icon = btn.querySelector('i');
-  icon.classList.toggle('fa-caret-up', open);
-  icon.classList.toggle('fa-caret-down', !open);
+  icon.classList.add('transition-transform');
+  icon.classList.toggle('rotate-180', open);
   const body = categorySection.querySelector('.category-body');
   if (animate) animateSection(body, open);
   else body.classList.toggle('hidden', !open);
@@ -446,7 +451,7 @@ export function renderProducts() {
         btn.className = 'toggle-storage ml-auto h-8 w-8 flex items-center justify-center';
         btn.setAttribute('aria-expanded', 'true');
         btn.setAttribute('title', t('collapse'));
-        btn.innerHTML = '<i class="fa-regular fa-caret-up"></i>';
+        btn.innerHTML = '<i class="fa-regular fa-caret-down transition-transform rotate-180"></i>';
         header.append(nameSpan, btn);
         block.appendChild(header);
 
@@ -469,7 +474,7 @@ export function renderProducts() {
           catBtn.className = 'toggle-category ml-auto h-8 w-8 flex items-center justify-center';
           catBtn.setAttribute('aria-expanded', 'true');
           catBtn.setAttribute('title', t('collapse'));
-          catBtn.innerHTML = '<i class="fa-regular fa-caret-up"></i>';
+          catBtn.innerHTML = '<i class="fa-regular fa-caret-down transition-transform rotate-180"></i>';
           catHeader.append(catSpan, catBtn);
           catBlock.appendChild(catHeader);
 
