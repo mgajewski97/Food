@@ -381,9 +381,18 @@ function createFlatRow(p, idx, editable) {
 }
 
 export function renderProducts() {
-  const { products = [], view = 'flat', filter = 'all', editing = false } = APP.state || {};
+  const {
+    products = [],
+    view = 'flat',
+    filter = 'all',
+    editing = false,
+    search = ''
+  } = APP.state || {};
   const data = Array.isArray(products) ? products.filter(p => p && p.name) : [];
-  const filtered = data.filter(p => matchesFilter(p, filter));
+  const term = (search || '').toLowerCase();
+  const filtered = data.filter(
+    p => matchesFilter(p, filter) && (!term || t(p.name).toLowerCase().includes(term) || p.name.toLowerCase().includes(term))
+  );
 
   const table = document.getElementById('product-table');
   const list = document.getElementById('products-by-category');

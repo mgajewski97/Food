@@ -16,6 +16,7 @@ APP.state = APP.state || {
   products: [],
   view: 'flat',
   filter: 'available',
+  search: '',
   editing: false
 };
 APP.activeTab = APP.activeTab || null;
@@ -73,8 +74,11 @@ async function checkHealth() {
 
 function resetProductFilter() {
   APP.state.filter = 'available';
+  APP.state.search = '';
   const sel = document.getElementById('state-filter');
   if (sel) sel.value = 'available';
+  const search = document.getElementById('product-search');
+  if (search) search.value = '';
 }
 
 function resetRecipeFilters() {
@@ -105,6 +109,9 @@ function activateTab(targetId) {
   document.querySelectorAll('.tab-panel').forEach(panel => (panel.style.display = 'none'));
   const panel = document.getElementById(targetId);
   if (panel) panel.style.display = 'block';
+  if (APP.activeTab === 'tab-products' && targetId !== 'tab-products') {
+    resetProductFilter();
+  }
   if (targetId === 'tab-products' && APP.activeTab !== 'tab-products') {
     resetProductFilter();
     renderProducts();
@@ -385,6 +392,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   const filterSel = document.getElementById('state-filter');
   filterSel?.addEventListener('change', () => {
     APP.state.filter = filterSel.value;
+    renderProducts();
+  });
+  const searchInput = document.getElementById('product-search');
+  searchInput?.addEventListener('input', () => {
+    APP.state.search = searchInput.value.trim().toLowerCase();
     renderProducts();
   });
   const copyBtn = document.getElementById('copy-btn');
