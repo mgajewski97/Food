@@ -425,18 +425,39 @@ html[data-layout="mobile"] #edit-json {
   display: none;
 }
 
-.ing-row {
-  border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+/* Ingredient list layout */
+.ingredient-list li {
   padding: 6px 0;
 }
 
-.step-index {
-  font-weight: 600;
-  margin-right: 0.5rem;
+.ingredient-list li:not(:last-child) {
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+}
+
+@media (min-width: 769px) {
+  .ingredient-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.75rem;
+  }
+
+  .ingredient-item .ingredient-qty {
+    text-align: right;
+  }
 }
 
 @media (max-width: 768px) {
-  .grid.md\:grid-cols-2 {
-    grid-template-columns: 1fr !important;
+  .ingredient-item {
+    display: flex;
+    align-items: center;
   }
+
+  .ingredient-item .ingredient-qty {
+    margin-right: 0.5rem;
+  }
+}
+
+/* Step list spacing */
+.step-list li + li {
+  margin-top: 0.5rem;
 }
