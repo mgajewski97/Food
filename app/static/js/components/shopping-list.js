@@ -1,4 +1,4 @@
-import { t, state, isSpice, stockLevel, fetchJson } from '../helpers.js';
+import { t, state, isSpice, stockLevel, fetchJson, debounce, withButtonLoading } from '../helpers.js';
 import { toast } from './toast.js';
 
 function saveShoppingList() {
@@ -30,12 +30,12 @@ export function addToShoppingList(name, quantity = 1) {
 export function renderShoppingList() {
   const list = document.getElementById('shopping-list');
   if (!list) return;
-  list.innerHTML = '';
   state.shoppingList.sort((a, b) => {
     if (a.inCart && b.inCart) return (a.cartTime || 0) - (b.cartTime || 0);
     if (a.inCart !== b.inCart) return a.inCart ? 1 : -1;
     return t(a.name).localeCompare(t(b.name));
   });
+  const frag = document.createDocumentFragment();
   state.shoppingList.forEach((item, idx) => {
     const row = document.createElement('div');
     row.className =
@@ -94,12 +94,13 @@ export function renderShoppingList() {
       qtyInput.value = newVal;
       saveShoppingList();
     });
-    qtyInput.addEventListener('change', () => {
+    const onQtyChange = debounce(() => {
       const val = Math.max(1, parseInt(qtyInput.value) || 1);
       item.quantity = val;
       qtyInput.value = val;
       saveShoppingList();
-    });
+    }, 150);
+    qtyInput.addEventListener('change', onQtyChange);
     qtyWrap.append(dec, qtyInput, inc);
     row.appendChild(qtyWrap);
 
@@ -113,22 +114,24 @@ export function renderShoppingList() {
     cartBtn.setAttribute('aria-label', t('in_cart'));
     cartBtn.setAttribute('title', t('in_cart'));
     cartBtn.addEventListener('click', async () => {
-      item.inCart = !item.inCart;
-      if (item.inCart) {
-        item.cartTime = Date.now();
-        if (stock && isSpice(stock)) {
-          try {
-            await fetchJson('/api/products', { method: 'POST', body: { ...stock, level: 'high', quantity: 0 } });
-            stock.level = 'high';
-          } catch (e) {
-            // ignore
+      await withButtonLoading(cartBtn, async () => {
+        item.inCart = !item.inCart;
+        if (item.inCart) {
+          item.cartTime = Date.now();
+          if (stock && isSpice(stock)) {
+            try {
+              await fetchJson('/api/products', { method: 'POST', body: { ...stock, level: 'high', quantity: 0 } });
+              stock.level = 'high';
+            } catch (e) {
+              toast.error(t('notify_error_title'));
+            }
           }
+        } else {
+          delete item.cartTime;
         }
-      } else {
-        delete item.cartTime;
-      }
-      saveShoppingList();
-      renderShoppingList();
+        saveShoppingList();
+        renderShoppingList();
+      });
     });
     actions.appendChild(cartBtn);
 
@@ -146,14 +149,17 @@ export function renderShoppingList() {
     actions.appendChild(delBtn);
     row.appendChild(actions);
 
-    list.appendChild(row);
+    frag.appendChild(row);
+  });
+  requestAnimationFrame(() => {
+    list.innerHTML = '';
+    list.appendChild(frag);
   });
 }
 
 export function renderSuggestions() {
   const container = document.getElementById('suggestion-list');
   if (!container) return;
-  container.innerHTML = '';
   const products = window.APP?.state?.products || [];
   const suggestions = products
     .filter(p => {
@@ -164,6 +170,7 @@ export function renderSuggestions() {
     })
     .filter(p => !state.dismissedSuggestions.has(p.name))
     .sort((a, b) => t(a.name).localeCompare(t(b.name)));
+  const frag = document.createDocumentFragment();
   suggestions.forEach(p => {
     let qty = p.threshold != null ? p.threshold : 1;
     const row = document.createElement('div');
@@ -211,10 +218,11 @@ export function renderSuggestions() {
       qty += 1;
       qtyInput.value = qty;
     });
-    qtyInput.addEventListener('change', () => {
+    const onChange = debounce(() => {
       qty = Math.max(1, parseInt(qtyInput.value) || 1);
       qtyInput.value = qty;
-    });
+    }, 150);
+    qtyInput.addEventListener('change', onChange);
     qtyWrap.append(dec, qtyInput, inc);
     row.appendChild(qtyWrap);
 
@@ -244,7 +252,11 @@ export function renderSuggestions() {
     actions.append(accept, reject);
     row.appendChild(actions);
 
-    container.appendChild(row);
+    frag.appendChild(row);
+  });
+  requestAnimationFrame(() => {
+    container.innerHTML = '';
+    container.appendChild(frag);
   });
 }
 

@@ -62,6 +62,47 @@ export const state = {
   lowStockToastShown: false
 };
 
+export function debounce(fn, wait = 100) {
+  if (typeof fn !== 'function') return () => {};
+  let t;
+  return function (...args) {
+    clearTimeout(t);
+    t = setTimeout(() => fn.apply(this, args), wait);
+  };
+}
+
+export function throttle(fn, wait = 100) {
+  if (typeof fn !== 'function') return () => {};
+  let pending = false;
+  return function (...args) {
+    if (pending) return;
+    pending = true;
+    fn.apply(this, args);
+    setTimeout(() => {
+      pending = false;
+    }, wait);
+  };
+}
+
+export async function withButtonLoading(btn, fn) {
+  if (typeof fn !== 'function') return;
+  const button = btn ?? null;
+  const origHTML = button ? button.innerHTML : null;
+  const origDisabled = button ? button.disabled : null;
+  if (button) {
+    button.disabled = true;
+    button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+  }
+  try {
+    return await fn();
+  } finally {
+    if (button) {
+      button.disabled = origDisabled;
+      if (origHTML != null) button.innerHTML = origHTML;
+    }
+  }
+}
+
 export function t(key) {
   if (!key) return key;
   if (key.startsWith('product.')) {

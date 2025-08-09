@@ -5,7 +5,9 @@ import {
   timeToBucket,
   toggleFavorite,
   normalizeRecipe,
-  fetchJson
+  fetchJson,
+  debounce,
+  withButtonLoading
 } from '../helpers.js';
 import { toast } from './toast.js';
 import { renderRecipeDetail } from './recipe-detail.js';
@@ -29,15 +31,16 @@ document.addEventListener('click', async e => {
   btn.textContent = open ? t('recipe_hide_details') : t('recipe_show_details');
   if (open && !panel.dataset.hydrated) {
     const recipe = getRecipeById(id);
-    panel.innerHTML = renderRecipeDetail(recipe);
-    panel.dataset.hydrated = '1';
+    requestAnimationFrame(() => {
+      panel.innerHTML = renderRecipeDetail(recipe);
+      panel.dataset.hydrated = '1';
+    });
   }
 });
 
 export function renderRecipes() {
   const list = document.getElementById('recipe-list');
   if (!list) return;
-  list.innerHTML = '';
   let data = state.recipesData.slice();
   if (state.recipeTimeFilter) data = data.filter(r => r.timeBucket === state.recipeTimeFilter);
   if (state.recipePortionsFilter) {
@@ -63,6 +66,7 @@ export function renderRecipes() {
     }
     return a.name.localeCompare(b.name);
   });
+  const frag = document.createDocumentFragment();
   if (data.length === 0) {
     const empty = document.createElement('div');
     empty.className = 'card bg-base-200 shadow';
@@ -70,8 +74,7 @@ export function renderRecipes() {
     body.className = 'card-body';
     body.textContent = t('recipes_empty_state');
     empty.appendChild(body);
-    list.appendChild(empty);
-    return;
+    frag.appendChild(empty);
   }
   data.forEach(r => {
     const card = document.createElement('div');
@@ -98,10 +101,16 @@ export function renderRecipes() {
     favBtn.innerHTML = state.favoriteRecipes.has(r.name)
       ? '<i class="fa-solid fa-heart"></i>'
       : '<i class="fa-regular fa-heart"></i>';
-    favBtn.addEventListener('click', e => {
+    favBtn.addEventListener('click', async e => {
       e.preventDefault();
-      toggleFavorite(r.name);
-      renderRecipes();
+      await withButtonLoading(favBtn, () => toggleFavorite(r.name));
+      if (state.showFavoritesOnly && !state.favoriteRecipes.has(r.name)) {
+        card.remove();
+      } else {
+        favBtn.innerHTML = state.favoriteRecipes.has(r.name)
+          ? '<i class="fa-solid fa-heart"></i>'
+          : '<i class="fa-regular fa-heart"></i>';
+      }
     });
     header.appendChild(titleWrap);
     header.appendChild(favBtn);
@@ -137,7 +146,11 @@ export function renderRecipes() {
     body.appendChild(btn);
     body.appendChild(panel);
     card.appendChild(body);
-    list.appendChild(card);
+    frag.appendChild(card);
+  });
+  requestAnimationFrame(() => {
+    list.innerHTML = '';
+    list.appendChild(frag);
   });
 }
 
@@ -194,41 +207,43 @@ document.addEventListener('DOMContentLoaded', () => {
     sortDesc?.classList.toggle('btn-outline', state.recipeSortDir !== 'desc');
   }
 
+  const rerender = debounce(() => renderRecipes(), 100);
+
   sortField?.addEventListener('change', () => {
     state.recipeSortField = sortField.value;
-    renderRecipes();
+    rerender();
   });
   sortAsc?.addEventListener('click', () => {
     state.recipeSortDir = 'asc';
     updateSortButtons();
-    renderRecipes();
+    rerender();
   });
   sortDesc?.addEventListener('click', () => {
     state.recipeSortDir = 'desc';
     updateSortButtons();
-    renderRecipes();
+    rerender();
   });
   sortMobile?.addEventListener('change', () => {
     const [field, dir] = sortMobile.value.split('-');
     state.recipeSortField = field;
     state.recipeSortDir = dir;
     updateSortButtons();
-    renderRecipes();
+    rerender();
   });
 
   timeFilter?.addEventListener('change', () => {
     state.recipeTimeFilter = timeFilter.value;
-    renderRecipes();
+    rerender();
   });
   portionsFilter?.addEventListener('change', () => {
     state.recipePortionsFilter = portionsFilter.value;
-    renderRecipes();
+    rerender();
   });
   favToggle?.addEventListener('click', () => {
     state.showFavoritesOnly = !state.showFavoritesOnly;
     favToggle.classList.toggle('btn-primary', state.showFavoritesOnly);
     favToggle.classList.toggle('btn-outline', !state.showFavoritesOnly);
-    renderRecipes();
+    rerender();
   });
   clearBtn?.addEventListener('click', () => {
     state.recipeSortField = 'name';
@@ -243,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
     favToggle?.classList.remove('btn-primary');
     favToggle?.classList.add('btn-outline');
     updateSortButtons();
-    renderRecipes();
+    rerender();
   });
 
   updateSortButtons();
