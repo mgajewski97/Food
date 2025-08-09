@@ -383,3 +383,34 @@ html[data-layout="mobile"] #edit-json {
 #receipt-drop-area.dragover {
   background-color: hsl(var(--b3) / 0.1);
 }
+
+/* Recipe card layout */
+.recipe-card {
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--base-200);
+}
+
+.recipe-detail {
+  padding-top: 12px;
+}
+
+.recipe-detail.hidden {
+  display: none;
+}
+
+.ing-row {
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+  padding: 6px 0;
+}
+
+.step-index {
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .grid.md\:grid-cols-2 {
+    grid-template-columns: 1fr !important;
+  }
+}
