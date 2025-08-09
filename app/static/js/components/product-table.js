@@ -18,15 +18,11 @@ import { toast } from './toast.js';
 
 const APP = (window.APP = window.APP || {});
 
-// --- delete selected handling
+// --- delete selected handling (button state only; actual deletion handled in script.js)
 const deleteBtn = document.getElementById('delete-selected');
-const deleteModal = document.getElementById('delete-modal');
-const deleteSummary = document.getElementById('delete-summary');
-const confirmDeleteBtn = document.getElementById('confirm-delete');
-const cancelDeleteBtn = document.getElementById('cancel-delete');
 
 function updateDeleteButton() {
-  const selected = document.querySelectorAll('input.row-select:checked').length;
+  const selected = document.querySelectorAll('input.product-select:checked').length;
   if (deleteBtn) {
     deleteBtn.disabled = selected === 0;
     deleteBtn.textContent =
@@ -37,50 +33,7 @@ function updateDeleteButton() {
 }
 
 document.addEventListener('change', e => {
-  if (e.target.matches('input.row-select')) updateDeleteButton();
-});
-
-deleteBtn?.addEventListener('click', () => {
-  const selected = Array.from(document.querySelectorAll('input.row-select:checked'));
-  if (selected.length === 0) return;
-  deleteSummary.innerHTML = '';
-  const list = document.createElement('ul');
-  selected.forEach(cb => {
-    const li = document.createElement('li');
-    li.textContent = t(cb.dataset.name);
-    list.appendChild(li);
-  });
-  deleteSummary.appendChild(list);
-  deleteModal.showModal();
-});
-
-confirmDeleteBtn?.addEventListener('click', async e => {
-  e.preventDefault();
-  const btn = confirmDeleteBtn;
-  const selected = Array.from(document.querySelectorAll('input.row-select:checked'));
-  const names = selected.map(cb => cb.dataset.name);
-  if (names.length === 0) return;
-  const prev = btn.innerHTML;
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-  try {
-    await Promise.all(
-      names.map(name => fetchJson(`/api/products/${encodeURIComponent(name)}`, { method: 'DELETE' }))
-    );
-    await refreshProducts();
-  } catch (err) {
-    toast.error(t('notify_error_title'));
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = prev;
-    deleteModal.close();
-    updateDeleteButton();
-  }
-});
-
-cancelDeleteBtn?.addEventListener('click', e => {
-  e.preventDefault();
-  deleteModal.close();
+  if (e.target.matches('input.product-select')) updateDeleteButton();
 });
 
 document.addEventListener('click', (e) => {
@@ -210,6 +163,7 @@ function adjustRow(tr, delta) {
 function buildQtyCell(p, tr) {
   const td = document.createElement('td');
   td.className = 'qty-cell';
+  td.style.minWidth = '10rem';
   if (isSpice(p)) {
     const wrap = document.createElement('div');
     wrap.className = 'flex gap-2';
@@ -237,6 +191,7 @@ function buildQtyCell(p, tr) {
   }
   const wrap = document.createElement('div');
   wrap.className = 'qty-wrap';
+  wrap.style.minWidth = '10rem';
   const dec = document.createElement('button');
   dec.type = 'button';
   dec.className = 'btn-qty qty-dec';
@@ -308,7 +263,7 @@ function createFlatRow(p, idx, editable) {
     cbTd.className = 'checkbox-cell';
     const cb = document.createElement('input');
     cb.type = 'checkbox';
-    cb.className = 'checkbox checkbox-sm row-select';
+    cb.className = 'checkbox checkbox-sm product-select';
     cb.dataset.name = p.name;
     cbTd.appendChild(cb);
     tr.appendChild(cbTd);
@@ -544,7 +499,7 @@ export function renderProducts() {
                   const cbTd = document.createElement('td');
                   const cb = document.createElement('input');
                   cb.type = 'checkbox';
-                  cb.className = 'checkbox checkbox-sm row-select';
+                  cb.className = 'checkbox checkbox-sm product-select';
                   cb.dataset.name = p.name;
                   cbTd.appendChild(cb);
                   tr.appendChild(cbTd);

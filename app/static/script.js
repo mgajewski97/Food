@@ -385,6 +385,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (ok) exitEditMode(false);
   });
 
+  deleteBtn?.addEventListener('click', async () => {
+    const checked = Array.from(document.querySelectorAll('.product-select:checked'));
+    if (!checked.length) return;
+    const names = [...new Set(checked.map(cb => cb.dataset.name))];
+    if (!confirm(t('delete_modal_question'))) return;
+    deleteBtn.disabled = true;
+    try {
+      await Promise.allSettled(
+        names.map(n => fetchJson(`/api/products/${encodeURIComponent(n)}`, { method: 'DELETE' }))
+      );
+      await fetchProducts();
+      exitEditMode(false);
+    } catch (err) {
+      showNotification({ type: 'error', title: t('notify_error_title'), message: err.status || err.message });
+    } finally {
+      const selected = document.querySelectorAll('.product-select:checked').length;
+      deleteBtn.disabled = selected === 0;
+      deleteBtn.textContent =
+        selected > 0
+          ? `${t('delete_selected_button')} (${selected})`
+          : t('delete_selected_button');
+    }
+  });
+
   const viewBtn = document.getElementById('view-toggle');
   viewBtn?.addEventListener('click', () => {
     if (APP.state.editing) exitEditMode(true);
