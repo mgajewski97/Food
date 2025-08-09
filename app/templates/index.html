@@ -411,5 +411,18 @@
     </nav>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.5/dist/tesseract.min.js"></script>
     <script type="module" src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+    if ('serviceWorker' in navigator) {
+      let refreshing;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        refreshing = true;
+        window.location.reload();
+      });
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js');
+      });
+    }
+    </script>
 </body>
 </html>
