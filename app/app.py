@@ -2,6 +2,8 @@ import logging
 import os
 from datetime import date
 
+# FIX: 2024-05-06
+
 from flask import Flask, render_template, request, jsonify
 
 from utils import (
@@ -74,7 +76,7 @@ def products():
                 PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
             )
         except ValueError as exc:
-            logger.error(str(exc))
+            logger.info(str(exc))
             return jsonify({"error": str(exc)}), 500
         return jsonify(products)
 
@@ -85,7 +87,7 @@ def products():
     try:
         validate_items(items, PRODUCTS_SCHEMA)
     except ValueError as exc:
-        logger.error("request: %s", exc)
+        logger.info("request: %s", exc)
         return jsonify({"error": str(exc)}), 400
 
     with file_lock(PRODUCTS_PATH):
@@ -94,7 +96,7 @@ def products():
                 PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
             )
         except ValueError as exc:
-            logger.error(str(exc))
+            logger.info(str(exc))
             return jsonify({"error": str(exc)}), 500
         existing = {p["name"]: p for p in products}
         for item in items:
@@ -111,7 +113,7 @@ def delete_product(name):
                 PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
             )
         except ValueError as exc:
-            logger.error(str(exc))
+            logger.info(str(exc))
             return jsonify({"error": str(exc)}), 500
         products = [p for p in products if p.get("name") != name]
         safe_write(PRODUCTS_PATH, products)
@@ -167,7 +169,7 @@ def recipes():
             RECIPES_PATH, RECIPES_SCHEMA, normalize=normalize_recipe
         )
     except ValueError as exc:
-        logger.error(str(exc))
+        logger.info(str(exc))
         return jsonify({"error": str(exc)}), 500
     return jsonify(recipes)
 
@@ -207,7 +209,7 @@ def health():
             RECIPES_PATH, RECIPES_SCHEMA, normalize=normalize_recipe
         )
     except ValueError as exc:
-        logger.error("health check failed: %s", exc)
+        logger.info("health check failed: %s", exc)
         return jsonify({"ok": False, "error": str(exc)}), 500
     return jsonify({"ok": True})
 

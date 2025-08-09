@@ -1,26 +1,23 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "type": "array",
-  "items": {
-    "type": "object",
-    "required": ["name", "quantity", "unit", "category", "storage"],
-    "properties": {
-      "name": {"type": "string"},
-      "quantity": {"type": "number"},
-      "unit": {"type": "string"},
-      "category": {"type": "string"},
-      "storage": {"type": "string"},
-      "threshold": {"type": "number"},
-      "main": {"type": "boolean"},
-      "package_size": {"type": ["number", "null"]},
-      "pack_size": {"type": ["number", "null"]},
-      "level": {"type": ["string", "null"], "enum": ["none", "low", "medium", "high", null]},
-      "is_spice": {"type": "boolean"},
-      "tags": {
-        "type": "array",
-        "items": {"type": "string"}
-      }
-    },
-    "additionalProperties": false
-  }
+  "type": "object",
+  "required": ["name", "quantity", "unit", "category", "storage"],
+  "properties": {
+    "name": {"type": "string"},
+    "quantity": {"type": "number"},
+    "unit": {"type": "string"},
+    "category": {"type": "string"},
+    "storage": {"type": "string"},
+    "threshold": {"type": "number"},
+    "main": {"type": "boolean"},
+    "package_size": {"type": ["number", "null"]},
+    "pack_size": {"type": ["number", "null"]},
+    "level": {"type": ["string", "null"], "enum": ["none", "low", "medium", "high", null]},
+    "is_spice": {"type": "boolean"},
+    "tags": {
+      "type": "array",
+      "items": {"type": "string"}
+    }
+  },
+  "additionalProperties": false
 }

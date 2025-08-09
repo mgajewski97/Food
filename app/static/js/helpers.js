@@ -1,3 +1,4 @@
+// FIX: 2024-05-06
 // CHANGELOG:
 // - Added normalization helpers and spice detector.
 // - Single translation helper with English fallback.
@@ -37,6 +38,11 @@ export const STORAGE_ICONS = {
   pantry: '🏠',
   freezer: '❄️'
 };
+
+export const DEBUG = false;
+export function dlog(...args) {
+  if (DEBUG) console.warn(...args);
+}
 
 let storedShopping = [];
 try {

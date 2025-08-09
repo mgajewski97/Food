@@ -1,48 +1,45 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "type": "array",
-  "items": {
-    "type": "object",
-    "required": ["name", "portions", "ingredients", "steps"],
-    "properties": {
-      "name": {"type": "string"},
-      "portions": {"type": "number"},
-      "time": {"type": "string"},
-      "ingredients": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "required": ["product", "quantity", "unit"],
-          "properties": {
-            "product": {"type": "string"},
-            "quantity": {"type": "number"},
-            "unit": {"type": "string"}
-          },
-          "additionalProperties": false
-        }
-      },
-      "optionalIngredients": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "required": ["product", "quantity", "unit"],
-          "properties": {
-            "product": {"type": "string"},
-            "quantity": {"type": "number"},
-            "unit": {"type": "string"}
-          },
-          "additionalProperties": false
-        }
-      },
-      "steps": {
-        "type": "array",
-        "items": {"type": "string"}
-      },
-      "tags": {
-        "type": "array",
-        "items": {"type": "string"}
+  "type": "object",
+  "required": ["name", "portions", "ingredients", "steps"],
+  "properties": {
+    "name": {"type": "string"},
+    "portions": {"type": "number"},
+    "time": {"type": "string"},
+    "ingredients": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["product", "quantity", "unit"],
+        "properties": {
+          "product": {"type": "string"},
+          "quantity": {"type": "number"},
+          "unit": {"type": "string"}
+        },
+        "additionalProperties": false
       }
     },
-    "additionalProperties": false
-  }
+    "optionalIngredients": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["product", "quantity", "unit"],
+        "properties": {
+          "product": {"type": "string"},
+          "quantity": {"type": "number"},
+          "unit": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "steps": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "tags": {
+      "type": "array",
+      "items": {"type": "string"}
+    }
+  },
+  "additionalProperties": false
 }
