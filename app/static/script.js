@@ -1,4 +1,4 @@
-import { loadTranslations, loadUnits, loadFavorites, state, t, normalizeProduct, applyTranslations, fetchJson, isSpice } from './js/helpers.js';
+import { loadTranslations, loadUnits, loadFavorites, state, t, normalizeProduct, applyTranslations, fetchJson, isSpice, debounce } from './js/helpers.js';
 import { renderProducts, refreshProducts } from './js/components/product-table.js';
 import { renderRecipes, loadRecipes } from './js/components/recipe-list.js';
 import { renderShoppingList, addToShoppingList, renderSuggestions } from './js/components/shopping-list.js';
@@ -448,15 +448,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderProducts();
   });
   const searchInput = document.getElementById('product-search');
-  searchInput?.addEventListener('input', () => {
-    APP.state.search = searchInput.value.trim().toLowerCase();
-    renderProducts();
-  });
+  searchInput?.addEventListener(
+    'input',
+    debounce(() => {
+      APP.state.search = searchInput.value.trim().toLowerCase();
+      renderProducts();
+    }, 150)
+  );
   const searchInputMobile = document.getElementById('product-search-mobile');
-  searchInputMobile?.addEventListener('input', () => {
-    APP.state.search = searchInputMobile.value.trim().toLowerCase();
-    renderProducts();
-  });
+  searchInputMobile?.addEventListener(
+    'input',
+    debounce(() => {
+      APP.state.search = searchInputMobile.value.trim().toLowerCase();
+      renderProducts();
+    }, 150)
+  );
   const copyBtn = document.getElementById('copy-btn');
   copyBtn?.addEventListener('click', () => {
     const blob = new Blob([JSON.stringify(APP.state.products, null, 2)], { type: 'application/json' });
@@ -480,6 +486,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('confirm-remove-item')?.setAttribute('aria-label', t('confirm_button'));
     document.querySelector('#shopping-delete-modal .btn-outline')?.setAttribute('aria-label', t('delete_cancel_button'));
     document.getElementById('history-detail-close')?.setAttribute('aria-label', t('close'));
+    document.getElementById('manual-dec')?.setAttribute('aria-label', t('decrease_quantity'));
+    document.getElementById('manual-inc')?.setAttribute('aria-label', t('increase_quantity'));
   }
 
   updateAriaLabels();

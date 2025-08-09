@@ -54,7 +54,7 @@ function sortShoppingList() {
 
 function renderShoppingItem(item, idx) {
   const row = document.createElement('div');
-  row.className = 'shopping-item flex items-center gap-2 py-2 min-h-11 hover:bg-base-200 transition-colors';
+  row.className = 'shopping-item flex items-center gap-2 h-11 hover:bg-base-200 transition-colors';
   row.dataset.index = idx;
   row.dataset.name = item.name;
   if (item.inCart) row.classList.add('in-cart');
@@ -82,6 +82,7 @@ function renderShoppingItem(item, idx) {
   dec.type = 'button';
   dec.innerHTML = '<i class="fa-solid fa-minus"></i>';
   dec.className = 'touch-btn';
+  dec.setAttribute('aria-label', t('decrease_quantity'));
   dec.disabled = item.inCart;
   const qtyInput = document.createElement('input');
   qtyInput.type = 'number';
@@ -93,6 +94,7 @@ function renderShoppingItem(item, idx) {
   inc.type = 'button';
   inc.innerHTML = '<i class="fa-solid fa-plus"></i>';
   inc.className = 'touch-btn';
+  inc.setAttribute('aria-label', t('increase_quantity'));
   inc.disabled = item.inCart;
   dec.addEventListener('click', () => {
     const newVal = Math.max(1, (parseInt(qtyInput.value) || 1) - 1);
@@ -216,7 +218,7 @@ export function renderSuggestions() {
     let qty = p.threshold != null ? p.threshold : 1;
     const row = document.createElement('div');
     row.className =
-      'suggestion-item flex items-center gap-2 py-2 min-h-11 hover:bg-base-200 transition-colors';
+      'suggestion-item flex items-center gap-2 h-11 hover:bg-base-200 transition-colors';
     const level = stockLevel(p);
     if (level === 'low') row.classList.add('product-low');
     if (level === 'none') row.classList.add('product-missing');
@@ -232,19 +234,21 @@ export function renderSuggestions() {
 
     const qtyWrap = document.createElement('div');
     qtyWrap.className = 'flex items-center gap-2';
-    const dec = document.createElement('button');
-    dec.type = 'button';
-    dec.innerHTML = '<i class="fa-solid fa-minus"></i>';
-    dec.className = 'touch-btn';
-    const qtyInput = document.createElement('input');
+  const dec = document.createElement('button');
+  dec.type = 'button';
+  dec.innerHTML = '<i class="fa-solid fa-minus"></i>';
+  dec.className = 'touch-btn';
+  dec.setAttribute('aria-label', t('decrease_quantity'));
+  const qtyInput = document.createElement('input');
     qtyInput.type = 'number';
     qtyInput.min = '1';
     qtyInput.value = qty;
     qtyInput.className = 'input input-bordered w-16 h-11 text-center no-spinner';
-    const inc = document.createElement('button');
-    inc.type = 'button';
-    inc.innerHTML = '<i class="fa-solid fa-plus"></i>';
-    inc.className = 'touch-btn';
+  const inc = document.createElement('button');
+  inc.type = 'button';
+  inc.innerHTML = '<i class="fa-solid fa-plus"></i>';
+  inc.className = 'touch-btn';
+  inc.setAttribute('aria-label', t('increase_quantity'));
     dec.addEventListener('click', () => {
       qty = Math.max(1, qty - 1);
       qtyInput.value = qty;

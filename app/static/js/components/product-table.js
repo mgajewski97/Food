@@ -75,7 +75,9 @@ function syncAllToggles(container) {
 function setStorageUI(storageSection, open) {
   const btn = storageSection.querySelector('.toggle-storage');
   btn.setAttribute('aria-expanded', String(open));
-  btn.title = open ? t('collapse') : t('expand');
+  const label = open ? t('collapse') : t('expand');
+  btn.title = label;
+  btn.setAttribute('aria-label', label);
   const icon = btn.querySelector('i');
   icon.classList.add('transition-transform');
   icon.classList.toggle('rotate-180', open);
@@ -96,7 +98,9 @@ function setStorageUI(storageSection, open) {
 function setCategoryUI(categorySection, open) {
   const btn = categorySection.querySelector('.toggle-category');
   btn.setAttribute('aria-expanded', String(open));
-  btn.title = open ? t('collapse') : t('expand');
+  const label = open ? t('collapse') : t('expand');
+  btn.title = label;
+  btn.setAttribute('aria-label', label);
   const icon = btn.querySelector('i');
   icon.classList.add('transition-transform');
   icon.classList.toggle('rotate-180', open);
@@ -157,6 +161,7 @@ function buildQtyCell(p, tr) {
   dec.type = 'button';
   dec.className = 'btn-qty qty-dec';
   dec.textContent = '−';
+  dec.setAttribute('aria-label', t('decrease_quantity'));
   const input = document.createElement('input');
   input.className = 'qty-input no-spinner';
   input.type = 'number';
@@ -180,6 +185,7 @@ function buildQtyCell(p, tr) {
   inc.type = 'button';
   inc.className = 'btn-qty qty-inc';
   inc.textContent = '+';
+  inc.setAttribute('aria-label', t('increase_quantity'));
   wrap.append(dec, input, inc);
   td.appendChild(wrap);
   return td;
@@ -397,6 +403,7 @@ export function renderProducts() {
           btn.className = 'toggle-storage ml-auto h-8 w-8 flex items-center justify-center';
           btn.setAttribute('aria-expanded', 'true');
           btn.setAttribute('title', t('collapse'));
+          btn.setAttribute('aria-label', t('collapse'));
           btn.innerHTML = '<i class="fa-regular fa-caret-up transition-transform rotate-180"></i>';
           header.append(nameSpan, btn);
           block.appendChild(header);
@@ -424,6 +431,7 @@ export function renderProducts() {
               catBtn.className = 'toggle-category ml-auto h-8 w-8 flex items-center justify-center';
               catBtn.setAttribute('aria-expanded', 'true');
               catBtn.setAttribute('title', t('collapse'));
+              catBtn.setAttribute('aria-label', t('collapse'));
               catBtn.innerHTML = '<i class="fa-regular fa-caret-up transition-transform rotate-180"></i>';
               catHeader.append(catSpan, catBtn);
               catBlock.appendChild(catHeader);
