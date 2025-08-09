@@ -1,5 +1,5 @@
 import { loadTranslations, loadUnits, loadFavorites, state, t, normalizeProduct, applyTranslations } from './js/helpers.js';
-import { renderProducts } from './js/components/product-table.js';
+import { renderProducts, refreshProducts } from './js/components/product-table.js';
 import { renderRecipes, loadRecipes } from './js/components/recipe-list.js';
 import { renderShoppingList, addToShoppingList, renderSuggestions } from './js/components/shopping-list.js';
 import { showNotification, checkLowStockToast } from './js/components/toast.js';
@@ -223,7 +223,7 @@ async function saveEdits() {
       updates.push({ ...orig, quantity: qty, unit, category: cat, storage: stor });
     }
   });
-  if (!updates.length) return;
+  if (!updates.length) return true;
   const btn = document.getElementById('save-btn');
   btn.disabled = true;
   try {
@@ -234,9 +234,11 @@ async function saveEdits() {
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     showNotification({ type: 'success', title: t('save_success') });
-    await fetchProducts();
+    await refreshProducts();
+    return true;
   } catch (err) {
     showNotification({ type: 'error', title: t('save_failed'), message: err.message });
+    return false;
   } finally {
     btn.disabled = false;
   }
@@ -316,8 +318,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   saveBtn?.addEventListener('click', async () => {
-    await saveEdits();
-    exitEditMode(false);
+    const ok = await saveEdits();
+    if (ok) exitEditMode(false);
   });
 
   const viewBtn = document.getElementById('view-toggle');
