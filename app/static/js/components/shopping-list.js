@@ -58,8 +58,28 @@ export function renderShoppingList() {
     const controls = document.createElement('div');
     controls.className = 'flex items-center gap-3 w-full sm:w-auto';
 
+    const cartLabel = document.createElement('label');
+    cartLabel.className = 'flex items-center gap-2 h-10 whitespace-nowrap';
+    const cartCheckbox = document.createElement('input');
+    cartCheckbox.type = 'checkbox';
+    cartCheckbox.className = 'checkbox';
+    cartCheckbox.checked = item.inCart;
+    cartCheckbox.addEventListener('change', () => {
+      item.inCart = cartCheckbox.checked;
+      if (item.inCart) {
+        item.cartTime = Date.now();
+      } else {
+        delete item.cartTime;
+      }
+      saveShoppingList();
+      renderShoppingList();
+    });
+    const cartText = document.createElement('span');
+    cartText.textContent = t('in_cart');
+    cartLabel.append(cartCheckbox, cartText);
+
     const qtyWrap = document.createElement('div');
-    qtyWrap.className = 'flex items-center gap-2';
+    qtyWrap.className = 'flex items-center gap-2 h-10';
     const dec = document.createElement('button');
     dec.type = 'button';
     dec.innerHTML = '<i class="fa-solid fa-minus"></i>';
@@ -95,28 +115,6 @@ export function renderShoppingList() {
       saveShoppingList();
     });
     qtyWrap.append(dec, qtyInput, inc);
-    controls.appendChild(qtyWrap);
-
-    const cartLabel = document.createElement('label');
-    cartLabel.className = 'flex items-center gap-2 h-10';
-    const cartCheckbox = document.createElement('input');
-    cartCheckbox.type = 'checkbox';
-    cartCheckbox.className = 'checkbox';
-    cartCheckbox.checked = item.inCart;
-    cartCheckbox.addEventListener('change', () => {
-      item.inCart = cartCheckbox.checked;
-      if (item.inCart) {
-        item.cartTime = Date.now();
-      } else {
-        delete item.cartTime;
-      }
-      saveShoppingList();
-      renderShoppingList();
-    });
-    const cartText = document.createElement('span');
-    cartText.textContent = t('in_cart');
-    cartLabel.append(cartCheckbox, cartText);
-    controls.appendChild(cartLabel);
 
     const delBtn = document.createElement('button');
     delBtn.type = 'button';
@@ -128,7 +126,8 @@ export function renderShoppingList() {
       const modal = document.getElementById('shopping-delete-modal');
       if (modal) modal.showModal();
     });
-    controls.appendChild(delBtn);
+
+    controls.append(cartLabel, qtyWrap, delBtn);
 
     row.appendChild(controls);
     list.appendChild(row);
@@ -168,7 +167,7 @@ export function renderSuggestions() {
     row.appendChild(nameWrap);
 
     const qtyWrap = document.createElement('div');
-    qtyWrap.className = 'flex items-center gap-2';
+    qtyWrap.className = 'flex items-center gap-2 h-10';
     const dec = document.createElement('button');
     dec.type = 'button';
     dec.innerHTML = '<i class="fa-solid fa-minus"></i>';

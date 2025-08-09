@@ -30,7 +30,7 @@ function createFlatRow(p, idx, editable) {
     const qtyTd = document.createElement('td');
     qtyTd.className = 'qty-cell';
     const wrap = document.createElement('div');
-    wrap.className = 'quantity-control flex items-center gap-2';
+    wrap.className = 'quantity-control flex items-center gap-2 h-10';
     const minus = document.createElement('button');
     minus.type = 'button';
     minus.innerHTML = '<i class="fa-solid fa-minus"></i>';
@@ -45,9 +45,14 @@ function createFlatRow(p, idx, editable) {
     plus.className = 'touch-btn';
     minus.addEventListener('click', () => {
       input.value = Math.max(0, (parseFloat(input.value) || 0) - 1);
+      p.quantity = parseFloat(input.value) || 0;
     });
     plus.addEventListener('click', () => {
       input.value = (parseFloat(input.value) || 0) + 1;
+      p.quantity = parseFloat(input.value) || 0;
+    });
+    input.addEventListener('change', () => {
+      p.quantity = parseFloat(input.value) || 0;
     });
     wrap.append(minus, input, plus);
     qtyTd.appendChild(wrap);
