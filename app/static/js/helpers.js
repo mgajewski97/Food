@@ -240,7 +240,7 @@ export function stockLevel(p = {}) {
     return p.level || 'none';
   }
   if (p.quantity === 0) return 'none';
-  if (p.main && p.threshold != null && p.quantity <= p.threshold) return 'low';
+  if (p.threshold != null && p.quantity <= p.threshold) return 'low';
   return 'ok';
 }
 
