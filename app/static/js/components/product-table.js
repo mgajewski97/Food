@@ -21,7 +21,7 @@ import { toast } from './toast.js';
 const APP = (window.APP = window.APP || {});
 
 // --- delete selected handling (button state only; actual deletion handled in script.js)
-const deleteBtn = document.getElementById('delete-selected');
+let deleteBtn;
 
 function updateDeleteButton() {
   const selected = document.querySelectorAll('input.product-select:checked').length;
@@ -34,14 +34,16 @@ function updateDeleteButton() {
   }
 }
 
-document.addEventListener('change', e => {
-  if (e.target.matches('input.product-select')) updateDeleteButton();
-});
-
-document.addEventListener('click', (e) => {
-  if (e.target.closest('.qty-inc')) adjustRow(e.target.closest('tr'), 1);
-  if (e.target.closest('.qty-dec')) adjustRow(e.target.closest('tr'), -1);
-});
+export function bindProductEvents() {
+  deleteBtn = document.getElementById('delete-selected');
+  document.addEventListener('change', e => {
+    if (e.target.matches('input.product-select')) updateDeleteButton();
+  });
+  document.addEventListener('click', e => {
+    if (e.target.closest('.qty-inc')) adjustRow(e.target.closest('tr'), 1);
+    if (e.target.closest('.qty-dec')) adjustRow(e.target.closest('tr'), -1);
+  });
+}
 
 // --- expand/collapse state
 const expandedStorages = new Map(); // storageId -> true/false
