@@ -38,11 +38,24 @@ export const STORAGE_ICONS = {
   freezer: '❄️'
 };
 
+let storedShopping = [];
+try {
+  storedShopping = JSON.parse(localStorage.getItem('shoppingList') || '[]');
+} catch (_) {
+  storedShopping = [];
+}
+let storedFavs = [];
+try {
+  storedFavs = JSON.parse(localStorage.getItem('favoriteRecipes') || '[]');
+} catch (_) {
+  storedFavs = [];
+}
+
 export const state = {
   displayMode: document.documentElement.getAttribute('data-layout') || 'desktop',
   expandedStorages: {},
   expandedCategories: {},
-  shoppingList: JSON.parse(localStorage.getItem('shoppingList') || '[]'),
+  shoppingList: storedShopping,
   dismissedSuggestions: new Set(),
   pendingRemoveIndex: null,
   recipesData: [],
@@ -54,7 +67,7 @@ export const state = {
   recipeTimeFilter: '',
   recipePortionsFilter: '',
   showFavoritesOnly: false,
-  favoriteRecipes: new Set(JSON.parse(localStorage.getItem('favoriteRecipes') || '[]')),
+  favoriteRecipes: new Set(storedFavs),
   currentLang: localStorage.getItem('lang') || 'pl',
   translations: { products: {} },
   uiTranslations: { pl: {}, en: {} },
@@ -189,8 +202,19 @@ export async function loadTranslations() {
       fetch('/static/translations/pl.json'),
       fetch('/static/translations/en.json')
     ]);
-    const pl = await plRes.json();
-    const en = await enRes.json();
+    if (!plRes.ok || !enRes.ok) throw new Error('translation load failed');
+    let pl = {};
+    let en = {};
+    try {
+      pl = await plRes.json();
+    } catch (_) {
+      pl = {};
+    }
+    try {
+      en = await enRes.json();
+    } catch (_) {
+      en = {};
+    }
     state.uiTranslations.pl = pl;
     state.uiTranslations.en = en;
     state.translations.products = {};
@@ -223,7 +247,13 @@ export async function loadFavorites() {
     state.favoriteRecipes = new Set(data);
     localStorage.setItem('favoriteRecipes', JSON.stringify(Array.from(state.favoriteRecipes)));
   } catch (err) {
-    state.favoriteRecipes = new Set(JSON.parse(localStorage.getItem('favoriteRecipes') || '[]'));
+    let localFavs = [];
+    try {
+      localFavs = JSON.parse(localStorage.getItem('favoriteRecipes') || '[]');
+    } catch (_) {
+      localFavs = [];
+    }
+    state.favoriteRecipes = new Set(localFavs);
   }
 }
 

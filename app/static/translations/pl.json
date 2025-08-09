@@ -216,6 +216,8 @@
   "ok": "OK",
   "accept": "dodaj",
   "reject": "ukryj",
+  "increase_quantity": "Zwiększ ilość",
+  "decrease_quantity": "Zmniejsz ilość",
     "in_cart": "W koszyku",
   "owned": "Posiadane",
   "expand": "Rozwiń",
