@@ -1,16 +1,77 @@
-import { t, state, productName, unitName, categoryName, storageName, formatPackQuantity, getStatusIcon, STORAGE_ICONS, CATEGORY_KEYS, STORAGE_KEYS, matchesFilter, stockLevel, normalizeProduct } from '../helpers.js';
+import {
+  t,
+  state,
+  productName,
+  unitName,
+  categoryName,
+  storageName,
+  formatPackQuantity,
+  getStatusIcon,
+  STORAGE_ICONS,
+  CATEGORY_KEYS,
+  STORAGE_KEYS,
+  matchesFilter,
+  stockLevel,
+  normalizeProduct
+} from '../helpers.js';
 import { showToast } from './toast.js';
 
 const APP = (window.APP = window.APP || {});
 
-const deleteBtn = document.getElementById('delete-selected'); // label: "Usuń zaznaczone"
+// --- delete selected handling
+const deleteBtn = document.getElementById('delete-selected');
+const deleteModal = document.getElementById('delete-modal');
+const deleteSummary = document.getElementById('delete-summary');
+const confirmDeleteBtn = document.getElementById('confirm-delete');
+const cancelDeleteBtn = document.getElementById('cancel-delete');
+
 function updateDeleteButton() {
   const selected = document.querySelectorAll('input.row-select:checked').length;
-  deleteBtn.disabled = selected === 0;
-  deleteBtn.textContent = selected > 0 ? `Usuń zaznaczone (${selected})` : 'Usuń zaznaczone';
+  if (deleteBtn) {
+    deleteBtn.disabled = selected === 0;
+    deleteBtn.textContent =
+      selected > 0
+        ? `${t('delete_selected_button')} (${selected})`
+        : t('delete_selected_button');
+  }
 }
-document.addEventListener('change', (e) => {
+
+document.addEventListener('change', e => {
   if (e.target.matches('input.row-select')) updateDeleteButton();
+});
+
+deleteBtn?.addEventListener('click', () => {
+  const selected = Array.from(document.querySelectorAll('input.row-select:checked'));
+  if (selected.length === 0) return;
+  deleteSummary.innerHTML = '';
+  const list = document.createElement('ul');
+  selected.forEach(cb => {
+    const li = document.createElement('li');
+    li.textContent = productName(cb.dataset.name);
+    list.appendChild(li);
+  });
+  deleteSummary.appendChild(list);
+  deleteModal.showModal();
+});
+
+confirmDeleteBtn?.addEventListener('click', async e => {
+  e.preventDefault();
+  const selected = Array.from(document.querySelectorAll('input.row-select:checked'));
+  const names = selected.map(cb => cb.dataset.name);
+  try {
+    await Promise.all(
+      names.map(name => fetch(`/api/products/${encodeURIComponent(name)}`, { method: 'DELETE' }))
+    );
+    await refreshProducts();
+  } finally {
+    deleteModal.close();
+    updateDeleteButton();
+  }
+});
+
+cancelDeleteBtn?.addEventListener('click', e => {
+  e.preventDefault();
+  deleteModal.close();
 });
 
 document.addEventListener('click', (e) => {
@@ -455,6 +516,7 @@ export function renderProducts() {
       });
     initExpandDefaults(list);
   }
+  updateDeleteButton();
 }
 
 const groupedRoot = document.getElementById('products-by-category');
