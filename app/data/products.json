@@ -735,16 +735,5 @@
     "main": false,
     "category": "oils",
     "storage": "pantry"
-  },
-  {
-    "name": "test",
-    "unit": "butelka",
-    "quantity": 2.0,
-    "package_size": 1.0,
-    "pack_size": null,
-    "threshold": 1.0,
-    "main": true,
-    "category": "mushrooms",
-    "storage": "fridge"
   }
 ]
