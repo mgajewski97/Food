@@ -300,7 +300,10 @@ export function isSpice(p = {}) {
 
 export function stockLevel(p = {}) {
   if (isSpice(p)) {
-    return p.level || 'none';
+    const lvl = String(p.level || '').toLowerCase();
+    if (lvl === 'brak' || lvl === 'none') return 'none';
+    if (lvl === 'malo' || lvl === 'low') return 'low';
+    return 'ok';
   }
   if (p.quantity === 0) return 'none';
   if (p.threshold != null && p.quantity <= p.threshold) return 'low';
@@ -317,6 +320,7 @@ export function matchesFilter(p = {}, filter = 'all') {
     case 'missing':
       return level === 'none';
     default:
+      if (!p.main && p.quantity === 0) return false;
       return true;
   }
 }

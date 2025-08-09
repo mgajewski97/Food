@@ -106,10 +106,22 @@ function setCategoryUI(categorySection, open) {
   setHidden(body, !open);
 }
 function highlightRow(tr, p) {
-  tr.classList.remove('product-low', 'product-missing');
+  tr.classList.remove(
+    'text-warning',
+    'text-error',
+    'bg-warning/10',
+    'bg-error/10',
+    'opacity-60',
+    'font-semibold'
+  );
   const level = stockLevel(p);
-  if (level === 'low') tr.classList.add('product-low');
-  if (level === 'none') tr.classList.add('product-missing');
+  if (p.main) {
+    if (level === 'none') tr.classList.add('text-error', 'bg-error/10', 'font-semibold');
+    else if (level === 'low') tr.classList.add('text-warning', 'bg-warning/10');
+  } else {
+    if (level === 'none') tr.classList.add('text-error', 'bg-error/10', 'opacity-60');
+    else if (level === 'low') tr.classList.add('text-warning', 'bg-warning/10', 'opacity-60');
+  }
 }
 
 function adjustRow(tr, delta) {
