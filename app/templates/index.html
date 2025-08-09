@@ -81,6 +81,21 @@
                     <tbody></tbody>
                 </table>
                 <div id="product-list" style="display:none;"></div>
+                <template id="grouped-row-template">
+                    <tr data-product-id="">
+                        <td><input type="checkbox" class="row-select hidden-in-view"></td>
+                        <td class="name-cell"></td>
+                        <td class="qty-cell">
+                            <div class="qty-wrap">
+                                <button class="btn-qty qty-dec" type="button">−</button>
+                                <input class="qty-input" type="number" step="1" inputmode="numeric" />
+                                <button class="btn-qty qty-inc" type="button">+</button>
+                            </div>
+                        </td>
+                        <td class="unit-cell"></td>
+                        <td class="status-cell text-center"></td>
+                    </tr>
+                </template>
             </div>
 
             <dialog id="delete-modal" class="modal">

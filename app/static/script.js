@@ -266,6 +266,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderProducts();
   });
   saveBtn?.addEventListener('click', saveEdits);
+  deleteBtn?.addEventListener('click', () => {
+    const rows = Array.from(document.querySelectorAll('.row-select:checked')).map(cb => cb.closest('tr'));
+    const summary = document.getElementById('delete-summary');
+    summary.innerHTML = '';
+    rows.forEach(tr => {
+      const name = tr.querySelector('.name-cell')?.textContent || '';
+      const div = document.createElement('div');
+      div.textContent = name.trim();
+      summary.appendChild(div);
+    });
+    document.getElementById('delete-modal')?.showModal();
+  });
   const viewBtn = document.getElementById('view-toggle');
   viewBtn?.addEventListener('click', () => {
     APP.state.view = APP.state.view === 'flat' ? 'grouped' : 'flat';

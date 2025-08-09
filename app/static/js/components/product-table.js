@@ -2,6 +2,29 @@ import { t, state, productName, unitName, categoryName, storageName, formatPackQ
 
 const APP = (window.APP = window.APP || {});
 
+export const editState = { editing: false };
+
+export function enterEditMode() {
+  editState.editing = true;
+  document.body.classList.add('editing');
+  document.querySelectorAll('.row-select').forEach(cb => cb.classList.remove('hidden-in-view'));
+  updateDeleteButton();
+}
+
+export function exitEditMode() {
+  editState.editing = false;
+  document.body.classList.remove('editing');
+  document.querySelectorAll('.row-select').forEach(cb => cb.classList.add('hidden-in-view'));
+  updateDeleteButton();
+}
+
+export function updateDeleteButton() {
+  const btn = document.getElementById('delete-selected');
+  if (!btn) return;
+  const count = document.querySelectorAll('.row-select:checked').length;
+  btn.disabled = count === 0;
+}
+
 function highlightRow(tr, p) {
   const level = stockLevel(p);
   if (level === 'low') tr.classList.add('product-low');
@@ -10,54 +33,43 @@ function highlightRow(tr, p) {
 
 function createFlatRow(p, idx, editable) {
   const tr = document.createElement('tr');
-  tr.dataset.index = idx;
+  tr.dataset.productId = idx;
   if (editable) {
-    // checkbox
     const cbTd = document.createElement('td');
-    cbTd.className = 'checkbox-cell';
     const cb = document.createElement('input');
     cb.type = 'checkbox';
-    cb.className = 'checkbox checkbox-sm product-select';
+    cb.className = 'row-select checkbox checkbox-sm';
     cb.dataset.name = p.name;
     cbTd.appendChild(cb);
     tr.appendChild(cbTd);
-    // name
+
     const nameTd = document.createElement('td');
     nameTd.className = 'name-cell';
     nameTd.textContent = productName(p.name);
     tr.appendChild(nameTd);
-    // quantity with steppers
+
     const qtyTd = document.createElement('td');
     qtyTd.className = 'qty-cell';
     const wrap = document.createElement('div');
-    wrap.className = 'quantity-control flex items-center gap-2 h-10';
+    wrap.className = 'qty-wrap flex items-center gap-2 h-10';
     const minus = document.createElement('button');
     minus.type = 'button';
-    minus.innerHTML = '<i class="fa-solid fa-minus"></i>';
-    minus.className = 'touch-btn';
+    minus.className = 'btn-qty qty-dec';
+    minus.textContent = '−';
     const input = document.createElement('input');
     input.type = 'number';
-    input.className = 'input input-bordered w-12 h-10 text-center no-spinner';
+    input.step = '1';
+    input.inputMode = 'numeric';
+    input.className = 'qty-input input input-bordered w-12 h-10 text-center no-spinner';
     input.value = p.quantity;
     const plus = document.createElement('button');
     plus.type = 'button';
-    plus.innerHTML = '<i class="fa-solid fa-plus"></i>';
-    plus.className = 'touch-btn';
-    minus.addEventListener('click', () => {
-      input.value = Math.max(0, (parseFloat(input.value) || 0) - 1);
-      p.quantity = parseFloat(input.value) || 0;
-    });
-    plus.addEventListener('click', () => {
-      input.value = (parseFloat(input.value) || 0) + 1;
-      p.quantity = parseFloat(input.value) || 0;
-    });
-    input.addEventListener('change', () => {
-      p.quantity = parseFloat(input.value) || 0;
-    });
+    plus.className = 'btn-qty qty-inc';
+    plus.textContent = '+';
     wrap.append(minus, input, plus);
     qtyTd.appendChild(wrap);
     tr.appendChild(qtyTd);
-    // unit select
+
     const unitTd = document.createElement('td');
     unitTd.className = 'unit-cell';
     const unitSel = document.createElement('select');
@@ -71,7 +83,7 @@ function createFlatRow(p, idx, editable) {
     });
     unitTd.appendChild(unitSel);
     tr.appendChild(unitTd);
-    // category select
+
     const catTd = document.createElement('td');
     catTd.className = 'category-cell';
     const catSel = document.createElement('select');
@@ -85,7 +97,7 @@ function createFlatRow(p, idx, editable) {
     });
     catTd.appendChild(catSel);
     tr.appendChild(catTd);
-    // storage select
+
     const storTd = document.createElement('td');
     storTd.className = 'storage-cell';
     const storSel = document.createElement('select');
@@ -99,7 +111,7 @@ function createFlatRow(p, idx, editable) {
     });
     storTd.appendChild(storSel);
     tr.appendChild(storTd);
-    // status
+
     const statusTd = document.createElement('td');
     statusTd.className = 'status-cell text-center';
     const status = getStatusIcon(p);
@@ -172,8 +184,10 @@ function attachCollapses(root) {
 
 export function renderProducts() {
   const { products = [], view = 'flat', filter = 'all', editing = false } = APP.state || {};
-  const data = Array.isArray(products) ? products.filter(p => p && p.name) : [];
-  const filtered = data.filter(p => matchesFilter(p, filter));
+  const filtered = [];
+  products.forEach((p, idx) => {
+    if (p && p.name && matchesFilter(p, filter)) filtered.push({ p, idx });
+  });
 
   const table = document.getElementById('product-table');
   const list = document.getElementById('product-list');
@@ -196,7 +210,7 @@ export function renderProducts() {
       tbody.appendChild(tr);
       return;
     }
-    filtered.forEach((p, idx) => {
+    filtered.forEach(({ p, idx }) => {
       const tr = createFlatRow(p, idx, editing);
       tbody.appendChild(tr);
     });
@@ -211,12 +225,12 @@ export function renderProducts() {
       return;
     }
     const storages = {};
-    filtered.forEach(p => {
+    filtered.forEach(({ p, idx }) => {
       const s = p.storage || 'pantry';
       const c = p.category || 'uncategorized';
       storages[s] = storages[s] || {};
       storages[s][c] = storages[s][c] || [];
-      storages[s][c].push(p);
+      storages[s][c].push({ p, idx });
     });
     Object.keys(storages)
       .sort((a, b) => storageName(a).localeCompare(storageName(b)))
@@ -265,7 +279,10 @@ export function renderProducts() {
             const table = document.createElement('table');
             table.className = 'table table-zebra w-full grouped-table';
             const colgroup = document.createElement('colgroup');
-            ['grouped-col-name', 'grouped-col-qty', 'grouped-col-unit', 'grouped-col-status'].forEach(cls => {
+            const cols = editing
+              ? ['grouped-col-select', 'grouped-col-name', 'grouped-col-qty', 'grouped-col-unit', 'grouped-col-status']
+              : ['grouped-col-name', 'grouped-col-qty', 'grouped-col-unit', 'grouped-col-status'];
+            cols.forEach(cls => {
               const col = document.createElement('col');
               col.className = cls;
               colgroup.appendChild(col);
@@ -273,6 +290,9 @@ export function renderProducts() {
             table.appendChild(colgroup);
             const thead = document.createElement('thead');
             const hr = document.createElement('tr');
+            if (editing) {
+              hr.appendChild(document.createElement('th'));
+            }
             [t('table_header_name'), t('table_header_quantity'), t('table_header_unit'), t('table_header_status')].forEach(txt => {
               const th = document.createElement('th');
               th.textContent = txt;
@@ -281,18 +301,32 @@ export function renderProducts() {
             thead.appendChild(hr);
             table.appendChild(thead);
             const tb = document.createElement('tbody');
-            storages[stor][cat].forEach(p => {
-              const tr = document.createElement('tr');
-              const n = document.createElement('td');
-              n.textContent = productName(p.name);
-              const q = document.createElement('td');
-              q.textContent = formatPackQuantity(p);
-              const u = document.createElement('td');
-              u.textContent = unitName(p.unit);
-              const s = document.createElement('td');
-              const ic = getStatusIcon(p);
-              if (ic) { s.innerHTML = ic.html; s.title = ic.title; }
-              tr.append(n, q, u, s);
+            const rowTpl = document.getElementById('grouped-row-template');
+            storages[stor][cat].forEach(({ p, idx }) => {
+              let tr;
+              if (editing && rowTpl) {
+                tr = rowTpl.content.firstElementChild.cloneNode(true);
+                tr.dataset.productId = idx;
+                tr.querySelector('.name-cell').textContent = productName(p.name);
+                const input = tr.querySelector('.qty-input');
+                input.value = p.quantity;
+                tr.querySelector('.unit-cell').textContent = unitName(p.unit);
+                const s = tr.querySelector('.status-cell');
+                const ic = getStatusIcon(p);
+                if (ic) { s.innerHTML = ic.html; s.title = ic.title; }
+              } else {
+                tr = document.createElement('tr');
+                const n = document.createElement('td');
+                n.textContent = productName(p.name);
+                const q = document.createElement('td');
+                q.textContent = formatPackQuantity(p);
+                const u = document.createElement('td');
+                u.textContent = unitName(p.unit);
+                const s = document.createElement('td');
+                const ic = getStatusIcon(p);
+                if (ic) { s.innerHTML = ic.html; s.title = ic.title; }
+                tr.append(n, q, u, s);
+              }
               highlightRow(tr, p);
               tb.appendChild(tr);
             });
@@ -306,4 +340,31 @@ export function renderProducts() {
       });
     attachCollapses(list);
   }
+  if (editing) enterEditMode(); else exitEditMode();
 }
+
+function adjustRow(tr, delta) {
+  const input = tr?.querySelector('.qty-input');
+  if (!input) return;
+  const val = Number(input.value || 0);
+  const next = Math.max(0, val + delta);
+  input.value = next;
+  input.dispatchEvent(new Event('change', { bubbles: true }));
+}
+
+document.addEventListener('click', e => {
+  const inc = e.target.closest('.qty-inc');
+  const dec = e.target.closest('.qty-dec');
+  if (inc) adjustRow(inc.closest('tr'), +1);
+  if (dec) adjustRow(dec.closest('tr'), -1);
+});
+
+document.addEventListener('change', e => {
+  if (e.target.matches('.row-select')) updateDeleteButton();
+  if (e.target.matches('.qty-input')) {
+    const tr = e.target.closest('tr');
+    const id = Number(tr?.dataset.productId);
+    const p = APP.state.products[id];
+    if (p) p.quantity = Number(e.target.value) || 0;
+  }
+});
