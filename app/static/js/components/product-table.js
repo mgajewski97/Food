@@ -527,9 +527,12 @@ export function renderProducts() {
               const headers = editing
                 ? ['', t('table_header_name'), t('table_header_quantity'), t('table_header_unit'), t('table_header_status')]
                 : [t('table_header_name'), t('table_header_quantity'), t('table_header_unit'), t('table_header_status')];
-              headers.forEach(txt => {
+              headers.forEach((txt, i) => {
                 const th = document.createElement('th');
                 th.textContent = txt;
+                // Reserve a header column for the checkbox when editing so
+                // column alignment matches body rows.
+                if (editing && i === 0) th.className = 'checkbox-cell';
                 hr.appendChild(th);
               });
               thead.appendChild(hr);
@@ -542,9 +545,11 @@ export function renderProducts() {
                 tr.dataset.productId = p.id != null ? p.id : idx;
                 if (editing) {
                   const cbTd = document.createElement('td');
+                  cbTd.className = 'checkbox-cell';
                   const cb = document.createElement('input');
                   cb.type = 'checkbox';
-                  cb.className = 'checkbox checkbox-sm row-select';
+                  // Same checkbox styling as flat view so delete logic works.
+                  cb.className = 'checkbox checkbox-sm row-select product-select';
                   cb.dataset.name = p.name;
                   cbTd.appendChild(cb);
                   tr.appendChild(cbTd);
@@ -600,6 +605,8 @@ if (groupedRoot) {
   initExpandDefaults(groupedRoot);
 
   groupedRoot.addEventListener('click', e => {
+    // Disable expand/collapse interactions while editing.
+    if (APP.state.editing) return;
     const storageBtn = e.target.closest('.toggle-storage');
     const catBtn = e.target.closest('.toggle-category');
 
@@ -625,6 +632,8 @@ if (groupedRoot) {
 
   // Mobile: tap entire header toggles
   groupedRoot.addEventListener('click', e => {
+    // Ignore header toggle taps while editing.
+    if (APP.state.editing) return;
     const hdr = e.target.closest('.category-header, .storage-header');
     if (!hdr) return;
     const btn = hdr.querySelector('.toggle-category, .toggle-storage');
