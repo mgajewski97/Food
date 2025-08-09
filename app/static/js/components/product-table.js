@@ -25,6 +25,46 @@ document.addEventListener('click', (e) => {
 const storageState = new Map(); // storageId -> true/false
 const categoryState = new Map(); // storageId::categoryId -> true/false
 
+function animateSection(el, show) {
+  if (!el) return;
+  el.style.overflow = 'hidden';
+  if (show) {
+    el.classList.remove('hidden');
+    const h = el.scrollHeight;
+    el.style.maxHeight = '0px';
+    requestAnimationFrame(() => {
+      el.style.transition = 'max-height 0.3s ease';
+      el.style.maxHeight = `${h}px`;
+    });
+    el.addEventListener(
+      'transitionend',
+      () => {
+        el.style.maxHeight = '';
+        el.style.transition = '';
+        el.style.overflow = '';
+      },
+      { once: true }
+    );
+  } else {
+    const h = el.scrollHeight;
+    el.style.maxHeight = `${h}px`;
+    requestAnimationFrame(() => {
+      el.style.transition = 'max-height 0.3s ease';
+      el.style.maxHeight = '0px';
+    });
+    el.addEventListener(
+      'transitionend',
+      () => {
+        el.classList.add('hidden');
+        el.style.maxHeight = '';
+        el.style.transition = '';
+        el.style.overflow = '';
+      },
+      { once: true }
+    );
+  }
+}
+
 // ensure default: everything expanded on first render
 function initExpandDefaults(container) {
   container.querySelectorAll('.storage-section').forEach(sec => {
@@ -35,23 +75,18 @@ function initExpandDefaults(container) {
       if (!categoryState.has(key)) categoryState.set(key, true);
     });
   });
-  syncAllToggles(container);
+  syncAllToggles(container, false);
 }
 
-function syncAllToggles(container) {
+function syncAllToggles(container, animate = true) {
   container.querySelectorAll('.storage-section').forEach(sec => {
     const storage = sec.dataset.storage;
     const storageOpen = !!storageState.get(storage);
-    setStorageUI(sec, storageOpen);
-    sec.querySelectorAll('.category-section').forEach(cat => {
-      const key = `${storage}::${cat.dataset.category}`;
-      const catOpen = !!categoryState.get(key);
-      setCategoryUI(cat, storageOpen && catOpen);
-    });
+    setStorageUI(sec, storageOpen, animate);
   });
 }
 
-function setStorageUI(storageSection, open) {
+function setStorageUI(storageSection, open, animate = true) {
   const btn = storageSection.querySelector('.toggle-storage');
   btn.setAttribute('aria-expanded', String(open));
   btn.title = open ? t('collapse') : t('expand');
@@ -62,18 +97,27 @@ function setStorageUI(storageSection, open) {
   storageSection.querySelectorAll('.category-section').forEach(cat => {
     const key = `${storageSection.dataset.storage}::${cat.dataset.category}`;
     const catOpen = !!categoryState.get(key);
-    setCategoryUI(cat, open && catOpen);
+    if (open) {
+      setCategoryUI(cat, catOpen, false);
+      if (animate) animateSection(cat, true);
+      else cat.classList.remove('hidden');
+    } else {
+      if (animate) animateSection(cat, false);
+      else cat.classList.add('hidden');
+    }
   });
 }
 
-function setCategoryUI(categorySection, open) {
+function setCategoryUI(categorySection, open, animate = true) {
   const btn = categorySection.querySelector('.toggle-category');
   btn.setAttribute('aria-expanded', String(open));
   btn.title = open ? t('collapse') : t('expand');
   const icon = btn.querySelector('i');
   icon.classList.toggle('fa-caret-up', open);
   icon.classList.toggle('fa-caret-down', !open);
-  categorySection.querySelector('.category-body').classList.toggle('hidden', !open);
+  const body = categorySection.querySelector('.category-body');
+  if (animate) animateSection(body, open);
+  else body.classList.toggle('hidden', !open);
 }
 function highlightRow(tr, p) {
   const level = stockLevel(p);
@@ -437,7 +481,7 @@ if (groupedRoot) {
       const key = `${storage}::${cat}`;
       categoryState.set(key, !categoryState.get(key));
       const parentOpen = !!storageState.get(storage);
-      setCategoryUI(section, parentOpen && categoryState.get(key));
+      setCategoryUI(section, parentOpen && categoryState.get(key), parentOpen);
     }
   });
 
