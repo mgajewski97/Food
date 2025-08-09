@@ -1,6 +1,7 @@
 // CHANGELOG:
 // - Added normalization helpers and spice detector.
 // - Single translation helper with English fallback.
+// - Added fetchJson wrapper for unified API diagnostics.
 
 export const CATEGORY_KEYS = {
   uncategorized: 'category_uncategorized',
@@ -85,6 +86,42 @@ export function applyTranslations() {
   });
 }
 
+export async function fetchJson(url, options = {}) {
+  const opts = {
+    ...options,
+    headers: {
+      Accept: 'application/json',
+      ...(options.headers || {})
+    }
+  };
+  if (opts.body && typeof opts.body === 'object' && !(opts.body instanceof FormData)) {
+    opts.body = JSON.stringify(opts.body);
+    if (!opts.headers['Content-Type']) {
+      opts.headers['Content-Type'] = 'application/json';
+    }
+  }
+  try {
+    const res = await fetch(url, opts);
+    const text = await res.text();
+    let body = null;
+    try {
+      body = text ? JSON.parse(text) : null;
+    } catch {
+      body = text;
+    }
+    if (!res.ok) {
+      const err = { url, status: res.status, body };
+      console.error('[fetchJson]', err);
+      throw err;
+    }
+    return body;
+  } catch (err) {
+    const wrapped = err && err.url ? err : { url, status: err?.status ?? null, body: err?.body ?? err?.message };
+    console.error('[fetchJson]', wrapped);
+    throw wrapped;
+  }
+}
+
 export function parseTimeToMinutes(value) {
   if (value == null) return null;
   if (typeof value === 'number') return value;
@@ -134,12 +171,10 @@ export function getStatusIcon(p) {
 
 export async function loadTranslations() {
   try {
-    const [plRes, enRes] = await Promise.all([
-      fetch('/static/translations/pl.json'),
-      fetch('/static/translations/en.json')
+    const [pl, en] = await Promise.all([
+      fetchJson('/static/translations/pl.json'),
+      fetchJson('/static/translations/en.json')
     ]);
-    const pl = await plRes.json();
-    const en = await enRes.json();
     state.uiTranslations.pl = pl;
     state.uiTranslations.en = en;
     state.translations.products = {};
@@ -159,8 +194,7 @@ export async function loadTranslations() {
 
 export async function loadUnits() {
   try {
-    const res = await fetch('/api/units');
-    state.units = await res.json();
+    state.units = await fetchJson('/api/units');
   } catch (err) {
     console.error('Failed to load units', err);
     state.units = {};
@@ -169,8 +203,7 @@ export async function loadUnits() {
 
 export async function loadFavorites() {
   try {
-    const res = await fetch('/api/favorites');
-    const data = await res.json();
+    const data = await fetchJson('/api/favorites');
     state.favoriteRecipes = new Set(data);
     localStorage.setItem('favoriteRecipes', JSON.stringify(Array.from(state.favoriteRecipes)));
   } catch (err) {
@@ -186,10 +219,9 @@ export function toggleFavorite(name) {
   }
   const arr = Array.from(state.favoriteRecipes);
   localStorage.setItem('favoriteRecipes', JSON.stringify(arr));
-  fetch('/api/favorites', {
+  fetchJson('/api/favorites', {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(arr)
+    body: arr
   }).catch(() => {});
 }
 

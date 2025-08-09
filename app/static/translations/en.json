@@ -133,6 +133,8 @@
   "notify_success_title": "Success",
   "notify_error_title": "Error",
   "manual_add_success": "Added to shopping list",
+  "retry": "Retry",
+  "health_check_failed": "Unable to reach server",
   "product.toast_bread": "Toast bread",
   "product.eggs": "Eggs",
   "product.natural_tofu": "Natural tofu",

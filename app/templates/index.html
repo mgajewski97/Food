@@ -16,6 +16,10 @@
 </head>
 <body class="min-h-screen bg-base-100">
 <div id="top-sentinel"></div>
+<div id="health-banner" class="bg-error text-error-content text-center py-2 hidden">
+    <span data-i18n="health_check_failed">Brak połączenia z serwerem</span>
+    <button id="health-retry" class="btn btn-sm ml-4" data-i18n="retry">Retry</button>
+</div>
 <div class="corner-icons flex justify-end bg-base-100">
     <button id="layout-toggle" aria-label="Toggle layout" class="text-xl p-2 bg-transparent border-0">
         <i id="layout-icon" class="fa-solid fa-mobile-screen-button"></i>

@@ -1,4 +1,4 @@
-import { loadTranslations, loadUnits, loadFavorites, state, t, normalizeProduct, applyTranslations } from './js/helpers.js';
+import { loadTranslations, loadUnits, loadFavorites, state, t, normalizeProduct, applyTranslations, fetchJson } from './js/helpers.js';
 import { renderProducts } from './js/components/product-table.js';
 import { renderRecipes, loadRecipes } from './js/components/recipe-list.js';
 import { renderShoppingList, addToShoppingList, renderSuggestions } from './js/components/shopping-list.js';
@@ -23,9 +23,7 @@ APP.editBackup = APP.editBackup || null;
 
 async function fetchProducts() {
   try {
-    const res = await fetch('/api/products');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    const data = await fetchJson('/api/products');
     APP.state.products = data.map(normalizeProduct);
     renderProducts();
     renderSuggestions();
@@ -33,7 +31,7 @@ async function fetchProducts() {
   } catch (err) {
     APP.state.products = [];
     renderProducts();
-    showNotification({ type: 'error', title: t('products_load_failed'), message: err.message, retry: fetchProducts });
+    showNotification({ type: 'error', title: t('products_load_failed'), message: err.body?.message || String(err.status), retry: fetchProducts });
   }
 }
 
@@ -47,12 +45,21 @@ async function fetchRecipes() {
 
 async function fetchHistory() {
   try {
-    const res = await fetch('/api/history');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    state.historyData = await res.json();
+    state.historyData = await fetchJson('/api/history');
   } catch (err) {
     state.historyData = [];
-    showNotification({ type: 'error', title: t('history_load_failed'), message: err.message, retry: fetchHistory });
+    showNotification({ type: 'error', title: t('history_load_failed'), message: err.body?.message || String(err.status), retry: fetchHistory });
+  }
+}
+
+async function checkHealth() {
+  try {
+    await fetchJson('/api/health');
+    document.getElementById('health-banner')?.classList.add('hidden');
+    return true;
+  } catch (err) {
+    document.getElementById('health-banner')?.classList.remove('hidden');
+    return false;
   }
 }
 
@@ -188,18 +195,15 @@ function initAddForm() {
     if (!isNaN(thr)) payload.threshold = thr;
     submitBtn.disabled = true;
     try {
-      const res = await fetch('/api/products', {
+      await fetchJson('/api/products', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: payload
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      await res.json();
       await fetchProducts();
       form.reset();
       document.getElementById('product-search')?.focus();
     } catch (err) {
-      showNotification({ type: 'error', title: t('save_failed'), message: err.message });
+      showNotification({ type: 'error', title: t('save_failed'), message: err.body?.message || String(err.status) });
     } finally {
       submitBtn.disabled = false;
     }
@@ -227,16 +231,14 @@ async function saveEdits() {
   const btn = document.getElementById('save-btn');
   btn.disabled = true;
   try {
-    const res = await fetch('/api/products', {
+    await fetchJson('/api/products', {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updates)
+      body: updates
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     showNotification({ type: 'success', title: t('save_success') });
     await fetchProducts();
   } catch (err) {
-    showNotification({ type: 'error', title: t('save_failed'), message: err.message });
+    showNotification({ type: 'error', title: t('save_failed'), message: err.body?.message || String(err.status) });
   } finally {
     btn.disabled = false;
   }
@@ -252,6 +254,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderShoppingList();
   initReceiptImport();
   renderProducts();
+  checkHealth();
   fetchProducts();
   fetchRecipes();
   fetchHistory();
@@ -331,6 +334,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   filterSel?.addEventListener('change', () => {
     APP.state.filter = filterSel.value;
     renderProducts();
+  });
+  const retryBtn = document.getElementById('health-retry');
+  retryBtn?.addEventListener('click', async () => {
+    if (await checkHealth()) {
+      window.location.reload();
+    }
   });
   const copyBtn = document.getElementById('copy-btn');
   copyBtn?.addEventListener('click', () => {

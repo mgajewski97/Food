@@ -133,6 +133,8 @@
   "notify_success_title": "Sukces",
   "notify_error_title": "Błąd",
   "manual_add_success": "Dodano do listy zakupów",
+  "retry": "Ponów",
+  "health_check_failed": "Brak połączenia z serwerem",
   "product.toast_bread": "Pieczywo tostowe",
   "product.eggs": "Jajka",
   "product.natural_tofu": "Tofu naturalne",

@@ -8,7 +8,8 @@ import {
   STORAGE_KEYS,
   matchesFilter,
   stockLevel,
-  normalizeProduct
+  normalizeProduct,
+  fetchJson
 } from '../helpers.js';
 import { showToast } from './toast.js';
 
@@ -56,9 +57,11 @@ confirmDeleteBtn?.addEventListener('click', async e => {
   const names = selected.map(cb => cb.dataset.name);
   try {
     await Promise.all(
-      names.map(name => fetch(`/api/products/${encodeURIComponent(name)}`, { method: 'DELETE' }))
+      names.map(name => fetchJson(`/api/products/${encodeURIComponent(name)}`, { method: 'DELETE' }))
     );
     await refreshProducts();
+  } catch (err) {
+    showToast(t('notify_error_title'), 'error');
   } finally {
     deleteModal.close();
     updateDeleteButton();
@@ -218,22 +221,26 @@ function buildQtyCell(p, tr) {
 }
 
 export async function refreshProducts() {
-  const res = await fetch('/api/products');
-  if (!res.ok) throw new Error('Fetch failed');
-  const data = await res.json();
-  APP.state.products = data.map(normalizeProduct);
-  renderProducts();
+  try {
+    const data = await fetchJson('/api/products');
+    APP.state.products = data.map(normalizeProduct);
+    renderProducts();
+  } catch (err) {
+    showToast(t('notify_error_title'), 'error');
+  }
 }
 
 export async function saveProduct(payload) {
-  const res = await fetch('/api/products', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
-  if (!res.ok) throw new Error('Save failed');
-  await refreshProducts();
-  showToast(t('save_success'));
+  try {
+    await fetchJson('/api/products', {
+      method: 'POST',
+      body: payload
+    });
+    await refreshProducts();
+    showToast(t('save_success'));
+  } catch (err) {
+    showToast(t('notify_error_title'), 'error');
+  }
 }
 
 function createFlatRow(p, idx, editable) {

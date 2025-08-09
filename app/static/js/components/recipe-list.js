@@ -4,7 +4,8 @@ import {
   parseTimeToMinutes,
   timeToBucket,
   toggleFavorite,
-  normalizeRecipe
+  normalizeRecipe,
+  fetchJson
 } from '../helpers.js';
 import { showNotification } from './toast.js';
 import { renderRecipeDetail } from './recipe-detail.js';
@@ -143,9 +144,7 @@ export async function loadRecipes() {
   }
   state.recipesLoading = true;
   try {
-    const res = await fetch('/api/recipes');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    const data = await fetchJson('/api/recipes');
     const processed = data
       .map(r => normalizeRecipe(r))
       .map(r => ({ ...r, timeBucket: timeToBucket(r.time) }));
@@ -154,7 +153,7 @@ export async function loadRecipes() {
     renderRecipes();
     return processed;
   } catch (err) {
-    showNotification({ type: 'error', title: t('recipes_load_failed'), message: err.message, retry: loadRecipes });
+    showNotification({ type: 'error', title: t('recipes_load_failed'), message: err.body?.message || String(err.status), retry: loadRecipes });
     return [];
   } finally {
     state.recipesLoading = false;
