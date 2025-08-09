@@ -363,8 +363,8 @@ input[type="number"] {
 
 /* Touch-friendly buttons for mobile */
 .touch-btn {
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 2.75rem;
+  height: 2.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -384,9 +384,18 @@ input[type="number"] {
 }
 
 html[data-layout="mobile"] .touch-btn {
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 2.75rem;
+  height: 2.75rem;
   font-size: 1.125rem;
+}
+
+.shopping-item.in-cart {
+  opacity: 0.6;
+}
+
+.owned-info {
+  font-size: 0.75rem;
+  color: hsl(var(--bc) / 0.7);
 }
 
 /* JSON editor adjustments */

@@ -28,6 +28,7 @@
   "delete_modal_question": "Czy na pewno chcesz usunąć zaznaczone produkty?",
   "delete_confirm_button": "Usuń",
   "delete_cancel_button": "Anuluj",
+  "confirm_button": "Potwierdź",
   "heading_add_edit_product": "Dodaj / edytuj produkt",
   "add_form_name_placeholder": "nazwa",
   "add_form_quantity_placeholder": "ilość",
