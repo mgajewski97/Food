@@ -25,6 +25,7 @@ document.addEventListener('click', async e => {
   const panel = document.getElementById(`recipe-detail-${id}`);
   if (!panel) return;
   const open = panel.classList.toggle('hidden') === false;
+  btn.textContent = open ? t('recipe_view_recipe') : t('history_show_details');
   if (open && !panel.dataset.hydrated) {
     const recipe = getRecipeById(id);
     panel.innerHTML = renderRecipeDetail(recipe);

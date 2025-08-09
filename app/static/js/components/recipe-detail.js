@@ -13,23 +13,15 @@ export function renderRecipeDetail(r){
       <span class="text-lg">${favIcon}</span>
     </div>
   `;
-
-  const meta = `
-    <div class="flex items-center gap-6 mb-4 text-sm">
-      <div class="flex items-center gap-2"><i class="fa-regular fa-clock"></i><span>${r.time ?? '—'}</span></div>
-      <div class="flex items-center gap-2"><i class="fa-solid fa-users"></i><span>${r.portions ?? '—'}</span></div>
-    </div>
-  `;
-
   const ing = (r.ingredients||[]).map(i=>{
     const nameTr = window.t?.(i.product);
     const name = nameTr && nameTr.trim() !== '' ? nameTr : i.product;
     const qty  = (i.quantity ?? '').toString();
     const unit = t(i.unit ?? '');
     const qtyStr = [qty, unit].filter(Boolean).join(' ');
-    return `<li class="ingredient-item md:grid md:grid-cols-[1fr_auto] md:gap-4 flex items-center bg-base-200/40 rounded px-2 py-1">
-      <span class="ingredient-qty order-1 md:order-2 md:text-right">${qtyStr}</span>
-      <span class="ingredient-name order-2 md:order-1">${name}</span>
+    return `<li class="ingredient-item grid grid-cols-[1fr_auto] gap-4 items-center bg-base-200/40 rounded px-2 py-1">
+      <span class="ingredient-name">${name}</span>
+      <span class="ingredient-qty text-right">${qtyStr}</span>
     </li>`;
   }).join('');
 
@@ -42,7 +34,6 @@ export function renderRecipeDetail(r){
 
   return `
     ${header}
-    ${meta}
     <div class="space-y-6">
       <section>
         <h4 class="font-semibold mb-2">${t('recipe_ingredients_header')}</h4>
