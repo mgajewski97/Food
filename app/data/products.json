@@ -1,605 +1,750 @@
 [
   {
     "name": "product.toast_bread",
-    "quantity": "1",
     "unit": "szt",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "bread",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true
+    "storage": "pantry"
   },
   {
     "name": "product.eggs",
-    "quantity": "10",
     "unit": "szt",
+    "quantity": 10.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "dairy_eggs",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.natural_tofu",
-    "quantity": "1",
     "unit": "szt",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "dairy_eggs",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.breaded_tofu_hot_spicy",
-    "quantity": "1",
     "unit": "szt",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "dairy_eggs",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.sour_cream_18",
-    "quantity": "2",
     "unit": "250g",
+    "quantity": 2.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "dairy_eggs",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.beans_piekny_jas",
-    "quantity": "400",
     "unit": "g",
+    "quantity": 400.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "dried_legumes",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true
+    "storage": "pantry"
   },
   {
     "name": "product.lentils_red",
-    "quantity": "1",
     "unit": "opak_350g",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "dried_legumes",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true
+    "storage": "pantry"
   },
   {
     "name": "product.lentils_green",
-    "quantity": "1",
     "unit": "opak_350g",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "dried_legumes",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true
+    "storage": "pantry"
   },
   {
     "name": "product.spring_onion",
-    "quantity": "1",
     "unit": "szt",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "dry_veg",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.red_onion",
-    "quantity": "1000",
     "unit": "g",
+    "quantity": 1000.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "dry_veg",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true
+    "storage": "pantry"
   },
   {
     "name": "product.garlic",
-    "quantity": "3",
     "unit": "szt",
+    "quantity": 3.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "dry_veg",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true
+    "storage": "pantry"
   },
   {
     "name": "product.lime",
-    "quantity": "2",
     "unit": "szt",
+    "quantity": 2.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "dry_veg",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true
+    "storage": "pantry"
   },
   {
     "name": "product.eggplant",
-    "quantity": "1",
     "unit": "szt",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "fresh_veg",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.zucchini",
-    "quantity": "2",
     "unit": "szt",
+    "quantity": 2.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "fresh_veg",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.radish",
-    "quantity": "0.5",
     "unit": "szt",
+    "quantity": 0.5,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "fresh_veg",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.fries",
-    "quantity": "1",
     "unit": "szt",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "fresh_veg",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.chinese_cabbage",
-    "quantity": "0.5",
     "unit": "szt",
+    "quantity": 0.5,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "fresh_veg",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.carrot",
-    "quantity": "500",
     "unit": "g",
+    "quantity": 500.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "fresh_veg",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.parsley",
-    "quantity": "1",
     "unit": "szt",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "fresh_veg",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.bell_peppers",
-    "quantity": "1",
     "unit": "szt",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "fresh_veg",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.pink_tomatoes",
-    "quantity": "3",
     "unit": "szt",
+    "quantity": 3.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "fresh_veg",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.tomato_puree",
-    "quantity": "500",
     "unit": "g",
+    "quantity": 500.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "fresh_veg",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.new_potatoes",
-    "quantity": "1000",
     "unit": "g",
+    "quantity": 1000.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "fresh_veg",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.borscht",
-    "quantity": "1",
     "unit": "sloik",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "frozen_meals",
-    "storage": "freezer",
-    "threshold": 1,
-    "main": true
+    "storage": "freezer"
   },
   {
     "name": "product.chinese_sauce",
-    "quantity": "1",
     "unit": "szt",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "frozen_meals",
-    "storage": "freezer",
-    "threshold": 1,
-    "main": true
+    "storage": "freezer"
   },
   {
     "name": "product.gravy",
-    "quantity": "1",
     "unit": "szt",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "frozen_meals",
-    "storage": "freezer",
-    "threshold": 1,
-    "main": true
+    "storage": "freezer"
   },
   {
     "name": "product.spinach",
-    "quantity": "1",
     "unit": "szt",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "frozen_meals",
-    "storage": "freezer",
-    "threshold": 1,
-    "main": true
+    "storage": "freezer"
   },
   {
     "name": "product.stir_fry_vegetables",
-    "quantity": "2",
     "unit": "szt",
+    "quantity": 2.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "frozen_meals",
-    "storage": "freezer",
-    "threshold": 1,
-    "main": true
+    "storage": "freezer"
   },
   {
     "name": "product.cauliflower_soup",
-    "quantity": "1",
     "unit": "szt",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "frozen_meals",
-    "storage": "freezer",
-    "threshold": 1,
-    "main": true
+    "storage": "freezer"
   },
   {
     "name": "product.bulgur",
-    "quantity": "3",
     "unit": "szt",
+    "quantity": 3.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "grains",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true
+    "storage": "pantry"
   },
   {
     "name": "product.buckwheat",
-    "quantity": "1",
     "unit": "szt",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "grains",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true
+    "storage": "pantry"
   },
   {
     "name": "product.barley",
-    "quantity": "8",
     "unit": "szt",
+    "quantity": 8.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "grains",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true
+    "storage": "pantry"
   },
   {
     "name": "product.rice_arborio",
-    "quantity": "500",
     "unit": "g",
+    "quantity": 500.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "grains",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true
+    "storage": "pantry"
   },
   {
     "name": "product.rice_basmati",
-    "quantity": "4",
     "unit": "szt",
+    "quantity": 4.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "grains",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true
+    "storage": "pantry"
   },
   {
     "name": "product.rice_jasmine",
-    "quantity": "4",
     "unit": "szt",
+    "quantity": 4.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "grains",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true
+    "storage": "pantry"
   },
   {
     "name": "product.oyster_mushrooms",
-    "quantity": "500",
     "unit": "g",
+    "quantity": 500.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "mushrooms",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.champignons",
-    "quantity": "1000",
     "unit": "g",
+    "quantity": 1000.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "mushrooms",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.sesame_oil",
-    "quantity": "1",
     "unit": "butelka",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "oils",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true
+    "storage": "pantry"
   },
   {
     "name": "product.sun_dried_tomatoes",
-    "quantity": "3",
     "unit": "x270g",
+    "quantity": 3.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "oils",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true
+    "storage": "pantry"
   },
   {
     "name": "product.chickpeas",
-    "quantity": "1",
     "unit": "szt",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "opened_preserves",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.garlic_in_oil",
-    "quantity": "1",
     "unit": "szt",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "opened_preserves",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.red_beans",
-    "quantity": "1",
     "unit": "szt",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "opened_preserves",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.corn",
-    "quantity": "1",
     "unit": "szt",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "opened_preserves",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.pickled_pearl_onions",
-    "quantity": "1",
     "unit": "szt",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "opened_preserves",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.dijon_mustard",
-    "quantity": "1",
     "unit": "szt",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "opened_preserves",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.french_mustard",
-    "quantity": "1",
     "unit": "szt",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "opened_preserves",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.large_green_olives",
-    "quantity": "500",
     "unit": "g",
+    "quantity": 500.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "opened_preserves",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.green_peas",
-    "quantity": "1",
     "unit": "szt",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "opened_preserves",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.ditalini_rigati_pasta",
-    "quantity": "500",
     "unit": "g",
+    "quantity": 500.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "pasta",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true
+    "storage": "pantry"
   },
   {
     "name": "product.penne_pasta",
-    "quantity": "1000",
     "unit": "g",
+    "quantity": 1000.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "pasta",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true
+    "storage": "pantry"
   },
   {
     "name": "product.sciatelli_al_limone_pasta",
-    "quantity": "500",
     "unit": "g",
+    "quantity": 500.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "pasta",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true
+    "storage": "pantry"
   },
   {
     "name": "product.sauce_alla_norma",
-    "quantity": "400",
     "unit": "g",
+    "quantity": 400.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "ready_sauces",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.sauce_alla_puttanesca",
-    "quantity": "400",
     "unit": "g",
+    "quantity": 400.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "ready_sauces",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.sauce_basilico",
-    "quantity": "400",
     "unit": "g",
+    "quantity": 400.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "ready_sauces",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.sauce_bearnaise",
-    "quantity": "125",
     "unit": "g",
+    "quantity": 125.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "ready_sauces",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.sauce_cacio_e_pepe",
-    "quantity": "350",
     "unit": "g",
+    "quantity": 350.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "ready_sauces",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.sauce_napoletana",
-    "quantity": "400",
     "unit": "g",
+    "quantity": 400.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "ready_sauces",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.pistachio_cream",
-    "quantity": "1",
     "unit": "szt",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "spreads",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true
+    "storage": "pantry"
   },
   {
     "name": "product.peanut_butter",
-    "quantity": "1",
     "unit": "szt",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "spreads",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true
+    "storage": "pantry"
   },
   {
     "name": "product.thai_spice_mix",
-    "quantity": "15",
     "unit": "g",
+    "quantity": 15.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "spreads",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true
+    "storage": "pantry"
   },
   {
     "name": "product.cashew_nuts",
-    "quantity": "35",
     "unit": "g",
+    "quantity": 35.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "spreads",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true
+    "storage": "pantry"
   },
   {
     "name": "product.breaded_schnitzel",
-    "quantity": "1",
     "unit": "szt",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": false,
     "category": "frozen_meals",
-    "storage": "freezer",
-    "threshold": 1,
-    "main": false
+    "storage": "freezer"
   },
   {
     "name": "product.cheese_slices",
-    "quantity": "2",
     "unit": "szt",
+    "quantity": 2.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
     "category": "dairy_eggs",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": true
+    "storage": "fridge"
   },
   {
     "name": "product.lemon",
-    "quantity": "1",
     "unit": "szt",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 2.0,
+    "main": false,
     "category": "dry_veg",
-    "storage": "pantry",
-    "threshold": 2,
-    "main": false
+    "storage": "pantry"
   },
   {
     "name": "product.green_beans",
-    "quantity": "400",
     "unit": "g",
+    "quantity": 400.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": false,
     "category": "fresh_veg",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": false
+    "storage": "fridge"
   },
   {
     "name": "product.soup_veg",
-    "quantity": "1",
     "unit": "szt",
+    "quantity": 1.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": false,
     "category": "fresh_veg",
-    "storage": "fridge",
-    "threshold": 1,
-    "main": false
+    "storage": "fridge"
   },
   {
     "name": "product.plant_fat",
-    "quantity": "2",
     "unit": "szt",
+    "quantity": 2.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": false,
     "category": "oils",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": false
+    "storage": "pantry"
+  },
+  {
+    "name": "test",
+    "unit": "butelka",
+    "quantity": 2.0,
+    "package_size": 1.0,
+    "pack_size": null,
+    "threshold": 1.0,
+    "main": true,
+    "category": "mushrooms",
+    "storage": "fridge"
   }
 ]
