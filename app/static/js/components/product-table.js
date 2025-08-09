@@ -2,6 +2,19 @@ import { t, state, productName, unitName, categoryName, storageName, formatPackQ
 
 const APP = (window.APP = window.APP || {});
 
+const deleteBtn = document.getElementById('delete-selected'); // label: "Usuń zaznaczone"
+function updateDeleteButton() {
+  const selected = document.querySelectorAll('input.row-select:checked').length;
+  deleteBtn.disabled = selected === 0;
+  deleteBtn.textContent = selected > 0 ? `Usuń zaznaczone (${selected})` : 'Usuń zaznaczone';
+}
+document.addEventListener('change', (e) => {
+  if (e.target.matches('input.row-select')) updateDeleteButton();
+});
+document.addEventListener('click', (e) => {
+  if (e.target.id === 'end-edit') { /* leaving edit mode */ updateDeleteButton(); }
+});
+
 // --- expand/collapse state
 const storageState = new Map(); // storageId -> true/false
 const categoryState = new Map(); // storageId::categoryId -> true/false
@@ -77,7 +90,7 @@ function createFlatRow(p, idx, editable) {
     cbTd.className = 'checkbox-cell';
     const cb = document.createElement('input');
     cb.type = 'checkbox';
-    cb.className = 'checkbox checkbox-sm product-select';
+    cb.className = 'checkbox checkbox-sm row-select';
     cb.dataset.name = p.name;
     cbTd.appendChild(cb);
     tr.appendChild(cbTd);
