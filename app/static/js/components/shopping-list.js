@@ -112,8 +112,11 @@ export function renderShoppingList() {
     cartBtn.classList.toggle('text-primary', item.inCart);
     cartBtn.setAttribute('aria-label', t('in_cart'));
     cartBtn.setAttribute('title', t('in_cart'));
+    cartBtn.setAttribute('aria-pressed', item.inCart);
     cartBtn.addEventListener('click', async () => {
       item.inCart = !item.inCart;
+      cartBtn.classList.toggle('text-primary', item.inCart);
+      cartBtn.setAttribute('aria-pressed', item.inCart);
       if (item.inCart) {
         item.cartTime = Date.now();
         if (stock && isSpice(stock)) {

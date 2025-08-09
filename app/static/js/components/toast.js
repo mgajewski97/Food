@@ -7,6 +7,8 @@ function createToast({ type = 'success', title = '', message = '', action = null
   const alertClass =
     type === 'error' ? 'alert-error' : type === 'info' ? 'alert-info' : 'alert-success';
   alert.className = `alert ${alertClass} shadow-lg relative`;
+  alert.setAttribute('role', 'status');
+  alert.setAttribute('aria-live', 'polite');
   const body = document.createElement('div');
   body.className = 'flex gap-2';
   const icon = document.createElement('span');
@@ -43,8 +45,8 @@ function createToast({ type = 'success', title = '', message = '', action = null
   }
   const close = document.createElement('button');
   close.className = 'btn btn-xs btn-circle btn-ghost absolute top-1 right-1';
-  close.setAttribute('title', t('toast_close'));
-  close.setAttribute('aria-label', t('toast_close'));
+  close.setAttribute('title', t('close'));
+  close.setAttribute('aria-label', t('close'));
   close.innerHTML = '<i class="fa-regular fa-xmark"></i>';
   close.addEventListener('click', () => alert.remove());
   alert.appendChild(close);
@@ -69,6 +71,8 @@ export function showLowStockToast(activateTab, renderSuggestions, renderShopping
   const alert = document.createElement('div');
   alert.className = 'alert alert-warning relative';
   alert.dataset.toast = 'low-stock';
+  alert.setAttribute('role', 'status');
+  alert.setAttribute('aria-live', 'polite');
   const span = document.createElement('span');
   span.textContent = t('toast_low_stock');
   const btn = document.createElement('button');
@@ -86,7 +90,8 @@ export function showLowStockToast(activateTab, renderSuggestions, renderShopping
   const close = document.createElement('button');
   close.className = 'btn btn-xs btn-circle btn-ghost absolute top-1 right-1';
   close.dataset.action = 'close';
-  close.setAttribute('title', t('toast_close'));
+  close.setAttribute('title', t('close'));
+  close.setAttribute('aria-label', t('close'));
   close.innerHTML = '<i class="fa-regular fa-xmark"></i>';
   close.addEventListener('click', () => {
     alert.remove();
@@ -113,7 +118,7 @@ export function checkLowStockToast(currentProducts, activateTab, renderSuggestio
       const btn = toast.querySelector('button[data-action="shopping"]');
       if (btn) btn.textContent = t('toast_go_shopping');
       const close = toast.querySelector('button[data-action="close"]');
-      if (close) close.setAttribute('title', t('toast_close'));
+      if (close) close.setAttribute('title', t('close'));
     }
   } else {
     if (toast) toast.remove();
