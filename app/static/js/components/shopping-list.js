@@ -1,4 +1,5 @@
-import { t, state, isSpice, stockLevel, fetchJson, debounce } from '../helpers.js';
+// FIX: Render & responsive boot (2025-08-09)
+import { t, state, isSpice, stockLevel, fetchJSON, debounce } from '../helpers.js';
 import { toast } from './toast.js';
 
 function saveShoppingList() {
@@ -142,7 +143,7 @@ function renderShoppingItem(item, idx) {
     if (item.inCart && stock && isSpice(stock)) {
       cartBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
       try {
-        await fetchJson('/api/products', { method: 'POST', body: { ...stock, level: 'high', quantity: 0 } });
+        await fetchJSON('/api/products', { method: 'POST', body: { ...stock, level: 'high', quantity: 0 } });
         stock.level = 'high';
       } catch (e) {
         toast.error(t('notify_error_title'));
@@ -165,7 +166,9 @@ function renderShoppingItem(item, idx) {
       [...list.children].forEach((el, i) => (el.dataset.index = i));
     });
   });
-  row.appendChild(cartBtn);
+  const actions = document.createElement('div');
+  actions.className = 'flex items-center gap-2 min-w-[88px] justify-end';
+  actions.appendChild(cartBtn);
 
   const delBtn = document.createElement('button');
   delBtn.type = 'button';
@@ -182,7 +185,8 @@ function renderShoppingItem(item, idx) {
     saveShoppingList();
     if (list) [...list.children].forEach((el, i) => (el.dataset.index = i));
   });
-  row.appendChild(delBtn);
+  actions.appendChild(delBtn);
+  row.appendChild(actions);
 
   return row;
 }

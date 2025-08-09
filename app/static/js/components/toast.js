@@ -1,3 +1,4 @@
+// FIX: Render & responsive boot (2025-08-09)
 import { t, state, isSpice } from '../helpers.js';
 
 function createToast({ type = 'success', title = '', message = '', action = null }) {
@@ -124,4 +125,30 @@ export function checkLowStockToast(currentProducts, activateTab, renderSuggestio
     if (toast) toast.remove();
     state.lowStockToastShown = false;
   }
+}
+
+export function showTopBanner(message, { actionLabel, onAction } = {}) {
+  const container = document.getElementById('top-banner-container');
+  if (!container) return;
+  const banner = document.createElement('div');
+  banner.className = 'alert alert-error flex items-center justify-between gap-4';
+  const msg = document.createElement('span');
+  msg.textContent = message;
+  banner.appendChild(msg);
+  if (actionLabel && onAction) {
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-sm';
+    btn.textContent = actionLabel;
+    btn.addEventListener('click', () => {
+      banner.remove();
+      onAction();
+    });
+    banner.appendChild(btn);
+  }
+  const close = document.createElement('button');
+  close.className = 'btn btn-xs btn-circle btn-ghost';
+  close.innerHTML = '<i class="fa-regular fa-xmark"></i>';
+  close.addEventListener('click', () => banner.remove());
+  banner.appendChild(close);
+  container.appendChild(banner);
 }

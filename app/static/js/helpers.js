@@ -1,4 +1,4 @@
-// FIX: 2024-05-06
+// FIX: Render & responsive boot (2025-08-09)
 // CHANGELOG:
 // - Added normalization helpers and spice detector.
 // - Single translation helper with English fallback.
@@ -147,7 +147,7 @@ export function timeToBucket(str) {
   return 'gt60';
 }
 
-export async function fetchJson(url, options = {}) {
+export async function fetchJSON(url, options = {}) {
   const opts = {
     headers: {
       Accept: 'application/json',
@@ -159,26 +159,25 @@ export async function fetchJson(url, options = {}) {
     opts.body = JSON.stringify(opts.body);
     opts.headers['Content-Type'] = 'application/json';
   }
+  const res = await fetch(url, opts);
+  const text = await res.text();
+  let data = null;
   try {
-    const res = await fetch(url, opts);
-    const text = await res.text();
-    let data = null;
-    try {
-      data = text ? JSON.parse(text) : null;
-    } catch (_) {
-      /* ignore parse error */
-    }
-    if (!res.ok) {
-      const err = { url, status: res.status, body: data ?? text };
-      console.error('[fetchJson]', err);
-      throw err;
-    }
-    return data;
-  } catch (err) {
-    console.error('[fetchJson]', err);
+    data = text ? JSON.parse(text) : null;
+  } catch (_) {
+    /* ignore parse error */
+  }
+  if (!res.ok) {
+    const snippet = text.slice(0, 100);
+    const err = new Error(snippet || `HTTP ${res.status}`);
+    err.status = res.status;
+    err.body = snippet;
     throw err;
   }
+  return data;
 }
+
+export const fetchJson = fetchJSON;
 
 export function formatPackQuantity(p) {
   if (isSpice(p)) {

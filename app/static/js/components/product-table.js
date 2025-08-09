@@ -1,4 +1,4 @@
-// FIX: 2024-05-06
+// FIX: Render & responsive boot (2025-08-09)
 import {
   t,
   state,
@@ -11,7 +11,7 @@ import {
   matchesFilter,
   stockLevel,
   normalizeProduct,
-  fetchJson,
+  fetchJSON,
   isSpice,
   debounce,
   dlog
@@ -207,7 +207,7 @@ function buildQtyCell(p, tr) {
 
 export async function refreshProducts() {
   try {
-    const data = await fetchJson('/api/products');
+    const data = await fetchJSON('/api/products');
     APP.state.products = data.map(normalizeProduct);
     renderProducts();
   } catch (err) {
@@ -217,7 +217,7 @@ export async function refreshProducts() {
 
 export async function saveProduct(payload) {
   try {
-    await fetchJson('/api/products', {
+    await fetchJSON('/api/products', {
       method: 'POST',
       body: payload
     });
@@ -347,10 +347,20 @@ export function renderProducts() {
     editing = false,
     search = ''
   } = APP.state || {};
-  const data = Array.isArray(products) ? products.filter(p => p && p.name) : [];
+  const data = Array.isArray(products)
+    ? products.map(p => {
+        try {
+          return normalizeProduct(p || {});
+        } catch (e) {
+          console.error('Bad product entry', p, e);
+          return { name: p?.name || '?', quantity: p?.quantity || 0, unit: p?.unit || '', category: p?.category || 'uncategorized', storage: p?.storage || 'pantry' };
+        }
+      })
+    : [];
   const term = (search || '').toLowerCase();
-  const filtered = data.filter(
-    p => matchesFilter(p, filter) && (!term || t(p.name).toLowerCase().includes(term) || p.name.toLowerCase().includes(term))
+  const filtered = data.filter(p =>
+    matchesFilter(p, filter) &&
+    (!term || t(p.name).toLowerCase().includes(term) || p.name.toLowerCase().includes(term))
   );
 
   dlog('renderProducts', filtered.length);
