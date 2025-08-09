@@ -89,107 +89,68 @@ document.addEventListener('click', (e) => {
 });
 
 // --- expand/collapse state
-const storageState = new Map(); // storageId -> true/false
-const categoryState = new Map(); // storageId::categoryId -> true/false
+const expandedStorages = new Map(); // storageId -> true/false
+const expandedCategories = new Map(); // storageId::categoryId -> true/false
 
-function animateSection(el, show) {
+function setHidden(el, flag) {
   if (!el) return;
-  const mb = el.dataset.mb || getComputedStyle(el).marginBottom;
-  el.dataset.mb = mb;
-  el.style.overflow = 'hidden';
-  if (show) {
-    el.classList.remove('hidden');
-    el.style.marginBottom = mb;
-    const h = el.scrollHeight;
-    el.style.maxHeight = '0px';
-    requestAnimationFrame(() => {
-      el.style.transition = 'max-height 0.3s ease';
-      el.style.maxHeight = `${h}px`;
-    });
-    el.addEventListener(
-      'transitionend',
-      () => {
-        el.style.maxHeight = '';
-        el.style.transition = '';
-        el.style.overflow = '';
-        el.style.marginBottom = '';
-      },
-      { once: true }
-    );
-  } else {
-    const h = el.scrollHeight;
-    el.style.maxHeight = `${h}px`;
-    el.style.marginBottom = '0px';
-    requestAnimationFrame(() => {
-      el.style.transition = 'max-height 0.3s ease';
-      el.style.maxHeight = '0px';
-    });
-    el.addEventListener(
-      'transitionend',
-      () => {
-        el.classList.add('hidden');
-        el.style.maxHeight = '';
-        el.style.transition = '';
-        el.style.overflow = '';
-      },
-      { once: true }
-    );
-  }
+  if (flag) el.classList.add('hidden');
+  else el.classList.remove('hidden');
 }
 
 // ensure default: everything expanded on first render
 function initExpandDefaults(container) {
   container.querySelectorAll('.storage-section').forEach(sec => {
     const storage = sec.dataset.storage;
-    if (!storageState.has(storage)) storageState.set(storage, true);
+    if (!expandedStorages.has(storage)) expandedStorages.set(storage, true);
     sec.querySelectorAll('.category-section').forEach(cat => {
       const key = `${storage}::${cat.dataset.category}`;
-      if (!categoryState.has(key)) categoryState.set(key, true);
+      if (!expandedCategories.has(key)) expandedCategories.set(key, true);
     });
   });
-  syncAllToggles(container, false);
+  syncAllToggles(container);
 }
 
-function syncAllToggles(container, animate = true) {
+function syncAllToggles(container) {
   container.querySelectorAll('.storage-section').forEach(sec => {
     const storage = sec.dataset.storage;
-    const storageOpen = !!storageState.get(storage);
-    setStorageUI(sec, storageOpen, animate);
+    const storageOpen = expandedStorages.get(storage) !== false;
+    setStorageUI(sec, storageOpen);
   });
 }
 
-function setStorageUI(storageSection, open, animate = true) {
+function setStorageUI(storageSection, open) {
   const btn = storageSection.querySelector('.toggle-storage');
   btn.setAttribute('aria-expanded', String(open));
   btn.title = open ? t('collapse') : t('expand');
   const icon = btn.querySelector('i');
   icon.classList.add('transition-transform');
   icon.classList.toggle('rotate-180', open);
+  icon.classList.toggle('fa-caret-up', open);
+  icon.classList.toggle('fa-caret-down', !open);
 
-  storageSection.querySelectorAll('.category-section').forEach(cat => {
-    const key = `${storageSection.dataset.storage}::${cat.dataset.category}`;
-    const catOpen = !!categoryState.get(key);
-    if (open) {
-      setCategoryUI(cat, catOpen, false);
-      if (animate) animateSection(cat, true);
-      else cat.classList.remove('hidden');
-    } else {
-      if (animate) animateSection(cat, false);
-      else cat.classList.add('hidden');
-    }
-  });
+  const content = storageSection.querySelector('.storage-content');
+  setHidden(content, !open);
+  if (open && content) {
+    content.querySelectorAll('.category-section').forEach(cat => {
+      const key = `${storageSection.dataset.storage}::${cat.dataset.category}`;
+      const catOpen = expandedCategories.get(key) !== false;
+      setCategoryUI(cat, catOpen);
+    });
+  }
 }
 
-function setCategoryUI(categorySection, open, animate = true) {
+function setCategoryUI(categorySection, open) {
   const btn = categorySection.querySelector('.toggle-category');
   btn.setAttribute('aria-expanded', String(open));
   btn.title = open ? t('collapse') : t('expand');
   const icon = btn.querySelector('i');
   icon.classList.add('transition-transform');
   icon.classList.toggle('rotate-180', open);
+  icon.classList.toggle('fa-caret-up', open);
+  icon.classList.toggle('fa-caret-down', !open);
   const body = categorySection.querySelector('.category-body');
-  if (animate) animateSection(body, open);
-  else body.classList.toggle('hidden', !open);
+  setHidden(body, !open);
 }
 function highlightRow(tr, p) {
   tr.classList.remove('product-low', 'product-missing');
@@ -481,9 +442,13 @@ export function renderProducts() {
           btn.className = 'toggle-storage ml-auto h-8 w-8 flex items-center justify-center';
           btn.setAttribute('aria-expanded', 'true');
           btn.setAttribute('title', t('collapse'));
-          btn.innerHTML = '<i class="fa-regular fa-caret-down transition-transform rotate-180"></i>';
+          btn.innerHTML = '<i class="fa-regular fa-caret-up transition-transform rotate-180"></i>';
           header.append(nameSpan, btn);
           block.appendChild(header);
+
+          const content = document.createElement('div');
+          content.className = 'storage-content';
+          block.appendChild(content);
 
           Object.keys(storages[stor])
             .sort((a, b) => (CATEGORY_ORDER[a] || 0) - (CATEGORY_ORDER[b] || 0) || t(CATEGORY_KEYS[a] || a).localeCompare(t(CATEGORY_KEYS[b] || b)))
@@ -504,7 +469,7 @@ export function renderProducts() {
               catBtn.className = 'toggle-category ml-auto h-8 w-8 flex items-center justify-center';
               catBtn.setAttribute('aria-expanded', 'true');
               catBtn.setAttribute('title', t('collapse'));
-              catBtn.innerHTML = '<i class="fa-regular fa-caret-down transition-transform rotate-180"></i>';
+              catBtn.innerHTML = '<i class="fa-regular fa-caret-up transition-transform rotate-180"></i>';
               catHeader.append(catSpan, catBtn);
               catBlock.appendChild(catHeader);
 
@@ -584,22 +549,24 @@ export function renderProducts() {
               table.appendChild(tb);
               body.appendChild(table);
               catBlock.appendChild(body);
-              block.appendChild(catBlock);
+              content.appendChild(catBlock);
             });
 
           list.appendChild(block);
         });
       initExpandDefaults(list);
+      attachCollapses(list);
     }
     updateDeleteButton();
   });
 }
 
-const groupedRoot = document.getElementById('products-by-category');
-if (groupedRoot) {
-  initExpandDefaults(groupedRoot);
+function attachCollapses(root) {
+  if (!root) return;
+  if (root._collapseHandler) root.removeEventListener('click', root._collapseHandler);
+  if (root._headerHandler) root.removeEventListener('click', root._headerHandler);
 
-  groupedRoot.addEventListener('click', e => {
+  const collapseHandler = e => {
     const storageBtn = e.target.closest('.toggle-storage');
     const catBtn = e.target.closest('.toggle-category');
 
@@ -607,8 +574,9 @@ if (groupedRoot) {
       e.stopPropagation();
       const section = storageBtn.closest('.storage-section');
       const id = section.dataset.storage;
-      storageState.set(id, !storageState.get(id));
-      setStorageUI(section, storageState.get(id));
+      const next = !expandedStorages.get(id);
+      expandedStorages.set(id, next);
+      setStorageUI(section, next);
     }
 
     if (catBtn) {
@@ -617,17 +585,32 @@ if (groupedRoot) {
       const storage = section.dataset.storage;
       const cat = section.dataset.category;
       const key = `${storage}::${cat}`;
-      categoryState.set(key, !categoryState.get(key));
-      const parentOpen = !!storageState.get(storage);
-      setCategoryUI(section, parentOpen && categoryState.get(key), parentOpen);
+      const next = !expandedCategories.get(key);
+      expandedCategories.set(key, next);
+      const parentOpen = expandedStorages.get(storage) !== false;
+      setCategoryUI(section, parentOpen && next);
     }
-  });
+  };
 
-  // Mobile: tap entire header toggles
-  groupedRoot.addEventListener('click', e => {
+  const headerHandler = e => {
     const hdr = e.target.closest('.category-header, .storage-header');
     if (!hdr) return;
+    if (!window.matchMedia('(max-width: 768px)').matches) return;
     const btn = hdr.querySelector('.toggle-category, .toggle-storage');
-    if (btn && window.matchMedia('(max-width: 768px)').matches) btn.click();
-  });
+    if (btn) {
+      e.stopPropagation();
+      btn.click();
+    }
+  };
+
+  root.addEventListener('click', collapseHandler);
+  root.addEventListener('click', headerHandler);
+  root._collapseHandler = collapseHandler;
+  root._headerHandler = headerHandler;
+}
+
+const groupedRoot = document.getElementById('products-by-category');
+if (groupedRoot) {
+  initExpandDefaults(groupedRoot);
+  attachCollapses(groupedRoot);
 }
