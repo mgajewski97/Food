@@ -1,9 +1,9 @@
-// FIX: 2024-05-06
-import { loadTranslations, loadUnits, loadFavorites, state, t, normalizeProduct, applyTranslations, fetchJson, isSpice, debounce } from './js/helpers.js';
+// FIX: Render & responsive boot (2025-08-09)
+import { loadTranslations, loadUnits, loadFavorites, state, t, normalizeProduct, applyTranslations, fetchJSON, isSpice, debounce } from './js/helpers.js';
 import { renderProducts, refreshProducts } from './js/components/product-table.js';
 import { renderRecipes, loadRecipes } from './js/components/recipe-list.js';
 import { renderShoppingList, addToShoppingList, renderSuggestions } from './js/components/shopping-list.js';
-import { toast, showNotification, checkLowStockToast } from './js/components/toast.js';
+import { toast, showNotification, checkLowStockToast, showTopBanner } from './js/components/toast.js';
 import { initReceiptImport } from './js/components/ocr-modal.js';
 
 // CHANGELOG:
@@ -23,56 +23,38 @@ APP.state = APP.state || {
 APP.activeTab = APP.activeTab || null;
 APP.editBackup = APP.editBackup || null;
 
-async function fetchProducts() {
+async function safeFetch(fn, message) {
   try {
-    const data = await fetchJson('/api/products');
-    APP.state.products = Array.isArray(data) ? data.map(normalizeProduct) : [];
-    renderProducts();
-    renderSuggestions();
-    checkLowStockToast(APP.state.products, activateTab, renderSuggestions, renderShoppingList);
-    const banner = document.getElementById('products-empty-banner');
-    if (banner) {
-      if (APP.state.products.length === 0) {
-        banner.classList.remove('hidden');
-        const btn = banner.querySelector('button');
-        if (btn && !btn._reloadBound) {
-          btn._reloadBound = true;
-          btn.addEventListener('click', () => {
-            banner.classList.add('hidden');
-            fetchProducts();
-          });
-        }
-      } else {
-        banner.classList.add('hidden');
-      }
-    }
+    return await fn();
   } catch (err) {
-    APP.state.products = [];
-    renderProducts();
-    showNotification({ type: 'error', title: t('products_load_failed'), message: err.status || err.message, retry: fetchProducts });
+    console.error(err);
+    showTopBanner(message, { actionLabel: t('retry'), onAction: () => safeFetch(fn, message) });
   }
 }
 
-async function fetchRecipes() {
-  try {
-    await loadRecipes();
-  } catch (err) {
-    showNotification({ type: 'error', title: t('recipes_load_failed'), message: err.message, retry: fetchRecipes });
+async function loadProducts() {
+  const data = await fetchJSON('/api/products');
+  APP.state.products = Array.isArray(data) ? data.map(normalizeProduct) : [];
+  renderProducts();
+  renderSuggestions();
+  checkLowStockToast(APP.state.products, activateTab, renderSuggestions, renderShoppingList);
+  if (!APP._productsLoaded) {
+    console.info('Products loaded:', APP.state.products.length);
+    APP._productsLoaded = true;
   }
 }
 
-async function fetchHistory() {
-  try {
-    state.historyData = await fetchJson('/api/history');
-  } catch (err) {
-    state.historyData = [];
-    showNotification({ type: 'error', title: t('history_load_failed'), message: err.status || err.message, retry: fetchHistory });
-  }
+async function loadRecipesData() {
+  await loadRecipes();
+}
+
+async function loadHistory() {
+  state.historyData = await fetchJSON('/api/history');
 }
 
 async function checkHealth() {
   try {
-    await fetchJson('/api/health');
+    await fetchJSON('/api/health');
     return true;
   } catch (err) {
     const banner = document.getElementById('health-banner');
@@ -89,7 +71,7 @@ async function checkHealth() {
   }
 }
 
-function resetProductFilter() {
+function resetProductFilters() {
   APP.state.filter = 'available';
   APP.state.search = '';
   const sel = document.getElementById('state-filter');
@@ -123,7 +105,7 @@ function resetRecipeFilters() {
   }
 }
 
-function activateTab(targetId) {
+async function activateTab(targetId) {
   document.querySelectorAll('[data-tab-target]').forEach(t => t.classList.remove('tab-active', 'font-bold'));
   const tab = document.querySelector(`[data-tab-target="${targetId}"]`);
   if (tab) tab.classList.add('tab-active', 'font-bold');
@@ -131,7 +113,10 @@ function activateTab(targetId) {
   const panel = document.getElementById(targetId);
   if (panel) panel.style.display = 'block';
   if (targetId === 'tab-products') {
-    resetProductFilter();
+    resetProductFilters();
+    if (!APP.state.products || APP.state.products.length === 0) {
+      await safeFetch(loadProducts, t('products_load_failed'));
+    }
     renderProducts();
   } else if (targetId === 'tab-recipes') {
     resetRecipeFilters();
@@ -142,20 +127,19 @@ function activateTab(targetId) {
 
 function mountNavigation() {
   document.querySelectorAll('[data-tab-target]').forEach(tab => {
-    tab.addEventListener('click', () => {
+    tab.addEventListener('click', async () => {
       const target = tab.dataset.tabTarget;
       if (target === APP.activeTab) return;
-      activateTab(target);
+      await activateTab(target);
       localStorage.setItem('activeTab', target);
       history.pushState({ tab: target }, '');
-    });
+    }, { once: false });
   });
   const initial = localStorage.getItem('activeTab') || 'tab-products';
   history.replaceState({ tab: initial }, '');
-  activateTab(initial);
-  window.addEventListener('popstate', e => {
+  window.addEventListener('popstate', async e => {
     const target = e.state?.tab || 'tab-products';
-    activateTab(target);
+    await activateTab(target);
     localStorage.setItem('activeTab', target);
   });
 }
@@ -164,7 +148,7 @@ window.addEventListener('pageshow', e => {
   if (e.persisted) {
     const target = localStorage.getItem('activeTab') || 'tab-products';
     if (target === 'tab-products') {
-      resetProductFilter();
+      resetProductFilters();
       renderProducts();
     }
   }
@@ -265,7 +249,7 @@ function initAddForm() {
     submitBtn.disabled = true;
     try {
       await fetchJson('/api/products', { method: 'POST', body: payload });
-      await fetchProducts();
+      await loadProducts();
       renderProducts();
       renderShoppingList();
       form.reset();
@@ -332,18 +316,8 @@ async function saveEdits() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-  await loadTranslations();
-  await loadUnits();
-  applyTranslations();
-  document.documentElement.setAttribute('lang', state.currentLang);
+function initNavigationAndEvents() {
   mountNavigation();
-  await loadFavorites();
-  const healthy = await checkHealth();
-  if (!healthy) return;
-  await fetchHistory();
-  await fetchProducts();
-  await fetchRecipes();
   renderShoppingList();
   initReceiptImport();
   initAddForm();
@@ -428,9 +402,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     deleteBtn.disabled = true;
     try {
       await Promise.allSettled(
-        names.map(n => fetchJson(`/api/products/${encodeURIComponent(n)}`, { method: 'DELETE' }))
+        names.map(n => fetchJSON(`/api/products/${encodeURIComponent(n)}`, { method: 'DELETE' }))
       );
-      await fetchProducts();
+      await loadProducts();
       exitEditMode(false);
     } catch (err) {
       showNotification({ type: 'error', title: t('notify_error_title'), message: err.status || err.message });
@@ -506,4 +480,32 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   updateAriaLabels();
-});
+}
+
+function initialRender() {
+  APP.state.view = 'grouped';
+  resetProductFilters();
+  activateTab('tab-products');
+}
+
+async function boot() {
+  await safeFetch(loadTranslations, 'Failed to load translations.');
+  await safeFetch(loadUnits, 'Failed to load units.');
+  applyTranslations();
+  document.documentElement.setAttribute('lang', state.currentLang);
+  await safeFetch(loadFavorites, 'Failed to load favorites.');
+  const healthy = await checkHealth();
+  if (!healthy) return;
+  await safeFetch(loadHistory, 'Failed to load history.');
+  await safeFetch(
+    loadProducts,
+    state.currentLang === 'pl'
+      ? 'Nie udało się wczytać produktów. Spróbuj ponownie.'
+      : 'Failed to load products. Try again.'
+  );
+  await safeFetch(loadRecipesData, 'Failed to load recipes.');
+  initNavigationAndEvents();
+  initialRender();
+}
+
+document.addEventListener('DOMContentLoaded', boot);
