@@ -157,8 +157,3 @@ export function showTopBanner(message, { actionLabel, onAction } = {}) {
   banner.appendChild(close);
   container.appendChild(banner);
 }
-
-window.toast = toast;
-window.showNotification = showNotification;
-window.checkLowStockToast = checkLowStockToast;
-window.showTopBanner = showTopBanner;
