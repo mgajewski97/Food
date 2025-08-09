@@ -62,6 +62,26 @@ export const state = {
   lowStockToastShown: false
 };
 
+// Utility helpers for performance-sensitive handlers
+export function debounce(fn, delay = 200) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(null, args), delay);
+  };
+}
+
+export function throttle(fn, delay = 200) {
+  let last = 0;
+  return (...args) => {
+    const now = Date.now();
+    if (now - last >= delay) {
+      last = now;
+      fn.apply(null, args);
+    }
+  };
+}
+
 export function t(key) {
   if (!key) return key;
   if (key.startsWith('product.')) {
@@ -207,18 +227,28 @@ export async function loadFavorites() {
   }
 }
 
-export function toggleFavorite(name) {
-  if (state.favoriteRecipes.has(name)) {
+export async function toggleFavorite(name) {
+  if (!name) throw new Error('invalid name');
+  const had = state.favoriteRecipes.has(name);
+  if (had) {
     state.favoriteRecipes.delete(name);
   } else {
-  state.favoriteRecipes.add(name);
+    state.favoriteRecipes.add(name);
   }
   const arr = Array.from(state.favoriteRecipes);
   localStorage.setItem('favoriteRecipes', JSON.stringify(arr));
-  fetchJson('/api/favorites', {
-    method: 'PUT',
-    body: arr
-  }).catch(() => {});
+  try {
+    await fetchJson('/api/favorites', {
+      method: 'PUT',
+      body: arr
+    });
+  } catch (err) {
+    // revert change on failure
+    if (had) state.favoriteRecipes.add(name);
+    else state.favoriteRecipes.delete(name);
+    localStorage.setItem('favoriteRecipes', JSON.stringify(Array.from(state.favoriteRecipes)));
+    throw err;
+  }
 }
 
 // Normalize product object ensuring required fields and defaults.
