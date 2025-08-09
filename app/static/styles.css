@@ -337,12 +337,12 @@ input[type="number"] {
 
 /* Touch-friendly buttons for mobile */
 .touch-btn {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.25rem;
+  height: 2.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   margin: 0 0.25rem;
 }
 
@@ -358,9 +358,9 @@ input[type="number"] {
 }
 
 html[data-layout="mobile"] .touch-btn {
-  width: 2.5rem;
-  height: 2.5rem;
-  font-size: 1.25rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  font-size: 1.125rem;
 }
 
 /* JSON editor adjustments */

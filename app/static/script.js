@@ -193,10 +193,10 @@ function initAddForm() {
         body: JSON.stringify(payload)
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const created = await res.json();
-      APP.state.products.push(normalizeProduct(created));
-      renderProducts();
+      await res.json();
+      await fetchProducts();
       form.reset();
+      document.getElementById('product-search')?.focus();
     } catch (err) {
       showNotification({ type: 'error', title: t('save_failed'), message: err.message });
     } finally {
