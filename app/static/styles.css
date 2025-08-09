@@ -396,6 +396,7 @@ html[data-layout="mobile"] .touch-btn {
 .owned-info {
   font-size: 0.75rem;
   color: hsl(var(--bc));
+  white-space: nowrap;
 }
 
 /* JSON editor adjustments */
