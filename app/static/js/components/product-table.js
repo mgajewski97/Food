@@ -1,4 +1,5 @@
-import { t, state, productName, unitName, categoryName, storageName, formatPackQuantity, getStatusIcon, STORAGE_ICONS, CATEGORY_KEYS, STORAGE_KEYS, matchesFilter, stockLevel } from '../helpers.js';
+import { t, state, productName, unitName, categoryName, storageName, formatPackQuantity, getStatusIcon, STORAGE_ICONS, CATEGORY_KEYS, STORAGE_KEYS, matchesFilter, stockLevel, normalizeProduct } from '../helpers.js';
+import { showToast } from './toast.js';
 
 const APP = (window.APP = window.APP || {});
 
@@ -79,6 +80,25 @@ function adjustRow(input, product, delta) {
   const newVal = Math.max(0, (parseFloat(input.value) || 0) + delta);
   input.value = newVal;
   product.quantity = newVal;
+}
+
+export async function refreshProducts() {
+  const res = await fetch('/api/products');
+  if (!res.ok) throw new Error('Fetch failed');
+  const data = await res.json();
+  APP.state.products = data.map(normalizeProduct);
+  renderProducts();
+}
+
+export async function saveProduct(payload) {
+  const res = await fetch('/api/products', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  if (!res.ok) throw new Error('Save failed');
+  await refreshProducts();
+  showToast(t('save_success'));
 }
 
 function createFlatRow(p, idx, editable) {
