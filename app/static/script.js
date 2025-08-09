@@ -206,14 +206,15 @@ function initAddForm() {
 }
 
 async function saveEdits() {
-  const table = document.getElementById('product-table');
-  const rows = Array.from(table.querySelectorAll('tbody tr'));
+  const rows = APP.state.view === 'flat'
+    ? Array.from(document.querySelectorAll('#product-table tbody tr'))
+    : Array.from(document.querySelectorAll('#products-by-category tbody tr'));
   const updates = [];
   rows.forEach(r => {
     const idx = Number(r.dataset.index);
     const orig = APP.state.products[idx];
     if (!orig) return;
-    const qty = parseFloat(r.querySelector('.qty-cell input')?.value) || 0;
+    const qty = parseFloat(r.querySelector('.qty-cell input')?.value) || orig.quantity;
     const unit = r.querySelector('.unit-cell select')?.value || orig.unit;
     const cat = r.querySelector('.category-cell select')?.value || orig.category;
     const stor = r.querySelector('.storage-cell select')?.value || orig.storage;
