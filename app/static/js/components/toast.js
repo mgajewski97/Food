@@ -1,19 +1,21 @@
 import { t, state, isSpice } from '../helpers.js';
 
-// CHANGELOG:
-// - Added optional retry button to ``showNotification`` for non-blocking error toasts.
-
-export function showNotification({ type = 'success', title = '', message = '', retry = null }) {
+function createToast({ type = 'success', title = '', message = '', action = null }) {
   const container = document.getElementById('notification-container');
   if (!container) return;
   const alert = document.createElement('div');
-  alert.className = `alert ${type === 'error' ? 'alert-error' : 'alert-success'} shadow-lg relative`;
+  const alertClass =
+    type === 'error' ? 'alert-error' : type === 'info' ? 'alert-info' : 'alert-success';
+  alert.className = `alert ${alertClass} shadow-lg relative`;
   const body = document.createElement('div');
   body.className = 'flex gap-2';
   const icon = document.createElement('span');
-  icon.innerHTML = type === 'error'
-    ? '<i class="fa-solid fa-circle-xmark"></i>'
-    : '<i class="fa-solid fa-circle-check"></i>';
+  icon.innerHTML =
+    type === 'error'
+      ? '<i class="fa-solid fa-circle-xmark"></i>'
+      : type === 'info'
+      ? '<i class="fa-solid fa-circle-info"></i>'
+      : '<i class="fa-solid fa-circle-check"></i>';
   const text = document.createElement('div');
   if (title) {
     const titleEl = document.createElement('span');
@@ -29,18 +31,20 @@ export function showNotification({ type = 'success', title = '', message = '', r
   body.appendChild(icon);
   body.appendChild(text);
   alert.appendChild(body);
-  if (retry) {
+  if (action) {
     const btn = document.createElement('button');
     btn.className = 'btn btn-sm ml-4';
-    btn.textContent = t('retry');
+    btn.textContent = action.label;
     btn.addEventListener('click', () => {
       alert.remove();
-      retry();
+      action.onClick && action.onClick();
     });
     alert.appendChild(btn);
   }
   const close = document.createElement('button');
   close.className = 'btn btn-xs btn-circle btn-ghost absolute top-1 right-1';
+  close.setAttribute('title', t('toast_close'));
+  close.setAttribute('aria-label', t('toast_close'));
   close.innerHTML = '<i class="fa-regular fa-xmark"></i>';
   close.addEventListener('click', () => alert.remove());
   alert.appendChild(close);
@@ -48,9 +52,14 @@ export function showNotification({ type = 'success', title = '', message = '', r
   setTimeout(() => alert.remove(), 5000);
 }
 
-export function showToast(message, type = 'success') {
-  showNotification({ type, title: message });
-}
+export const toast = {
+  success: (title, message = '', action = null) =>
+    createToast({ type: 'success', title, message, action }),
+  info: (title, message = '', action = null) =>
+    createToast({ type: 'info', title, message, action }),
+  error: (title, message = '', action = null) =>
+    createToast({ type: 'error', title, message, action })
+};
 
 export function showLowStockToast(activateTab, renderSuggestions, renderShoppingList) {
   const container = document.getElementById('notification-container');

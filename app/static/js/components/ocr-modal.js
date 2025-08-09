@@ -1,6 +1,6 @@
 import { t, state, fetchJson } from '../helpers.js';
 import { addToShoppingList, renderShoppingList } from './shopping-list.js';
-import { showNotification } from './toast.js';
+import { toast } from './toast.js';
 
 export function initReceiptImport() {
   const btn = document.getElementById('receipt-btn');
@@ -47,7 +47,7 @@ export async function handleReceiptUpload(file) {
       body: { items: lines }
     });
   } catch (err) {
-    showNotification({ type: 'error', title: t('notify_error_title') });
+    toast.error(t('notify_error_title'));
     return;
   }
   tableBody.innerHTML = '';

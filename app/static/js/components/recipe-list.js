@@ -7,7 +7,7 @@ import {
   normalizeRecipe,
   fetchJson
 } from '../helpers.js';
-import { showNotification } from './toast.js';
+import { toast } from './toast.js';
 import { renderRecipeDetail } from './recipe-detail.js';
 
 // CHANGELOG:
@@ -167,7 +167,10 @@ export async function loadRecipes() {
     renderRecipes();
     return processed;
   } catch (err) {
-    showNotification({ type: 'error', title: t('recipes_load_failed'), message: err.status || err.message, retry: loadRecipes });
+    toast.error(t('recipes_load_failed'), err.status || err.message, {
+      label: t('retry'),
+      onClick: loadRecipes
+    });
     return [];
   } finally {
     state.recipesLoading = false;
