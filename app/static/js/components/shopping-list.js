@@ -1,4 +1,4 @@
-import { t, state, isSpice, stockLevel } from '../helpers.js';
+import { t, state, isSpice, stockLevel, fetchJson } from '../helpers.js';
 
 function saveShoppingList() {
   localStorage.setItem('shoppingList', JSON.stringify(state.shoppingList));
@@ -92,10 +92,18 @@ export function renderShoppingList() {
     cartBtn.innerHTML = '<i class="fa-solid fa-cart-shopping"></i>';
     cartBtn.className = 'touch-btn h-9 w-9';
     cartBtn.classList.toggle('text-primary', item.inCart);
-    cartBtn.addEventListener('click', () => {
+    cartBtn.addEventListener('click', async () => {
       item.inCart = !item.inCart;
       if (item.inCart) {
         item.cartTime = Date.now();
+        if (stock && isSpice(stock)) {
+          try {
+            await fetchJson('/api/products', { method: 'POST', body: { ...stock, level: 'high', quantity: 0 } });
+            stock.level = 'high';
+          } catch (e) {
+            // ignore
+          }
+        }
       } else {
         delete item.cartTime;
       }

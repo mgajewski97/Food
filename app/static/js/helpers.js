@@ -18,10 +18,13 @@ export const CATEGORY_KEYS = {
   sauces: 'category_sauces',
   oils: 'category_oils',
   spreads: 'category_spreads',
+  spices: 'category_spices',
   frozen_veg: 'category_frozen_veg',
   frozen_sauces: 'category_frozen_sauces',
   frozen_meals: 'category_frozen_meals'
 };
+
+export const CATEGORY_ORDER = { spices: 999 };
 
 export const STORAGE_KEYS = {
   fridge: 'storage_fridge',
@@ -139,6 +142,9 @@ export async function fetchJson(url, options = {}) {
 }
 
 export function formatPackQuantity(p) {
+  if (isSpice(p)) {
+    return t(`level.${p.level || 'none'}`);
+  }
   if (p.pack_size) {
     const total = Math.ceil(p.quantity / p.pack_size) * p.pack_size;
     return `${p.quantity} z ${total}`;
@@ -147,20 +153,12 @@ export function formatPackQuantity(p) {
 }
 
 export function getStatusIcon(p) {
-  if (p.main) {
-    if (p.quantity === 0) {
-      return { html: '<i class="fa-regular fa-circle-exclamation text-red-600"></i>', title: t('status_missing') };
-    }
-    if (p.threshold !== null && p.quantity <= p.threshold) {
-      return { html: '<i class="fa-regular fa-triangle-exclamation text-yellow-500"></i>', title: t('status_low') };
-    }
-  } else {
-    if (p.quantity === 0) {
-      return { html: '<i class="fa-regular fa-circle-exclamation text-red-600"></i>', title: t('status_missing') };
-    }
-    if (p.threshold !== null && p.quantity <= p.threshold) {
-      return { html: '<i class="fa-regular fa-triangle-exclamation text-yellow-300"></i>', title: t('status_low') };
-    }
+  const level = stockLevel(p);
+  if (level === 'none') {
+    return { html: '<i class="fa-regular fa-circle-exclamation text-red-600"></i>', title: t('status_missing') };
+  }
+  if (level === 'low') {
+    return { html: '<i class="fa-regular fa-triangle-exclamation text-yellow-500"></i>', title: t('status_low') };
   }
   return null;
 }
@@ -225,18 +223,29 @@ export function toggleFavorite(name) {
 
 // Normalize product object ensuring required fields and defaults.
 export function normalizeProduct(p = {}) {
+  const isSp = p.is_spice === true || p.category === 'spices';
+  let qty = Number(p.quantity) || 0;
+  let level = p.level;
+  if (isSp) {
+    if (!level) {
+      if (qty <= 0) level = 'none';
+      else if (qty === 1) level = 'low';
+      else level = 'medium';
+    }
+    qty = 0;
+  }
   return {
     name: p.name || '',
     unit: p.unit || 'szt',
-    quantity: Number(p.quantity) || 0,
+    quantity: qty,
     package_size: Number(p.package_size) || 1,
     pack_size: p.pack_size != null ? Number(p.pack_size) : null,
     threshold: p.threshold != null ? Number(p.threshold) : 1,
-    main: p.main !== false,
-    category: p.category || 'uncategorized',
+    main: isSp ? true : p.main !== false,
+    category: isSp ? 'spices' : p.category || 'uncategorized',
     storage: p.storage || 'pantry',
-    is_spice: p.is_spice === true || p.category === 'spices',
-    level: p.level || null
+    is_spice: isSp,
+    level: level || (isSp ? 'none' : null)
   };
 }
 
