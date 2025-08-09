@@ -7,11 +7,30 @@ import {
   normalizeRecipe
 } from '../helpers.js';
 import { showNotification } from './toast.js';
+import { renderRecipeDetail } from './recipe-detail.js';
 
 // CHANGELOG:
 // - Exposed ``loadRecipes`` without internal catch to allow caller-side retry/toast handling.
 // - Added defensive rendering and normalization of ingredient structures.
 // - Inline recipe details with expandable cards and single-shot event bindings.
+
+function getRecipeById(id) {
+  return state.recipesData.find(r => r.name === id);
+}
+
+document.addEventListener('click', async e => {
+  const btn = e.target.closest('.show-recipe');
+  if (!btn) return;
+  const id = btn.dataset.recipeId;
+  const panel = document.getElementById(`recipe-detail-${id}`);
+  if (!panel) return;
+  const open = panel.classList.toggle('hidden') === false;
+  if (open && !panel.dataset.hydrated) {
+    const recipe = getRecipeById(id);
+    panel.innerHTML = renderRecipeDetail(recipe);
+    panel.dataset.hydrated = '1';
+  }
+});
 
 export function renderRecipes() {
   const list = document.getElementById('recipe-list');
@@ -97,48 +116,14 @@ export function renderRecipes() {
     }
     if (meta.children.length) body.appendChild(meta);
     const btn = document.createElement('button');
-    btn.className = 'btn btn-sm btn-primary self-start';
+    btn.className = 'btn btn-primary show-recipe';
+    btn.dataset.recipeId = r.name;
     btn.textContent = t('history_show_details');
-    const details = document.createElement('div');
-    details.className = 'hidden mt-4 space-y-4';
-    const ingHeader = document.createElement('h4');
-    ingHeader.className = 'font-semibold';
-    ingHeader.textContent = t('recipe_ingredients_header');
-    details.appendChild(ingHeader);
-    const ingGrid = document.createElement('div');
-    ingGrid.className = 'space-y-1 text-sm';
-    (r.ingredients || []).forEach(ing => {
-      const row = document.createElement('div');
-      row.className = 'grid grid-cols-2 gap-2';
-      const nameSpan = document.createElement('span');
-      nameSpan.textContent = t(ing.product);
-      const qtySpan = document.createElement('span');
-      let qt = '';
-      if (ing.quantity != null) {
-        qt += String(ing.quantity);
-        if (ing.unit) qt += ' ' + t(ing.unit);
-      }
-      qtySpan.textContent = qt;
-      row.appendChild(nameSpan);
-      row.appendChild(qtySpan);
-      ingGrid.appendChild(row);
-    });
-    details.appendChild(ingGrid);
-    const stepsHeader = document.createElement('h4');
-    stepsHeader.className = 'font-semibold';
-    stepsHeader.textContent = t('recipe_steps_header');
-    details.appendChild(stepsHeader);
-    const stepsList = document.createElement('ol');
-    stepsList.className = 'list-decimal pl-4 space-y-1 text-sm';
-    (r.steps || []).forEach(step => {
-      const li = document.createElement('li');
-      li.textContent = step;
-      stepsList.appendChild(li);
-    });
-    details.appendChild(stepsList);
-    btn.addEventListener('click', () => details.classList.toggle('hidden'));
+    const panel = document.createElement('div');
+    panel.id = `recipe-detail-${r.name}`;
+    panel.className = 'recipe-detail hidden';
     body.appendChild(btn);
-    body.appendChild(details);
+    body.appendChild(panel);
     card.appendChild(body);
     list.appendChild(card);
   });

@@ -1,50 +1,35 @@
-import { t, productName, unitName } from '../helpers.js';
+function t(key){ return window.t?.(key) ?? key; }
 
-export function openRecipeDetails(recipe) {
-  const modal = document.getElementById('recipe-detail-modal');
-  if (!modal) return;
-  const title = document.getElementById('recipe-detail-title');
-  if (title) title.textContent = t(recipe.name);
-  const timeWrap = document.getElementById('recipe-detail-time');
-  const timeSpan = timeWrap ? timeWrap.querySelector('span') : null;
-  if (timeWrap && timeSpan) {
-    timeSpan.textContent = recipe.time || '';
-    timeWrap.style.display = recipe.time ? 'inline-flex' : 'none';
-    timeWrap.setAttribute('aria-label', t('label_time'));
-  }
-  const portionsWrap = document.getElementById('recipe-detail-portions');
-  const portionsSpan = portionsWrap ? portionsWrap.querySelector('span') : null;
-  if (portionsWrap && portionsSpan) {
-    portionsSpan.textContent = recipe.portions ? String(recipe.portions) : '';
-    portionsWrap.style.display = recipe.portions ? 'inline-flex' : 'none';
-    portionsWrap.setAttribute('aria-label', t('label_portions'));
-  }
-  const ingList = document.getElementById('recipe-ingredients');
-  if (ingList) {
-    ingList.innerHTML = '';
-    (recipe.ingredients || []).forEach(ing => {
-      const li = document.createElement('li');
-      const name = document.createElement('span');
-      const qty = document.createElement('span');
-      name.textContent = productName(ing.productKey);
-      let text = '';
-      if (ing.quantity != null) text += ing.quantity;
-      if (ing.unit) text += ` ${unitName(ing.unit)}`;
-      qty.textContent = text.trim();
-      li.append(name, qty);
-      ingList.appendChild(li);
-    });
-  }
-  const stepsOl = document.getElementById('recipe-steps');
-  if (stepsOl) {
-    stepsOl.innerHTML = '';
-    (recipe.steps || []).forEach(step => {
-      const li = document.createElement('li');
-      li.textContent = step;
-      stepsOl.appendChild(li);
-    });
-  }
-  const addBtn = document.getElementById('recipe-add-to-shopping');
-  if (addBtn) addBtn.onclick = () => {};
-  modal.showModal();
+export function renderRecipeDetail(r){
+  const meta = `
+    <div class="meta flex items-center gap-6 mb-4">
+      <div class="flex items-center gap-2"><i class="fa-regular fa-clock"></i><span>${r.time ?? '—'}</span></div>
+      <div class="flex items-center gap-2"><i class="fa-regular fa-users"></i><span>${r.portions ?? '—'}</span></div>
+    </div>
+  `;
+
+  const ing = (r.ingredients||[]).map(i=>{
+    const name = t(i.product);
+    const qty  = (i.quantity ?? '').toString();
+    const unit = t(i.unit ?? '');
+    return `<div class="ing-row grid grid-cols-[1fr_auto] gap-3"><span>${name}</span><span class="opacity-80">${qty} ${unit}</span></div>`;
+  }).join('');
+
+  const steps = (r.steps||[]).map((s,idx)=>`
+    <li class="leading-relaxed"><span class="step-index">${idx+1}.</span> ${s}</li>
+  `).join('');
+
+  return `
+    ${meta}
+    <div class="grid md:grid-cols-2 gap-8">
+      <section>
+        <h4 class="font-semibold mb-2">${t('recipe_ingredients_header')}</h4>
+        <div class="ing-list flex flex-col gap-2">${ing}</div>
+      </section>
+      <section>
+        <h4 class="font-semibold mb-2">${t('recipe_steps_header')}</h4>
+        <ol class="list-decimal ml-5 flex flex-col gap-2">${steps}</ol>
+      </section>
+    </div>
+  `;
 }
