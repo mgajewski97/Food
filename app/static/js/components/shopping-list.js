@@ -28,23 +28,36 @@ export function renderShoppingList() {
   state.shoppingList.forEach((item, idx) => {
     const row = document.createElement('div');
     row.className =
-      'shopping-item flex flex-nowrap items-center gap-3 p-2 min-h-12 hover:bg-base-200 transition-colors';
+      'shopping-item flex flex-col sm:flex-row sm:items-center gap-3 p-2 min-h-12 hover:bg-base-200 transition-colors';
     if (item.inCart) row.classList.add('opacity-50', 'italic');
-    const nameWrap = document.createElement('div');
-    nameWrap.className = 'flex-1 overflow-hidden';
-    const nameEl = document.createElement('div');
-    nameEl.textContent = productName(item.name);
-    nameEl.className = 'truncate';
-    if (item.inCart) nameEl.classList.add('line-through');
-    nameWrap.appendChild(nameEl);
+
     const stock = (window.APP?.state?.products || []).find(p => p.name === item.name);
     if (stock) {
-      const ownedEl = document.createElement('div');
-      ownedEl.className = 'text-xs text-secondary truncate';
-      ownedEl.textContent = `${t('owned')}: ${stock.quantity}`;
-      nameWrap.appendChild(ownedEl);
+      const level = stockLevel(stock);
+      if (level === 'low') row.classList.add('product-low');
+      if (level === 'none') row.classList.add('product-missing');
     }
+
+    const nameWrap = document.createElement('div');
+    nameWrap.className = 'flex-1 overflow-hidden';
+    const nameRow = document.createElement('div');
+    nameRow.className = 'flex items-baseline gap-2 truncate';
+    const nameEl = document.createElement('span');
+    nameEl.textContent = productName(item.name);
+    if (item.inCart) nameEl.classList.add('line-through');
+    nameRow.appendChild(nameEl);
+    if (stock && stock.quantity > 0) {
+      const ownedEl = document.createElement('span');
+      ownedEl.className = 'text-xs text-secondary';
+      ownedEl.textContent = `(${t('owned')}: ${stock.quantity})`;
+      nameRow.appendChild(ownedEl);
+    }
+    nameWrap.appendChild(nameRow);
     row.appendChild(nameWrap);
+
+    const controls = document.createElement('div');
+    controls.className = 'flex items-center gap-3 w-full sm:w-auto';
+
     const qtyWrap = document.createElement('div');
     qtyWrap.className = 'flex items-center gap-2';
     const dec = document.createElement('button');
@@ -82,16 +95,16 @@ export function renderShoppingList() {
       saveShoppingList();
     });
     qtyWrap.append(dec, qtyInput, inc);
-    row.appendChild(qtyWrap);
-    const actions = document.createElement('div');
-    actions.className = 'flex items-center gap-3';
-    const acceptBtn = document.createElement('button');
-    acceptBtn.type = 'button';
-    acceptBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
-    acceptBtn.className = 'touch-btn' + (item.inCart ? ' text-success' : '');
-    acceptBtn.setAttribute('aria-label', t('in_cart'));
-    acceptBtn.addEventListener('click', () => {
-      item.inCart = !item.inCart;
+    controls.appendChild(qtyWrap);
+
+    const cartLabel = document.createElement('label');
+    cartLabel.className = 'flex items-center gap-2 h-10';
+    const cartCheckbox = document.createElement('input');
+    cartCheckbox.type = 'checkbox';
+    cartCheckbox.className = 'checkbox';
+    cartCheckbox.checked = item.inCart;
+    cartCheckbox.addEventListener('change', () => {
+      item.inCart = cartCheckbox.checked;
       if (item.inCart) {
         item.cartTime = Date.now();
       } else {
@@ -100,10 +113,14 @@ export function renderShoppingList() {
       saveShoppingList();
       renderShoppingList();
     });
-    actions.appendChild(acceptBtn);
+    const cartText = document.createElement('span');
+    cartText.textContent = t('in_cart');
+    cartLabel.append(cartCheckbox, cartText);
+    controls.appendChild(cartLabel);
+
     const delBtn = document.createElement('button');
     delBtn.type = 'button';
-    delBtn.className = 'text-error touch-btn';
+    delBtn.className = 'text-error touch-btn ml-auto';
     delBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
     delBtn.setAttribute('aria-label', t('delete_confirm_button'));
     delBtn.addEventListener('click', () => {
@@ -111,8 +128,9 @@ export function renderShoppingList() {
       const modal = document.getElementById('shopping-delete-modal');
       if (modal) modal.showModal();
     });
-    actions.appendChild(delBtn);
-    row.appendChild(actions);
+    controls.appendChild(delBtn);
+
+    row.appendChild(controls);
     list.appendChild(row);
   });
 }
