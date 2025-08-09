@@ -26,7 +26,7 @@ document.addEventListener('click', async e => {
   const panel = document.getElementById(`recipe-detail-${id}`);
   if (!panel) return;
   const open = panel.classList.toggle('hidden') === false;
-  btn.textContent = open ? t('recipe_view_recipe') : t('history_show_details');
+  btn.textContent = open ? t('recipe_hide_details') : t('recipe_show_details');
   if (open && !panel.dataset.hydrated) {
     const recipe = getRecipeById(id);
     panel.innerHTML = renderRecipeDetail(recipe);
@@ -80,9 +80,19 @@ export function renderRecipes() {
     body.className = 'card-body';
     const header = document.createElement('div');
     header.className = 'flex justify-between items-start';
+    const titleWrap = document.createElement('div');
+    titleWrap.className = 'flex items-center gap-2';
     const title = document.createElement('h3');
     title.className = 'card-title';
-    title.textContent = t(r.name);
+    const nameTr = t(r.name);
+    title.textContent = nameTr && nameTr.trim() !== '' ? nameTr : r.name;
+    titleWrap.appendChild(title);
+    if (r.available) {
+      const badge = document.createElement('span');
+      badge.className = 'badge badge-sm badge-outline';
+      badge.textContent = t('recipe_available');
+      titleWrap.appendChild(badge);
+    }
     const favBtn = document.createElement('button');
     favBtn.className = 'btn btn-ghost btn-xs';
     favBtn.innerHTML = state.favoriteRecipes.has(r.name)
@@ -93,7 +103,7 @@ export function renderRecipes() {
       toggleFavorite(r.name);
       renderRecipes();
     });
-    header.appendChild(title);
+    header.appendChild(titleWrap);
     header.appendChild(favBtn);
     body.appendChild(header);
     const meta = document.createElement('div');
@@ -120,7 +130,7 @@ export function renderRecipes() {
     const btn = document.createElement('button');
     btn.className = 'btn btn-primary show-recipe';
     btn.dataset.recipeId = r.name;
-    btn.textContent = t('history_show_details');
+    btn.textContent = t('recipe_show_details');
     const panel = document.createElement('div');
     panel.id = `recipe-detail-${r.name}`;
     panel.className = 'recipe-detail hidden';
@@ -147,7 +157,11 @@ export async function loadRecipes() {
     const data = await fetchJson('/api/recipes');
     const processed = data
       .map(r => normalizeRecipe(r))
-      .map(r => ({ ...r, timeBucket: timeToBucket(r.time) }));
+      .map(r => ({
+        ...r,
+        timeBucket: timeToBucket(r.time),
+        available: (r.ingredients || []).every(i => state.translations.products[i.product])
+      }));
     state.recipesData = processed;
     state.recipesLoaded = true;
     renderRecipes();
