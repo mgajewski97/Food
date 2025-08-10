@@ -7,8 +7,8 @@ const PRECACHE_URLS = [
   '/',
   '/static/styles.css',
   '/static/script.js',
-  '/static/translations/en.json',
-  '/static/translations/pl.json',
+  '/api/ui/en',
+  '/api/ui/pl',
   '/static/icons/icon-192x192.png',
   '/static/icons/icon-512x512.png',
   '/manifest.json'
@@ -35,7 +35,7 @@ self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
 
   const url = new URL(event.request.url);
-  if (url.pathname.startsWith('/api/')) return;
+  if (url.pathname.startsWith('/api/') && !url.pathname.startsWith('/api/ui/')) return;
 
   if (event.request.mode === 'navigate') {
     event.respondWith(

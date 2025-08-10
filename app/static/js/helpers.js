@@ -182,8 +182,8 @@ export async function loadTranslations() {
   window.trace?.('loadTranslations:enter');
   try {
     const [plRes, enRes] = await Promise.all([
-      fetch('/static/translations/pl.json'),
-      fetch('/static/translations/en.json')
+      fetch('/api/ui/pl'),
+      fetch('/api/ui/en')
     ]);
     if (!plRes.ok || !enRes.ok) throw new Error('translation load failed');
     let pl = {};
