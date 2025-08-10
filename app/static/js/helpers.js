@@ -480,7 +480,6 @@ export function matchesFilter(p = {}, filter = 'all') {
     case 'missing':
       return level === 'none';
     default:
-      if (!p.main && p.quantity === 0) return false;
       return true;
   }
 }
