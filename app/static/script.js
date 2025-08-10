@@ -573,10 +573,6 @@ async function boot() {
   trace('favorites');
   await loadHistory();
   trace('history');
-  await loadProducts();
-  trace('products');
-  await loadRecipes();
-  trace('recipes');
   initNavigationAndEvents();
   trace('events');
   initialRender();

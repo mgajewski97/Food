@@ -251,3 +251,16 @@ export function bindRecipeEvents() {
 
   updateSortButtons();
 }
+
+// Render recipe list once the domain data is ready.
+if (window.__domain) {
+  renderRecipes();
+} else {
+  document.addEventListener(
+    'domain:ready',
+    () => {
+      renderRecipes();
+    },
+    { once: true }
+  );
+}
