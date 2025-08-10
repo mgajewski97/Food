@@ -31,6 +31,8 @@ def find_conflicts(products):
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Check for conflicting product aliases")
     parser.add_argument("--strict", action="store_true", help="exit with error on conflicts")
+    # Accept and ignore optional paths to be compatible with pre-commit
+    parser.add_argument("paths", nargs="*", help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
 
     if not DATA_PATH.exists():
