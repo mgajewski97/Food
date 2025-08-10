@@ -20,6 +20,7 @@ from .utils import (
     file_lock,
     save_json,
 )
+from .search import search_products
 
 """Flask application providing basic CRUD APIs for a pantry manager."""
 
@@ -199,6 +200,19 @@ def domain():
         logger.info(str(exc))
         return jsonify({"error": str(exc)}), 500
     return jsonify(data)
+
+
+@bp.route("/api/search")
+def search():
+    """Search products in the domain using query and locale."""
+    query = request.args.get("q", "")
+    locale = request.args.get("locale", "pl")
+    try:
+        results = search_products(query, locale)
+    except ValueError as exc:
+        logger.info(str(exc))
+        return jsonify({"error": str(exc)}), 400
+    return jsonify(results)
 
 @bp.route("/api/products", methods=["GET", "POST", "PUT"])
 def products():
