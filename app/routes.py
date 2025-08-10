@@ -202,10 +202,9 @@ def _load_recipes_compat(locale: str = "pl"):
                     )
                     continue
                 unit_key = unit.get("id", "").replace("unit.", "")
-                unit_name = (
-                    unit.get("names", {}).get(locale)
-                    or unit.get("names", {}).get("en")
-                )
+                unit_name = unit.get("names", {}).get(locale) or unit.get(
+                    "names", {}
+                ).get("en")
 
             prod_name = (
                 prod.get("names", {}).get(locale)
@@ -284,12 +283,29 @@ def ui_strings(lang):
 @bp.route("/api/domain")
 def domain():
     """Return normalized domain data of products, categories and units."""
+
+    context = {"endpoint": "/api/domain", "args": request.args.to_dict()}
     try:
         with open(PRODUCTS_PATH, "r", encoding="utf-8") as f:
             data = json.load(f)
-    except Exception as exc:
-        logger.info(str(exc))
-        return jsonify({"error": str(exc)}), 500
+    except Exception as exc:  # pragma: no cover - defensive
+        trace_id = log_error_with_trace(exc, context)
+        return (
+            jsonify({"error": "Internal Server Error", "traceId": trace_id}),
+            500,
+        )
+
+    products = data.get("products", [])
+    categories = data.get("categories", [])
+    units = data.get("units", [])
+    first_id = products[0].get("id") if products else None
+    logger.info(
+        "domain products=%d categories=%d units=%d first_product=%s",
+        len(products),
+        len(categories),
+        len(units),
+        first_id,
+    )
     return jsonify(data)
 
 
@@ -305,6 +321,7 @@ def search():
         return jsonify({"error": str(exc)}), 400
     return jsonify(results)
 
+
 @bp.route("/api/products", methods=["GET", "POST", "PUT"])
 def products():
     context = {"endpoint": "/api/products", "args": request.args.to_dict()}
@@ -312,9 +329,18 @@ def products():
         if request.method == "GET":
             try:
                 products = _load_products_compat()
-            except ValueError as exc:
-                logger.info(str(exc))
-                return jsonify({"error": str(exc)}), 500
+            except ValueError as exc:  # pragma: no cover - defensive
+                trace_id = log_error_with_trace(exc, context)
+                return (
+                    jsonify({"error": "Internal Server Error", "traceId": trace_id}),
+                    500,
+                )
+            first_id = products[0].get("id") if products else None
+            logger.info(
+                "products count=%d first=%s",
+                len(products),
+                first_id,
+            )
             return jsonify(products)
 
         payload = request.get_json(silent=True) or []
@@ -348,6 +374,7 @@ def products():
             500,
         )
 
+
 @bp.route("/api/products/<string:name>", methods=["DELETE"])
 def delete_product(name):
     context = {"endpoint": "/api/products/<name>", "args": request.args.to_dict()}
@@ -379,6 +406,7 @@ def units():
         return jsonify(units)
     return jsonify(load_json(UNITS_PATH, {}))
 
+
 @bp.route("/api/ocr-match", methods=["POST"])
 def ocr_match():
     payload = request.json or {}
@@ -390,18 +418,21 @@ def ocr_match():
     for raw in items:
         text = str(raw).strip().lower()
         matches = [p for p in products if text and text in p.get("name", "").lower()]
-        results.append({
-            'original': raw,
-            'matches': [
-                {
-                    'name': m.get('name'),
-                    'category': m.get('category'),
-                    'storage': m.get('storage')
-                }
-                for m in matches
-            ]
-        })
+        results.append(
+            {
+                "original": raw,
+                "matches": [
+                    {
+                        "name": m.get("name"),
+                        "category": m.get("category"),
+                        "storage": m.get("storage"),
+                    }
+                    for m in matches
+                ],
+            }
+        )
     return jsonify(results)
+
 
 @bp.route("/api/recipes")
 def recipes():
@@ -412,9 +443,14 @@ def recipes():
     try:
         try:
             recipes = _load_recipes_compat(locale)
-        except ValueError as exc:
-            logger.info(str(exc))
-            return jsonify({"error": str(exc)}), 500
+        except ValueError as exc:  # pragma: no cover - defensive
+            trace_id = log_error_with_trace(exc, context)
+            return (
+                jsonify({"error": "Internal Server Error", "traceId": trace_id}),
+                500,
+            )
+        first_id = recipes[0].get("id") if recipes else None
+        logger.info("recipes count=%d first=%s", len(recipes), first_id)
         return jsonify(recipes)
     except Exception as exc:  # pragma: no cover - defensive
         trace_id = log_error_with_trace(exc, context)
@@ -454,7 +490,7 @@ def favorites():
             jsonify({"error": "Internal Server Error", "traceId": trace_id}),
             500,
         )
-    
+
 
 def _generate_shopping_list(selection: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     recipes = load_json_validated(
@@ -604,12 +640,8 @@ def shopping_confirm():
 def health():
     """Basic health check ensuring data files validate."""
     try:
-        load_json_validated(
-            PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
-        )
-        load_json_validated(
-            RECIPES_PATH, RECIPES_SCHEMA, normalize=normalize_recipe
-        )
+        load_json_validated(PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product)
+        load_json_validated(RECIPES_PATH, RECIPES_SCHEMA, normalize=normalize_recipe)
     except ValueError as exc:
         logger.info("health check failed: %s", exc)
         return jsonify({"ok": False, "error": str(exc)}), 500
@@ -652,13 +684,9 @@ def health_new():
 def validate_route():
     """Return validation summary for core datasets."""
     summary = {}
-    count, errors = validate_file(
-        PRODUCTS_PATH, [], PRODUCTS_SCHEMA, normalize_product
-    )
+    count, errors = validate_file(PRODUCTS_PATH, [], PRODUCTS_SCHEMA, normalize_product)
     summary["products"] = {"count": count, "errors": errors[:5]}
-    count, errors = validate_file(
-        RECIPES_PATH, [], RECIPES_SCHEMA, normalize_recipe
-    )
+    count, errors = validate_file(RECIPES_PATH, [], RECIPES_SCHEMA, normalize_recipe)
     summary["recipes"] = {"count": count, "errors": errors[:5]}
     count, errors = validate_file(HISTORY_PATH, [], None)
     summary["history"] = {"count": count, "errors": errors[:5]}
