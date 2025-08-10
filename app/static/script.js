@@ -38,7 +38,7 @@ const APP = window.APP;
 APP.state = APP.state || {
   products: [],
   view: 'flat',
-  filter: 'available',
+  filter: 'all',
   search: '',
   editing: false
 };
@@ -124,12 +124,12 @@ function registerServiceWorker() {
 }
 
 function resetProductFilters() {
-  APP.state.filter = 'available';
+  APP.state.filter = 'all';
   APP.state.search = '';
   const sel = document.getElementById('state-filter');
-  if (sel) sel.value = 'available';
+  if (sel) sel.value = 'all';
   const selMobile = document.getElementById('state-filter-mobile');
-  if (selMobile) selMobile.value = 'available';
+  if (selMobile) selMobile.value = 'all';
   const search = document.getElementById('product-search');
   if (search) search.value = '';
   const searchMobile = document.getElementById('product-search-mobile');
