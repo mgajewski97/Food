@@ -6,28 +6,6 @@
 import { showTopBanner } from './components/toast.js';
 export { showTopBanner };
 
-export const CATEGORY_KEYS = {
-  uncategorized: 'category_uncategorized',
-  fresh_veg: 'category_fresh_veg',
-  mushrooms: 'category_mushrooms',
-  dairy_eggs: 'category_dairy_eggs',
-  opened_preserves: 'category_opened_preserves',
-  ready_sauces: 'category_ready_sauces',
-  dry_veg: 'category_dry_veg',
-  bread: 'category_bread',
-  pasta: 'category_pasta',
-  rice: 'category_rice',
-  grains: 'category_grains',
-  dried_legumes: 'category_dried_legumes',
-  sauces: 'category_sauces',
-  oils: 'category_oils',
-  spreads: 'category_spreads',
-  spices: 'category_spices',
-  frozen_veg: 'category_frozen_veg',
-  frozen_sauces: 'category_frozen_sauces',
-  frozen_meals: 'category_frozen_meals'
-};
-
 export const CATEGORY_ORDER = { spices: 999 };
 
 export const STORAGE_KEYS = {
@@ -78,8 +56,8 @@ export const state = {
   showFavoritesOnly: false,
   favoriteRecipes: new Set(storedFavs),
   currentLang: localStorage.getItem('lang') || 'pl',
-  translations: { products: {} },
   uiTranslations: { pl: {}, en: {} },
+  domain: { products: {}, categories: {}, units: {}, aliases: {} },
   units: {},
   lowStockToastShown: false
 };
@@ -106,15 +84,6 @@ export function throttle(fn, delay = 200) {
 
 export function t(key) {
   if (!key) return key;
-  if (key.startsWith('product.')) {
-    const k = key.slice('product.'.length);
-    const entry = state.translations.products[k];
-    return entry?.[state.currentLang] ?? entry?.en ?? key;
-  }
-  const unit = state.units[key];
-  if (unit) {
-    return unit[state.currentLang] ?? unit.en ?? key;
-  }
   return state.uiTranslations[state.currentLang]?.[key] ?? state.uiTranslations.en?.[key] ?? key;
 }
 
@@ -231,16 +200,6 @@ export async function loadTranslations() {
     }
     state.uiTranslations.pl = pl;
     state.uiTranslations.en = en;
-    state.translations.products = {};
-    const keys = new Set([...Object.keys(pl), ...Object.keys(en)]);
-    keys.forEach(k => {
-      if (k.startsWith('product.')) {
-        const id = k.slice('product.'.length);
-        state.translations.products[id] = {};
-        if (pl[k]) state.translations.products[id].pl = pl[k];
-        if (en[k]) state.translations.products[id].en = en[k];
-      }
-    });
     window.trace?.('loadTranslations:ok');
   } catch (err) {
     console.error('Failed to load translations', err);
@@ -252,20 +211,71 @@ export async function loadTranslations() {
   }
 }
 
-export async function loadUnits() {
-  window.trace?.('loadUnits:enter');
+export async function loadDomain() {
+  window.trace?.('loadDomain:enter');
   try {
-    state.units = await fetchJson('/api/units');
-    window.trace?.('loadUnits:ok');
+    const data = await fetchJson('/api/domain');
+    state.domain = { products: {}, categories: {}, units: {}, aliases: {} };
+    (data.products || []).forEach(p => {
+      state.domain.products[p.id] = p;
+      (p.aliases || []).forEach(a => {
+        state.domain.aliases[a] = p.id;
+      });
+    });
+    (data.categories || []).forEach(c => {
+      const key = c.id.replace('category.', '').replace(/-/g, '_');
+      state.domain.categories[key] = c;
+    });
+    (data.units || []).forEach(u => {
+      const key = u.id.replace('unit.', '');
+      state.domain.units[key] = u;
+      state.units[key] = u.names;
+    });
+    window.trace?.('loadDomain:ok');
   } catch (err) {
-    console.error('Failed to load units', err);
-    state.units = {};
-    showTopBanner('Failed to load units', {
+    console.error('Failed to load domain', err);
+    state.domain = { products: {}, categories: {}, units: {}, aliases: {} };
+    showTopBanner('Failed to load domain', {
       actionLabel: t('retry'),
-      onAction: loadUnits
+      onAction: loadDomain
     });
     throw err;
   }
+}
+
+function resolveProduct(id) {
+  return state.domain.products[id] || state.domain.products[state.domain.aliases[id]] || null;
+}
+
+export function getProduct(id) {
+  return resolveProduct(id);
+}
+
+export function productName(id) {
+  const p = resolveProduct(id);
+  if (!p) {
+    console.warn('Unknown product', id);
+    return t('unknown');
+  }
+  return p.names[state.currentLang] ?? p.names.en ?? t('unknown');
+}
+
+export function categoryName(id) {
+  const c = state.domain.categories[id];
+  if (!c) {
+    console.warn('Unknown category', id);
+    return t('unknown');
+  }
+  return c.names[state.currentLang] ?? c.names.en ?? t('unknown');
+}
+
+export function unitName(id) {
+  const u = state.domain.units[id];
+  if (!u) {
+    console.warn('Unknown unit', id);
+    return t('unknown');
+  }
+  return u.names[state.currentLang] ?? u.names.en ?? t('unknown');
 }
 
 export async function loadFavorites() {
