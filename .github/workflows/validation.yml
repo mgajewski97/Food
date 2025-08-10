@@ -5,12 +5,14 @@ on:
     paths:
       - 'app/data/**/*.json'
       - 'scripts/validate_data.py'
+      - 'scripts/check_alias_conflicts.py'
       - '.pre-commit-config.yaml'
       - '.github/workflows/validation.yml'
   pull_request:
     paths:
       - 'app/data/**/*.json'
       - 'scripts/validate_data.py'
+      - 'scripts/check_alias_conflicts.py'
       - '.pre-commit-config.yaml'
       - '.github/workflows/validation.yml'
 

@@ -13,3 +13,8 @@ repos:
         entry: python scripts/validate_data.py
         language: system
         files: ^app/data/(products|recipes)\.json$
+      - id: check-alias-conflicts
+        name: Check alias conflicts
+        entry: python scripts/check_alias_conflicts.py
+        language: system
+        files: ^app/data/products\.json$
