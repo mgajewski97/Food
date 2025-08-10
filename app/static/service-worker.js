@@ -1,12 +1,12 @@
-const CACHE_VERSION = 'v1';
-const CACHE_NAME = `food-cache-${CACHE_VERSION}`;
+const APP_VERSION = '2';
+const CACHE_NAME = `food-cache-${APP_VERSION}`;
 const OFFLINE_URL = '/offline';
 const OFFLINE_HTML = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Offline</title></head><body><h1>You're offline</h1></body></html>`;
 
 const PRECACHE_URLS = [
   '/',
-  '/static/styles.css',
-  '/static/script.js',
+  `/static/styles.css?v=${APP_VERSION}`,
+  `/static/script.js?v=${APP_VERSION}`,
   '/api/ui/en',
   '/api/ui/pl',
   '/static/icons/icon-192x192.png',

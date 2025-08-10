@@ -399,6 +399,25 @@ function initNavigationAndEvents() {
     window.scrollTo(0, scroll);
   });
 
+  const themeBtn = document.getElementById('theme-toggle');
+  const themeIcon = document.getElementById('theme-icon');
+  function updateThemeUI() {
+    const current = localStorage.getItem('theme') || 'system';
+    const icons = { light: 'fa-sun', dark: 'fa-moon', system: 'fa-desktop' };
+    if (themeIcon) {
+      themeIcon.className = `fa-solid ${icons[current]}`;
+    }
+    themeBtn?.setAttribute('aria-label', `Theme: ${current}`);
+  }
+  themeBtn?.addEventListener('click', () => {
+    const current = localStorage.getItem('theme') || 'system';
+    const order = ['light', 'dark', 'system'];
+    const next = order[(order.indexOf(current) + 1) % order.length];
+    window.setTheme(next);
+    updateThemeUI();
+  });
+  updateThemeUI();
+
   const editBtn = document.getElementById('edit-toggle');
   const saveBtn = document.getElementById('save-btn');
   const deleteBtn = document.getElementById('delete-selected');

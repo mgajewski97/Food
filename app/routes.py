@@ -250,9 +250,12 @@ def remove_used_products(used_ingredients):
         safe_write(PRODUCTS_PATH, products)
 
 
+APP_VERSION = "2"
+
+
 @bp.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html", app_version=APP_VERSION)
 
 
 @bp.route("/manifest.json")
