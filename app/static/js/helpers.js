@@ -172,9 +172,14 @@ export async function fetchJSON(url, options = {}) {
   }
   if (!res.ok) {
     const snippet = text.slice(0, 100);
-    const err = new Error(snippet || `HTTP ${res.status}`);
+    const baseMsg = (data && data.error) || snippet || `HTTP ${res.status}`;
+    const trace = data && data.traceId;
+    const err = new Error(
+      trace ? `${baseMsg} [${t('ID')}: ${trace}]` : baseMsg
+    );
     err.status = res.status;
     err.body = snippet;
+    if (trace) err.traceId = trace;
     throw err;
   }
   return data;

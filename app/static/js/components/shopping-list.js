@@ -145,8 +145,8 @@ function renderShoppingItem(item, idx) {
       try {
         await fetchJSON('/api/products', { method: 'POST', body: { ...stock, level: 'high', quantity: 0 } });
         stock.level = 'high';
-      } catch (e) {
-        toast.error(t('notify_error_title'));
+      } catch (err) {
+        toast.error(t('notify_error_title'), err.message);
       }
     }
     saveShoppingList();
