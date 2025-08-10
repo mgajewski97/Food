@@ -1,1248 +1,1230 @@
-[
-  {
-    "name": "product.toast_bread",
-    "quantity": 1.0,
-    "unit": "szt",
-    "category": "bread",
-    "storage": "pantry",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.eggs",
-    "quantity": 10.0,
-    "unit": "szt",
-    "category": "dairy_eggs",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.natural_tofu",
-    "quantity": 1.0,
-    "unit": "szt",
-    "category": "dairy_eggs",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.breaded_tofu_hot_spicy",
-    "quantity": 1.0,
-    "unit": "szt",
-    "category": "dairy_eggs",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.sour_cream_18",
-    "quantity": 2.0,
-    "unit": "250g",
-    "category": "dairy_eggs",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.beans_piekny_jas",
-    "quantity": 400.0,
-    "unit": "g",
-    "category": "dried_legumes",
-    "storage": "pantry",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.lentils_red",
-    "quantity": 1.0,
-    "unit": "opak_350g",
-    "category": "dried_legumes",
-    "storage": "pantry",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.lentils_green",
-    "quantity": 1.0,
-    "unit": "opak_350g",
-    "category": "dried_legumes",
-    "storage": "pantry",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.spring_onion",
-    "quantity": 1.0,
-    "unit": "szt",
-    "category": "dry_veg",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.red_onion",
-    "quantity": 1000.0,
-    "unit": "g",
-    "category": "dry_veg",
-    "storage": "pantry",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.garlic",
-    "quantity": 3.0,
-    "unit": "szt",
-    "category": "dry_veg",
-    "storage": "pantry",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.lime",
-    "quantity": 2.0,
-    "unit": "szt",
-    "category": "dry_veg",
-    "storage": "pantry",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.eggplant",
-    "quantity": 1.0,
-    "unit": "szt",
-    "category": "fresh_veg",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.zucchini",
-    "quantity": 2.0,
-    "unit": "szt",
-    "category": "fresh_veg",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.radish",
-    "quantity": 0.5,
-    "unit": "szt",
-    "category": "fresh_veg",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.fries",
-    "quantity": 1.0,
-    "unit": "szt",
-    "category": "fresh_veg",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.chinese_cabbage",
-    "quantity": 0.5,
-    "unit": "szt",
-    "category": "fresh_veg",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.carrot",
-    "quantity": 500.0,
-    "unit": "g",
-    "category": "fresh_veg",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.parsley",
-    "quantity": 1.0,
-    "unit": "szt",
-    "category": "fresh_veg",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.bell_peppers",
-    "quantity": 1.0,
-    "unit": "szt",
-    "category": "fresh_veg",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.pink_tomatoes",
-    "quantity": 3.0,
-    "unit": "szt",
-    "category": "fresh_veg",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.tomato_puree",
-    "quantity": 500.0,
-    "unit": "g",
-    "category": "fresh_veg",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.new_potatoes",
-    "quantity": 1000.0,
-    "unit": "g",
-    "category": "fresh_veg",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.borscht",
-    "quantity": 1.0,
-    "unit": "sloik",
-    "category": "frozen_meals",
-    "storage": "freezer",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.chinese_sauce",
-    "quantity": 1.0,
-    "unit": "szt",
-    "category": "frozen_meals",
-    "storage": "freezer",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.gravy",
-    "quantity": 1.0,
-    "unit": "szt",
-    "category": "frozen_meals",
-    "storage": "freezer",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.spinach",
-    "quantity": 1.0,
-    "unit": "szt",
-    "category": "frozen_meals",
-    "storage": "freezer",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.stir_fry_vegetables",
-    "quantity": 2.0,
-    "unit": "szt",
-    "category": "frozen_meals",
-    "storage": "freezer",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.cauliflower_soup",
-    "quantity": 1.0,
-    "unit": "szt",
-    "category": "frozen_meals",
-    "storage": "freezer",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.bulgur",
-    "quantity": 3.0,
-    "unit": "szt",
-    "category": "grains",
-    "storage": "pantry",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.buckwheat",
-    "quantity": 1.0,
-    "unit": "szt",
-    "category": "grains",
-    "storage": "pantry",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.barley",
-    "quantity": 8.0,
-    "unit": "szt",
-    "category": "grains",
-    "storage": "pantry",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.rice_arborio",
-    "quantity": 500.0,
-    "unit": "g",
-    "category": "grains",
-    "storage": "pantry",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.rice_basmati",
-    "quantity": 4.0,
-    "unit": "szt",
-    "category": "grains",
-    "storage": "pantry",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.rice_jasmine",
-    "quantity": 4.0,
-    "unit": "szt",
-    "category": "grains",
-    "storage": "pantry",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.oyster_mushrooms",
-    "quantity": 250.0,
-    "unit": "g",
-    "category": "mushrooms",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.champignons",
-    "quantity": 500.0,
-    "unit": "g",
-    "category": "mushrooms",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.sesame_oil",
-    "quantity": 1.0,
-    "unit": "butelka",
-    "category": "oils",
-    "storage": "pantry",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.sun_dried_tomatoes",
-    "quantity": 3.0,
-    "unit": "x270g",
-    "category": "oils",
-    "storage": "pantry",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.chickpeas",
-    "quantity": 1.0,
-    "unit": "szt",
-    "category": "opened_preserves",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.garlic_in_oil",
-    "quantity": 1.0,
-    "unit": "szt",
-    "category": "opened_preserves",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.red_beans",
-    "quantity": 1.0,
-    "unit": "szt",
-    "category": "opened_preserves",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.corn",
-    "quantity": 1.0,
-    "unit": "szt",
-    "category": "opened_preserves",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.pickled_pearl_onions",
-    "quantity": 1.0,
-    "unit": "szt",
-    "category": "opened_preserves",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.dijon_mustard",
-    "quantity": 1.0,
-    "unit": "szt",
-    "category": "opened_preserves",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.french_mustard",
-    "quantity": 1.0,
-    "unit": "szt",
-    "category": "opened_preserves",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.large_green_olives",
-    "quantity": 500.0,
-    "unit": "g",
-    "category": "opened_preserves",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.green_peas",
-    "quantity": 1.0,
-    "unit": "szt",
-    "category": "opened_preserves",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.ditalini_rigati_pasta",
-    "quantity": 500.0,
-    "unit": "g",
-    "category": "pasta",
-    "storage": "pantry",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.penne_pasta",
-    "quantity": 1000.0,
-    "unit": "g",
-    "category": "pasta",
-    "storage": "pantry",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.sciatelli_al_limone_pasta",
-    "quantity": 500.0,
-    "unit": "g",
-    "category": "pasta",
-    "storage": "pantry",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.sauce_alla_norma",
-    "quantity": 400.0,
-    "unit": "g",
-    "category": "ready_sauces",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.sauce_alla_puttanesca",
-    "quantity": 400.0,
-    "unit": "g",
-    "category": "ready_sauces",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.sauce_basilico",
-    "quantity": 400.0,
-    "unit": "g",
-    "category": "ready_sauces",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.sauce_bearnaise",
-    "quantity": 125.0,
-    "unit": "g",
-    "category": "ready_sauces",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.sauce_cacio_e_pepe",
-    "quantity": 350.0,
-    "unit": "g",
-    "category": "ready_sauces",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.sauce_napoletana",
-    "quantity": 400.0,
-    "unit": "g",
-    "category": "ready_sauces",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.pistachio_cream",
-    "quantity": 1.0,
-    "unit": "szt",
-    "category": "spreads",
-    "storage": "pantry",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.peanut_butter",
-    "quantity": 1.0,
-    "unit": "szt",
-    "category": "spreads",
-    "storage": "pantry",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.thai_spice_mix",
-    "quantity": 15.0,
-    "unit": "g",
-    "category": "spreads",
-    "storage": "pantry",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.cashew_nuts",
-    "quantity": 35.0,
-    "unit": "g",
-    "category": "spreads",
-    "storage": "pantry",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.breaded_schnitzel",
-    "quantity": 1.0,
-    "unit": "szt",
-    "category": "frozen_meals",
-    "storage": "freezer",
-    "threshold": 1.0,
-    "main": false,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.cheese_slices",
-    "quantity": 2.0,
-    "unit": "szt",
-    "category": "dairy_eggs",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.lemon",
-    "quantity": 1.0,
-    "unit": "szt",
-    "category": "dry_veg",
-    "storage": "pantry",
-    "threshold": 2.0,
-    "main": false,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.green_beans",
-    "quantity": 400.0,
-    "unit": "g",
-    "category": "fresh_veg",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": false,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.soup_veg",
-    "quantity": 0.0,
-    "unit": "szt",
-    "category": "fresh_veg",
-    "storage": "fridge",
-    "threshold": 1.0,
-    "main": false,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.plant_fat",
-    "quantity": 2.0,
-    "unit": "szt",
-    "category": "oils",
-    "storage": "pantry",
-    "threshold": 1.0,
-    "main": false,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": null,
-    "is_spice": false
-  },
-  {
-    "name": "product.nutmeg",
-    "quantity": 0,
-    "unit": "lvl",
-    "category": "spices",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": "high",
-    "is_spice": true
-  },
-  {
-    "name": "product.turmeric",
-    "quantity": 0,
-    "unit": "lvl",
-    "category": "spices",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": "low",
-    "is_spice": true
-  },
-  {
-    "name": "product.cardamom",
-    "quantity": 0,
-    "unit": "lvl",
-    "category": "spices",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": "low",
-    "is_spice": true
-  },
-  {
-    "name": "product.curry_powder",
-    "quantity": 0,
-    "unit": "lvl",
-    "category": "spices",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": "high",
-    "is_spice": true
-  },
-  {
-    "name": "product.hot_paprika",
-    "quantity": 0,
-    "unit": "lvl",
-    "category": "spices",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": "low",
-    "is_spice": true
-  },
-  {
-    "name": "product.cloves",
-    "quantity": 0,
-    "unit": "lvl",
-    "category": "spices",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": "medium",
-    "is_spice": true
-  },
-  {
-    "name": "product.lovage",
-    "quantity": 0,
-    "unit": "lvl",
-    "category": "spices",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": "medium",
-    "is_spice": true
-  },
-  {
-    "name": "product.herbes_de_provence_duo",
-    "quantity": 0,
-    "unit": "lvl",
-    "category": "spices",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": "high",
-    "is_spice": true
-  },
-  {
-    "name": "product.oregano",
-    "quantity": 0,
-    "unit": "lvl",
-    "category": "spices",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": "high",
-    "is_spice": true
-  },
-  {
-    "name": "product.cayenne_chilli",
-    "quantity": 0,
-    "unit": "lvl",
-    "category": "spices",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": "medium",
-    "is_spice": true
-  },
-  {
-    "name": "product.basil",
-    "quantity": 0,
-    "unit": "lvl",
-    "category": "spices",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": "high",
-    "is_spice": true
-  },
-  {
-    "name": "product.dark_gravy_sauce",
-    "quantity": 0,
-    "unit": "lvl",
-    "category": "spices",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": "medium",
-    "is_spice": true
-  },
-  {
-    "name": "product.bouillon_cubes",
-    "quantity": 0,
-    "unit": "lvl",
-    "category": "spices",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": "high",
-    "is_spice": true
-  },
-  {
-    "name": "product.bay_leaves",
-    "quantity": 0,
-    "unit": "lvl",
-    "category": "spices",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": "medium",
-    "is_spice": true
-  },
-  {
-    "name": "product.allspice",
-    "quantity": 0,
-    "unit": "lvl",
-    "category": "spices",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": "medium",
-    "is_spice": true
-  },
-  {
-    "name": "product.rosemary",
-    "quantity": 0,
-    "unit": "lvl",
-    "category": "spices",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": "medium",
-    "is_spice": true
-  },
-  {
-    "name": "product.lemon_pepper",
-    "quantity": 0,
-    "unit": "lvl",
-    "category": "spices",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": "high",
-    "is_spice": true
-  },
-  {
-    "name": "product.coriander_leaves",
-    "quantity": 0,
-    "unit": "lvl",
-    "category": "spices",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": "high",
-    "is_spice": true
-  },
-  {
-    "name": "product.smoked_paprika",
-    "quantity": 0,
-    "unit": "lvl",
-    "category": "spices",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": "high",
-    "is_spice": true
-  },
-  {
-    "name": "product.thyme",
-    "quantity": 0,
-    "unit": "lvl",
-    "category": "spices",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": "high",
-    "is_spice": true
-  },
-  {
-    "name": "product.garlic_powder",
-    "quantity": 0,
-    "unit": "lvl",
-    "category": "spices",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": "high",
-    "is_spice": true
-  },
-  {
-    "name": "product.tomato_garlic_basil_mix",
-    "quantity": 0,
-    "unit": "lvl",
-    "category": "spices",
-    "storage": "pantry",
-    "threshold": 1,
-    "main": true,
-    "package_size": 1.0,
-    "pack_size": null,
-    "tags": [],
-    "level": "high",
-    "is_spice": true
-  }
-]
+{
+  "products": [
+    {
+      "id": "prod.allspice",
+      "aliases": [
+        "product.allspice"
+      ],
+      "categoryId": "category.spices",
+      "unitId": "unit.lvl",
+      "names": {
+        "pl": "Ziele angielskie",
+        "en": "Allspice"
+      }
+    },
+    {
+      "id": "prod.barley",
+      "aliases": [
+        "product.barley"
+      ],
+      "categoryId": "category.grains",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Kasza pęczak",
+        "en": "Pearl barley"
+      }
+    },
+    {
+      "id": "prod.basil",
+      "aliases": [
+        "product.basil"
+      ],
+      "categoryId": "category.spices",
+      "unitId": "unit.lvl",
+      "names": {
+        "pl": "Bazylia",
+        "en": "Basil"
+      }
+    },
+    {
+      "id": "prod.bay-leaves",
+      "aliases": [
+        "product.bay_leaves"
+      ],
+      "categoryId": "category.spices",
+      "unitId": "unit.lvl",
+      "names": {
+        "pl": "Liście laurowe",
+        "en": "Bay leaves"
+      }
+    },
+    {
+      "id": "prod.beans-piekny-jas",
+      "aliases": [
+        "product.beans_piekny_jas"
+      ],
+      "categoryId": "category.dried-legumes",
+      "unitId": "unit.g",
+      "names": {
+        "pl": "Fasola Piękny Jaś",
+        "en": "Piękny Jaś beans"
+      }
+    },
+    {
+      "id": "prod.bell-peppers",
+      "aliases": [
+        "product.bell_peppers"
+      ],
+      "categoryId": "category.fresh-veg",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Papryki",
+        "en": "Bell peppers"
+      }
+    },
+    {
+      "id": "prod.borscht",
+      "aliases": [
+        "product.borscht"
+      ],
+      "categoryId": "category.frozen-meals",
+      "unitId": "unit.sloik",
+      "names": {
+        "pl": "Barszcz",
+        "en": "Borscht"
+      }
+    },
+    {
+      "id": "prod.bouillon-cubes",
+      "aliases": [
+        "product.bouillon_cubes"
+      ],
+      "categoryId": "category.spices",
+      "unitId": "unit.lvl",
+      "names": {
+        "pl": "Kostki bulionowe",
+        "en": "Bouillon cubes"
+      }
+    },
+    {
+      "id": "prod.breaded-schnitzel",
+      "aliases": [
+        "product.breaded_schnitzel"
+      ],
+      "categoryId": "category.frozen-meals",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Sznycel w chrupiącej panierce",
+        "en": "Breaded schnitzel"
+      }
+    },
+    {
+      "id": "prod.breaded-tofu-hot-spicy",
+      "aliases": [
+        "product.breaded_tofu_hot_spicy"
+      ],
+      "categoryId": "category.dairy-eggs",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Tofu panierowane Hot & Spicy",
+        "en": "Hot & Spicy breaded tofu"
+      }
+    },
+    {
+      "id": "prod.buckwheat",
+      "aliases": [
+        "product.buckwheat"
+      ],
+      "categoryId": "category.grains",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Kasza gryczana",
+        "en": "Buckwheat groats"
+      }
+    },
+    {
+      "id": "prod.bulgur",
+      "aliases": [
+        "product.bulgur"
+      ],
+      "categoryId": "category.grains",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Kasza bulgur",
+        "en": "Bulgur"
+      }
+    },
+    {
+      "id": "prod.cardamom",
+      "aliases": [
+        "product.cardamom"
+      ],
+      "categoryId": "category.spices",
+      "unitId": "unit.lvl",
+      "names": {
+        "pl": "Kardamon",
+        "en": "Cardamom"
+      }
+    },
+    {
+      "id": "prod.carrot",
+      "aliases": [
+        "product.carrot"
+      ],
+      "categoryId": "category.fresh-veg",
+      "unitId": "unit.g",
+      "names": {
+        "pl": "Marchew",
+        "en": "Carrot"
+      }
+    },
+    {
+      "id": "prod.cashew-nuts",
+      "aliases": [
+        "product.cashew_nuts"
+      ],
+      "categoryId": "category.spreads",
+      "unitId": "unit.g",
+      "names": {
+        "pl": "Orzechy nerkowca",
+        "en": "Cashew nuts"
+      }
+    },
+    {
+      "id": "prod.cauliflower-soup",
+      "aliases": [
+        "product.cauliflower_soup"
+      ],
+      "categoryId": "category.frozen-meals",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Zupa kalafiorowa",
+        "en": "Cauliflower soup"
+      }
+    },
+    {
+      "id": "prod.cayenne-chilli",
+      "aliases": [
+        "product.cayenne_chilli"
+      ],
+      "categoryId": "category.spices",
+      "unitId": "unit.lvl",
+      "names": {
+        "pl": "Chili cayenne",
+        "en": "Cayenne chili"
+      }
+    },
+    {
+      "id": "prod.champignons",
+      "aliases": [
+        "product.champignons"
+      ],
+      "categoryId": "category.mushrooms",
+      "unitId": "unit.g",
+      "names": {
+        "pl": "Pieczarki",
+        "en": "Champignons"
+      }
+    },
+    {
+      "id": "prod.cheese-slices",
+      "aliases": [
+        "product.cheese_slices"
+      ],
+      "categoryId": "category.dairy-eggs",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Ser w plastrach",
+        "en": "Cheese slices"
+      }
+    },
+    {
+      "id": "prod.chickpeas",
+      "aliases": [
+        "product.chickpeas"
+      ],
+      "categoryId": "category.opened-preserves",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Ciecierzyca",
+        "en": "Chickpeas"
+      }
+    },
+    {
+      "id": "prod.chinese-cabbage",
+      "aliases": [
+        "product.chinese_cabbage"
+      ],
+      "categoryId": "category.fresh-veg",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Kapusta pekińska",
+        "en": "Chinese cabbage"
+      }
+    },
+    {
+      "id": "prod.chinese-sauce",
+      "aliases": [
+        "product.chinese_sauce"
+      ],
+      "categoryId": "category.frozen-meals",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Sos do chińszczyzny",
+        "en": "Chinese-style sauce"
+      }
+    },
+    {
+      "id": "prod.cloves",
+      "aliases": [
+        "product.cloves"
+      ],
+      "categoryId": "category.spices",
+      "unitId": "unit.lvl",
+      "names": {
+        "pl": "Goździki",
+        "en": "Cloves"
+      }
+    },
+    {
+      "id": "prod.coriander-leaves",
+      "aliases": [
+        "product.coriander_leaves"
+      ],
+      "categoryId": "category.spices",
+      "unitId": "unit.lvl",
+      "names": {
+        "pl": "Kolendra (liście)",
+        "en": "Coriander leaves"
+      }
+    },
+    {
+      "id": "prod.corn",
+      "aliases": [
+        "product.corn"
+      ],
+      "categoryId": "category.opened-preserves",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Kukurydza",
+        "en": "Corn"
+      }
+    },
+    {
+      "id": "prod.curry-powder",
+      "aliases": [
+        "product.curry_powder"
+      ],
+      "categoryId": "category.spices",
+      "unitId": "unit.lvl",
+      "names": {
+        "pl": "Przyprawa curry",
+        "en": "Curry powder"
+      }
+    },
+    {
+      "id": "prod.dark-gravy-sauce",
+      "aliases": [
+        "product.dark_gravy_sauce"
+      ],
+      "categoryId": "category.spices",
+      "unitId": "unit.lvl",
+      "names": {
+        "pl": "Sos pieczeniowy ciemny",
+        "en": "Dark gravy sauce"
+      }
+    },
+    {
+      "id": "prod.dijon-mustard",
+      "aliases": [
+        "product.dijon_mustard"
+      ],
+      "categoryId": "category.opened-preserves",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Musztarda dijon",
+        "en": "Dijon mustard"
+      }
+    },
+    {
+      "id": "prod.ditalini-rigati-pasta",
+      "aliases": [
+        "product.ditalini_rigati_pasta"
+      ],
+      "categoryId": "category.pasta",
+      "unitId": "unit.g",
+      "names": {
+        "pl": "Makaron ditalini rigati",
+        "en": "Ditalini rigati pasta"
+      }
+    },
+    {
+      "id": "prod.eggplant",
+      "aliases": [
+        "product.eggplant"
+      ],
+      "categoryId": "category.fresh-veg",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Bakłażan",
+        "en": "Eggplant"
+      }
+    },
+    {
+      "id": "prod.eggs",
+      "aliases": [
+        "product.eggs"
+      ],
+      "categoryId": "category.dairy-eggs",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Jajka",
+        "en": "Eggs"
+      }
+    },
+    {
+      "id": "prod.french-mustard",
+      "aliases": [
+        "product.french_mustard"
+      ],
+      "categoryId": "category.opened-preserves",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Musztarda francuska",
+        "en": "French mustard"
+      }
+    },
+    {
+      "id": "prod.fries",
+      "aliases": [
+        "product.fries"
+      ],
+      "categoryId": "category.fresh-veg",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Frytki",
+        "en": "Fries"
+      }
+    },
+    {
+      "id": "prod.garlic",
+      "aliases": [
+        "product.garlic"
+      ],
+      "categoryId": "category.dry-veg",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Czosnek",
+        "en": "Garlic"
+      }
+    },
+    {
+      "id": "prod.garlic-in-oil",
+      "aliases": [
+        "product.garlic_in_oil"
+      ],
+      "categoryId": "category.opened-preserves",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Czosnek w oleju",
+        "en": "Garlic in oil"
+      }
+    },
+    {
+      "id": "prod.garlic-powder",
+      "aliases": [
+        "product.garlic_powder"
+      ],
+      "categoryId": "category.spices",
+      "unitId": "unit.lvl",
+      "names": {
+        "pl": "Czosnek w proszku",
+        "en": "Garlic powder"
+      }
+    },
+    {
+      "id": "prod.gravy",
+      "aliases": [
+        "product.gravy"
+      ],
+      "categoryId": "category.frozen-meals",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Sos pieczeniowy",
+        "en": "Gravy"
+      }
+    },
+    {
+      "id": "prod.green-beans",
+      "aliases": [
+        "product.green_beans"
+      ],
+      "categoryId": "category.fresh-veg",
+      "unitId": "unit.g",
+      "names": {
+        "pl": "Fasolka szparagowa",
+        "en": "Green beans"
+      }
+    },
+    {
+      "id": "prod.green-peas",
+      "aliases": [
+        "product.green_peas"
+      ],
+      "categoryId": "category.opened-preserves",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Zielony groszek",
+        "en": "Green peas"
+      }
+    },
+    {
+      "id": "prod.herbes-de-provence-duo",
+      "aliases": [
+        "product.herbes_de_provence_duo"
+      ],
+      "categoryId": "category.spices",
+      "unitId": "unit.lvl",
+      "names": {
+        "pl": "Zioła prowansalskie",
+        "en": "Herbes de Provence"
+      }
+    },
+    {
+      "id": "prod.hot-paprika",
+      "aliases": [
+        "product.hot_paprika"
+      ],
+      "categoryId": "category.spices",
+      "unitId": "unit.lvl",
+      "names": {
+        "pl": "Papryka ostra",
+        "en": "Hot paprika"
+      }
+    },
+    {
+      "id": "prod.large-green-olives",
+      "aliases": [
+        "product.large_green_olives"
+      ],
+      "categoryId": "category.opened-preserves",
+      "unitId": "unit.g",
+      "names": {
+        "pl": "Zielone oliwki duże",
+        "en": "Large green olives"
+      }
+    },
+    {
+      "id": "prod.lemon",
+      "aliases": [
+        "product.lemon"
+      ],
+      "categoryId": "category.dry-veg",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Cytryna",
+        "en": "Lemon"
+      }
+    },
+    {
+      "id": "prod.lemon-pepper",
+      "aliases": [
+        "product.lemon_pepper"
+      ],
+      "categoryId": "category.spices",
+      "unitId": "unit.lvl",
+      "names": {
+        "pl": "Pieprz cytrynowy",
+        "en": "Lemon pepper"
+      }
+    },
+    {
+      "id": "prod.lentils-green",
+      "aliases": [
+        "product.lentils_green"
+      ],
+      "categoryId": "category.dried-legumes",
+      "unitId": "unit.opak-350g",
+      "names": {
+        "pl": "Soczewica zielona",
+        "en": "Green lentils"
+      }
+    },
+    {
+      "id": "prod.lentils-red",
+      "aliases": [
+        "product.lentils_red"
+      ],
+      "categoryId": "category.dried-legumes",
+      "unitId": "unit.opak-350g",
+      "names": {
+        "pl": "Soczewica czerwona",
+        "en": "Red lentils"
+      }
+    },
+    {
+      "id": "prod.lime",
+      "aliases": [
+        "product.lime"
+      ],
+      "categoryId": "category.dry-veg",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Limonka",
+        "en": "Lime"
+      }
+    },
+    {
+      "id": "prod.lovage",
+      "aliases": [
+        "product.lovage"
+      ],
+      "categoryId": "category.spices",
+      "unitId": "unit.lvl",
+      "names": {
+        "pl": "Lubczyk",
+        "en": "Lovage"
+      }
+    },
+    {
+      "id": "prod.natural-tofu",
+      "aliases": [
+        "product.natural_tofu"
+      ],
+      "categoryId": "category.dairy-eggs",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Tofu naturalne",
+        "en": "Natural tofu"
+      }
+    },
+    {
+      "id": "prod.new-potatoes",
+      "aliases": [
+        "product.new_potatoes"
+      ],
+      "categoryId": "category.fresh-veg",
+      "unitId": "unit.g",
+      "names": {
+        "pl": "Ziemniaki młode",
+        "en": "New potatoes"
+      }
+    },
+    {
+      "id": "prod.nutmeg",
+      "aliases": [
+        "product.nutmeg"
+      ],
+      "categoryId": "category.spices",
+      "unitId": "unit.lvl",
+      "names": {
+        "pl": "Gałka muszkatołowa",
+        "en": "Nutmeg"
+      }
+    },
+    {
+      "id": "prod.oregano",
+      "aliases": [
+        "product.oregano"
+      ],
+      "categoryId": "category.spices",
+      "unitId": "unit.lvl",
+      "names": {
+        "pl": "Oregano",
+        "en": "Oregano"
+      }
+    },
+    {
+      "id": "prod.oyster-mushrooms",
+      "aliases": [
+        "product.oyster_mushrooms"
+      ],
+      "categoryId": "category.mushrooms",
+      "unitId": "unit.g",
+      "names": {
+        "pl": "Boczniaki",
+        "en": "Oyster mushrooms"
+      }
+    },
+    {
+      "id": "prod.parsley",
+      "aliases": [
+        "product.parsley"
+      ],
+      "categoryId": "category.fresh-veg",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Natka pietruszki",
+        "en": "Parsley"
+      }
+    },
+    {
+      "id": "prod.peanut-butter",
+      "aliases": [
+        "product.peanut_butter"
+      ],
+      "categoryId": "category.spreads",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Masło orzechowe",
+        "en": "Peanut butter"
+      }
+    },
+    {
+      "id": "prod.penne-pasta",
+      "aliases": [
+        "product.penne_pasta"
+      ],
+      "categoryId": "category.pasta",
+      "unitId": "unit.g",
+      "names": {
+        "pl": "Makaron penne",
+        "en": "Penne pasta"
+      }
+    },
+    {
+      "id": "prod.pickled-pearl-onions",
+      "aliases": [
+        "product.pickled_pearl_onions"
+      ],
+      "categoryId": "category.opened-preserves",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Marynowana cebula perłowa",
+        "en": "Pickled pearl onions"
+      }
+    },
+    {
+      "id": "prod.pink-tomatoes",
+      "aliases": [
+        "product.pink_tomatoes"
+      ],
+      "categoryId": "category.fresh-veg",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Pomidory malinowe",
+        "en": "Pink tomatoes"
+      }
+    },
+    {
+      "id": "prod.pistachio-cream",
+      "aliases": [
+        "product.pistachio_cream"
+      ],
+      "categoryId": "category.spreads",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Krem pistacjowy",
+        "en": "Pistachio cream"
+      }
+    },
+    {
+      "id": "prod.plant-fat",
+      "aliases": [
+        "product.plant_fat"
+      ],
+      "categoryId": "category.oils",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Tłuszcz roślinny",
+        "en": "Plant fat"
+      }
+    },
+    {
+      "id": "prod.radish",
+      "aliases": [
+        "product.radish"
+      ],
+      "categoryId": "category.fresh-veg",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Rzodkiewka",
+        "en": "Radish"
+      }
+    },
+    {
+      "id": "prod.red-beans",
+      "aliases": [
+        "product.red_beans"
+      ],
+      "categoryId": "category.opened-preserves",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Fasola czerwona",
+        "en": "Red beans"
+      }
+    },
+    {
+      "id": "prod.red-onion",
+      "aliases": [
+        "product.red_onion"
+      ],
+      "categoryId": "category.dry-veg",
+      "unitId": "unit.g",
+      "names": {
+        "pl": "Czerwona cebula",
+        "en": "Red onion"
+      }
+    },
+    {
+      "id": "prod.rice-arborio",
+      "aliases": [
+        "product.rice_arborio"
+      ],
+      "categoryId": "category.grains",
+      "unitId": "unit.g",
+      "names": {
+        "pl": "Ryż arborio",
+        "en": "Arborio rice"
+      }
+    },
+    {
+      "id": "prod.rice-basmati",
+      "aliases": [
+        "product.rice_basmati"
+      ],
+      "categoryId": "category.grains",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Ryż basmati",
+        "en": "Basmati rice"
+      }
+    },
+    {
+      "id": "prod.rice-jasmine",
+      "aliases": [
+        "product.rice_jasmine"
+      ],
+      "categoryId": "category.grains",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Ryż jaśminowy",
+        "en": "Jasmine rice"
+      }
+    },
+    {
+      "id": "prod.rosemary",
+      "aliases": [
+        "product.rosemary"
+      ],
+      "categoryId": "category.spices",
+      "unitId": "unit.lvl",
+      "names": {
+        "pl": "Rozmaryn",
+        "en": "Rosemary"
+      }
+    },
+    {
+      "id": "prod.sauce-alla-norma",
+      "aliases": [
+        "product.sauce_alla_norma"
+      ],
+      "categoryId": "category.ready-sauces",
+      "unitId": "unit.g",
+      "names": {
+        "pl": "Sos alla norma",
+        "en": "Alla Norma sauce"
+      }
+    },
+    {
+      "id": "prod.sauce-alla-puttanesca",
+      "aliases": [
+        "product.sauce_alla_puttanesca"
+      ],
+      "categoryId": "category.ready-sauces",
+      "unitId": "unit.g",
+      "names": {
+        "pl": "Sos alla puttanesca",
+        "en": "Puttanesca sauce"
+      }
+    },
+    {
+      "id": "prod.sauce-basilico",
+      "aliases": [
+        "product.sauce_basilico"
+      ],
+      "categoryId": "category.ready-sauces",
+      "unitId": "unit.g",
+      "names": {
+        "pl": "Sos basilico",
+        "en": "Basilico sauce"
+      }
+    },
+    {
+      "id": "prod.sauce-bearnaise",
+      "aliases": [
+        "product.sauce_bearnaise"
+      ],
+      "categoryId": "category.ready-sauces",
+      "unitId": "unit.g",
+      "names": {
+        "pl": "Sos berneński",
+        "en": "Béarnaise sauce"
+      }
+    },
+    {
+      "id": "prod.sauce-cacio-e-pepe",
+      "aliases": [
+        "product.sauce_cacio_e_pepe"
+      ],
+      "categoryId": "category.ready-sauces",
+      "unitId": "unit.g",
+      "names": {
+        "pl": "Sos cacio e pepe",
+        "en": "Cacio e pepe sauce"
+      }
+    },
+    {
+      "id": "prod.sauce-napoletana",
+      "aliases": [
+        "product.sauce_napoletana"
+      ],
+      "categoryId": "category.ready-sauces",
+      "unitId": "unit.g",
+      "names": {
+        "pl": "Sos napoletana",
+        "en": "Napoletana sauce"
+      }
+    },
+    {
+      "id": "prod.sciatelli-al-limone-pasta",
+      "aliases": [
+        "product.sciatelli_al_limone_pasta"
+      ],
+      "categoryId": "category.pasta",
+      "unitId": "unit.g",
+      "names": {
+        "pl": "Makaron sciatelli al limone",
+        "en": "Sciatelli al limone pasta"
+      }
+    },
+    {
+      "id": "prod.sesame-oil",
+      "aliases": [
+        "product.sesame_oil"
+      ],
+      "categoryId": "category.oils",
+      "unitId": "unit.butelka",
+      "names": {
+        "pl": "Olej sezamowy",
+        "en": "Sesame oil"
+      }
+    },
+    {
+      "id": "prod.smoked-paprika",
+      "aliases": [
+        "product.smoked_paprika"
+      ],
+      "categoryId": "category.spices",
+      "unitId": "unit.lvl",
+      "names": {
+        "pl": "Papryka wędzona",
+        "en": "Smoked paprika"
+      }
+    },
+    {
+      "id": "prod.soup-veg",
+      "aliases": [
+        "product.soup_veg"
+      ],
+      "categoryId": "category.fresh-veg",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Włoszczyzna",
+        "en": "Soup vegetables"
+      }
+    },
+    {
+      "id": "prod.sour-cream-18",
+      "aliases": [
+        "product.sour_cream_18"
+      ],
+      "categoryId": "category.dairy-eggs",
+      "unitId": "unit.250g",
+      "names": {
+        "pl": "Śmietana 18%",
+        "en": "Sour cream 18%"
+      }
+    },
+    {
+      "id": "prod.spinach",
+      "aliases": [
+        "product.spinach"
+      ],
+      "categoryId": "category.frozen-meals",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Szpinak",
+        "en": "Spinach"
+      }
+    },
+    {
+      "id": "prod.spring-onion",
+      "aliases": [
+        "product.spring_onion"
+      ],
+      "categoryId": "category.dry-veg",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Cebula dymka",
+        "en": "Spring onion"
+      }
+    },
+    {
+      "id": "prod.stir-fry-vegetables",
+      "aliases": [
+        "product.stir_fry_vegetables"
+      ],
+      "categoryId": "category.frozen-meals",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Warzywa na patelnię",
+        "en": "Stir-fry vegetables"
+      }
+    },
+    {
+      "id": "prod.sun-dried-tomatoes",
+      "aliases": [
+        "product.sun_dried_tomatoes"
+      ],
+      "categoryId": "category.oils",
+      "unitId": "unit.x270g",
+      "names": {
+        "pl": "Suszone pomidory w oleju",
+        "en": "Sun-dried tomatoes in oil"
+      }
+    },
+    {
+      "id": "prod.thai-spice-mix",
+      "aliases": [
+        "product.thai_spice_mix"
+      ],
+      "categoryId": "category.spreads",
+      "unitId": "unit.g",
+      "names": {
+        "pl": "Mieszanka przypraw tajska",
+        "en": "Thai spice mix"
+      }
+    },
+    {
+      "id": "prod.thyme",
+      "aliases": [
+        "product.thyme"
+      ],
+      "categoryId": "category.spices",
+      "unitId": "unit.lvl",
+      "names": {
+        "pl": "Tymianek",
+        "en": "Thyme"
+      }
+    },
+    {
+      "id": "prod.toast-bread",
+      "aliases": [
+        "product.toast_bread"
+      ],
+      "categoryId": "category.bread",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Pieczywo tostowe",
+        "en": "Toast bread"
+      }
+    },
+    {
+      "id": "prod.tomato-garlic-basil-mix",
+      "aliases": [
+        "product.tomato_garlic_basil_mix"
+      ],
+      "categoryId": "category.spices",
+      "unitId": "unit.lvl",
+      "names": {
+        "pl": "Mieszanka: pomidor, czosnek, bazylia",
+        "en": "Mix: tomato, garlic, basil"
+      }
+    },
+    {
+      "id": "prod.tomato-puree",
+      "aliases": [
+        "product.tomato_puree"
+      ],
+      "categoryId": "category.fresh-veg",
+      "unitId": "unit.g",
+      "names": {
+        "pl": "Przecier pomidorowy",
+        "en": "Tomato purée"
+      }
+    },
+    {
+      "id": "prod.turmeric",
+      "aliases": [
+        "product.turmeric"
+      ],
+      "categoryId": "category.spices",
+      "unitId": "unit.lvl",
+      "names": {
+        "pl": "Kurkuma",
+        "en": "Turmeric"
+      }
+    },
+    {
+      "id": "prod.zucchini",
+      "aliases": [
+        "product.zucchini"
+      ],
+      "categoryId": "category.fresh-veg",
+      "unitId": "unit.szt",
+      "names": {
+        "pl": "Cukinia",
+        "en": "Zucchini"
+      }
+    }
+  ],
+  "categories": [
+    {
+      "id": "category.bread",
+      "names": {
+        "pl": "Pieczywo",
+        "en": "Bread"
+      }
+    },
+    {
+      "id": "category.dairy-eggs",
+      "names": {
+        "pl": "Nabiał i jajka",
+        "en": "Dairy & eggs"
+      }
+    },
+    {
+      "id": "category.dried-legumes",
+      "names": {
+        "pl": "Strączki suche",
+        "en": "Dried legumes"
+      }
+    },
+    {
+      "id": "category.dry-veg",
+      "names": {
+        "pl": "Warzywa trwałe",
+        "en": "Long-lasting vegetables"
+      }
+    },
+    {
+      "id": "category.fresh-veg",
+      "names": {
+        "pl": "Warzywa świeże",
+        "en": "Fresh vegetables"
+      }
+    },
+    {
+      "id": "category.frozen-meals",
+      "names": {
+        "pl": "Dania mrożone",
+        "en": "Frozen meals"
+      }
+    },
+    {
+      "id": "category.grains",
+      "names": {
+        "pl": "Zboża i kasze",
+        "en": "Grains & groats"
+      }
+    },
+    {
+      "id": "category.mushrooms",
+      "names": {
+        "pl": "Grzyby",
+        "en": "Mushrooms"
+      }
+    },
+    {
+      "id": "category.oils",
+      "names": {
+        "pl": "Oleje",
+        "en": "Oils"
+      }
+    },
+    {
+      "id": "category.opened-preserves",
+      "names": {
+        "pl": "Otwarte przetwory",
+        "en": "Opened preserves"
+      }
+    },
+    {
+      "id": "category.pasta",
+      "names": {
+        "pl": "Makaron",
+        "en": "Pasta"
+      }
+    },
+    {
+      "id": "category.ready-sauces",
+      "names": {
+        "pl": "Gotowe sosy",
+        "en": "Ready sauces"
+      }
+    },
+    {
+      "id": "category.spices",
+      "names": {
+        "pl": "Przyprawy",
+        "en": "Spices"
+      }
+    },
+    {
+      "id": "category.spreads",
+      "names": {
+        "pl": "Smary i pasty",
+        "en": "Spreads & pastes"
+      }
+    }
+  ],
+  "units": [
+    {
+      "id": "unit.250g",
+      "names": {
+        "pl": "250 g",
+        "en": "250 g"
+      }
+    },
+    {
+      "id": "unit.butelka",
+      "names": {
+        "pl": "butelka",
+        "en": "bottle"
+      }
+    },
+    {
+      "id": "unit.g",
+      "names": {
+        "pl": "g",
+        "en": "g"
+      }
+    },
+    {
+      "id": "unit.lvl",
+      "names": {
+        "pl": "lvl",
+        "en": "lvl"
+      }
+    },
+    {
+      "id": "unit.opak-350g",
+      "names": {
+        "pl": "opak. (350 g)",
+        "en": "pkg (350 g)"
+      }
+    },
+    {
+      "id": "unit.sloik",
+      "names": {
+        "pl": "słoik",
+        "en": "jar"
+      }
+    },
+    {
+      "id": "unit.szt",
+      "names": {
+        "pl": "szt",
+        "en": "pcs"
+      }
+    },
+    {
+      "id": "unit.x270g",
+      "names": {
+        "pl": "× 270 g",
+        "en": "× 270 g"
+      }
+    }
+  ]
+}
