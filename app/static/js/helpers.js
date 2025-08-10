@@ -277,6 +277,8 @@ export async function loadDomain() {
       state.domain.units[key] = u;
       state.units[key] = u.names;
     });
+    state.domainLoaded = true;
+    document.dispatchEvent(new Event('domain-loaded'));
     window.trace?.('loadDomain:ok');
   } catch (err) {
     console.error('Failed to load domain', err);
@@ -389,8 +391,10 @@ export async function toggleFavorite(name) {
 
 // Normalize product object ensuring required fields and defaults.
 export function normalizeProduct(p = {}) {
+  const id = p.id || p.name || '';
   const isSp = p.is_spice === true || p.category === 'spices';
-  let qty = Number(p.quantity) || 0;
+  let qty = Number(p.quantity ?? p.amount);
+  if (isNaN(qty)) qty = 0;
   let level = p.level;
   if (isSp) {
     if (!level) {
@@ -401,7 +405,8 @@ export function normalizeProduct(p = {}) {
     qty = 0;
   }
   return {
-    name: p.name || '',
+    id,
+    name: p.name || id,
     unit: p.unit || 'szt',
     quantity: qty,
     package_size: Number(p.package_size) || 1,
@@ -450,6 +455,7 @@ export function matchesFilter(p = {}, filter = 'all') {
   const level = stockLevel(p);
   switch (filter) {
     case 'available':
+      if (p.quantity == null || p.quantity === 0) return true;
       return level === 'ok';
     case 'low':
       return level === 'low';

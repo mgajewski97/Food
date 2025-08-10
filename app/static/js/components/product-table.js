@@ -213,7 +213,7 @@ function buildQtyCell(p, tr) {
 export async function refreshProducts() {
   try {
     const data = await fetchJson('/api/products');
-    APP.state.products = data.map(normalizeProduct);
+    APP.state.products = Array.isArray(data) ? data.map(normalizeProduct) : [];
     renderProducts();
   } catch (err) {
     toast.error(t('notify_error_title'), err.message);
@@ -348,6 +348,10 @@ function createFlatRow(p, idx, editable) {
 }
 
 export function renderProducts() {
+  if (!state.domainLoaded) {
+    document.addEventListener('domain-loaded', () => renderProducts(), { once: true });
+    return;
+  }
   const {
     products = [],
     view = 'flat',
@@ -361,7 +365,7 @@ export function renderProducts() {
           return normalizeProduct(p || {});
         } catch (e) {
           console.error('Bad product entry', p, e);
-          return { name: p?.name || '?', quantity: p?.quantity || 0, unit: p?.unit || '', category: p?.category || 'uncategorized', storage: p?.storage || 'pantry' };
+          return { id: p?.id || p?.name || '?', name: p?.name || '?', quantity: p?.quantity || 0, unit: p?.unit || '', category: p?.category || 'uncategorized', storage: p?.storage || 'pantry' };
         }
       })
     : [];
@@ -385,7 +389,7 @@ export function renderProducts() {
       table.style.display = '';
       list.style.display = 'none';
       table.classList.toggle('edit-mode', editing);
-      if (filtered.length === 0) {
+      if (data.length === 0) {
         const tr = document.createElement('tr');
         const td = document.createElement('td');
         td.colSpan = editing ? 7 : 6;
@@ -396,18 +400,24 @@ export function renderProducts() {
         updateDeleteButton();
         return;
       }
-      filtered.forEach((p, idx) => {
-        const tr = createFlatRow(p, idx, editing);
-        tbody.appendChild(tr);
-      });
+      if (filtered.length) {
+        filtered.forEach((p, idx) => {
+          const tr = createFlatRow(p, idx, editing);
+          tbody.appendChild(tr);
+        });
+      }
     } else {
       table.style.display = 'none';
       list.style.display = '';
-      if (filtered.length === 0) {
+      if (data.length === 0) {
         const empty = document.createElement('div');
         empty.className = 'p-4 text-center text-base-content/70';
         empty.textContent = t('products_empty');
         list.appendChild(empty);
+        updateDeleteButton();
+        return;
+      }
+      if (!filtered.length) {
         updateDeleteButton();
         return;
       }
@@ -563,8 +573,14 @@ export function renderProducts() {
       attachCollapses(list);
     }
     updateDeleteButton();
+    const summaryIds = data.slice(0, 3).map(p => p.id);
+    console.debug('renderProducts', data.length, summaryIds);
   });
 }
+
+document.addEventListener('domain-loaded', () => {
+  if (APP.state?.products?.length) renderProducts();
+});
 
 function attachCollapses(root) {
   if (!root) return;
