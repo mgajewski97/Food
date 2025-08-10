@@ -1,11 +1,12 @@
 import json
 import logging
 import os
-from datetime import date
+from datetime import date, datetime, timezone
 
 # FIX: 2024-05-06
 
 from flask import Blueprint, current_app, render_template, request, jsonify
+from .utils.logging import log_error_with_trace
 
 from .utils import (
     load_json,
@@ -138,52 +139,68 @@ def service_worker():
 
 @bp.route("/api/products", methods=["GET", "POST", "PUT"])
 def products():
-    if request.method == "GET":
-        try:
-            products = _load_products_compat()
-        except ValueError as exc:
-            logger.info(str(exc))
-            return jsonify({"error": str(exc)}), 500
-        return jsonify(products)
-
-    payload = request.get_json(silent=True) or []
-    if isinstance(payload, dict):
-        payload = [payload]
-    items = [normalize_product(p) for p in payload]
+    context = {"endpoint": "/api/products", "args": request.args.to_dict()}
     try:
-        validate_items(items, PRODUCTS_SCHEMA)
-    except ValueError as exc:
-        logger.info("request: %s", exc)
-        return jsonify({"error": str(exc)}), 400
+        if request.method == "GET":
+            try:
+                products = _load_products_compat()
+            except ValueError as exc:
+                logger.info(str(exc))
+                return jsonify({"error": str(exc)}), 500
+            return jsonify(products)
 
-    with file_lock(PRODUCTS_PATH):
+        payload = request.get_json(silent=True) or []
+        if isinstance(payload, dict):
+            payload = [payload]
+        items = [normalize_product(p) for p in payload]
         try:
-            products = load_json_validated(
-                PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
-            )
+            validate_items(items, PRODUCTS_SCHEMA)
         except ValueError as exc:
-            logger.info(str(exc))
-            return jsonify({"error": str(exc)}), 500
-        existing = {p["name"]: p for p in products}
-        for item in items:
-            existing[item["name"]] = item
-        products = list(existing.values())
-        safe_write(PRODUCTS_PATH, products)
-    return jsonify(products)
+            logger.info("request: %s", exc)
+            return jsonify({"error": str(exc)}), 400
+
+        with file_lock(PRODUCTS_PATH):
+            try:
+                products = load_json_validated(
+                    PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
+                )
+            except ValueError as exc:
+                logger.info(str(exc))
+                return jsonify({"error": str(exc)}), 500
+            existing = {p["name"]: p for p in products}
+            for item in items:
+                existing[item["name"]] = item
+            products = list(existing.values())
+            safe_write(PRODUCTS_PATH, products)
+        return jsonify(products)
+    except Exception as exc:  # pragma: no cover - defensive
+        trace_id = log_error_with_trace(exc, context)
+        return (
+            jsonify({"error": "Internal Server Error", "traceId": trace_id}),
+            500,
+        )
 
 @bp.route("/api/products/<string:name>", methods=["DELETE"])
 def delete_product(name):
-    with file_lock(PRODUCTS_PATH):
-        try:
-            products = load_json_validated(
-                PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
-            )
-        except ValueError as exc:
-            logger.info(str(exc))
-            return jsonify({"error": str(exc)}), 500
-        products = [p for p in products if p.get("name") != name]
-        safe_write(PRODUCTS_PATH, products)
-    return "", 204
+    context = {"endpoint": "/api/products/<name>", "args": request.args.to_dict()}
+    try:
+        with file_lock(PRODUCTS_PATH):
+            try:
+                products = load_json_validated(
+                    PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
+                )
+            except ValueError as exc:
+                logger.info(str(exc))
+                return jsonify({"error": str(exc)}), 500
+            products = [p for p in products if p.get("name") != name]
+            safe_write(PRODUCTS_PATH, products)
+        return "", 204
+    except Exception as exc:  # pragma: no cover - defensive
+        trace_id = log_error_with_trace(exc, context)
+        return (
+            jsonify({"error": "Internal Server Error", "traceId": trace_id}),
+            500,
+        )
 
 
 @bp.route("/api/units", methods=["GET", "PUT"])
@@ -230,14 +247,22 @@ def recipes():
     load and normalize the recipes here.
     """
 
+    context = {"endpoint": "/api/recipes", "args": request.args.to_dict()}
     try:
-        recipes = load_json_validated(
-            RECIPES_PATH, RECIPES_SCHEMA, normalize=normalize_recipe
+        try:
+            recipes = load_json_validated(
+                RECIPES_PATH, RECIPES_SCHEMA, normalize=normalize_recipe
+            )
+        except ValueError as exc:
+            logger.info(str(exc))
+            return jsonify({"error": str(exc)}), 500
+        return jsonify(recipes)
+    except Exception as exc:  # pragma: no cover - defensive
+        trace_id = log_error_with_trace(exc, context)
+        return (
+            jsonify({"error": "Internal Server Error", "traceId": trace_id}),
+            500,
         )
-    except ValueError as exc:
-        logger.info(str(exc))
-        return jsonify({"error": str(exc)}), 500
-    return jsonify(recipes)
 
 
 @bp.route("/api/history", methods=["GET", "POST"])
@@ -257,11 +282,19 @@ def history():
 @bp.route("/api/favorites", methods=["GET", "PUT"])
 def favorites():
     """Store or retrieve favorite recipes."""
-    if request.method == "PUT":
-        favs = request.json or []
-        save_json(FAVORITES_PATH, favs)
-        return jsonify(favs)
-    return jsonify(load_json(FAVORITES_PATH, []))
+    context = {"endpoint": "/api/favorites", "args": request.args.to_dict()}
+    try:
+        if request.method == "PUT":
+            favs = request.json or []
+            save_json(FAVORITES_PATH, favs)
+            return jsonify(favs)
+        return jsonify(load_json(FAVORITES_PATH, []))
+    except Exception as exc:  # pragma: no cover - defensive
+        trace_id = log_error_with_trace(exc, context)
+        return (
+            jsonify({"error": "Internal Server Error", "traceId": trace_id}),
+            500,
+        )
 
 
 @bp.route("/api/health")
@@ -278,6 +311,38 @@ def health():
         logger.info("health check failed: %s", exc)
         return jsonify({"ok": False, "error": str(exc)}), 500
     return jsonify({"ok": True})
+
+
+@bp.route("/api/_health")
+def health_new():
+    """Lightweight health check exposing dataset stats."""
+    context = {"endpoint": "/api/_health", "args": request.args.to_dict()}
+    try:
+        products = _load_products_compat()
+        recipes = load_json_validated(
+            RECIPES_PATH, RECIPES_SCHEMA, normalize=normalize_recipe
+        )
+        last_updated_ts = max(
+            os.path.getmtime(PRODUCTS_PATH), os.path.getmtime(RECIPES_PATH)
+        )
+        last_updated = datetime.fromtimestamp(
+            last_updated_ts, tz=timezone.utc
+        ).isoformat()
+        return jsonify(
+            {
+                "status": "ok",
+                "schemaVersion": "normalized@1",
+                "productsCount": len(products),
+                "recipesCount": len(recipes),
+                "lastUpdated": last_updated,
+            }
+        )
+    except Exception as exc:  # pragma: no cover - defensive
+        trace_id = log_error_with_trace(exc, context)
+        return (
+            jsonify({"error": "Internal Server Error", "traceId": trace_id}),
+            500,
+        )
 
 
 @bp.route("/api/validate")

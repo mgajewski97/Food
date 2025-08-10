@@ -48,7 +48,7 @@ export async function handleReceiptUpload(file) {
       body: { items: lines }
     });
   } catch (err) {
-    toast.error(t('notify_error_title'));
+    toast.error(t('notify_error_title'), err.message);
     return;
   }
   tableBody.innerHTML = '';

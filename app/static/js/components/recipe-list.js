@@ -95,7 +95,7 @@ export function renderRecipes() {
           }
         } catch (err) {
           favBtn.innerHTML = prev;
-          toast.error(t('notify_error_title'));
+          toast.error(t('notify_error_title'), err.message);
         } finally {
           favBtn.disabled = false;
         }

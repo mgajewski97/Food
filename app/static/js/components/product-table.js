@@ -213,7 +213,7 @@ export async function refreshProducts() {
     APP.state.products = data.map(normalizeProduct);
     renderProducts();
   } catch (err) {
-    toast.error(t('notify_error_title'));
+    toast.error(t('notify_error_title'), err.message);
   }
 }
 
@@ -233,7 +233,7 @@ export async function saveProduct(payload) {
       }
     });
   } catch (err) {
-    toast.error(t('notify_error_title'));
+    toast.error(t('notify_error_title'), err.message);
   }
 }
 
