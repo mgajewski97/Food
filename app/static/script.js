@@ -1,7 +1,7 @@
 // FIX: Render & responsive boot (2025-08-09)
 import {
   t,
-  fetchJSON,
+  fetchJson,
   showTopBanner,
   loadTranslations,
   loadDomain,
@@ -49,7 +49,7 @@ APP.editBackup = APP.editBackup || null;
 async function loadProducts() {
   trace('loadProducts:enter');
   try {
-    const data = await fetchJSON('/api/products');
+    const data = await fetchJson('/api/products');
     APP.state.products = Array.isArray(data) ? data.map(normalizeProduct) : [];
     ProductTable.renderProducts();
     Shopping.renderSuggestions();
@@ -81,7 +81,7 @@ async function loadRecipes() {
 async function loadHistory() {
   trace('loadHistory:enter');
   try {
-    state.historyData = await fetchJSON('/api/history');
+    state.historyData = await fetchJson('/api/history');
     trace('loadHistory:ok');
   } catch (e) {
     console.error(e);
@@ -92,7 +92,7 @@ async function loadHistory() {
 
 async function checkHealth() {
   try {
-    await fetchJSON('/api/health');
+    await fetchJson('/api/health');
     return true;
   } catch (err) {
     const banner = document.getElementById('health-banner');
@@ -300,7 +300,7 @@ function initAddForm() {
     }
     submitBtn.disabled = true;
     try {
-      await fetchJSON('/api/products', { method: 'POST', body: payload });
+      await fetchJson('/api/products', { method: 'POST', body: payload });
       await loadProducts();
       ProductTable.renderProducts();
       Shopping.renderShoppingList();
@@ -354,7 +354,7 @@ async function saveEdits() {
   const btn = document.getElementById('save-btn');
   btn.disabled = true;
   try {
-    await fetchJSON('/api/products', {
+    await fetchJson('/api/products', {
       method: 'PUT',
       body: updates
     });
@@ -456,7 +456,7 @@ function initNavigationAndEvents() {
     deleteBtn.disabled = true;
     try {
       await Promise.allSettled(
-        names.map(n => fetchJSON(`/api/products/${encodeURIComponent(n)}`, { method: 'DELETE' }))
+        names.map(n => fetchJson(`/api/products/${encodeURIComponent(n)}`, { method: 'DELETE' }))
       );
       await loadProducts();
       exitEditMode(false);

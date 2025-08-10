@@ -3,6 +3,39 @@
 // - Added normalization helpers and spice detector.
 // - Single translation helper with English fallback.
 
+/**
+ * @typedef {Object} Ingredient
+ * @property {string} product
+ * @property {number} [quantity]
+ * @property {string} [unit]
+ */
+
+/**
+ * @typedef {Object} Recipe
+ * @property {string} id
+ * @property {{pl:string, en:string}} names
+ * @property {number} portions
+ * @property {string} time
+ * @property {Ingredient[]} ingredients
+ * @property {string[]} steps
+ * @property {string[]} tags
+ */
+
+/**
+ * @typedef {Object} Product
+ * @property {string} name
+ * @property {string} unit
+ * @property {number} quantity
+ * @property {string} category
+ * @property {string} storage
+ * @property {number} threshold
+ * @property {boolean} main
+ * @property {number} package_size
+ * @property {number|null} [pack_size]
+ * @property {string|null} [level]
+ * @property {boolean} is_spice
+ */
+
 import { showTopBanner } from './components/toast.js';
 export { showTopBanner };
 
@@ -119,7 +152,14 @@ export function timeToBucket(str) {
   return 'gt60';
 }
 
-export async function fetchJSON(url, options = {}) {
+/**
+ * Fetch JSON data with uniform error handling.
+ * Displays a toast on HTTP errors unless `{silent: true}` is passed.
+ * @param {string} url
+ * @param {RequestInit & {silent?: boolean}} [options]
+ * @returns {Promise<any>}
+ */
+export async function fetchJson(url, options = {}) {
   const opts = {
     headers: {
       Accept: 'application/json',
@@ -131,7 +171,13 @@ export async function fetchJSON(url, options = {}) {
     opts.body = JSON.stringify(opts.body);
     opts.headers['Content-Type'] = 'application/json';
   }
-  const res = await fetch(url, opts);
+  let res;
+  try {
+    res = await fetch(url, opts);
+  } catch (err) {
+    if (!opts.silent) showTopBanner(err.message || 'Network error');
+    throw err;
+  }
   const text = await res.text();
   let data = null;
   try {
@@ -143,9 +189,11 @@ export async function fetchJSON(url, options = {}) {
     const snippet = text.slice(0, 100);
     const baseMsg = (data && data.error) || snippet || `HTTP ${res.status}`;
     const trace = data && data.traceId;
-    const err = new Error(
-      trace ? `${baseMsg} [${t('ID')}: ${trace}]` : baseMsg
-    );
+    const message = trace ? `${baseMsg} [${t('ID')}: ${trace}]` : baseMsg;
+    if (!opts.silent) {
+      showTopBanner(message);
+    }
+    const err = new Error(message);
     err.status = res.status;
     err.body = snippet;
     if (trace) err.traceId = trace;
@@ -153,8 +201,6 @@ export async function fetchJSON(url, options = {}) {
   }
   return data;
 }
-
-export const fetchJson = fetchJSON;
 
 export function formatPackQuantity(p) {
   if (isSpice(p)) {

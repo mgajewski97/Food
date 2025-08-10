@@ -10,7 +10,7 @@ import {
   matchesFilter,
   stockLevel,
   normalizeProduct,
-  fetchJSON,
+  fetchJson,
   isSpice,
   debounce,
   dlog,
@@ -212,7 +212,7 @@ function buildQtyCell(p, tr) {
 
 export async function refreshProducts() {
   try {
-    const data = await fetchJSON('/api/products');
+    const data = await fetchJson('/api/products');
     APP.state.products = data.map(normalizeProduct);
     renderProducts();
   } catch (err) {
@@ -222,7 +222,7 @@ export async function refreshProducts() {
 
 export async function saveProduct(payload) {
   try {
-    await fetchJSON('/api/products', {
+    await fetchJson('/api/products', {
       method: 'POST',
       body: payload
     });
