@@ -1,5 +1,13 @@
 # Developer Notes
 
+## Uruchom serwer / Run server
+
+From the project root run the development server with:
+
+```
+flask --app app:create_app run
+```
+
 ## Data Models
 
 ### products.json
@@ -38,3 +46,9 @@ Use `/api/validate` to view counts and the first five warnings for each dataset.
 - Frontend layout still needs fine‑tuning for narrow screens.
 - History view is minimal and lacks editing features.
 - Validation only reports first five warnings per dataset.
+
+## UI Labels (PL/EN)
+- Uruchom serwer / Run server
+- Aplikacja / Application
+- Błąd / Error
+- Start / Start
