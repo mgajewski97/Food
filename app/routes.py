@@ -2,6 +2,7 @@ import json
 import logging
 import os
 from datetime import date, datetime, timezone
+from typing import Any, Dict, List, Optional, Tuple
 
 # FIX: 2024-05-06
 
@@ -40,6 +41,41 @@ RECIPES_SCHEMA = os.path.join(SCHEMA_DIR, "recipe.schema.json")
 UNITS_PATH = os.path.join(DATA_DIR, "units.json")
 HISTORY_PATH = os.path.join(DATA_DIR, "history.json")
 FAVORITES_PATH = os.path.join(DATA_DIR, "favorites.json")
+SHOPPING_PATH = os.path.join(DATA_DIR, "shopping_list.json")
+
+UNIT_CONVERSIONS = {
+    ("unit.g", "unit.kg"): 0.001,
+    ("unit.kg", "unit.g"): 1000,
+    ("unit.ml", "unit.l"): 0.001,
+    ("unit.l", "unit.ml"): 1000,
+}
+
+UNIT_ID_TO_NAME = {
+    "unit.g": "g",
+    "unit.kg": "kg",
+    "unit.ml": "ml",
+    "unit.l": "l",
+    "unit.szt": "szt",
+}
+UNIT_NAME_TO_ID = {v: k for k, v in UNIT_ID_TO_NAME.items()}
+
+
+def _convert_qty(qty: float, from_unit: str, to_unit: str) -> Optional[float]:
+    if from_unit == to_unit:
+        return qty
+    factor = UNIT_CONVERSIONS.get((from_unit, to_unit))
+    if factor is None:
+        return None
+    return qty * factor
+
+
+def _to_base(qty: float, unit: str) -> Tuple[float, str]:
+    base_map = {"unit.kg": "unit.g", "unit.l": "unit.ml"}
+    base = base_map.get(unit, unit)
+    converted = _convert_qty(qty, unit, base)
+    if converted is None:
+        return qty, unit
+    return converted, base
 
 
 def run_initial_validation() -> None:
@@ -322,6 +358,150 @@ def favorites():
             jsonify({"error": "Internal Server Error", "traceId": trace_id}),
             500,
         )
+    
+
+def _generate_shopping_list(selection: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    recipes = load_json_validated(
+        RECIPES_PATH, RECIPES_SCHEMA, normalize=normalize_recipe
+    )
+    recipes_map = {r.get("id"): r for r in recipes}
+    aggregate: Dict[Tuple[str, str], float] = {}
+    optional_map: Dict[Tuple[str, str], bool] = {}
+    for sel in selection:
+        rid = sel.get("id")
+        servings = float(sel.get("servings", 0))
+        recipe = recipes_map.get(rid)
+        if not recipe:
+            continue
+        scale = servings / (recipe.get("portions") or 1)
+        for ing in recipe.get("ingredients", []):
+            pid = ing.get("productId")
+            unit = ing.get("unitId")
+            qty = ing.get("qty")
+            if not pid or not unit or qty is None:
+                continue
+            qty_scaled = qty * scale
+            qty_base, base_unit = _to_base(qty_scaled, unit)
+            key = (pid, base_unit)
+            aggregate[key] = aggregate.get(key, 0) + qty_base
+            if ing.get("optional"):
+                optional_map[key] = True
+            else:
+                optional_map.setdefault(key, False)
+    try:
+        products = load_json_validated(
+            PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
+        )
+    except ValueError:
+        products = []
+    stock: Dict[Tuple[str, str], float] = {}
+    for prod in products:
+        pid = prod.get("name")
+        unit_name = prod.get("unit", "")
+        unit_id = UNIT_NAME_TO_ID.get(unit_name, unit_name)
+        qty_base, base_unit = _to_base(prod.get("quantity", 0), unit_id)
+        key = (pid, base_unit)
+        stock[key] = stock.get(key, 0) + qty_base
+    items: List[Dict[str, Any]] = []
+    for key, total in aggregate.items():
+        available = stock.get(key, 0)
+        remaining = max(total - available, 0)
+        if remaining <= 0:
+            continue
+        pid, unit = key
+        items.append(
+            {
+                "productId": pid,
+                "unitId": unit,
+                "quantity_to_buy": remaining,
+                "optional": optional_map.get(key, False),
+                "in_cart": False,
+            }
+        )
+    return items
+
+
+@bp.route("/api/shopping", methods=["GET", "POST"])
+def shopping():
+    if request.method == "POST":
+        payload = request.json or {}
+        selection = payload.get("recipes", [])
+        items = _generate_shopping_list(selection)
+        save_json(SHOPPING_PATH, items)
+        return jsonify(items)
+    return jsonify(load_json(SHOPPING_PATH, []))
+
+
+@bp.route("/api/shopping/<string:product_id>", methods=["PATCH"])
+def shopping_mark(product_id: str):
+    items = load_json(SHOPPING_PATH, [])
+    flag = bool((request.json or {}).get("inCart"))
+    updated = False
+    for item in items:
+        if item.get("productId") == product_id:
+            item["in_cart"] = flag
+            updated = True
+            break
+    if updated:
+        save_json(SHOPPING_PATH, items)
+    return jsonify(items)
+
+
+def _update_pantry(items: List[Dict[str, Any]]) -> None:
+    with file_lock(PRODUCTS_PATH):
+        try:
+            products = load_json_validated(
+                PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
+            )
+        except ValueError:
+            products = []
+        prod_map = {p.get("name"): p for p in products}
+        for it in items:
+            pid = it.get("productId")
+            qty = it.get("quantity_to_buy", 0)
+            unit_id = it.get("unitId")
+            unit_name = UNIT_ID_TO_NAME.get(unit_id, unit_id)
+            if pid in prod_map:
+                product = prod_map[pid]
+                prod_unit_id = UNIT_NAME_TO_ID.get(
+                    product.get("unit", unit_name), unit_name
+                )
+                converted = _convert_qty(qty, unit_id, prod_unit_id)
+                if converted is None:
+                    continue
+                product["quantity"] = product.get("quantity", 0) + converted
+            else:
+                prod_map[pid] = {
+                    "name": pid,
+                    "quantity": qty,
+                    "unit": unit_name,
+                    "category": "uncategorized",
+                    "storage": "pantry",
+                    "threshold": 1,
+                    "main": True,
+                    "package_size": 1,
+                    "pack_size": None,
+                    "tags": [],
+                    "level": None,
+                    "is_spice": False,
+                }
+        save_json(
+            PRODUCTS_PATH,
+            list(prod_map.values()),
+            PRODUCTS_SCHEMA,
+            normalize_product,
+        )
+
+
+@bp.route("/api/shopping/confirm", methods=["POST"])
+def shopping_confirm():
+    items = load_json(SHOPPING_PATH, [])
+    purchased = [i for i in items if i.get("in_cart")]
+    if purchased:
+        _update_pantry(purchased)
+    remaining = [i for i in items if not i.get("in_cart")]
+    save_json(SHOPPING_PATH, remaining)
+    return jsonify(remaining)
 
 
 @bp.route("/api/health")
