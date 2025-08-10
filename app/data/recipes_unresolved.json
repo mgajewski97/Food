@@ -1,0 +1,86 @@
+[
+  {
+    "recipeId": "recipe.mushroom_oyster_mushroom_cream_soup",
+    "note": "product.sour_cream_18 2.0 lyzka"
+  },
+  {
+    "recipeId": "recipe.mushroom_oyster_mushroom_cream_soup",
+    "note": "product.plant_fat 1.0 lyzka"
+  },
+  {
+    "recipeId": "recipe.mushroom_oyster_mushroom_cream_soup",
+    "note": "product.water 1000.0 ml"
+  },
+  {
+    "recipeId": "recipe.mushroom_oyster_mushroom_cream_soup",
+    "note": "product.bay_leaf 1.0 szt"
+  },
+  {
+    "recipeId": "recipe.mushroom_oyster_mushroom_cream_soup",
+    "note": "product.thyme 0.5 lyzeczka"
+  },
+  {
+    "recipeId": "recipe.mushroom_oyster_mushroom_cream_soup",
+    "note": "product.salt 1.0 do_smaczenia"
+  },
+  {
+    "recipeId": "recipe.mushroom_oyster_mushroom_cream_soup",
+    "note": "product.black_pepper 1.0 do_smaczenia"
+  },
+  {
+    "recipeId": "recipe.stir_fry_peking_cabbage_tofu_pepper_radish_rice_cashew",
+    "note": "product.tofu 180.0 g"
+  },
+  {
+    "recipeId": "recipe.stir_fry_peking_cabbage_tofu_pepper_radish_rice_cashew",
+    "note": "product.peking_cabbage 0.5 szt"
+  },
+  {
+    "recipeId": "recipe.stir_fry_peking_cabbage_tofu_pepper_radish_rice_cashew",
+    "note": "product.red_pepper 1.0 szt"
+  },
+  {
+    "recipeId": "recipe.stir_fry_peking_cabbage_tofu_pepper_radish_rice_cashew",
+    "note": "product.ginger_fresh 10.0 g"
+  },
+  {
+    "recipeId": "recipe.stir_fry_peking_cabbage_tofu_pepper_radish_rice_cashew",
+    "note": "product.teriyaki_sauce 4.0 łyżka"
+  },
+  {
+    "recipeId": "recipe.stir_fry_peking_cabbage_tofu_pepper_radish_rice_cashew",
+    "note": "product.soy_sauce 3.0 łyżka"
+  },
+  {
+    "recipeId": "recipe.stir_fry_peking_cabbage_tofu_pepper_radish_rice_cashew",
+    "note": "product.sesame_oil 1.0 łyżeczka"
+  },
+  {
+    "recipeId": "recipe.stir_fry_peking_cabbage_tofu_pepper_radish_rice_cashew",
+    "note": "product.sesame 1.0 łyżka"
+  },
+  {
+    "recipeId": "recipe.stir_fry_peking_cabbage_tofu_pepper_radish_rice_cashew",
+    "note": "product.chili 0.5 łyżeczka"
+  },
+  {
+    "recipeId": "recipe.stir_fry_peking_cabbage_tofu_pepper_radish_rice_cashew",
+    "note": "product.pepper 0.25 łyżeczka"
+  },
+  {
+    "recipeId": "recipe.stir_fry_peking_cabbage_tofu_pepper_radish_rice_cashew",
+    "note": "product.coriander_ground 0.25 łyżeczka"
+  },
+  {
+    "recipeId": "recipe.stir_fry_peking_cabbage_tofu_pepper_radish_rice_cashew",
+    "note": "product.cashew 20.0 g"
+  },
+  {
+    "recipeId": "recipe.stir_fry_peking_cabbage_tofu_pepper_radish_rice_cashew",
+    "note": "product.sugar 0.5 łyżeczka"
+  },
+  {
+    "recipeId": "recipe.stir_fry_peking_cabbage_tofu_pepper_radish_rice_cashew",
+    "note": "product.coriander_fresh 10.0 g"
+  }
+]

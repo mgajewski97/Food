@@ -138,38 +138,47 @@ def normalize_product(data: Dict[str, Any]) -> Dict[str, Any]:
 
 def normalize_recipe(data: Dict[str, Any]) -> Dict[str, Any]:
     """Return recipe dict with defaults and cleaned ingredients."""
+
     def _clean_list(items: List[Any]) -> List[Dict[str, Any]]:
         cleaned: List[Dict[str, Any]] = []
         for ing in items:
             if isinstance(ing, dict):
-                cleaned.append(
-                    {
-                        "product": ing.get("product"),
-                        "quantity": _safe_float(ing.get("quantity", 0)),
-                        "unit": ing.get("unit", DEFAULT_UNIT),
-                    }
-                )
+                obj: Dict[str, Any] = {
+                    "productId": ing.get("productId"),
+                    "qty": _safe_float(ing.get("qty", 0)),
+                    "unitId": ing.get("unitId"),
+                    "optional": bool(ing.get("optional", False)),
+                }
+                if ing.get("note") is not None:
+                    obj["note"] = ing["note"]
+                if ing.get("unresolved"):
+                    obj["unresolved"] = True
+                cleaned.append(obj)
             else:
                 cleaned.append(
                     {
-                        "product": ing,
-                        "quantity": 0,
-                        "unit": DEFAULT_UNIT,
+                        "productId": None,
+                        "qty": 0,
+                        "unitId": None,
+                        "optional": False,
+                        "note": str(ing),
+                        "unresolved": True,
                     }
                 )
         return cleaned
 
     recipe = {
-        "name": data.get("name"),
+        "id": data.get("id"),
+        "names": {
+            "pl": data.get("names", {}).get("pl", ""),
+            "en": data.get("names", {}).get("en", ""),
+        },
         "portions": _safe_float(data.get("portions", 1), 1) or 1,
         "time": str(data.get("time", "")),
         "ingredients": _clean_list(data.get("ingredients", [])),
         "steps": [str(s) for s in data.get("steps", []) if isinstance(s, str)],
         "tags": [str(t) for t in data.get("tags", []) if isinstance(t, str)],
     }
-    optional = data.get("optionalIngredients") or []
-    if optional:
-        recipe["optionalIngredients"] = _clean_list(optional)
     return recipe
 
 

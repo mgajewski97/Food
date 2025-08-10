@@ -1,33 +1,32 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "required": ["name", "portions", "ingredients", "steps"],
+  "required": ["id", "names", "portions", "ingredients", "steps"],
   "properties": {
-    "name": {"type": "string"},
+    "id": {"type": "string"},
+    "names": {
+      "type": "object",
+      "required": ["pl", "en"],
+      "properties": {
+        "pl": {"type": "string"},
+        "en": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
     "portions": {"type": "number"},
     "time": {"type": "string"},
     "ingredients": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["product", "quantity", "unit"],
+        "required": ["productId", "qty", "unitId", "optional"],
         "properties": {
-          "product": {"type": "string"},
-          "quantity": {"type": "number"},
-          "unit": {"type": "string"}
-        },
-        "additionalProperties": false
-      }
-    },
-    "optionalIngredients": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["product", "quantity", "unit"],
-        "properties": {
-          "product": {"type": "string"},
-          "quantity": {"type": "number"},
-          "unit": {"type": "string"}
+          "productId": {"type": ["string", "null"]},
+          "qty": {"type": ["number", "null"]},
+          "unitId": {"type": ["string", "null"]},
+          "optional": {"type": "boolean"},
+          "note": {"type": "string"},
+          "unresolved": {"type": "boolean"}
         },
         "additionalProperties": false
       }
