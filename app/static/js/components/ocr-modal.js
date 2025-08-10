@@ -1,4 +1,4 @@
-import { t, state, fetchJSON, productName } from '../helpers.js';
+import { t, state, fetchJson, productName } from '../helpers.js';
 import { addToShoppingList, renderShoppingList } from './shopping-list.js';
 import { toast } from './toast.js';
 
@@ -43,7 +43,7 @@ export async function handleReceiptUpload(file) {
   const lines = text.split('\n').map(l => l.trim()).filter(l => l);
   let data;
   try {
-    data = await fetchJSON('/api/ocr-match', {
+    data = await fetchJson('/api/ocr-match', {
       method: 'POST',
       body: { items: lines }
     });

@@ -1,5 +1,5 @@
 // FIX: Render & responsive boot (2025-08-09)
-import { t, state, isSpice, stockLevel, fetchJSON, debounce, productName } from '../helpers.js';
+import { t, state, isSpice, stockLevel, fetchJson, debounce, productName } from '../helpers.js';
 import { toast } from './toast.js';
 
 function saveShoppingList() {
@@ -144,7 +144,7 @@ function renderShoppingItem(item, idx) {
     if (item.inCart && stock && isSpice(stock)) {
       cartBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
       try {
-        await fetchJSON('/api/products', { method: 'POST', body: { ...stock, level: 'high', quantity: 0 } });
+        await fetchJson('/api/products', { method: 'POST', body: { ...stock, level: 'high', quantity: 0 } });
         stock.level = 'high';
       } catch (err) {
         toast.error(t('notify_error_title'), err.message);
