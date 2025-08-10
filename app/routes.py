@@ -4,7 +4,7 @@ from datetime import date
 
 # FIX: 2024-05-06
 
-from flask import Flask, render_template, request, jsonify
+from flask import Blueprint, current_app, render_template, request, jsonify
 
 from .utils import (
     load_json,
@@ -26,7 +26,7 @@ from .utils import (
 # - Added validation summary endpoint returning counts and warnings.
 
 logger = logging.getLogger(__name__)
-app = Flask(__name__, static_folder="static", template_folder="templates")
+bp = Blueprint("routes", __name__)
 
 BASE_DIR = os.path.dirname(__file__)
 SCHEMA_DIR = os.path.join(BASE_DIR, "schemas")
@@ -39,12 +39,14 @@ UNITS_PATH = os.path.join(DATA_DIR, "units.json")
 HISTORY_PATH = os.path.join(DATA_DIR, "history.json")
 FAVORITES_PATH = os.path.join(DATA_DIR, "favorites.json")
 
-# Run initial validation on startup to surface warnings without blocking app.
-for _path, _schema, _norm in [
-    (PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize_product),
-    (RECIPES_PATH, RECIPES_SCHEMA, normalize_recipe),
-]:
-    validate_file(_path, [], _schema, _norm)
+
+def run_initial_validation() -> None:
+    """Validate core datasets once on application startup."""
+    for _path, _schema, _norm in [
+        (PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize_product),
+        (RECIPES_PATH, RECIPES_SCHEMA, normalize_recipe),
+    ]:
+        validate_file(_path, [], _schema, _norm)
 
 
 def remove_used_products(used_ingredients):
@@ -56,19 +58,22 @@ def remove_used_products(used_ingredients):
         products = [p for p in products if p.get("name") not in used_ingredients]
         safe_write(PRODUCTS_PATH, products)
 
-@app.route('/')
+
+@bp.route("/")
 def index():
-    return render_template('index.html')
+    return render_template("index.html")
 
-@app.route('/manifest.json')
+
+@bp.route("/manifest.json")
 def manifest():
-    return app.send_static_file('manifest.json')
+    return current_app.send_static_file("manifest.json")
 
-@app.route('/service-worker.js')
+
+@bp.route("/service-worker.js")
 def service_worker():
-    return app.send_static_file('service-worker.js')
+    return current_app.send_static_file("service-worker.js")
 
-@app.route("/api/products", methods=["GET", "POST", "PUT"])
+@bp.route("/api/products", methods=["GET", "POST", "PUT"])
 def products():
     if request.method == "GET":
         try:
@@ -105,7 +110,7 @@ def products():
         safe_write(PRODUCTS_PATH, products)
     return jsonify(products)
 
-@app.route("/api/products/<string:name>", methods=["DELETE"])
+@bp.route("/api/products/<string:name>", methods=["DELETE"])
 def delete_product(name):
     with file_lock(PRODUCTS_PATH):
         try:
@@ -120,7 +125,7 @@ def delete_product(name):
     return "", 204
 
 
-@app.route("/api/units", methods=["GET", "PUT"])
+@bp.route("/api/units", methods=["GET", "PUT"])
 def units():
     if request.method == "PUT":
         units = request.json or {}
@@ -128,7 +133,7 @@ def units():
         return jsonify(units)
     return jsonify(load_json(UNITS_PATH, {}))
 
-@app.route("/api/ocr-match", methods=["POST"])
+@bp.route("/api/ocr-match", methods=["POST"])
 def ocr_match():
     payload = request.json or {}
     items = payload.get("items", [])
@@ -152,7 +157,7 @@ def ocr_match():
         })
     return jsonify(results)
 
-@app.route("/api/recipes")
+@bp.route("/api/recipes")
 def recipes():
     """Return all recipes with normalized ingredient structures.
 
@@ -174,7 +179,7 @@ def recipes():
     return jsonify(recipes)
 
 
-@app.route("/api/history", methods=["GET", "POST"])
+@bp.route("/api/history", methods=["GET", "POST"])
 def history():
     if request.method == "POST":
         entry = request.json or {}
@@ -188,7 +193,7 @@ def history():
     return jsonify(load_json(HISTORY_PATH, []))
 
 
-@app.route("/api/favorites", methods=["GET", "PUT"])
+@bp.route("/api/favorites", methods=["GET", "PUT"])
 def favorites():
     """Store or retrieve favorite recipes."""
     if request.method == "PUT":
@@ -198,7 +203,7 @@ def favorites():
     return jsonify(load_json(FAVORITES_PATH, []))
 
 
-@app.route("/api/health")
+@bp.route("/api/health")
 def health():
     """Basic health check ensuring data files validate."""
     try:
@@ -214,7 +219,7 @@ def health():
     return jsonify({"ok": True})
 
 
-@app.route("/api/validate")
+@bp.route("/api/validate")
 def validate_route():
     """Return validation summary for core datasets."""
     summary = {}
@@ -229,6 +234,3 @@ def validate_route():
     count, errors = validate_file(HISTORY_PATH, [], None)
     summary["history"] = {"count": count, "errors": errors[:5]}
     return jsonify(summary)
-
-if __name__ == '__main__':
-    app.run(debug=True)
