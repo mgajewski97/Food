@@ -81,10 +81,10 @@
                 <div class="flex flex-col md:flex-row gap-2 items-start md:items-center flex-1">
                     <input id="product-search" placeholder="Szukaj produktu" data-i18n="search_placeholder" class="input input-bordered flex-1 min-w-[200px]" />
                     <select id="state-filter" class="select select-bordered w-full md:w-auto">
+                        <option value="all" data-i18n="state_filter_all" selected>Wszystkie</option>
                         <option value="available" data-i18n="state_filter_available">Dostępne</option>
                         <option value="missing" data-i18n="state_filter_missing">Brakujące</option>
                         <option value="low" data-i18n="state_filter_low">Kończące się</option>
-                        <option value="all" data-i18n="state_filter_all">Wszystkie</option>
                     </select>
                 </div>
                 <button id="view-toggle" class="btn btn-outline btn-primary btn-sm" role="switch" aria-pressed="false" aria-label="Widok z podziałem" data-i18n="change_view_toggle_grouped">Widok z podziałem</button>

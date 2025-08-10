@@ -49,6 +49,7 @@ export function bindProductEvents() {
 }
 
 // --- expand/collapse state
+// Track expand/collapse state and persist to localStorage
 const expandedStorages = new Map(); // storageId -> true/false
 const expandedCategories = new Map(); // storageId::categoryId -> true/false
 
@@ -62,10 +63,16 @@ function setHidden(el, flag) {
 function initExpandDefaults(container) {
   container.querySelectorAll('.storage-section').forEach(sec => {
     const storage = sec.dataset.storage;
-    if (!expandedStorages.has(storage)) expandedStorages.set(storage, true);
+    if (!expandedStorages.has(storage)) {
+      const stored = localStorage.getItem(`products:storage:${storage}`);
+      expandedStorages.set(storage, stored !== 'false');
+    }
     sec.querySelectorAll('.category-section').forEach(cat => {
       const key = `${storage}::${cat.dataset.category}`;
-      if (!expandedCategories.has(key)) expandedCategories.set(key, true);
+      if (!expandedCategories.has(key)) {
+        const cStored = localStorage.getItem(`products:category:${key}`);
+        expandedCategories.set(key, cStored !== 'false');
+      }
     });
   });
   syncAllToggles(container);
@@ -359,16 +366,21 @@ export function renderProducts() {
     editing = false,
     search = ''
   } = APP.state || {};
-  const data = Array.isArray(products)
-    ? products.map(p => {
-        try {
-          return normalizeProduct(p || {});
-        } catch (e) {
-          console.error('Bad product entry', p, e);
-          return { id: p?.id || p?.name || '?', name: p?.name || '?', quantity: p?.quantity || 0, unit: p?.unit || '', category: p?.category || 'uncategorized', storage: p?.storage || 'pantry' };
-        }
-      })
-    : [];
+
+  const domainList = Object.values(state.domain.products || {});
+  const data = domainList.map(dp => {
+    const existing = products.find(p => p.id === dp.id) || {};
+    const merged = normalizeProduct({ ...dp, ...existing, id: dp.id, name: productName(dp.id) });
+    return {
+      ...merged,
+      unitLabel: unitName(merged.unit),
+      categoryLabel: categoryName(merged.category),
+      storageLabel: t(STORAGE_KEYS[merged.storage] || merged.storage),
+      status: stockLevel(merged)
+    };
+  });
+  APP.state.products = data;
+
   const term = (search || '').toLowerCase();
   const filtered = data.filter(p =>
     matchesFilter(p, filter) &&
@@ -422,14 +434,16 @@ export function renderProducts() {
         return;
       }
       const storages = {};
+      Object.keys(STORAGE_KEYS).forEach(s => {
+        storages[s] = {};
+      });
       filtered.forEach(p => {
         const s = p.storage || 'pantry';
         const c = p.category || 'uncategorized';
-        storages[s] = storages[s] || {};
         storages[s][c] = storages[s][c] || [];
         storages[s][c].push(p);
       });
-      Object.keys(storages)
+      Object.keys(STORAGE_KEYS)
         .sort((a, b) => t(STORAGE_KEYS[a] || a).localeCompare(t(STORAGE_KEYS[b] || b)))
         .forEach(stor => {
           const block = document.createElement('section');
@@ -454,119 +468,125 @@ export function renderProducts() {
 
           const content = document.createElement('div');
           content.className = 'storage-content';
+          const categories = storages[stor];
+          if (!Object.keys(categories).length) {
+            const emptyMsg = document.createElement('div');
+            emptyMsg.className = 'p-2 text-center text-base-content/70';
+            emptyMsg.textContent = t('products_empty');
+            content.appendChild(emptyMsg);
+          } else {
+            Object.keys(categories)
+              .sort((a, b) =>
+                (CATEGORY_ORDER[a] || 0) - (CATEGORY_ORDER[b] || 0) ||
+                categoryName(a).localeCompare(categoryName(b))
+              )
+              .forEach(cat => {
+                const catBlock = document.createElement('div');
+                catBlock.className = 'category-section category-block';
+                catBlock.dataset.storage = stor;
+                catBlock.dataset.category = cat;
+
+                const catHeader = document.createElement('header');
+                catHeader.className = 'category-header flex items-center gap-2';
+                if (state.displayMode === 'mobile') catHeader.classList.add('cursor-pointer');
+                const catSpan = document.createElement('span');
+                catSpan.className = 'font-medium';
+                catSpan.textContent = categoryName(cat);
+                if (!state.domain.categories[cat]) catSpan.classList.add('opacity-60');
+                const catBtn = document.createElement('button');
+                catBtn.type = 'button';
+                catBtn.className = 'toggle-category ml-auto h-8 w-8 flex items-center justify-center';
+                catBtn.setAttribute('aria-expanded', 'true');
+                catBtn.setAttribute('title', t('collapse'));
+                catBtn.setAttribute('aria-label', t('collapse'));
+                catBtn.innerHTML = '<i class="fa-regular fa-caret-up transition-transform rotate-180"></i>';
+                catHeader.append(catSpan, catBtn);
+                catBlock.appendChild(catHeader);
+
+                const body = document.createElement('div');
+                body.className = 'category-body';
+                const table = document.createElement('table');
+                table.className = 'table table-zebra w-full grouped-table';
+                const colgroup = document.createElement('colgroup');
+                const cols = editing
+                  ? ['grouped-col-select', 'grouped-col-name', 'grouped-col-qty', 'grouped-col-unit', 'grouped-col-status']
+                  : ['grouped-col-name', 'grouped-col-qty', 'grouped-col-unit', 'grouped-col-status'];
+                cols.forEach(cls => {
+                  const col = document.createElement('col');
+                  col.className = cls;
+                  colgroup.appendChild(col);
+                });
+                table.appendChild(colgroup);
+                const thead = document.createElement('thead');
+                const hr = document.createElement('tr');
+                const headers = editing
+                  ? ['', t('table_header_name'), t('table_header_quantity'), t('table_header_unit'), t('table_header_status')]
+                  : [t('table_header_name'), t('table_header_quantity'), t('table_header_unit'), t('table_header_status')];
+                headers.forEach((txt, i) => {
+                  const th = document.createElement('th');
+                  th.textContent = txt;
+                  if (editing && i === 0) th.className = 'checkbox-cell';
+                  hr.appendChild(th);
+                });
+                thead.appendChild(hr);
+                table.appendChild(thead);
+                const tb = document.createElement('tbody');
+                categories[cat].forEach(p => {
+                  const tr = document.createElement('tr');
+                  const idx = data.indexOf(p);
+                  tr.dataset.index = idx;
+                  tr.dataset.productId = p.id != null ? p.id : idx;
+                  if (editing) {
+                    const cbTd = document.createElement('td');
+                    cbTd.className = 'checkbox-cell';
+                    const cb = document.createElement('input');
+                    cb.type = 'checkbox';
+                    cb.className = 'checkbox checkbox-sm product-select';
+                    cb.dataset.name = p.name;
+                    cbTd.appendChild(cb);
+                    tr.appendChild(cbTd);
+                    const n = document.createElement('td');
+                    n.textContent = productName(p.id);
+                    if (!getProduct(p.id)) n.classList.add('opacity-60');
+                    tr.appendChild(n);
+                    const q = buildQtyCell(p, tr);
+                    tr.appendChild(q);
+                      const u = document.createElement('td');
+                      u.textContent = unitName(p.unit);
+                      tr.appendChild(u);
+                    const s = document.createElement('td');
+                    const ic = getStatusIcon(p);
+                    if (ic) {
+                      s.innerHTML = ic.html;
+                      s.title = ic.title;
+                    }
+                    tr.appendChild(s);
+                  } else {
+                    const n = document.createElement('td');
+                    n.textContent = productName(p.id);
+                    if (!getProduct(p.id)) n.classList.add('opacity-60');
+                    const q = document.createElement('td');
+                    q.textContent = formatPackQuantity(p);
+                      const u = document.createElement('td');
+                      u.textContent = unitName(p.unit);
+                    const s = document.createElement('td');
+                    const ic = getStatusIcon(p);
+                    if (ic) {
+                      s.innerHTML = ic.html;
+                      s.title = ic.title;
+                    }
+                    tr.append(n, q, u, s);
+                  }
+                  highlightRow(tr, p);
+                  tb.appendChild(tr);
+                });
+                table.appendChild(tb);
+                body.appendChild(table);
+                catBlock.appendChild(body);
+                content.appendChild(catBlock);
+              });
+          }
           block.appendChild(content);
-
-          Object.keys(storages[stor])
-            .sort((a, b) =>
-              (CATEGORY_ORDER[a] || 0) - (CATEGORY_ORDER[b] || 0) ||
-              categoryName(a).localeCompare(categoryName(b))
-            )
-            .forEach(cat => {
-              const catBlock = document.createElement('div');
-              catBlock.className = 'category-section category-block';
-              catBlock.dataset.storage = stor;
-              catBlock.dataset.category = cat;
-
-              const catHeader = document.createElement('header');
-              catHeader.className = 'category-header flex items-center gap-2';
-              if (state.displayMode === 'mobile') catHeader.classList.add('cursor-pointer');
-              const catSpan = document.createElement('span');
-              catSpan.className = 'font-medium';
-              catSpan.textContent = categoryName(cat);
-              if (!state.domain.categories[cat]) catSpan.classList.add('opacity-60');
-              const catBtn = document.createElement('button');
-              catBtn.type = 'button';
-              catBtn.className = 'toggle-category ml-auto h-8 w-8 flex items-center justify-center';
-              catBtn.setAttribute('aria-expanded', 'true');
-              catBtn.setAttribute('title', t('collapse'));
-              catBtn.setAttribute('aria-label', t('collapse'));
-              catBtn.innerHTML = '<i class="fa-regular fa-caret-up transition-transform rotate-180"></i>';
-              catHeader.append(catSpan, catBtn);
-              catBlock.appendChild(catHeader);
-
-              const body = document.createElement('div');
-              body.className = 'category-body';
-              const table = document.createElement('table');
-              table.className = 'table table-zebra w-full grouped-table';
-              const colgroup = document.createElement('colgroup');
-              const cols = editing
-                ? ['grouped-col-select', 'grouped-col-name', 'grouped-col-qty', 'grouped-col-unit', 'grouped-col-status']
-                : ['grouped-col-name', 'grouped-col-qty', 'grouped-col-unit', 'grouped-col-status'];
-              cols.forEach(cls => {
-                const col = document.createElement('col');
-                col.className = cls;
-                colgroup.appendChild(col);
-              });
-              table.appendChild(colgroup);
-              const thead = document.createElement('thead');
-              const hr = document.createElement('tr');
-              const headers = editing
-                ? ['', t('table_header_name'), t('table_header_quantity'), t('table_header_unit'), t('table_header_status')]
-                : [t('table_header_name'), t('table_header_quantity'), t('table_header_unit'), t('table_header_status')];
-              headers.forEach((txt, i) => {
-                const th = document.createElement('th');
-                th.textContent = txt;
-                if (editing && i === 0) th.className = 'checkbox-cell';
-                hr.appendChild(th);
-              });
-              thead.appendChild(hr);
-              table.appendChild(thead);
-              const tb = document.createElement('tbody');
-              storages[stor][cat].forEach(p => {
-                const tr = document.createElement('tr');
-                const idx = data.indexOf(p);
-                tr.dataset.index = idx;
-                tr.dataset.productId = p.id != null ? p.id : idx;
-                if (editing) {
-                  const cbTd = document.createElement('td');
-                  cbTd.className = 'checkbox-cell';
-                  const cb = document.createElement('input');
-                  cb.type = 'checkbox';
-                  cb.className = 'checkbox checkbox-sm product-select';
-                  cb.dataset.name = p.name;
-                  cbTd.appendChild(cb);
-                  tr.appendChild(cbTd);
-                  const n = document.createElement('td');
-                  n.textContent = productName(p.id);
-                  if (!getProduct(p.id)) n.classList.add('opacity-60');
-                  tr.appendChild(n);
-                  const q = buildQtyCell(p, tr);
-                  tr.appendChild(q);
-                    const u = document.createElement('td');
-                    u.textContent = unitName(p.unit);
-                    tr.appendChild(u);
-                  const s = document.createElement('td');
-                  const ic = getStatusIcon(p);
-                  if (ic) {
-                    s.innerHTML = ic.html;
-                    s.title = ic.title;
-                  }
-                  tr.appendChild(s);
-                } else {
-                  const n = document.createElement('td');
-                  n.textContent = productName(p.id);
-                  if (!getProduct(p.id)) n.classList.add('opacity-60');
-                  const q = document.createElement('td');
-                  q.textContent = formatPackQuantity(p);
-                    const u = document.createElement('td');
-                    u.textContent = unitName(p.unit);
-                  const s = document.createElement('td');
-                  const ic = getStatusIcon(p);
-                  if (ic) {
-                    s.innerHTML = ic.html;
-                    s.title = ic.title;
-                  }
-                  tr.append(n, q, u, s);
-                }
-                highlightRow(tr, p);
-                tb.appendChild(tr);
-              });
-              table.appendChild(tb);
-              body.appendChild(table);
-              catBlock.appendChild(body);
-              content.appendChild(catBlock);
-            });
-
           list.appendChild(block);
         });
       initExpandDefaults(list);
@@ -595,6 +615,7 @@ function attachCollapses(root) {
       const id = section.dataset.storage;
       const next = !expandedStorages.get(id);
       expandedStorages.set(id, next);
+      localStorage.setItem(`products:storage:${id}`, String(next));
       setStorageUI(section, next);
     }
 
@@ -606,6 +627,7 @@ function attachCollapses(root) {
       const key = `${storage}::${cat}`;
       const next = !expandedCategories.get(key);
       expandedCategories.set(key, next);
+      localStorage.setItem(`products:category:${key}`, String(next));
       const parentOpen = expandedStorages.get(storage) !== false;
       setCategoryUI(section, parentOpen && next);
     }
