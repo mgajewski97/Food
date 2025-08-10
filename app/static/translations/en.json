@@ -40,6 +40,7 @@
   "unknown": "Unknown",
   "name_label": "Name",
   "select_product": "Select product",
+  "search_products": "Search products",
   "edit": "Edit",
   "edit_json_placeholder": "JSON",
   "edit_json_submit_button": "Submit JSON",

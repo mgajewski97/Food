@@ -252,6 +252,10 @@ export function getProduct(id) {
 }
 
 export function productName(id) {
+  if (!id) {
+    console.warn('Missing product id');
+    return t('unknown');
+  }
   const p = resolveProduct(id);
   if (!p) {
     console.warn('Unknown product', id);
@@ -276,6 +280,18 @@ export function unitName(id) {
     return t('unknown');
   }
   return u.names[state.currentLang] ?? u.names.en ?? t('unknown');
+}
+
+export async function searchProducts(query) {
+  if (!query) return [];
+  try {
+    const locale = state.currentLang || 'pl';
+    const res = await fetchJson(`/api/search?q=${encodeURIComponent(query)}&locale=${locale}`);
+    return Array.isArray(res) ? res : [];
+  } catch (err) {
+    console.error('searchProducts failed', err);
+    return [];
+  }
 }
 
 export async function loadFavorites() {
