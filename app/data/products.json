@@ -1,1229 +1,1229 @@
 {
-  "products": [
-    {
-      "id": "prod.allspice",
-      "aliases": [
-        "product.allspice"
-      ],
-      "categoryId": "category.spices",
-      "unitId": "unit.lvl",
-      "names": {
-        "pl": "Ziele angielskie",
-        "en": "Allspice"
-      }
-    },
-    {
-      "id": "prod.barley",
-      "aliases": [
-        "product.barley"
-      ],
-      "categoryId": "category.grains",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Kasza pęczak",
-        "en": "Pearl barley"
-      }
-    },
-    {
-      "id": "prod.basil",
-      "aliases": [
-        "product.basil"
-      ],
-      "categoryId": "category.spices",
-      "unitId": "unit.lvl",
-      "names": {
-        "pl": "Bazylia",
-        "en": "Basil"
-      }
-    },
-    {
-      "id": "prod.bay-leaves",
-      "aliases": [
-        "product.bay_leaves"
-      ],
-      "categoryId": "category.spices",
-      "unitId": "unit.lvl",
-      "names": {
-        "pl": "Liście laurowe",
-        "en": "Bay leaves"
-      }
-    },
-    {
-      "id": "prod.beans-piekny-jas",
-      "aliases": [
-        "product.beans_piekny_jas"
-      ],
-      "categoryId": "category.dried-legumes",
-      "unitId": "unit.g",
-      "names": {
-        "pl": "Fasola Piękny Jaś",
-        "en": "Piękny Jaś beans"
-      }
-    },
-    {
-      "id": "prod.bell-peppers",
-      "aliases": [
-        "product.bell_peppers"
-      ],
-      "categoryId": "category.fresh-veg",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Papryki",
-        "en": "Bell peppers"
-      }
-    },
-    {
-      "id": "prod.borscht",
-      "aliases": [
-        "product.borscht"
-      ],
-      "categoryId": "category.frozen-meals",
-      "unitId": "unit.sloik",
-      "names": {
-        "pl": "Barszcz",
-        "en": "Borscht"
-      }
-    },
-    {
-      "id": "prod.bouillon-cubes",
-      "aliases": [
-        "product.bouillon_cubes"
-      ],
-      "categoryId": "category.spices",
-      "unitId": "unit.lvl",
-      "names": {
-        "pl": "Kostki bulionowe",
-        "en": "Bouillon cubes"
-      }
-    },
-    {
-      "id": "prod.breaded-schnitzel",
-      "aliases": [
-        "product.breaded_schnitzel"
-      ],
-      "categoryId": "category.frozen-meals",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Sznycel w chrupiącej panierce",
-        "en": "Breaded schnitzel"
-      }
-    },
-    {
-      "id": "prod.breaded-tofu-hot-spicy",
-      "aliases": [
-        "product.breaded_tofu_hot_spicy"
-      ],
-      "categoryId": "category.dairy-eggs",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Tofu panierowane Hot & Spicy",
-        "en": "Hot & Spicy breaded tofu"
-      }
-    },
-    {
-      "id": "prod.buckwheat",
-      "aliases": [
-        "product.buckwheat"
-      ],
-      "categoryId": "category.grains",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Kasza gryczana",
-        "en": "Buckwheat groats"
-      }
-    },
-    {
-      "id": "prod.bulgur",
-      "aliases": [
-        "product.bulgur"
-      ],
-      "categoryId": "category.grains",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Kasza bulgur",
-        "en": "Bulgur"
-      }
-    },
-    {
-      "id": "prod.cardamom",
-      "aliases": [
-        "product.cardamom"
-      ],
-      "categoryId": "category.spices",
-      "unitId": "unit.lvl",
-      "names": {
-        "pl": "Kardamon",
-        "en": "Cardamom"
-      }
-    },
-    {
-      "id": "prod.carrot",
-      "aliases": [
-        "product.carrot"
-      ],
-      "categoryId": "category.fresh-veg",
-      "unitId": "unit.g",
-      "names": {
-        "pl": "Marchew",
-        "en": "Carrot"
-      }
-    },
-    {
-      "id": "prod.cashew-nuts",
-      "aliases": [
-        "product.cashew_nuts"
-      ],
-      "categoryId": "category.spreads",
-      "unitId": "unit.g",
-      "names": {
-        "pl": "Orzechy nerkowca",
-        "en": "Cashew nuts"
-      }
-    },
-    {
-      "id": "prod.cauliflower-soup",
-      "aliases": [
-        "product.cauliflower_soup"
-      ],
-      "categoryId": "category.frozen-meals",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Zupa kalafiorowa",
-        "en": "Cauliflower soup"
-      }
-    },
-    {
-      "id": "prod.cayenne-chilli",
-      "aliases": [
-        "product.cayenne_chilli"
-      ],
-      "categoryId": "category.spices",
-      "unitId": "unit.lvl",
-      "names": {
-        "pl": "Chili cayenne",
-        "en": "Cayenne chili"
-      }
-    },
-    {
-      "id": "prod.champignons",
-      "aliases": [
-        "product.champignons"
-      ],
-      "categoryId": "category.mushrooms",
-      "unitId": "unit.g",
-      "names": {
-        "pl": "Pieczarki",
-        "en": "Champignons"
-      }
-    },
-    {
-      "id": "prod.cheese-slices",
-      "aliases": [
-        "product.cheese_slices"
-      ],
-      "categoryId": "category.dairy-eggs",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Ser w plastrach",
-        "en": "Cheese slices"
-      }
-    },
-    {
-      "id": "prod.chickpeas",
-      "aliases": [
-        "product.chickpeas"
-      ],
-      "categoryId": "category.opened-preserves",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Ciecierzyca",
-        "en": "Chickpeas"
-      }
-    },
-    {
-      "id": "prod.chinese-cabbage",
-      "aliases": [
-        "product.chinese_cabbage"
-      ],
-      "categoryId": "category.fresh-veg",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Kapusta pekińska",
-        "en": "Chinese cabbage"
-      }
-    },
-    {
-      "id": "prod.chinese-sauce",
-      "aliases": [
-        "product.chinese_sauce"
-      ],
-      "categoryId": "category.frozen-meals",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Sos do chińszczyzny",
-        "en": "Chinese-style sauce"
-      }
-    },
-    {
-      "id": "prod.cloves",
-      "aliases": [
-        "product.cloves"
-      ],
-      "categoryId": "category.spices",
-      "unitId": "unit.lvl",
-      "names": {
-        "pl": "Goździki",
-        "en": "Cloves"
-      }
-    },
-    {
-      "id": "prod.coriander-leaves",
-      "aliases": [
-        "product.coriander_leaves"
-      ],
-      "categoryId": "category.spices",
-      "unitId": "unit.lvl",
-      "names": {
-        "pl": "Kolendra (liście)",
-        "en": "Coriander leaves"
-      }
-    },
-    {
-      "id": "prod.corn",
-      "aliases": [
-        "product.corn"
-      ],
-      "categoryId": "category.opened-preserves",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Kukurydza",
-        "en": "Corn"
-      }
-    },
-    {
-      "id": "prod.curry-powder",
-      "aliases": [
-        "product.curry_powder"
-      ],
-      "categoryId": "category.spices",
-      "unitId": "unit.lvl",
-      "names": {
-        "pl": "Przyprawa curry",
-        "en": "Curry powder"
-      }
-    },
-    {
-      "id": "prod.dark-gravy-sauce",
-      "aliases": [
-        "product.dark_gravy_sauce"
-      ],
-      "categoryId": "category.spices",
-      "unitId": "unit.lvl",
-      "names": {
-        "pl": "Sos pieczeniowy ciemny",
-        "en": "Dark gravy sauce"
-      }
-    },
-    {
-      "id": "prod.dijon-mustard",
-      "aliases": [
-        "product.dijon_mustard"
-      ],
-      "categoryId": "category.opened-preserves",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Musztarda dijon",
-        "en": "Dijon mustard"
-      }
-    },
-    {
-      "id": "prod.ditalini-rigati-pasta",
-      "aliases": [
-        "product.ditalini_rigati_pasta"
-      ],
-      "categoryId": "category.pasta",
-      "unitId": "unit.g",
-      "names": {
-        "pl": "Makaron ditalini rigati",
-        "en": "Ditalini rigati pasta"
-      }
-    },
-    {
-      "id": "prod.eggplant",
-      "aliases": [
-        "product.eggplant"
-      ],
-      "categoryId": "category.fresh-veg",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Bakłażan",
-        "en": "Eggplant"
-      }
-    },
-    {
-      "id": "prod.eggs",
-      "aliases": [
-        "product.eggs"
-      ],
-      "categoryId": "category.dairy-eggs",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Jajka",
-        "en": "Eggs"
-      }
-    },
-    {
-      "id": "prod.french-mustard",
-      "aliases": [
-        "product.french_mustard"
-      ],
-      "categoryId": "category.opened-preserves",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Musztarda francuska",
-        "en": "French mustard"
-      }
-    },
-    {
-      "id": "prod.fries",
-      "aliases": [
-        "product.fries"
-      ],
-      "categoryId": "category.fresh-veg",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Frytki",
-        "en": "Fries"
-      }
-    },
-    {
-      "id": "prod.garlic",
-      "aliases": [
-        "product.garlic"
-      ],
-      "categoryId": "category.dry-veg",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Czosnek",
-        "en": "Garlic"
-      }
-    },
-    {
-      "id": "prod.garlic-in-oil",
-      "aliases": [
-        "product.garlic_in_oil"
-      ],
-      "categoryId": "category.opened-preserves",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Czosnek w oleju",
-        "en": "Garlic in oil"
-      }
-    },
-    {
-      "id": "prod.garlic-powder",
-      "aliases": [
-        "product.garlic_powder"
-      ],
-      "categoryId": "category.spices",
-      "unitId": "unit.lvl",
-      "names": {
-        "pl": "Czosnek w proszku",
-        "en": "Garlic powder"
-      }
-    },
-    {
-      "id": "prod.gravy",
-      "aliases": [
-        "product.gravy"
-      ],
-      "categoryId": "category.frozen-meals",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Sos pieczeniowy",
-        "en": "Gravy"
-      }
-    },
-    {
-      "id": "prod.green-beans",
-      "aliases": [
-        "product.green_beans"
-      ],
-      "categoryId": "category.fresh-veg",
-      "unitId": "unit.g",
-      "names": {
-        "pl": "Fasolka szparagowa",
-        "en": "Green beans"
-      }
-    },
-    {
-      "id": "prod.green-peas",
-      "aliases": [
-        "product.green_peas"
-      ],
-      "categoryId": "category.opened-preserves",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Zielony groszek",
-        "en": "Green peas"
-      }
-    },
-    {
-      "id": "prod.herbes-de-provence-duo",
-      "aliases": [
-        "product.herbes_de_provence_duo"
-      ],
-      "categoryId": "category.spices",
-      "unitId": "unit.lvl",
-      "names": {
-        "pl": "Zioła prowansalskie",
-        "en": "Herbes de Provence"
-      }
-    },
-    {
-      "id": "prod.hot-paprika",
-      "aliases": [
-        "product.hot_paprika"
-      ],
-      "categoryId": "category.spices",
-      "unitId": "unit.lvl",
-      "names": {
-        "pl": "Papryka ostra",
-        "en": "Hot paprika"
-      }
-    },
-    {
-      "id": "prod.large-green-olives",
-      "aliases": [
-        "product.large_green_olives"
-      ],
-      "categoryId": "category.opened-preserves",
-      "unitId": "unit.g",
-      "names": {
-        "pl": "Zielone oliwki duże",
-        "en": "Large green olives"
-      }
-    },
-    {
-      "id": "prod.lemon",
-      "aliases": [
-        "product.lemon"
-      ],
-      "categoryId": "category.dry-veg",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Cytryna",
-        "en": "Lemon"
-      }
-    },
-    {
-      "id": "prod.lemon-pepper",
-      "aliases": [
-        "product.lemon_pepper"
-      ],
-      "categoryId": "category.spices",
-      "unitId": "unit.lvl",
-      "names": {
-        "pl": "Pieprz cytrynowy",
-        "en": "Lemon pepper"
-      }
-    },
-    {
-      "id": "prod.lentils-green",
-      "aliases": [
-        "product.lentils_green"
-      ],
-      "categoryId": "category.dried-legumes",
-      "unitId": "unit.opak-350g",
-      "names": {
-        "pl": "Soczewica zielona",
-        "en": "Green lentils"
-      }
-    },
-    {
-      "id": "prod.lentils-red",
-      "aliases": [
-        "product.lentils_red"
-      ],
-      "categoryId": "category.dried-legumes",
-      "unitId": "unit.opak-350g",
-      "names": {
-        "pl": "Soczewica czerwona",
-        "en": "Red lentils"
-      }
-    },
-    {
-      "id": "prod.lime",
-      "aliases": [
-        "product.lime"
-      ],
-      "categoryId": "category.dry-veg",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Limonka",
-        "en": "Lime"
-      }
-    },
-    {
-      "id": "prod.lovage",
-      "aliases": [
-        "product.lovage"
-      ],
-      "categoryId": "category.spices",
-      "unitId": "unit.lvl",
-      "names": {
-        "pl": "Lubczyk",
-        "en": "Lovage"
-      }
-    },
-    {
-      "id": "prod.natural-tofu",
-      "aliases": [
-        "product.natural_tofu"
-      ],
-      "categoryId": "category.dairy-eggs",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Tofu naturalne",
-        "en": "Natural tofu"
-      }
-    },
-    {
-      "id": "prod.new-potatoes",
-      "aliases": [
-        "product.new_potatoes"
-      ],
-      "categoryId": "category.fresh-veg",
-      "unitId": "unit.g",
-      "names": {
-        "pl": "Ziemniaki młode",
-        "en": "New potatoes"
-      }
-    },
-    {
-      "id": "prod.nutmeg",
-      "aliases": [
-        "product.nutmeg"
-      ],
-      "categoryId": "category.spices",
-      "unitId": "unit.lvl",
-      "names": {
-        "pl": "Gałka muszkatołowa",
-        "en": "Nutmeg"
-      }
-    },
-    {
-      "id": "prod.oregano",
-      "aliases": [
-        "product.oregano"
-      ],
-      "categoryId": "category.spices",
-      "unitId": "unit.lvl",
-      "names": {
-        "pl": "Oregano",
-        "en": "Oregano"
-      }
-    },
-    {
-      "id": "prod.oyster-mushrooms",
-      "aliases": [
-        "product.oyster_mushrooms"
-      ],
-      "categoryId": "category.mushrooms",
-      "unitId": "unit.g",
-      "names": {
-        "pl": "Boczniaki",
-        "en": "Oyster mushrooms"
-      }
-    },
-    {
-      "id": "prod.parsley",
-      "aliases": [
-        "product.parsley"
-      ],
-      "categoryId": "category.fresh-veg",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Natka pietruszki",
-        "en": "Parsley"
-      }
-    },
-    {
-      "id": "prod.peanut-butter",
-      "aliases": [
-        "product.peanut_butter"
-      ],
-      "categoryId": "category.spreads",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Masło orzechowe",
-        "en": "Peanut butter"
-      }
-    },
-    {
-      "id": "prod.penne-pasta",
-      "aliases": [
-        "product.penne_pasta"
-      ],
-      "categoryId": "category.pasta",
-      "unitId": "unit.g",
-      "names": {
-        "pl": "Makaron penne",
-        "en": "Penne pasta"
-      }
-    },
-    {
-      "id": "prod.pickled-pearl-onions",
-      "aliases": [
-        "product.pickled_pearl_onions"
-      ],
-      "categoryId": "category.opened-preserves",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Marynowana cebula perłowa",
-        "en": "Pickled pearl onions"
-      }
-    },
-    {
-      "id": "prod.pink-tomatoes",
-      "aliases": [
-        "product.pink_tomatoes"
-      ],
-      "categoryId": "category.fresh-veg",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Pomidory malinowe",
-        "en": "Pink tomatoes"
-      }
-    },
-    {
-      "id": "prod.pistachio-cream",
-      "aliases": [
-        "product.pistachio_cream"
-      ],
-      "categoryId": "category.spreads",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Krem pistacjowy",
-        "en": "Pistachio cream"
-      }
-    },
-    {
-      "id": "prod.plant-fat",
-      "aliases": [
-        "product.plant_fat"
-      ],
-      "categoryId": "category.oils",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Tłuszcz roślinny",
-        "en": "Plant fat"
-      }
-    },
-    {
-      "id": "prod.radish",
-      "aliases": [
-        "product.radish"
-      ],
-      "categoryId": "category.fresh-veg",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Rzodkiewka",
-        "en": "Radish"
-      }
-    },
-    {
-      "id": "prod.red-beans",
-      "aliases": [
-        "product.red_beans"
-      ],
-      "categoryId": "category.opened-preserves",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Fasola czerwona",
-        "en": "Red beans"
-      }
-    },
-    {
-      "id": "prod.red-onion",
-      "aliases": [
-        "product.red_onion"
-      ],
-      "categoryId": "category.dry-veg",
-      "unitId": "unit.g",
-      "names": {
-        "pl": "Czerwona cebula",
-        "en": "Red onion"
-      }
-    },
-    {
-      "id": "prod.rice-arborio",
-      "aliases": [
-        "product.rice_arborio"
-      ],
-      "categoryId": "category.grains",
-      "unitId": "unit.g",
-      "names": {
-        "pl": "Ryż arborio",
-        "en": "Arborio rice"
-      }
-    },
-    {
-      "id": "prod.rice-basmati",
-      "aliases": [
-        "product.rice_basmati"
-      ],
-      "categoryId": "category.grains",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Ryż basmati",
-        "en": "Basmati rice"
-      }
-    },
-    {
-      "id": "prod.rice-jasmine",
-      "aliases": [
-        "product.rice_jasmine"
-      ],
-      "categoryId": "category.grains",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Ryż jaśminowy",
-        "en": "Jasmine rice"
-      }
-    },
-    {
-      "id": "prod.rosemary",
-      "aliases": [
-        "product.rosemary"
-      ],
-      "categoryId": "category.spices",
-      "unitId": "unit.lvl",
-      "names": {
-        "pl": "Rozmaryn",
-        "en": "Rosemary"
-      }
-    },
-    {
-      "id": "prod.sauce-alla-norma",
-      "aliases": [
-        "product.sauce_alla_norma"
-      ],
-      "categoryId": "category.ready-sauces",
-      "unitId": "unit.g",
-      "names": {
-        "pl": "Sos alla norma",
-        "en": "Alla Norma sauce"
-      }
-    },
-    {
-      "id": "prod.sauce-alla-puttanesca",
-      "aliases": [
-        "product.sauce_alla_puttanesca"
-      ],
-      "categoryId": "category.ready-sauces",
-      "unitId": "unit.g",
-      "names": {
-        "pl": "Sos alla puttanesca",
-        "en": "Puttanesca sauce"
-      }
-    },
-    {
-      "id": "prod.sauce-basilico",
-      "aliases": [
-        "product.sauce_basilico"
-      ],
-      "categoryId": "category.ready-sauces",
-      "unitId": "unit.g",
-      "names": {
-        "pl": "Sos basilico",
-        "en": "Basilico sauce"
-      }
-    },
-    {
-      "id": "prod.sauce-bearnaise",
-      "aliases": [
-        "product.sauce_bearnaise"
-      ],
-      "categoryId": "category.ready-sauces",
-      "unitId": "unit.g",
-      "names": {
-        "pl": "Sos berneński",
-        "en": "Béarnaise sauce"
-      }
-    },
-    {
-      "id": "prod.sauce-cacio-e-pepe",
-      "aliases": [
-        "product.sauce_cacio_e_pepe"
-      ],
-      "categoryId": "category.ready-sauces",
-      "unitId": "unit.g",
-      "names": {
-        "pl": "Sos cacio e pepe",
-        "en": "Cacio e pepe sauce"
-      }
-    },
-    {
-      "id": "prod.sauce-napoletana",
-      "aliases": [
-        "product.sauce_napoletana"
-      ],
-      "categoryId": "category.ready-sauces",
-      "unitId": "unit.g",
-      "names": {
-        "pl": "Sos napoletana",
-        "en": "Napoletana sauce"
-      }
-    },
-    {
-      "id": "prod.sciatelli-al-limone-pasta",
-      "aliases": [
-        "product.sciatelli_al_limone_pasta"
-      ],
-      "categoryId": "category.pasta",
-      "unitId": "unit.g",
-      "names": {
-        "pl": "Makaron sciatelli al limone",
-        "en": "Sciatelli al limone pasta"
-      }
-    },
-    {
-      "id": "prod.sesame-oil",
-      "aliases": [
-        "product.sesame_oil"
-      ],
-      "categoryId": "category.oils",
-      "unitId": "unit.butelka",
-      "names": {
-        "pl": "Olej sezamowy",
-        "en": "Sesame oil"
-      }
-    },
-    {
-      "id": "prod.smoked-paprika",
-      "aliases": [
-        "product.smoked_paprika"
-      ],
-      "categoryId": "category.spices",
-      "unitId": "unit.lvl",
-      "names": {
-        "pl": "Papryka wędzona",
-        "en": "Smoked paprika"
-      }
-    },
-    {
-      "id": "prod.soup-veg",
-      "aliases": [
-        "product.soup_veg"
-      ],
-      "categoryId": "category.fresh-veg",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Włoszczyzna",
-        "en": "Soup vegetables"
-      }
-    },
-    {
-      "id": "prod.sour-cream-18",
-      "aliases": [
-        "product.sour_cream_18"
-      ],
-      "categoryId": "category.dairy-eggs",
-      "unitId": "unit.250g",
-      "names": {
-        "pl": "Śmietana 18%",
-        "en": "Sour cream 18%"
-      }
-    },
-    {
-      "id": "prod.spinach",
-      "aliases": [
-        "product.spinach"
-      ],
-      "categoryId": "category.frozen-meals",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Szpinak",
-        "en": "Spinach"
-      }
-    },
-    {
-      "id": "prod.spring-onion",
-      "aliases": [
-        "product.spring_onion"
-      ],
-      "categoryId": "category.dry-veg",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Cebula dymka",
-        "en": "Spring onion"
-      }
-    },
-    {
-      "id": "prod.stir-fry-vegetables",
-      "aliases": [
-        "product.stir_fry_vegetables"
-      ],
-      "categoryId": "category.frozen-meals",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Warzywa na patelnię",
-        "en": "Stir-fry vegetables"
-      }
-    },
-    {
-      "id": "prod.sun-dried-tomatoes",
-      "aliases": [
-        "product.sun_dried_tomatoes"
-      ],
-      "categoryId": "category.oils",
-      "unitId": "unit.x270g",
-      "names": {
-        "pl": "Suszone pomidory w oleju",
-        "en": "Sun-dried tomatoes in oil"
-      }
-    },
-    {
-      "id": "prod.thai-spice-mix",
-      "aliases": [
-        "product.thai_spice_mix"
-      ],
-      "categoryId": "category.spreads",
-      "unitId": "unit.g",
-      "names": {
-        "pl": "Mieszanka przypraw tajska",
-        "en": "Thai spice mix"
-      }
-    },
-    {
-      "id": "prod.thyme",
-      "aliases": [
-        "product.thyme"
-      ],
-      "categoryId": "category.spices",
-      "unitId": "unit.lvl",
-      "names": {
-        "pl": "Tymianek",
-        "en": "Thyme"
-      }
-    },
-    {
-      "id": "prod.toast-bread",
-      "aliases": [
-        "product.toast_bread"
-      ],
-      "categoryId": "category.bread",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Pieczywo tostowe",
-        "en": "Toast bread"
-      }
-    },
-    {
-      "id": "prod.tomato-garlic-basil-mix",
-      "aliases": [
-        "product.tomato_garlic_basil_mix"
-      ],
-      "categoryId": "category.spices",
-      "unitId": "unit.lvl",
-      "names": {
-        "pl": "Mieszanka: pomidor, czosnek, bazylia",
-        "en": "Mix: tomato, garlic, basil"
-      }
-    },
-    {
-      "id": "prod.tomato-puree",
-      "aliases": [
-        "product.tomato_puree"
-      ],
-      "categoryId": "category.fresh-veg",
-      "unitId": "unit.g",
-      "names": {
-        "pl": "Przecier pomidorowy",
-        "en": "Tomato purée"
-      }
-    },
-    {
-      "id": "prod.turmeric",
-      "aliases": [
-        "product.turmeric"
-      ],
-      "categoryId": "category.spices",
-      "unitId": "unit.lvl",
-      "names": {
-        "pl": "Kurkuma",
-        "en": "Turmeric"
-      }
-    },
-    {
-      "id": "prod.zucchini",
-      "aliases": [
-        "product.zucchini"
-      ],
-      "categoryId": "category.fresh-veg",
-      "unitId": "unit.szt",
-      "names": {
-        "pl": "Cukinia",
-        "en": "Zucchini"
-      }
-    }
-  ],
   "categories": [
     {
       "id": "category.bread",
       "names": {
-        "pl": "Pieczywo",
-        "en": "Bread"
+        "en": "Bread",
+        "pl": "Pieczywo"
       }
     },
     {
       "id": "category.dairy-eggs",
       "names": {
-        "pl": "Nabiał i jajka",
-        "en": "Dairy & eggs"
+        "en": "Dairy & eggs",
+        "pl": "Nabiał i jajka"
       }
     },
     {
       "id": "category.dried-legumes",
       "names": {
-        "pl": "Strączki suche",
-        "en": "Dried legumes"
+        "en": "Dried legumes",
+        "pl": "Strączki suche"
       }
     },
     {
       "id": "category.dry-veg",
       "names": {
-        "pl": "Warzywa trwałe",
-        "en": "Long-lasting vegetables"
+        "en": "Long-lasting vegetables",
+        "pl": "Warzywa trwałe"
       }
     },
     {
       "id": "category.fresh-veg",
       "names": {
-        "pl": "Warzywa świeże",
-        "en": "Fresh vegetables"
+        "en": "Fresh vegetables",
+        "pl": "Warzywa świeże"
       }
     },
     {
       "id": "category.frozen-meals",
       "names": {
-        "pl": "Dania mrożone",
-        "en": "Frozen meals"
+        "en": "Frozen meals",
+        "pl": "Dania mrożone"
       }
     },
     {
       "id": "category.grains",
       "names": {
-        "pl": "Zboża i kasze",
-        "en": "Grains & groats"
+        "en": "Grains & groats",
+        "pl": "Zboża i kasze"
       }
     },
     {
       "id": "category.mushrooms",
       "names": {
-        "pl": "Grzyby",
-        "en": "Mushrooms"
+        "en": "Mushrooms",
+        "pl": "Grzyby"
       }
     },
     {
       "id": "category.oils",
       "names": {
-        "pl": "Oleje",
-        "en": "Oils"
+        "en": "Oils",
+        "pl": "Oleje"
       }
     },
     {
       "id": "category.opened-preserves",
       "names": {
-        "pl": "Otwarte przetwory",
-        "en": "Opened preserves"
+        "en": "Opened preserves",
+        "pl": "Otwarte przetwory"
       }
     },
     {
       "id": "category.pasta",
       "names": {
-        "pl": "Makaron",
-        "en": "Pasta"
+        "en": "Pasta",
+        "pl": "Makaron"
       }
     },
     {
       "id": "category.ready-sauces",
       "names": {
-        "pl": "Gotowe sosy",
-        "en": "Ready sauces"
+        "en": "Ready sauces",
+        "pl": "Gotowe sosy"
       }
     },
     {
       "id": "category.spices",
       "names": {
-        "pl": "Przyprawy",
-        "en": "Spices"
+        "en": "Spices",
+        "pl": "Przyprawy"
       }
     },
     {
       "id": "category.spreads",
       "names": {
-        "pl": "Smary i pasty",
-        "en": "Spreads & pastes"
+        "en": "Spreads & pastes",
+        "pl": "Smary i pasty"
       }
+    }
+  ],
+  "products": [
+    {
+      "aliases": [
+        "product.allspice"
+      ],
+      "categoryId": "category.spices",
+      "id": "prod.allspice",
+      "names": {
+        "en": "Allspice",
+        "pl": "Ziele angielskie"
+      },
+      "unitId": "unit.lvl"
+    },
+    {
+      "aliases": [
+        "product.barley"
+      ],
+      "categoryId": "category.grains",
+      "id": "prod.barley",
+      "names": {
+        "en": "Pearl barley",
+        "pl": "Kasza pęczak"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.basil"
+      ],
+      "categoryId": "category.spices",
+      "id": "prod.basil",
+      "names": {
+        "en": "Basil",
+        "pl": "Bazylia"
+      },
+      "unitId": "unit.lvl"
+    },
+    {
+      "aliases": [
+        "product.bay_leaves"
+      ],
+      "categoryId": "category.spices",
+      "id": "prod.bay-leaves",
+      "names": {
+        "en": "Bay leaves",
+        "pl": "Liście laurowe"
+      },
+      "unitId": "unit.lvl"
+    },
+    {
+      "aliases": [
+        "product.beans_piekny_jas"
+      ],
+      "categoryId": "category.dried-legumes",
+      "id": "prod.beans-piekny-jas",
+      "names": {
+        "en": "Piękny Jaś beans",
+        "pl": "Fasola Piękny Jaś"
+      },
+      "unitId": "unit.g"
+    },
+    {
+      "aliases": [
+        "product.bell_peppers"
+      ],
+      "categoryId": "category.fresh-veg",
+      "id": "prod.bell-peppers",
+      "names": {
+        "en": "Bell peppers",
+        "pl": "Papryki"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.borscht"
+      ],
+      "categoryId": "category.frozen-meals",
+      "id": "prod.borscht",
+      "names": {
+        "en": "Borscht",
+        "pl": "Barszcz"
+      },
+      "unitId": "unit.sloik"
+    },
+    {
+      "aliases": [
+        "product.bouillon_cubes"
+      ],
+      "categoryId": "category.spices",
+      "id": "prod.bouillon-cubes",
+      "names": {
+        "en": "Bouillon cubes",
+        "pl": "Kostki bulionowe"
+      },
+      "unitId": "unit.lvl"
+    },
+    {
+      "aliases": [
+        "product.breaded_schnitzel"
+      ],
+      "categoryId": "category.frozen-meals",
+      "id": "prod.breaded-schnitzel",
+      "names": {
+        "en": "Breaded schnitzel",
+        "pl": "Sznycel w chrupiącej panierce"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.breaded_tofu_hot_spicy"
+      ],
+      "categoryId": "category.dairy-eggs",
+      "id": "prod.breaded-tofu-hot-spicy",
+      "names": {
+        "en": "Hot & Spicy breaded tofu",
+        "pl": "Tofu panierowane Hot & Spicy"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.buckwheat"
+      ],
+      "categoryId": "category.grains",
+      "id": "prod.buckwheat",
+      "names": {
+        "en": "Buckwheat groats",
+        "pl": "Kasza gryczana"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.bulgur"
+      ],
+      "categoryId": "category.grains",
+      "id": "prod.bulgur",
+      "names": {
+        "en": "Bulgur",
+        "pl": "Kasza bulgur"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.cardamom"
+      ],
+      "categoryId": "category.spices",
+      "id": "prod.cardamom",
+      "names": {
+        "en": "Cardamom",
+        "pl": "Kardamon"
+      },
+      "unitId": "unit.lvl"
+    },
+    {
+      "aliases": [
+        "product.carrot"
+      ],
+      "categoryId": "category.fresh-veg",
+      "id": "prod.carrot",
+      "names": {
+        "en": "Carrot",
+        "pl": "Marchew"
+      },
+      "unitId": "unit.g"
+    },
+    {
+      "aliases": [
+        "product.cashew_nuts"
+      ],
+      "categoryId": "category.spreads",
+      "id": "prod.cashew-nuts",
+      "names": {
+        "en": "Cashew nuts",
+        "pl": "Orzechy nerkowca"
+      },
+      "unitId": "unit.g"
+    },
+    {
+      "aliases": [
+        "product.cauliflower_soup"
+      ],
+      "categoryId": "category.frozen-meals",
+      "id": "prod.cauliflower-soup",
+      "names": {
+        "en": "Cauliflower soup",
+        "pl": "Zupa kalafiorowa"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.cayenne_chilli"
+      ],
+      "categoryId": "category.spices",
+      "id": "prod.cayenne-chilli",
+      "names": {
+        "en": "Cayenne chili",
+        "pl": "Chili cayenne"
+      },
+      "unitId": "unit.lvl"
+    },
+    {
+      "aliases": [
+        "product.champignons"
+      ],
+      "categoryId": "category.mushrooms",
+      "id": "prod.champignons",
+      "names": {
+        "en": "Champignons",
+        "pl": "Pieczarki"
+      },
+      "unitId": "unit.g"
+    },
+    {
+      "aliases": [
+        "product.cheese_slices"
+      ],
+      "categoryId": "category.dairy-eggs",
+      "id": "prod.cheese-slices",
+      "names": {
+        "en": "Cheese slices",
+        "pl": "Ser w plastrach"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.chickpeas"
+      ],
+      "categoryId": "category.opened-preserves",
+      "id": "prod.chickpeas",
+      "names": {
+        "en": "Chickpeas",
+        "pl": "Ciecierzyca"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.chinese_cabbage"
+      ],
+      "categoryId": "category.fresh-veg",
+      "id": "prod.chinese-cabbage",
+      "names": {
+        "en": "Chinese cabbage",
+        "pl": "Kapusta pekińska"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.chinese_sauce"
+      ],
+      "categoryId": "category.frozen-meals",
+      "id": "prod.chinese-sauce",
+      "names": {
+        "en": "Chinese-style sauce",
+        "pl": "Sos do chińszczyzny"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.cloves"
+      ],
+      "categoryId": "category.spices",
+      "id": "prod.cloves",
+      "names": {
+        "en": "Cloves",
+        "pl": "Goździki"
+      },
+      "unitId": "unit.lvl"
+    },
+    {
+      "aliases": [
+        "product.coriander_leaves"
+      ],
+      "categoryId": "category.spices",
+      "id": "prod.coriander-leaves",
+      "names": {
+        "en": "Coriander leaves",
+        "pl": "Kolendra (liście)"
+      },
+      "unitId": "unit.lvl"
+    },
+    {
+      "aliases": [
+        "product.corn"
+      ],
+      "categoryId": "category.opened-preserves",
+      "id": "prod.corn",
+      "names": {
+        "en": "Corn",
+        "pl": "Kukurydza"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.curry_powder"
+      ],
+      "categoryId": "category.spices",
+      "id": "prod.curry-powder",
+      "names": {
+        "en": "Curry powder",
+        "pl": "Przyprawa curry"
+      },
+      "unitId": "unit.lvl"
+    },
+    {
+      "aliases": [
+        "product.dark_gravy_sauce"
+      ],
+      "categoryId": "category.spices",
+      "id": "prod.dark-gravy-sauce",
+      "names": {
+        "en": "Dark gravy sauce",
+        "pl": "Sos pieczeniowy ciemny"
+      },
+      "unitId": "unit.lvl"
+    },
+    {
+      "aliases": [
+        "product.dijon_mustard"
+      ],
+      "categoryId": "category.opened-preserves",
+      "id": "prod.dijon-mustard",
+      "names": {
+        "en": "Dijon mustard",
+        "pl": "Musztarda dijon"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.ditalini_rigati_pasta"
+      ],
+      "categoryId": "category.pasta",
+      "id": "prod.ditalini-rigati-pasta",
+      "names": {
+        "en": "Ditalini rigati pasta",
+        "pl": "Makaron ditalini rigati"
+      },
+      "unitId": "unit.g"
+    },
+    {
+      "aliases": [
+        "product.eggplant"
+      ],
+      "categoryId": "category.fresh-veg",
+      "id": "prod.eggplant",
+      "names": {
+        "en": "Eggplant",
+        "pl": "Bakłażan"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.eggs"
+      ],
+      "categoryId": "category.dairy-eggs",
+      "id": "prod.eggs",
+      "names": {
+        "en": "Eggs",
+        "pl": "Jajka"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.french_mustard"
+      ],
+      "categoryId": "category.opened-preserves",
+      "id": "prod.french-mustard",
+      "names": {
+        "en": "French mustard",
+        "pl": "Musztarda francuska"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.fries"
+      ],
+      "categoryId": "category.fresh-veg",
+      "id": "prod.fries",
+      "names": {
+        "en": "Fries",
+        "pl": "Frytki"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.garlic"
+      ],
+      "categoryId": "category.dry-veg",
+      "id": "prod.garlic",
+      "names": {
+        "en": "Garlic",
+        "pl": "Czosnek"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.garlic_in_oil"
+      ],
+      "categoryId": "category.opened-preserves",
+      "id": "prod.garlic-in-oil",
+      "names": {
+        "en": "Garlic in oil",
+        "pl": "Czosnek w oleju"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.garlic_powder"
+      ],
+      "categoryId": "category.spices",
+      "id": "prod.garlic-powder",
+      "names": {
+        "en": "Garlic powder",
+        "pl": "Czosnek w proszku"
+      },
+      "unitId": "unit.lvl"
+    },
+    {
+      "aliases": [
+        "product.gravy"
+      ],
+      "categoryId": "category.frozen-meals",
+      "id": "prod.gravy",
+      "names": {
+        "en": "Gravy",
+        "pl": "Sos pieczeniowy"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.green_beans"
+      ],
+      "categoryId": "category.fresh-veg",
+      "id": "prod.green-beans",
+      "names": {
+        "en": "Green beans",
+        "pl": "Fasolka szparagowa"
+      },
+      "unitId": "unit.g"
+    },
+    {
+      "aliases": [
+        "product.green_peas"
+      ],
+      "categoryId": "category.opened-preserves",
+      "id": "prod.green-peas",
+      "names": {
+        "en": "Green peas",
+        "pl": "Zielony groszek"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.herbes_de_provence_duo"
+      ],
+      "categoryId": "category.spices",
+      "id": "prod.herbes-de-provence-duo",
+      "names": {
+        "en": "Herbes de Provence",
+        "pl": "Zioła prowansalskie"
+      },
+      "unitId": "unit.lvl"
+    },
+    {
+      "aliases": [
+        "product.hot_paprika"
+      ],
+      "categoryId": "category.spices",
+      "id": "prod.hot-paprika",
+      "names": {
+        "en": "Hot paprika",
+        "pl": "Papryka ostra"
+      },
+      "unitId": "unit.lvl"
+    },
+    {
+      "aliases": [
+        "product.large_green_olives"
+      ],
+      "categoryId": "category.opened-preserves",
+      "id": "prod.large-green-olives",
+      "names": {
+        "en": "Large green olives",
+        "pl": "Zielone oliwki duże"
+      },
+      "unitId": "unit.g"
+    },
+    {
+      "aliases": [
+        "product.lemon"
+      ],
+      "categoryId": "category.dry-veg",
+      "id": "prod.lemon",
+      "names": {
+        "en": "Lemon",
+        "pl": "Cytryna"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.lemon_pepper"
+      ],
+      "categoryId": "category.spices",
+      "id": "prod.lemon-pepper",
+      "names": {
+        "en": "Lemon pepper",
+        "pl": "Pieprz cytrynowy"
+      },
+      "unitId": "unit.lvl"
+    },
+    {
+      "aliases": [
+        "product.lentils_green"
+      ],
+      "categoryId": "category.dried-legumes",
+      "id": "prod.lentils-green",
+      "names": {
+        "en": "Green lentils",
+        "pl": "Soczewica zielona"
+      },
+      "unitId": "unit.opak-350g"
+    },
+    {
+      "aliases": [
+        "product.lentils_red"
+      ],
+      "categoryId": "category.dried-legumes",
+      "id": "prod.lentils-red",
+      "names": {
+        "en": "Red lentils",
+        "pl": "Soczewica czerwona"
+      },
+      "unitId": "unit.opak-350g"
+    },
+    {
+      "aliases": [
+        "product.lime"
+      ],
+      "categoryId": "category.dry-veg",
+      "id": "prod.lime",
+      "names": {
+        "en": "Lime",
+        "pl": "Limonka"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.lovage"
+      ],
+      "categoryId": "category.spices",
+      "id": "prod.lovage",
+      "names": {
+        "en": "Lovage",
+        "pl": "Lubczyk"
+      },
+      "unitId": "unit.lvl"
+    },
+    {
+      "aliases": [
+        "product.natural_tofu"
+      ],
+      "categoryId": "category.dairy-eggs",
+      "id": "prod.natural-tofu",
+      "names": {
+        "en": "Natural tofu",
+        "pl": "Tofu naturalne"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.new_potatoes"
+      ],
+      "categoryId": "category.fresh-veg",
+      "id": "prod.new-potatoes",
+      "names": {
+        "en": "New potatoes",
+        "pl": "Ziemniaki młode"
+      },
+      "unitId": "unit.g"
+    },
+    {
+      "aliases": [
+        "product.nutmeg"
+      ],
+      "categoryId": "category.spices",
+      "id": "prod.nutmeg",
+      "names": {
+        "en": "Nutmeg",
+        "pl": "Gałka muszkatołowa"
+      },
+      "unitId": "unit.lvl"
+    },
+    {
+      "aliases": [
+        "product.oregano"
+      ],
+      "categoryId": "category.spices",
+      "id": "prod.oregano",
+      "names": {
+        "en": "Oregano",
+        "pl": "Oregano"
+      },
+      "unitId": "unit.lvl"
+    },
+    {
+      "aliases": [
+        "product.oyster_mushrooms"
+      ],
+      "categoryId": "category.mushrooms",
+      "id": "prod.oyster-mushrooms",
+      "names": {
+        "en": "Oyster mushrooms",
+        "pl": "Boczniaki"
+      },
+      "unitId": "unit.g"
+    },
+    {
+      "aliases": [
+        "product.parsley"
+      ],
+      "categoryId": "category.fresh-veg",
+      "id": "prod.parsley",
+      "names": {
+        "en": "Parsley",
+        "pl": "Natka pietruszki"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.peanut_butter"
+      ],
+      "categoryId": "category.spreads",
+      "id": "prod.peanut-butter",
+      "names": {
+        "en": "Peanut butter",
+        "pl": "Masło orzechowe"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.penne_pasta"
+      ],
+      "categoryId": "category.pasta",
+      "id": "prod.penne-pasta",
+      "names": {
+        "en": "Penne pasta",
+        "pl": "Makaron penne"
+      },
+      "unitId": "unit.g"
+    },
+    {
+      "aliases": [
+        "product.pickled_pearl_onions"
+      ],
+      "categoryId": "category.opened-preserves",
+      "id": "prod.pickled-pearl-onions",
+      "names": {
+        "en": "Pickled pearl onions",
+        "pl": "Marynowana cebula perłowa"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.pink_tomatoes"
+      ],
+      "categoryId": "category.fresh-veg",
+      "id": "prod.pink-tomatoes",
+      "names": {
+        "en": "Pink tomatoes",
+        "pl": "Pomidory malinowe"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.pistachio_cream"
+      ],
+      "categoryId": "category.spreads",
+      "id": "prod.pistachio-cream",
+      "names": {
+        "en": "Pistachio cream",
+        "pl": "Krem pistacjowy"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.plant_fat"
+      ],
+      "categoryId": "category.oils",
+      "id": "prod.plant-fat",
+      "names": {
+        "en": "Plant fat",
+        "pl": "Tłuszcz roślinny"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.radish"
+      ],
+      "categoryId": "category.fresh-veg",
+      "id": "prod.radish",
+      "names": {
+        "en": "Radish",
+        "pl": "Rzodkiewka"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.red_beans"
+      ],
+      "categoryId": "category.opened-preserves",
+      "id": "prod.red-beans",
+      "names": {
+        "en": "Red beans",
+        "pl": "Fasola czerwona"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.red_onion"
+      ],
+      "categoryId": "category.dry-veg",
+      "id": "prod.red-onion",
+      "names": {
+        "en": "Red onion",
+        "pl": "Czerwona cebula"
+      },
+      "unitId": "unit.g"
+    },
+    {
+      "aliases": [
+        "product.rice_arborio"
+      ],
+      "categoryId": "category.grains",
+      "id": "prod.rice-arborio",
+      "names": {
+        "en": "Arborio rice",
+        "pl": "Ryż arborio"
+      },
+      "unitId": "unit.g"
+    },
+    {
+      "aliases": [
+        "product.rice_basmati"
+      ],
+      "categoryId": "category.grains",
+      "id": "prod.rice-basmati",
+      "names": {
+        "en": "Basmati rice",
+        "pl": "Ryż basmati"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.rice_jasmine"
+      ],
+      "categoryId": "category.grains",
+      "id": "prod.rice-jasmine",
+      "names": {
+        "en": "Jasmine rice",
+        "pl": "Ryż jaśminowy"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.rosemary"
+      ],
+      "categoryId": "category.spices",
+      "id": "prod.rosemary",
+      "names": {
+        "en": "Rosemary",
+        "pl": "Rozmaryn"
+      },
+      "unitId": "unit.lvl"
+    },
+    {
+      "aliases": [
+        "product.sauce_alla_norma"
+      ],
+      "categoryId": "category.ready-sauces",
+      "id": "prod.sauce-alla-norma",
+      "names": {
+        "en": "Alla Norma sauce",
+        "pl": "Sos alla norma"
+      },
+      "unitId": "unit.g"
+    },
+    {
+      "aliases": [
+        "product.sauce_alla_puttanesca"
+      ],
+      "categoryId": "category.ready-sauces",
+      "id": "prod.sauce-alla-puttanesca",
+      "names": {
+        "en": "Puttanesca sauce",
+        "pl": "Sos alla puttanesca"
+      },
+      "unitId": "unit.g"
+    },
+    {
+      "aliases": [
+        "product.sauce_basilico"
+      ],
+      "categoryId": "category.ready-sauces",
+      "id": "prod.sauce-basilico",
+      "names": {
+        "en": "Basilico sauce",
+        "pl": "Sos basilico"
+      },
+      "unitId": "unit.g"
+    },
+    {
+      "aliases": [
+        "product.sauce_bearnaise"
+      ],
+      "categoryId": "category.ready-sauces",
+      "id": "prod.sauce-bearnaise",
+      "names": {
+        "en": "Béarnaise sauce",
+        "pl": "Sos berneński"
+      },
+      "unitId": "unit.g"
+    },
+    {
+      "aliases": [
+        "product.sauce_cacio_e_pepe"
+      ],
+      "categoryId": "category.ready-sauces",
+      "id": "prod.sauce-cacio-e-pepe",
+      "names": {
+        "en": "Cacio e pepe sauce",
+        "pl": "Sos cacio e pepe"
+      },
+      "unitId": "unit.g"
+    },
+    {
+      "aliases": [
+        "product.sauce_napoletana"
+      ],
+      "categoryId": "category.ready-sauces",
+      "id": "prod.sauce-napoletana",
+      "names": {
+        "en": "Napoletana sauce",
+        "pl": "Sos napoletana"
+      },
+      "unitId": "unit.g"
+    },
+    {
+      "aliases": [
+        "product.sciatelli_al_limone_pasta"
+      ],
+      "categoryId": "category.pasta",
+      "id": "prod.sciatelli-al-limone-pasta",
+      "names": {
+        "en": "Sciatelli al limone pasta",
+        "pl": "Makaron sciatelli al limone"
+      },
+      "unitId": "unit.g"
+    },
+    {
+      "aliases": [
+        "product.sesame_oil"
+      ],
+      "categoryId": "category.oils",
+      "id": "prod.sesame-oil",
+      "names": {
+        "en": "Sesame oil",
+        "pl": "Olej sezamowy"
+      },
+      "unitId": "unit.butelka"
+    },
+    {
+      "aliases": [
+        "product.smoked_paprika"
+      ],
+      "categoryId": "category.spices",
+      "id": "prod.smoked-paprika",
+      "names": {
+        "en": "Smoked paprika",
+        "pl": "Papryka wędzona"
+      },
+      "unitId": "unit.lvl"
+    },
+    {
+      "aliases": [
+        "product.soup_veg"
+      ],
+      "categoryId": "category.fresh-veg",
+      "id": "prod.soup-veg",
+      "names": {
+        "en": "Soup vegetables",
+        "pl": "Włoszczyzna"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.sour_cream_18"
+      ],
+      "categoryId": "category.dairy-eggs",
+      "id": "prod.sour-cream-18",
+      "names": {
+        "en": "Sour cream 18%",
+        "pl": "Śmietana 18%"
+      },
+      "unitId": "unit.250g"
+    },
+    {
+      "aliases": [
+        "product.spinach"
+      ],
+      "categoryId": "category.frozen-meals",
+      "id": "prod.spinach",
+      "names": {
+        "en": "Spinach",
+        "pl": "Szpinak"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.spring_onion"
+      ],
+      "categoryId": "category.dry-veg",
+      "id": "prod.spring-onion",
+      "names": {
+        "en": "Spring onion",
+        "pl": "Cebula dymka"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.stir_fry_vegetables"
+      ],
+      "categoryId": "category.frozen-meals",
+      "id": "prod.stir-fry-vegetables",
+      "names": {
+        "en": "Stir-fry vegetables",
+        "pl": "Warzywa na patelnię"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.sun_dried_tomatoes"
+      ],
+      "categoryId": "category.oils",
+      "id": "prod.sun-dried-tomatoes",
+      "names": {
+        "en": "Sun-dried tomatoes in oil",
+        "pl": "Suszone pomidory w oleju"
+      },
+      "unitId": "unit.x270g"
+    },
+    {
+      "aliases": [
+        "product.thai_spice_mix"
+      ],
+      "categoryId": "category.spreads",
+      "id": "prod.thai-spice-mix",
+      "names": {
+        "en": "Thai spice mix",
+        "pl": "Mieszanka przypraw tajska"
+      },
+      "unitId": "unit.g"
+    },
+    {
+      "aliases": [
+        "product.thyme"
+      ],
+      "categoryId": "category.spices",
+      "id": "prod.thyme",
+      "names": {
+        "en": "Thyme",
+        "pl": "Tymianek"
+      },
+      "unitId": "unit.lvl"
+    },
+    {
+      "aliases": [
+        "product.toast_bread"
+      ],
+      "categoryId": "category.bread",
+      "id": "prod.toast-bread",
+      "names": {
+        "en": "Toast bread",
+        "pl": "Pieczywo tostowe"
+      },
+      "unitId": "unit.szt"
+    },
+    {
+      "aliases": [
+        "product.tomato_garlic_basil_mix"
+      ],
+      "categoryId": "category.spices",
+      "id": "prod.tomato-garlic-basil-mix",
+      "names": {
+        "en": "Mix: tomato, garlic, basil",
+        "pl": "Mieszanka: pomidor, czosnek, bazylia"
+      },
+      "unitId": "unit.lvl"
+    },
+    {
+      "aliases": [
+        "product.tomato_puree"
+      ],
+      "categoryId": "category.fresh-veg",
+      "id": "prod.tomato-puree",
+      "names": {
+        "en": "Tomato purée",
+        "pl": "Przecier pomidorowy"
+      },
+      "unitId": "unit.g"
+    },
+    {
+      "aliases": [
+        "product.turmeric"
+      ],
+      "categoryId": "category.spices",
+      "id": "prod.turmeric",
+      "names": {
+        "en": "Turmeric",
+        "pl": "Kurkuma"
+      },
+      "unitId": "unit.lvl"
+    },
+    {
+      "aliases": [
+        "product.zucchini"
+      ],
+      "categoryId": "category.fresh-veg",
+      "id": "prod.zucchini",
+      "names": {
+        "en": "Zucchini",
+        "pl": "Cukinia"
+      },
+      "unitId": "unit.szt"
     }
   ],
   "units": [
     {
       "id": "unit.250g",
       "names": {
-        "pl": "250 g",
-        "en": "250 g"
+        "en": "250 g",
+        "pl": "250 g"
       }
     },
     {
       "id": "unit.butelka",
       "names": {
-        "pl": "butelka",
-        "en": "bottle"
+        "en": "bottle",
+        "pl": "butelka"
       }
     },
     {
       "id": "unit.g",
       "names": {
-        "pl": "g",
-        "en": "g"
+        "en": "g",
+        "pl": "g"
       }
     },
     {
       "id": "unit.lvl",
       "names": {
-        "pl": "lvl",
-        "en": "lvl"
+        "en": "lvl",
+        "pl": "lvl"
       }
     },
     {
       "id": "unit.opak-350g",
       "names": {
-        "pl": "opak. (350 g)",
-        "en": "pkg (350 g)"
+        "en": "pkg (350 g)",
+        "pl": "opak. (350 g)"
       }
     },
     {
       "id": "unit.sloik",
       "names": {
-        "pl": "słoik",
-        "en": "jar"
+        "en": "jar",
+        "pl": "słoik"
       }
     },
     {
       "id": "unit.szt",
       "names": {
-        "pl": "szt",
-        "en": "pcs"
+        "en": "pcs",
+        "pl": "szt"
       }
     },
     {
       "id": "unit.x270g",
       "names": {
-        "pl": "× 270 g",
-        "en": "× 270 g"
+        "en": "× 270 g",
+        "pl": "× 270 g"
       }
     }
   ]
