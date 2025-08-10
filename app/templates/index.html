@@ -1,7 +1,7 @@
 <!doctype html>
 <!-- FIX: Render & responsive boot (2025-08-09) -->
-<html lang="pl" data-theme="dark" data-layout="desktop">
-<head>
+<html lang="pl" data-layout="desktop">
+  <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Food App</title>
@@ -11,10 +11,39 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Food App">
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.10.2/dist/full.min.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-</head>
+      <script>
+        (() => {
+          const key = 'theme';
+          const mql = window.matchMedia('(prefers-color-scheme: dark)');
+          const apply = t => {
+            document.documentElement.setAttribute('data-theme', t);
+            document.documentElement.style.colorScheme = t;
+          };
+          const resolve = () => {
+            const stored = localStorage.getItem(key) || 'system';
+            return stored === 'system' ? (mql.matches ? 'dark' : 'light') : stored;
+          };
+          apply(resolve());
+          console.info('theme:', resolve());
+          mql.addEventListener('change', e => {
+            if ((localStorage.getItem(key) || 'system') === 'system') {
+              const t = e.matches ? 'dark' : 'light';
+              apply(t);
+              console.info('theme:', t);
+            }
+          });
+          window.setTheme = v => {
+            localStorage.setItem(key, v);
+            const t = v === 'system' ? (mql.matches ? 'dark' : 'light') : v;
+            apply(t);
+            console.info('theme:', t);
+          };
+        })();
+      </script>
+      <link href="https://cdn.jsdelivr.net/npm/daisyui@4.10.2/dist/full.min.css" rel="stylesheet" type="text/css" />
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+      <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v={{ app_version }}">
+      </head>
 <body class="min-h-screen bg-base-100">
 <div id="top-sentinel"></div>
 <div id="health-banner" class="alert alert-error hidden justify-between">
@@ -26,9 +55,9 @@
         <i id="layout-icon" class="fa-solid fa-mobile-screen-button"></i>
     </button>
     <button id="lang-toggle" aria-label="Toggle language" class="text-xl p-2 bg-transparent border-0">PL</button>
-    <button id="theme-toggle" aria-label="Toggle theme" class="text-xl p-2 bg-transparent border-0">
-        <i id="theme-icon" class="fa-solid fa-circle-half-stroke"></i>
-    </button>
+      <button id="theme-toggle" aria-label="Toggle theme" class="text-xl p-2 bg-transparent border-0">
+          <i id="theme-icon" class="fa-solid fa-desktop"></i>
+      </button>
     <button id="install-btn" aria-label="Install app" class="text-xl p-2 bg-transparent border-0" style="display:none;">
         <i class="fa-solid fa-download"></i>
     </button>
@@ -428,6 +457,6 @@
             <span class="text-xs" data-i18n="tab_shopping">Lista zakupów</span>
         </a>
     </nav>
-    <script type="module" src="/static/script.js"></script>
+      <script type="module" src="/static/script.js?v={{ app_version }}"></script>
 </body>
 </html>
