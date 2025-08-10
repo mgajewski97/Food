@@ -617,7 +617,7 @@
   },
   {
     "name": "product.dijon_mustard",
-    "quantity": 0.0,
+    "quantity": 1.0,
     "unit": "szt",
     "category": "opened_preserves",
     "storage": "fridge",
@@ -948,7 +948,7 @@
     "package_size": 1.0,
     "pack_size": null,
     "tags": [],
-    "level": "low",
+    "level": "high",
     "is_spice": true
   },
   {
@@ -990,7 +990,7 @@
     "package_size": 1.0,
     "pack_size": null,
     "tags": [],
-    "level": "low",
+    "level": "high",
     "is_spice": true
   },
   {
