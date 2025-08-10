@@ -1,100 +1,99 @@
 [
   {
     "id": "recipe.mushroom_oyster_mushroom_cream_soup",
-    "names": {
-      "pl": "Krem z pieczarek i boczniaków",
-      "en": "Mushroom & oyster mushroom cream soup"
-    },
-    "portions": 3.0,
-    "time": "30min",
     "ingredients": [
       {
+        "optional": false,
         "productId": "prod.champignons",
         "qty": 500.0,
-        "unitId": "unit.g",
-        "optional": false
+        "unitId": "unit.g"
       },
       {
+        "optional": false,
         "productId": "prod.oyster-mushrooms",
         "qty": 250.0,
-        "unitId": "unit.g",
-        "optional": false
+        "unitId": "unit.g"
       },
       {
+        "optional": false,
         "productId": "prod.red-onion",
         "qty": 1.0,
-        "unitId": "unit.szt",
-        "optional": false
+        "unitId": "unit.szt"
       },
       {
+        "optional": false,
         "productId": "prod.garlic",
         "qty": 1.0,
-        "unitId": "unit.szt",
-        "optional": false
+        "unitId": "unit.szt"
       },
       {
+        "note": "product.sour_cream_18 2.0 lyzka",
+        "optional": false,
         "productId": "prod.sour-cream-18",
         "qty": 2.0,
         "unitId": null,
-        "optional": false,
-        "unresolved": true,
-        "note": "product.sour_cream_18 2.0 lyzka"
+        "unresolved": true
       },
       {
+        "note": "product.plant_fat 1.0 lyzka",
+        "optional": false,
         "productId": "prod.plant-fat",
         "qty": 1.0,
         "unitId": null,
-        "optional": false,
-        "unresolved": true,
-        "note": "product.plant_fat 1.0 lyzka"
+        "unresolved": true
       },
       {
+        "optional": false,
         "productId": "prod.parsley",
         "qty": 1.0,
-        "unitId": "unit.szt",
-        "optional": false
+        "unitId": "unit.szt"
       },
       {
+        "note": "product.water 1000.0 ml",
+        "optional": false,
         "productId": null,
         "qty": 1000.0,
         "unitId": null,
-        "optional": false,
-        "unresolved": true,
-        "note": "product.water 1000.0 ml"
+        "unresolved": true
       },
       {
+        "note": "product.bay_leaf 1.0 szt",
+        "optional": false,
         "productId": null,
         "qty": 1.0,
         "unitId": "unit.szt",
-        "optional": false,
-        "unresolved": true,
-        "note": "product.bay_leaf 1.0 szt"
+        "unresolved": true
       },
       {
+        "note": "product.thyme 0.5 lyzeczka",
+        "optional": false,
         "productId": "prod.thyme",
         "qty": 0.5,
         "unitId": null,
-        "optional": false,
-        "unresolved": true,
-        "note": "product.thyme 0.5 lyzeczka"
+        "unresolved": true
       },
       {
+        "note": "product.salt 1.0 do_smaczenia",
+        "optional": false,
         "productId": null,
         "qty": 1.0,
         "unitId": null,
-        "optional": false,
-        "unresolved": true,
-        "note": "product.salt 1.0 do_smaczenia"
+        "unresolved": true
       },
       {
+        "note": "product.black_pepper 1.0 do_smaczenia",
+        "optional": false,
         "productId": null,
         "qty": 1.0,
         "unitId": null,
-        "optional": false,
-        "unresolved": true,
-        "note": "product.black_pepper 1.0 do_smaczenia"
+        "unresolved": true
       }
     ],
+    "names": {
+      "en": "Mushroom & oyster mushroom cream soup",
+      "pl": "Krem z pieczarek i boczniaków"
+    },
+    "portions": 3.0,
     "steps": [
       "W garnku rozgrzej plant fat lub olej.",
       "Dodaj posiekaną cebulę i czosnek, smaż do zeszklenia.",
@@ -104,166 +103,166 @@
       "Dodaj śmietanę, wymieszaj i dopraw do smaku.",
       "Podawaj z natką pietruszki, opcjonalnie z grzankami."
     ],
-    "tags": []
+    "tags": [],
+    "time": "30min"
   },
   {
     "id": "recipe.stir_fry_peking_cabbage_tofu_pepper_radish_rice_cashew",
-    "names": {
-      "pl": "Stir‑fry: kapusta pekińska, tofu, papryka, rzodkiewka, ryż, nerkowce",
-      "en": "Stir-fry: Chinese cabbage, tofu, pepper, radish, rice, cashews"
-    },
-    "portions": 3.0,
-    "time": "",
     "ingredients": [
       {
+        "note": "product.tofu 180.0 g",
+        "optional": false,
         "productId": null,
         "qty": 180.0,
         "unitId": "unit.g",
-        "optional": false,
-        "unresolved": true,
-        "note": "product.tofu 180.0 g"
+        "unresolved": true
       },
       {
+        "note": "product.peking_cabbage 0.5 szt",
+        "optional": false,
         "productId": null,
         "qty": 0.5,
         "unitId": "unit.szt",
-        "optional": false,
-        "unresolved": true,
-        "note": "product.peking_cabbage 0.5 szt"
+        "unresolved": true
       },
       {
+        "note": "product.red_pepper 1.0 szt",
+        "optional": false,
         "productId": null,
         "qty": 1.0,
         "unitId": "unit.szt",
-        "optional": false,
-        "unresolved": true,
-        "note": "product.red_pepper 1.0 szt"
+        "unresolved": true
       },
       {
+        "optional": false,
         "productId": "prod.red-onion",
         "qty": 1.0,
-        "unitId": "unit.szt",
-        "optional": false
+        "unitId": "unit.szt"
       },
       {
+        "optional": false,
         "productId": "prod.garlic",
         "qty": 2.0,
-        "unitId": "unit.szt",
-        "optional": false
+        "unitId": "unit.szt"
       },
       {
+        "note": "product.ginger_fresh 10.0 g",
+        "optional": false,
         "productId": null,
         "qty": 10.0,
         "unitId": "unit.g",
-        "optional": false,
-        "unresolved": true,
-        "note": "product.ginger_fresh 10.0 g"
+        "unresolved": true
       },
       {
+        "optional": false,
         "productId": "prod.radish",
         "qty": 5.0,
-        "unitId": "unit.szt",
-        "optional": false
+        "unitId": "unit.szt"
       },
       {
+        "optional": false,
         "productId": "prod.rice-basmati",
         "qty": 90.0,
-        "unitId": "unit.g",
-        "optional": false
+        "unitId": "unit.g"
       },
       {
+        "note": "product.teriyaki_sauce 4.0 łyżka",
+        "optional": false,
         "productId": null,
         "qty": 4.0,
         "unitId": null,
-        "optional": false,
-        "unresolved": true,
-        "note": "product.teriyaki_sauce 4.0 łyżka"
+        "unresolved": true
       },
       {
+        "note": "product.soy_sauce 3.0 łyżka",
+        "optional": false,
         "productId": null,
         "qty": 3.0,
         "unitId": null,
-        "optional": false,
-        "unresolved": true,
-        "note": "product.soy_sauce 3.0 łyżka"
+        "unresolved": true
       },
       {
+        "note": "product.sesame_oil 1.0 łyżeczka",
+        "optional": false,
         "productId": "prod.sesame-oil",
         "qty": 1.0,
         "unitId": null,
-        "optional": false,
-        "unresolved": true,
-        "note": "product.sesame_oil 1.0 łyżeczka"
+        "unresolved": true
       },
       {
+        "note": "product.sesame 1.0 łyżka",
+        "optional": false,
         "productId": null,
         "qty": 1.0,
         "unitId": null,
-        "optional": false,
-        "unresolved": true,
-        "note": "product.sesame 1.0 łyżka"
+        "unresolved": true
       },
       {
+        "optional": false,
         "productId": "prod.parsley",
         "qty": 10.0,
-        "unitId": "unit.g",
-        "optional": false
+        "unitId": "unit.g"
       },
       {
+        "optional": false,
         "productId": "prod.lime",
         "qty": 0.5,
-        "unitId": "unit.szt",
-        "optional": false
+        "unitId": "unit.szt"
       },
       {
+        "note": "product.chili 0.5 łyżeczka",
+        "optional": false,
         "productId": null,
         "qty": 0.5,
         "unitId": null,
-        "optional": false,
-        "unresolved": true,
-        "note": "product.chili 0.5 łyżeczka"
+        "unresolved": true
       },
       {
+        "note": "product.pepper 0.25 łyżeczka",
+        "optional": false,
         "productId": null,
         "qty": 0.25,
         "unitId": null,
-        "optional": false,
-        "unresolved": true,
-        "note": "product.pepper 0.25 łyżeczka"
+        "unresolved": true
       },
       {
+        "note": "product.coriander_ground 0.25 łyżeczka",
+        "optional": false,
         "productId": null,
         "qty": 0.25,
         "unitId": null,
-        "optional": false,
-        "unresolved": true,
-        "note": "product.coriander_ground 0.25 łyżeczka"
+        "unresolved": true
       },
       {
+        "note": "product.cashew 20.0 g",
+        "optional": false,
         "productId": null,
         "qty": 20.0,
         "unitId": "unit.g",
-        "optional": false,
-        "unresolved": true,
-        "note": "product.cashew 20.0 g"
+        "unresolved": true
       },
       {
+        "note": "product.sugar 0.5 łyżeczka",
+        "optional": false,
         "productId": null,
         "qty": 0.5,
         "unitId": null,
-        "optional": false,
-        "unresolved": true,
-        "note": "product.sugar 0.5 łyżeczka"
+        "unresolved": true
       },
       {
+        "note": "product.coriander_fresh 10.0 g",
+        "optional": true,
         "productId": null,
         "qty": 10.0,
         "unitId": "unit.g",
-        "optional": true,
-        "unresolved": true,
-        "note": "product.coriander_fresh 10.0 g"
+        "unresolved": true
       }
     ],
+    "names": {
+      "en": "Stir-fry: Chinese cabbage, tofu, pepper, radish, rice, cashews",
+      "pl": "Stir‑fry: kapusta pekińska, tofu, papryka, rzodkiewka, ryż, nerkowce"
+    },
+    "portions": 3.0,
     "steps": [
       "Ugotuj ryż zgodnie z instrukcją i odstaw.",
       "Tofu pokrój w kostkę, podsmaż na oliwie, dodaj 0.5 łyżeczki cukru i smaż dalej aż lekko się skarmelizuje. Dodaj 1 łyżkę sosu sojowego i smaż do zrumienienia. Odstaw.",
@@ -275,6 +274,7 @@
       "Wyłącz ogień, dodaj natkę pietruszki, olej sezamowy, sok z limonki, pokruszone nerkowce i ewentualnie świeżą kolendrę. Wymieszaj.",
       "Posyp sezamem i podziel na 3 porcje."
     ],
-    "tags": []
+    "tags": [],
+    "time": ""
   }
 ]
