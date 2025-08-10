@@ -138,6 +138,21 @@ def service_worker():
     return current_app.send_static_file("service-worker.js")
 
 
+@bp.route("/api/ui/<string:lang>")
+def ui_strings(lang):
+    """Return UI translation strings for a given locale."""
+    path = os.path.join(BASE_DIR, "static", "translations", f"{lang}.json")
+    if not os.path.exists(path):
+        return jsonify({"error": "not found"}), 404
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception as exc:  # pragma: no cover - defensive
+        logger.info(str(exc))
+        return jsonify({"error": str(exc)}), 500
+    return jsonify(data)
+
+
 @bp.route("/api/domain")
 def domain():
     """Return normalized domain data of products, categories and units."""
