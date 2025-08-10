@@ -349,7 +349,7 @@ function createFlatRow(p, idx, editable) {
 
 export function renderProducts() {
   if (!state.domainLoaded) {
-    document.addEventListener('domain-loaded', () => renderProducts(), { once: true });
+    document.addEventListener('domain:ready', () => renderProducts(), { once: true });
     return;
   }
   const {
@@ -578,9 +578,6 @@ export function renderProducts() {
   });
 }
 
-document.addEventListener('domain-loaded', () => {
-  if (APP.state?.products?.length) renderProducts();
-});
 
 function attachCollapses(root) {
   if (!root) return;
@@ -636,4 +633,17 @@ const groupedRoot = document.getElementById('products-by-category');
 if (groupedRoot) {
   initExpandDefaults(groupedRoot);
   attachCollapses(groupedRoot);
+}
+
+// Wait for domain data before initial render to avoid race conditions.
+if (window.__domain) {
+  renderProducts();
+} else {
+  document.addEventListener(
+    'domain:ready',
+    () => {
+      renderProducts();
+    },
+    { once: true }
+  );
 }

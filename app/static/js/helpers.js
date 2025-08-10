@@ -261,24 +261,42 @@ export async function loadDomain() {
   window.trace?.('loadDomain:enter');
   try {
     const data = await fetchJson('/api/domain');
+    window.__domain = data;
+    const domainData = data.domain || data;
     state.domain = { products: {}, categories: {}, units: {}, aliases: {} };
-    (data.products || []).forEach(p => {
+    (domainData.products || []).forEach(p => {
       state.domain.products[p.id] = p;
       (p.aliases || []).forEach(a => {
         state.domain.aliases[a] = p.id;
       });
     });
-    (data.categories || []).forEach(c => {
+    (domainData.categories || []).forEach(c => {
       const key = c.id.replace('category.', '').replace(/-/g, '_');
       state.domain.categories[key] = c;
     });
-    (data.units || []).forEach(u => {
+    (domainData.units || []).forEach(u => {
       const key = u.id.replace('unit.', '');
       state.domain.units[key] = u;
       state.units[key] = u.names;
     });
+    const APP = (window.APP = window.APP || {});
+    APP.state = APP.state || {};
+    APP.state.products = (data.products || []).map(normalizeProduct);
+    state.recipesData = (data.recipes || []).map(r => {
+      const rec = normalizeRecipe(r);
+      return {
+        ...rec,
+        timeBucket: timeToBucket(rec.time),
+        available: (rec.ingredients || []).every(i => getProduct(i.product))
+      };
+    });
+    state.recipesLoaded = true;
     state.domainLoaded = true;
-    document.dispatchEvent(new Event('domain-loaded'));
+    console.debug('domain:ready', {
+      products: APP.state.products.length,
+      recipes: state.recipesData.length
+    });
+    document.dispatchEvent(new Event('domain:ready'));
     window.trace?.('loadDomain:ok');
   } catch (err) {
     console.error('Failed to load domain', err);
