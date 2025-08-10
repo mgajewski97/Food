@@ -61,7 +61,7 @@ async function loadProducts() {
     trace('loadProducts:ok');
   } catch (e) {
     console.error(e);
-    showTopBanner('Failed to load products', { actionLabel: t('retry'), onAction: loadProducts });
+    showTopBanner(t('load_products_failed'), { actionLabel: t('retry'), onAction: loadProducts });
     throw e;
   }
 }
@@ -73,7 +73,7 @@ async function loadRecipes() {
     trace('loadRecipes:ok');
   } catch (e) {
     console.error(e);
-    showTopBanner('Failed to load recipes', { actionLabel: t('retry'), onAction: loadRecipes });
+    showTopBanner(t('load_recipes_failed'), { actionLabel: t('retry'), onAction: loadRecipes });
     throw e;
   }
 }
@@ -85,7 +85,7 @@ async function loadHistory() {
     trace('loadHistory:ok');
   } catch (e) {
     console.error(e);
-    showTopBanner('Failed to load history', { actionLabel: t('retry'), onAction: loadHistory });
+    showTopBanner(t('load_history_failed'), { actionLabel: t('retry'), onAction: loadHistory });
     throw e;
   }
 }
