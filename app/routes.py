@@ -150,6 +150,97 @@ def _load_products_compat():
     return legacy
 
 
+def _load_recipes_compat(locale: str = "pl"):
+    """Return legacy recipe list built from normalized domain data.
+
+    Each ingredient is enriched with resolved product and unit display names
+    for the requested locale while keeping original identifiers so the legacy
+    front-end can operate without changes.
+    """
+
+    try:
+        with open(PRODUCTS_PATH, "r", encoding="utf-8") as f:
+            products_data = json.load(f)
+    except Exception as exc:  # pragma: no cover - defensive
+        raise ValueError(str(exc))
+
+    products = {p.get("id"): p for p in products_data.get("products", [])}
+    units = {u.get("id"): u for u in products_data.get("units", [])}
+
+    try:
+        recipes = load_json_validated(
+            RECIPES_PATH, RECIPES_SCHEMA, normalize=normalize_recipe
+        )
+    except ValueError as exc:
+        raise ValueError(str(exc))
+
+    legacy = []
+    for rec in recipes:
+        ing_list = []
+        for ing in rec.get("ingredients", []):
+            pid = ing.get("productId")
+            uid = ing.get("unitId")
+
+            prod = products.get(pid)
+            if not pid or not prod:
+                logger.warning(
+                    "recipe %s references missing product %s",
+                    rec.get("id"),
+                    pid,
+                )
+                continue
+
+            unit_key = None
+            unit_name = None
+            if uid:
+                unit = units.get(uid)
+                if not unit:
+                    logger.warning(
+                        "recipe %s references missing unit %s",
+                        rec.get("id"),
+                        uid,
+                    )
+                    continue
+                unit_key = unit.get("id", "").replace("unit.", "")
+                unit_name = (
+                    unit.get("names", {}).get(locale)
+                    or unit.get("names", {}).get("en")
+                )
+
+            prod_name = (
+                prod.get("names", {}).get(locale)
+                or prod.get("names", {}).get("en")
+                or prod.get("id")
+            )
+
+            ing_list.append(
+                {
+                    "product": pid,
+                    "productId": pid,
+                    "productName": prod_name,
+                    "quantity": ing.get("qty"),
+                    "unit": unit_key,
+                    "unitId": uid,
+                    "unitName": unit_name,
+                }
+            )
+
+        legacy.append(
+            {
+                "id": rec.get("id"),
+                "name": rec.get("id"),
+                "names": rec.get("names", {}),
+                "time": rec.get("time"),
+                "portions": rec.get("portions"),
+                "steps": rec.get("steps", []),
+                "ingredients": ing_list,
+            }
+        )
+
+    legacy.sort(key=lambda r: r.get("names", {}).get("pl", "").lower())
+    return legacy
+
+
 def remove_used_products(used_ingredients):
     """Remove used ingredients from stored products."""
     with file_lock(PRODUCTS_PATH):
@@ -314,22 +405,13 @@ def ocr_match():
 
 @bp.route("/api/recipes")
 def recipes():
-    """Return all recipes with normalized ingredient structures.
-
-    Older iterations of the backend attempted to filter out recipes whose
-    ingredients were not present in ``products.json``. This proved too strict
-    and resulted in an empty recipe list whenever the pantry data was out of
-    sync with the recipes file.  The front-end expects the raw recipe dataset
-    and performs its own availability checks if needed, therefore we simply
-    load and normalize the recipes here.
-    """
+    """Return legacy recipe list compatible with the front-end."""
 
     context = {"endpoint": "/api/recipes", "args": request.args.to_dict()}
+    locale = request.args.get("locale", "pl")
     try:
         try:
-            recipes = load_json_validated(
-                RECIPES_PATH, RECIPES_SCHEMA, normalize=normalize_recipe
-            )
+            recipes = _load_recipes_compat(locale)
         except ValueError as exc:
             logger.info(str(exc))
             return jsonify({"error": str(exc)}), 500
