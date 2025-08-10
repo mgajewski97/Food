@@ -70,7 +70,7 @@
   "level.medium": "Medium",
   "level.none": "None",
   "load_history_failed": "Failed to load history",
-  "load_products_failed": "Failed to load products",
+  "load_products_failed": "Products failed to load",
   "load_recipes_failed": "Failed to load recipes",
   "manual_add_success": "Added to shopping list",
   "names": "Names",

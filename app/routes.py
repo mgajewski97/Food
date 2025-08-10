@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 from datetime import date
@@ -49,6 +50,68 @@ def run_initial_validation() -> None:
         validate_file(_path, [], _schema, _norm)
 
 
+def _load_products_compat():
+    """Return legacy product list built from normalized domain data."""
+    try:
+        with open(PRODUCTS_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception as exc:
+        raise ValueError(str(exc))
+
+    categories = {c.get("id"): c for c in data.get("categories", [])}
+    units = {u.get("id"): u for u in data.get("units", [])}
+    legacy = []
+
+    for prod in data.get("products", []):
+        cat = categories.get(prod.get("categoryId"))
+        unit = units.get(prod.get("unitId"))
+        if not cat:
+            logger.warning(
+                "product %s references missing category %s",
+                prod.get("id"),
+                prod.get("categoryId"),
+            )
+            continue
+        if not unit:
+            logger.warning(
+                "product %s references missing unit %s",
+                prod.get("id"),
+                prod.get("unitId"),
+            )
+            continue
+
+        category_key = cat.get("id", "").replace("category.", "").replace("-", "_")
+        unit_key = unit.get("id", "").replace("unit.", "")
+        name_key = (prod.get("aliases") or [prod.get("id")])[0]
+
+        item = {
+            "id": prod.get("id"),
+            "name": name_key,
+            "name_pl": prod.get("names", {}).get("pl", ""),
+            "name_en": prod.get("names", {}).get("en", ""),
+            "category": category_key,
+            "unit": unit_key,
+            "quantity": 0,
+            "threshold": 0,
+            "storage": "pantry",
+            "main": True,
+            "package_size": 1,
+            "pack_size": None,
+            "level": None,
+            "is_spice": category_key == "spices",
+            "aliases": prod.get("aliases", []),
+            "tags": [],
+        }
+
+        if item["is_spice"]:
+            item["level"] = "none"
+
+        legacy.append(item)
+
+    legacy.sort(key=lambda p: p.get("name_pl", "").lower())
+    return legacy
+
+
 def remove_used_products(used_ingredients):
     """Remove used ingredients from stored products."""
     with file_lock(PRODUCTS_PATH):
@@ -77,9 +140,7 @@ def service_worker():
 def products():
     if request.method == "GET":
         try:
-            products = load_json_validated(
-                PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
-            )
+            products = _load_products_compat()
         except ValueError as exc:
             logger.info(str(exc))
             return jsonify({"error": str(exc)}), 500
