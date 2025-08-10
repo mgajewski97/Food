@@ -6,7 +6,7 @@ from datetime import date
 
 from flask import Flask, render_template, request, jsonify
 
-from utils import (
+from .utils import (
     load_json,
     load_json_validated,
     normalize_product,
