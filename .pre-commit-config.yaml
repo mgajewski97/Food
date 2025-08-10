@@ -1,0 +1,15 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: pretty-format-json
+        name: Format JSON
+        args: ["--autofix", "--indent=2", "--no-ensure-ascii"]
+        files: ^app/data/.*\.json$
+  - repo: local
+    hooks:
+      - id: validate-data
+        name: Walidacja / Validation
+        entry: python scripts/validate_data.py
+        language: system
+        files: ^app/data/(products|recipes)\.json$

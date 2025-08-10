@@ -1,8 +1,5 @@
 [
   {
-    "name": "recipe.mushroom_oyster_mushroom_cream_soup",
-    "portions": 3.0,
-    "time": "30min",
     "ingredients": [
       {
         "product": "product.champignons",
@@ -65,6 +62,8 @@
         "unit": "do_smaczenia"
       }
     ],
+    "name": "recipe.mushroom_oyster_mushroom_cream_soup",
+    "portions": 3.0,
     "steps": [
       "W garnku rozgrzej plant fat lub olej.",
       "Dodaj posiekaną cebulę i czosnek, smaż do zeszklenia.",
@@ -74,12 +73,10 @@
       "Dodaj śmietanę, wymieszaj i dopraw do smaku.",
       "Podawaj z natką pietruszki, opcjonalnie z grzankami."
     ],
-    "tags": []
+    "tags": [],
+    "time": "30min"
   },
   {
-    "name": "recipe.stir_fry_peking_cabbage_tofu_pepper_radish_rice_cashew",
-    "portions": 3.0,
-    "time": "",
     "ingredients": [
       {
         "product": "product.tofu",
@@ -177,6 +174,15 @@
         "unit": "łyżeczka"
       }
     ],
+    "name": "recipe.stir_fry_peking_cabbage_tofu_pepper_radish_rice_cashew",
+    "optionalIngredients": [
+      {
+        "product": "product.coriander_fresh",
+        "quantity": 10.0,
+        "unit": "g"
+      }
+    ],
+    "portions": 3.0,
     "steps": [
       "Ugotuj ryż zgodnie z instrukcją i odstaw.",
       "Tofu pokrój w kostkę, podsmaż na oliwie, dodaj 0.5 łyżeczki cukru i smaż dalej aż lekko się skarmelizuje. Dodaj 1 łyżkę sosu sojowego i smaż do zrumienienia. Odstaw.",
@@ -189,12 +195,6 @@
       "Posyp sezamem i podziel na 3 porcje."
     ],
     "tags": [],
-    "optionalIngredients": [
-      {
-        "product": "product.coriander_fresh",
-        "quantity": 10.0,
-        "unit": "g"
-      }
-    ]
+    "time": ""
   }
 ]
