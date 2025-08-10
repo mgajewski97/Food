@@ -4,7 +4,7 @@ import {
   fetchJSON,
   showTopBanner,
   loadTranslations,
-  loadUnits,
+  loadDomain,
   loadFavorites,
   state,
   normalizeProduct,
@@ -546,8 +546,8 @@ async function boot() {
   trace('boot:start');
   await loadTranslations();
   trace('i18n');
-  await loadUnits();
-  trace('units');
+  await loadDomain();
+  trace('domain');
   applyTranslations();
   document.documentElement.setAttribute('lang', state.currentLang);
   await loadFavorites();

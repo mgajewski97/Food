@@ -137,6 +137,18 @@ def manifest():
 def service_worker():
     return current_app.send_static_file("service-worker.js")
 
+
+@bp.route("/api/domain")
+def domain():
+    """Return normalized domain data of products, categories and units."""
+    try:
+        with open(PRODUCTS_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception as exc:
+        logger.info(str(exc))
+        return jsonify({"error": str(exc)}), 500
+    return jsonify(data)
+
 @bp.route("/api/products", methods=["GET", "POST", "PUT"])
 def products():
     context = {"endpoint": "/api/products", "args": request.args.to_dict()}

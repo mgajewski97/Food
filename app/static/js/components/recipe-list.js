@@ -6,7 +6,8 @@ import {
   toggleFavorite,
   normalizeRecipe,
   fetchJson,
-  debounce
+  debounce,
+  getProduct
 } from '../helpers.js';
 import { toast } from './toast.js';
 import { openRecipeDetails } from './recipe-detail.js';
@@ -158,7 +159,7 @@ export async function loadRecipes() {
       .map(r => ({
         ...r,
         timeBucket: timeToBucket(r.time),
-        available: (r.ingredients || []).every(i => state.translations.products[i.product])
+        available: (r.ingredients || []).every(i => getProduct(i.product))
       }));
     state.recipesData = processed;
     state.recipesLoaded = true;

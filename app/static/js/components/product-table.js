@@ -5,7 +5,6 @@ import {
   formatPackQuantity,
   getStatusIcon,
   STORAGE_ICONS,
-  CATEGORY_KEYS,
   CATEGORY_ORDER,
   STORAGE_KEYS,
   matchesFilter,
@@ -14,7 +13,11 @@ import {
   fetchJSON,
   isSpice,
   debounce,
-  dlog
+  dlog,
+  productName,
+  categoryName,
+  unitName,
+  getProduct
 } from '../helpers.js';
 import { toast } from './toast.js';
 
@@ -253,7 +256,8 @@ function createFlatRow(p, idx, editable) {
     // name
     const nameTd = document.createElement('td');
     nameTd.className = 'name-cell';
-    nameTd.textContent = t(p.name);
+    nameTd.textContent = productName(p.id);
+    if (!getProduct(p.id)) nameTd.classList.add('opacity-60');
     tr.appendChild(nameTd);
     // quantity with steppers
     const qtyTd = buildQtyCell(p, tr);
@@ -269,7 +273,7 @@ function createFlatRow(p, idx, editable) {
       Object.keys(state.units).forEach(u => {
         const opt = document.createElement('option');
         opt.value = u;
-        opt.textContent = t(u);
+        opt.textContent = unitName(u);
         if (u === p.unit) opt.selected = true;
         unitSel.appendChild(opt);
       });
@@ -281,11 +285,11 @@ function createFlatRow(p, idx, editable) {
     catTd.className = 'category-cell';
     const catSel = document.createElement('select');
     catSel.className = 'select select-bordered w-full';
-    Object.keys(CATEGORY_KEYS).forEach(c => {
+    Object.keys(state.domain.categories).forEach(c => {
       const opt = document.createElement('option');
       opt.value = c;
-      opt.textContent = t(CATEGORY_KEYS[c] || c);
-      if (c === (p.category || 'uncategorized')) opt.selected = true;
+      opt.textContent = categoryName(c);
+      if (c === (p.category || '')) opt.selected = true;
       catSel.appendChild(opt);
     });
     catTd.appendChild(catSel);
@@ -315,16 +319,18 @@ function createFlatRow(p, idx, editable) {
     tr.appendChild(statusTd);
   } else {
     const nameTd = document.createElement('td');
-    nameTd.textContent = t(p.name);
+    nameTd.textContent = productName(p.id);
+    if (!getProduct(p.id)) nameTd.classList.add('opacity-60');
     tr.appendChild(nameTd);
     const qtyTd = document.createElement('td');
     qtyTd.textContent = formatPackQuantity(p);
     tr.appendChild(qtyTd);
-    const unitTd = document.createElement('td');
-    unitTd.textContent = isSpice(p) ? '' : t(p.unit);
-    tr.appendChild(unitTd);
+      const unitTd = document.createElement('td');
+      unitTd.textContent = isSpice(p) ? '' : unitName(p.unit);
+      tr.appendChild(unitTd);
     const catTd = document.createElement('td');
-    catTd.textContent = t(CATEGORY_KEYS[p.category] || p.category);
+    catTd.textContent = categoryName(p.category);
+    if (!state.domain.categories[p.category]) catTd.classList.add('opacity-60');
     tr.appendChild(catTd);
     const storTd = document.createElement('td');
     storTd.textContent = t(STORAGE_KEYS[p.storage] || p.storage);
@@ -362,7 +368,7 @@ export function renderProducts() {
   const term = (search || '').toLowerCase();
   const filtered = data.filter(p =>
     matchesFilter(p, filter) &&
-    (!term || t(p.name).toLowerCase().includes(term) || p.name.toLowerCase().includes(term))
+    (!term || productName(p.id).toLowerCase().includes(term) || p.name.toLowerCase().includes(term))
   );
 
   dlog('renderProducts', filtered.length);
@@ -441,7 +447,10 @@ export function renderProducts() {
           block.appendChild(content);
 
           Object.keys(storages[stor])
-            .sort((a, b) => (CATEGORY_ORDER[a] || 0) - (CATEGORY_ORDER[b] || 0) || t(CATEGORY_KEYS[a] || a).localeCompare(t(CATEGORY_KEYS[b] || b)))
+            .sort((a, b) =>
+              (CATEGORY_ORDER[a] || 0) - (CATEGORY_ORDER[b] || 0) ||
+              categoryName(a).localeCompare(categoryName(b))
+            )
             .forEach(cat => {
               const catBlock = document.createElement('div');
               catBlock.className = 'category-section category-block';
@@ -453,7 +462,8 @@ export function renderProducts() {
               if (state.displayMode === 'mobile') catHeader.classList.add('cursor-pointer');
               const catSpan = document.createElement('span');
               catSpan.className = 'font-medium';
-              catSpan.textContent = t(CATEGORY_KEYS[cat] || cat);
+              catSpan.textContent = categoryName(cat);
+              if (!state.domain.categories[cat]) catSpan.classList.add('opacity-60');
               const catBtn = document.createElement('button');
               catBtn.type = 'button';
               catBtn.className = 'toggle-category ml-auto h-8 w-8 flex items-center justify-center';
@@ -507,13 +517,14 @@ export function renderProducts() {
                   cbTd.appendChild(cb);
                   tr.appendChild(cbTd);
                   const n = document.createElement('td');
-                  n.textContent = t(p.name);
+                  n.textContent = productName(p.id);
+                  if (!getProduct(p.id)) n.classList.add('opacity-60');
                   tr.appendChild(n);
                   const q = buildQtyCell(p, tr);
                   tr.appendChild(q);
-                  const u = document.createElement('td');
-                  u.textContent = t(p.unit);
-                  tr.appendChild(u);
+                    const u = document.createElement('td');
+                    u.textContent = unitName(p.unit);
+                    tr.appendChild(u);
                   const s = document.createElement('td');
                   const ic = getStatusIcon(p);
                   if (ic) {
@@ -523,11 +534,12 @@ export function renderProducts() {
                   tr.appendChild(s);
                 } else {
                   const n = document.createElement('td');
-                  n.textContent = t(p.name);
+                  n.textContent = productName(p.id);
+                  if (!getProduct(p.id)) n.classList.add('opacity-60');
                   const q = document.createElement('td');
                   q.textContent = formatPackQuantity(p);
-                  const u = document.createElement('td');
-                  u.textContent = t(p.unit);
+                    const u = document.createElement('td');
+                    u.textContent = unitName(p.unit);
                   const s = document.createElement('td');
                   const ic = getStatusIcon(p);
                   if (ic) {

@@ -1,4 +1,4 @@
-import { state, t, toggleFavorite } from '../helpers.js';
+import { state, t, toggleFavorite, productName, unitName } from '../helpers.js';
 
 function renderRecipeDetail(r) {
   const nameTr = t(r.name);
@@ -13,14 +13,16 @@ function renderRecipeDetail(r) {
   }
   const metaHtml = meta.length ? `<div class="flex gap-4 text-sm mb-4">${meta.join('')}</div>` : '';
 
-  const ingRows = (r.ingredients || []).map(i => {
-    const nameTr = t(i.product);
-    const name = nameTr && nameTr.trim() !== '' ? nameTr : i.product;
-    const qty = (i.quantity ?? '').toString();
-    const unit = t(i.unit ?? '');
-    const qtyStr = [qty, unit].filter(Boolean).join(' ');
-    return `<tr><td class="pr-4">${name}</td><td class="text-right">${qtyStr}</td></tr>`;
-  }).join('');
+  const ingRows = (r.ingredients || [])
+    .map(i => {
+      const name = productName(i.product);
+      const qty = (i.quantity ?? '').toString();
+      const unit = i.unit ? unitName(i.unit) : '';
+      const qtyStr = [qty, unit].filter(Boolean).join(' ');
+      const unknown = name === t('unknown') ? ' opacity-60' : '';
+      return `<tr><td class="pr-4${unknown}">${name}</td><td class="text-right">${qtyStr}</td></tr>`;
+    })
+    .join('');
 
   const steps = (r.steps || []).map(s => `<li class="mb-2">${s}</li>`).join('');
 
