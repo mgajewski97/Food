@@ -150,12 +150,12 @@ def _load_products_compat():
     return legacy
 
 
-def _load_recipes_compat(locale: str = "pl"):
-    """Return legacy recipe list built from normalized domain data.
+def _load_recipes(locale: str = "pl"):
+    """Return normalized recipes enriched with display names.
 
-    Each ingredient is enriched with resolved product and unit display names
-    for the requested locale while keeping original identifiers so the legacy
-    front-end can operate without changes.
+    Ingredients keep their identifiers while ``productName`` and ``unitName``
+    are resolved for the requested locale. Missing references are kept so the
+    caller can decide how to handle unknown items.
     """
 
     try:
@@ -174,7 +174,7 @@ def _load_recipes_compat(locale: str = "pl"):
     except ValueError as exc:
         raise ValueError(str(exc))
 
-    legacy = []
+    result = []
     for rec in recipes:
         ing_list = []
         for ing in rec.get("ingredients", []):
@@ -182,62 +182,48 @@ def _load_recipes_compat(locale: str = "pl"):
             uid = ing.get("unitId")
 
             prod = products.get(pid)
-            if not pid or not prod:
-                logger.warning(
-                    "recipe %s references missing product %s",
-                    rec.get("id"),
-                    pid,
+            prod_name = None
+            if prod:
+                prod_name = (
+                    prod.get("names", {}).get(locale)
+                    or prod.get("names", {}).get("en")
+                    or prod.get("id")
                 )
-                continue
 
-            unit_key = None
+            unit = units.get(uid)
             unit_name = None
-            if uid:
-                unit = units.get(uid)
-                if not unit:
-                    logger.warning(
-                        "recipe %s references missing unit %s",
-                        rec.get("id"),
-                        uid,
-                    )
-                    continue
-                unit_key = unit.get("id", "").replace("unit.", "")
-                unit_name = unit.get("names", {}).get(locale) or unit.get(
-                    "names", {}
-                ).get("en")
-
-            prod_name = (
-                prod.get("names", {}).get(locale)
-                or prod.get("names", {}).get("en")
-                or prod.get("id")
-            )
+            if unit:
+                unit_name = (
+                    unit.get("names", {}).get(locale)
+                    or unit.get("names", {}).get("en")
+                    or unit.get("id")
+                )
 
             ing_list.append(
                 {
-                    "product": pid,
                     "productId": pid,
                     "productName": prod_name,
-                    "quantity": ing.get("qty"),
-                    "unit": unit_key,
+                    "qty": ing.get("qty"),
                     "unitId": uid,
                     "unitName": unit_name,
+                    "optional": ing.get("optional"),
+                    "note": ing.get("note"),
                 }
             )
 
-        legacy.append(
+        result.append(
             {
                 "id": rec.get("id"),
-                "name": rec.get("id"),
                 "names": rec.get("names", {}),
                 "time": rec.get("time"),
-                "portions": rec.get("portions"),
+                "servings": rec.get("portions"),
                 "steps": rec.get("steps", []),
                 "ingredients": ing_list,
             }
         )
 
-    legacy.sort(key=lambda r: r.get("names", {}).get("pl", "").lower())
-    return legacy
+    result.sort(key=lambda r: r.get("names", {}).get("pl", "").lower())
+    return result
 
 
 def remove_used_products(used_ingredients):
@@ -439,13 +425,13 @@ def ocr_match():
 
 @bp.route("/api/recipes")
 def recipes():
-    """Return legacy recipe list compatible with the front-end."""
+    """Return normalized recipes with resolved display names."""
 
     context = {"endpoint": "/api/recipes", "args": request.args.to_dict()}
     locale = request.args.get("locale", "pl")
     try:
         try:
-            recipes = _load_recipes_compat(locale)
+            recipes = _load_recipes(locale)
         except ValueError as exc:  # pragma: no cover - defensive
             trace_id = log_error_with_trace(exc, context)
             return (
