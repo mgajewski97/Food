@@ -1,29 +1,38 @@
-// FIX: Render & responsive boot (2025-08-09)
-import { t, state, isSpice, stockLevel, fetchJson, debounce, labelProduct } from '../helpers.js';
-import { toast } from './toast.js';
+import {
+  t,
+  state,
+  isSpice,
+  stockLevel,
+  fetchJson,
+  debounce,
+  labelProduct,
+} from "../helpers.js";
+import { toast } from "./toast.js";
 
 function saveShoppingList() {
-  localStorage.setItem('shoppingList', JSON.stringify(state.shoppingList));
+  localStorage.setItem("shoppingList", JSON.stringify(state.shoppingList));
 }
 
 export function addToShoppingList(name, quantity = 1) {
   if (!name) {
-    toast.error(t('notify_error_title'));
+    toast.error(t("notify_error_title"));
     return;
   }
   quantity = parseFloat(quantity) || 1;
-  const existing = state.shoppingList.find(item => item.name === name);
+  const existing = state.shoppingList.find((item) => item.name === name);
   if (existing) {
     existing.quantity += quantity;
     saveShoppingList();
-    const row = document.querySelector(`#shopping-list .shopping-item[data-name="${CSS.escape(name)}"] input`);
+    const row = document.querySelector(
+      `#shopping-list .shopping-item[data-name="${CSS.escape(name)}"] input`,
+    );
     if (row) row.value = existing.quantity;
   } else {
     const item = { name, quantity, inCart: false };
     state.shoppingList.push(item);
     saveShoppingList();
     sortShoppingList();
-    const list = document.getElementById('shopping-list');
+    const list = document.getElementById("shopping-list");
     const newIndex = state.shoppingList.indexOf(item);
     const newRow = renderShoppingItem(item, newIndex);
     const ref = list?.children[newIndex];
@@ -34,110 +43,115 @@ export function addToShoppingList(name, quantity = 1) {
     }
     if (list) [...list.children].forEach((el, i) => (el.dataset.index = i));
   }
-  toast.success(t('manual_add_success'), '', {
-    label: t('toast_go_shopping'),
+  toast.success(t("manual_add_success"), "", {
+    label: t("toast_go_shopping"),
     onClick: () => {
-      const hash = '#shopping';
+      const hash = "#shopping";
       if (location.hash === hash) {
-        window.activateTab('tab-shopping');
+        window.activateTab("tab-shopping");
       } else {
         location.hash = hash;
       }
       renderSuggestions();
       renderShoppingList();
-    }
+    },
   });
 }
 function sortShoppingList() {
   state.shoppingList.sort((a, b) => {
     if (a.inCart && b.inCart) return (a.cartTime || 0) - (b.cartTime || 0);
     if (a.inCart !== b.inCart) return a.inCart ? 1 : -1;
-    return labelProduct(a.name, state.currentLang).localeCompare(labelProduct(b.name, state.currentLang));
+    return labelProduct(a.name, state.currentLang).localeCompare(
+      labelProduct(b.name, state.currentLang),
+    );
   });
 }
 
 function renderShoppingItem(item, idx) {
-  const row = document.createElement('div');
-  row.className = 'shopping-item flex items-center gap-2 h-11 hover:bg-base-200 transition-colors';
+  const row = document.createElement("div");
+  row.className =
+    "shopping-item flex items-center gap-2 h-11 hover:bg-base-200 transition-colors";
   row.dataset.index = idx;
   row.dataset.name = item.name;
-  if (item.inCart) row.classList.add('in-cart');
+  if (item.inCart) row.classList.add("in-cart");
 
-  const stock = (window.APP?.state?.products || []).find(p => p.name === item.name);
+  const stock = (window.APP?.state?.products || []).find(
+    (p) => p.name === item.name,
+  );
   if (stock) {
     const level = stockLevel(stock);
-    if (level === 'low') row.classList.add('product-low');
-    if (level === 'none') row.classList.add('product-missing');
+    if (level === "low") row.classList.add("product-low");
+    if (level === "none") row.classList.add("product-missing");
   }
 
-  const nameWrap = document.createElement('div');
-  nameWrap.className = 'flex items-center gap-1 flex-1 overflow-hidden';
-  const nameEl = document.createElement('span');
-  nameEl.className = 'truncate';
+  const nameWrap = document.createElement("div");
+  nameWrap.className = "flex items-center gap-1 flex-1 overflow-hidden";
+  const nameEl = document.createElement("span");
+  nameEl.className = "truncate";
   const lbl = labelProduct(item.name, state.currentLang);
   nameEl.textContent = lbl;
   nameEl.title = lbl;
-  const unknownLabel = state.currentLang === 'pl' ? 'Nieznane' : 'Unknown';
-  if (lbl === unknownLabel) nameEl.classList.add('opacity-60');
-  if (item.inCart) nameEl.classList.add('line-through');
+  const unknownLabel = state.currentLang === "pl" ? "Nieznane" : "Unknown";
+  if (lbl === unknownLabel) nameEl.classList.add("opacity-60");
+  if (item.inCart) nameEl.classList.add("line-through");
   nameWrap.appendChild(nameEl);
   row.appendChild(nameWrap);
 
-  const qtyWrap = document.createElement('div');
-  qtyWrap.className = 'flex items-center gap-2';
-  const dec = document.createElement('button');
-  dec.type = 'button';
+  const qtyWrap = document.createElement("div");
+  qtyWrap.className = "flex items-center gap-2";
+  const dec = document.createElement("button");
+  dec.type = "button";
   dec.innerHTML = '<i class="fa-solid fa-minus"></i>';
-  dec.className = 'touch-btn';
-  dec.setAttribute('aria-label', t('decrease_quantity'));
+  dec.className = "touch-btn";
+  dec.setAttribute("aria-label", t("decrease_quantity"));
   dec.disabled = item.inCart;
-  const qtyInput = document.createElement('input');
-  qtyInput.type = 'number';
-  qtyInput.min = '1';
+  const qtyInput = document.createElement("input");
+  qtyInput.type = "number";
+  qtyInput.min = "1";
   qtyInput.value = item.quantity;
-  qtyInput.className = 'input input-bordered w-16 h-11 text-center no-spinner';
+  qtyInput.className = "input input-bordered w-16 h-11 text-center no-spinner";
   qtyInput.disabled = item.inCart;
-  const inc = document.createElement('button');
-  inc.type = 'button';
+  const inc = document.createElement("button");
+  inc.type = "button";
   inc.innerHTML = '<i class="fa-solid fa-plus"></i>';
-  inc.className = 'touch-btn';
-  inc.setAttribute('aria-label', t('increase_quantity'));
+  inc.className = "touch-btn";
+  inc.setAttribute("aria-label", t("increase_quantity"));
   inc.disabled = item.inCart;
-  dec.addEventListener('click', () => {
+  dec.addEventListener("click", () => {
     const newVal = Math.max(1, (parseInt(qtyInput.value) || 1) - 1);
     item.quantity = newVal;
     qtyInput.value = newVal;
     saveShoppingList();
   });
-  inc.addEventListener('click', () => {
+  inc.addEventListener("click", () => {
     const newVal = (parseInt(qtyInput.value) || 1) + 1;
     item.quantity = newVal;
     qtyInput.value = newVal;
     saveShoppingList();
   });
   qtyInput.addEventListener(
-    'input',
+    "input",
     debounce(() => {
       const val = Math.max(1, parseInt(qtyInput.value) || 1);
       item.quantity = val;
       qtyInput.value = val;
       saveShoppingList();
-    }, 150)
+    }, 150),
   );
   qtyWrap.append(dec, qtyInput, inc);
   row.appendChild(qtyWrap);
 
-  const cartBtn = document.createElement('button');
-  cartBtn.type = 'button';
+  const cartBtn = document.createElement("button");
+  cartBtn.type = "button";
   cartBtn.innerHTML = '<i class="fa-solid fa-cart-shopping"></i>';
-  cartBtn.className = 'touch-btn';
-  cartBtn.classList.toggle('text-primary', item.inCart);
-  cartBtn.setAttribute('aria-label', t('in_cart'));
-  cartBtn.setAttribute('title', t('in_cart'));
-  cartBtn.setAttribute('aria-pressed', item.inCart);
-  cartBtn.addEventListener('click', async () => {
-    const list = document.getElementById('shopping-list');
-    const oldRow = cartBtn.closest('.shopping-item');
+  cartBtn.className = "touch-btn";
+  cartBtn.classList.toggle("text-primary", item.inCart);
+  cartBtn.setAttribute("aria-label", t("in_cart"));
+  cartBtn.setAttribute("title", t("in_cart"));
+  cartBtn.setAttribute("aria-pressed", item.inCart);
+  cartBtn.addEventListener("click", async () => {
+    const list = document.getElementById("shopping-list");
+    const oldRow = cartBtn.closest(".shopping-item");
     item.inCart = !item.inCart;
     if (item.inCart) {
       item.cartTime = Date.now();
@@ -149,10 +163,13 @@ function renderShoppingItem(item, idx) {
     if (item.inCart && stock && isSpice(stock)) {
       cartBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
       try {
-        await fetchJson('/api/products', { method: 'POST', body: { ...stock, level: 'high', quantity: 0 } });
-        stock.level = 'high';
+        await fetchJson("/api/products", {
+          method: "POST",
+          body: { ...stock, level: "high", quantity: 0 },
+        });
+        stock.level = "high";
       } catch (err) {
-        toast.error(t('notify_error_title'), err.message);
+        toast.error(t("notify_error_title"), err.message);
       }
     }
     saveShoppingList();
@@ -172,19 +189,19 @@ function renderShoppingItem(item, idx) {
       [...list.children].forEach((el, i) => (el.dataset.index = i));
     });
   });
-  const actions = document.createElement('div');
-  actions.className = 'flex items-center gap-2 min-w-[88px] justify-end';
+  const actions = document.createElement("div");
+  actions.className = "flex items-center gap-2 min-w-[88px] justify-end";
   actions.appendChild(cartBtn);
 
-  const delBtn = document.createElement('button');
-  delBtn.type = 'button';
-  delBtn.className = 'touch-btn text-error';
+  const delBtn = document.createElement("button");
+  delBtn.type = "button";
+  delBtn.className = "touch-btn text-error";
   delBtn.innerHTML = '<i class="fa-solid fa-circle-minus"></i>';
-  delBtn.setAttribute('aria-label', t('delete_confirm_button'));
-  delBtn.setAttribute('title', t('delete_confirm_button'));
-  delBtn.addEventListener('click', () => {
-    if (!confirm(t('delete_confirm_button'))) return;
-    const list = document.getElementById('shopping-list');
+  delBtn.setAttribute("aria-label", t("delete_confirm_button"));
+  delBtn.setAttribute("title", t("delete_confirm_button"));
+  delBtn.addEventListener("click", () => {
+    if (!confirm(t("delete_confirm_button"))) return;
+    const list = document.getElementById("shopping-list");
     const idx = parseInt(row.dataset.index, 10);
     state.shoppingList.splice(idx, 1);
     row.remove();
@@ -198,112 +215,122 @@ function renderShoppingItem(item, idx) {
 }
 
 export function renderShoppingList() {
-  const list = document.getElementById('shopping-list');
+  const list = document.getElementById("shopping-list");
   if (!list) return;
   sortShoppingList();
   const frag = document.createDocumentFragment();
-  state.shoppingList.forEach((item, idx) => frag.appendChild(renderShoppingItem(item, idx)));
+  state.shoppingList.forEach((item, idx) =>
+    frag.appendChild(renderShoppingItem(item, idx)),
+  );
   requestAnimationFrame(() => {
-    list.innerHTML = '';
+    list.innerHTML = "";
     list.appendChild(frag);
   });
 }
 
 export function renderSuggestions() {
-  const container = document.getElementById('suggestion-list');
+  const container = document.getElementById("suggestion-list");
   if (!container) return;
-  container.innerHTML = '';
+  container.innerHTML = "";
   const products = window.APP?.state?.products || [];
   const suggestions = products
-    .filter(p => {
+    .filter((p) => {
       if (isSpice(p)) {
-        return ['none', 'low'].includes(p.level);
+        return ["none", "low"].includes(p.level);
       }
-      return p.main && (p.quantity === 0 || (p.threshold != null && p.quantity <= p.threshold));
+      return (
+        p.main &&
+        (p.quantity === 0 || (p.threshold != null && p.quantity <= p.threshold))
+      );
     })
-    .filter(p => !state.dismissedSuggestions.has(p.name))
-    .sort((a, b) => labelProduct(a.id, state.currentLang).localeCompare(labelProduct(b.id, state.currentLang)));
+    .filter((p) => !state.dismissedSuggestions.has(p.name))
+    .sort((a, b) =>
+      labelProduct(a.id, state.currentLang).localeCompare(
+        labelProduct(b.id, state.currentLang),
+      ),
+    );
   const frag = document.createDocumentFragment();
-  suggestions.forEach(p => {
+  suggestions.forEach((p) => {
     let qty = p.threshold != null ? p.threshold : 1;
-    const row = document.createElement('div');
+    const row = document.createElement("div");
     row.className =
-      'suggestion-item flex items-center gap-2 h-11 hover:bg-base-200 transition-colors';
+      "suggestion-item flex items-center gap-2 h-11 hover:bg-base-200 transition-colors";
     const level = stockLevel(p);
-    if (level === 'low') row.classList.add('product-low');
-    if (level === 'none') row.classList.add('product-missing');
+    if (level === "low") row.classList.add("product-low");
+    if (level === "none") row.classList.add("product-missing");
 
-    const nameWrap = document.createElement('div');
-    nameWrap.className = 'flex items-center gap-1 flex-1 overflow-hidden';
-    const nameEl = document.createElement('span');
-    nameEl.className = 'truncate';
+    const nameWrap = document.createElement("div");
+    nameWrap.className = "flex items-center gap-1 flex-1 overflow-hidden";
+    const nameEl = document.createElement("span");
+    nameEl.className = "truncate";
     const lbl = labelProduct(p.id, state.currentLang);
     nameEl.textContent = lbl;
     nameEl.title = lbl;
-    const unknownLabel = state.currentLang === 'pl' ? 'Nieznane' : 'Unknown';
-    if (!lbl || lbl === unknownLabel) nameEl.classList.add('opacity-60');
+    const unknownLabel = state.currentLang === "pl" ? "Nieznane" : "Unknown";
+    if (!lbl || lbl === unknownLabel) nameEl.classList.add("opacity-60");
     nameWrap.appendChild(nameEl);
     row.appendChild(nameWrap);
 
-    const qtyWrap = document.createElement('div');
-    qtyWrap.className = 'flex items-center gap-2';
-  const dec = document.createElement('button');
-  dec.type = 'button';
-  dec.innerHTML = '<i class="fa-solid fa-minus"></i>';
-  dec.className = 'touch-btn';
-  dec.setAttribute('aria-label', t('decrease_quantity'));
-  const qtyInput = document.createElement('input');
-    qtyInput.type = 'number';
-    qtyInput.min = '1';
+    const qtyWrap = document.createElement("div");
+    qtyWrap.className = "flex items-center gap-2";
+    const dec = document.createElement("button");
+    dec.type = "button";
+    dec.innerHTML = '<i class="fa-solid fa-minus"></i>';
+    dec.className = "touch-btn";
+    dec.setAttribute("aria-label", t("decrease_quantity"));
+    const qtyInput = document.createElement("input");
+    qtyInput.type = "number";
+    qtyInput.min = "1";
     qtyInput.value = qty;
-    qtyInput.className = 'input input-bordered w-16 h-11 text-center no-spinner';
-  const inc = document.createElement('button');
-  inc.type = 'button';
-  inc.innerHTML = '<i class="fa-solid fa-plus"></i>';
-  inc.className = 'touch-btn';
-  inc.setAttribute('aria-label', t('increase_quantity'));
-    dec.addEventListener('click', () => {
+    qtyInput.className =
+      "input input-bordered w-16 h-11 text-center no-spinner";
+    const inc = document.createElement("button");
+    inc.type = "button";
+    inc.innerHTML = '<i class="fa-solid fa-plus"></i>';
+    inc.className = "touch-btn";
+    inc.setAttribute("aria-label", t("increase_quantity"));
+    dec.addEventListener("click", () => {
       qty = Math.max(1, qty - 1);
       qtyInput.value = qty;
     });
-    inc.addEventListener('click', () => {
+    inc.addEventListener("click", () => {
       qty += 1;
       qtyInput.value = qty;
     });
     qtyInput.addEventListener(
-      'input',
+      "input",
       debounce(() => {
         qty = Math.max(1, parseInt(qtyInput.value) || 1);
         qtyInput.value = qty;
-      }, 150)
+      }, 150),
     );
     qtyWrap.append(dec, qtyInput, inc);
     if (p.quantity > 0) {
-      const owned = document.createElement('span');
-      owned.className = 'owned-info';
-      owned.textContent = `(${t('owned')}: ${p.quantity})`;
+      const owned = document.createElement("span");
+      owned.className = "owned-info";
+      owned.textContent = `(${t("owned")}: ${p.quantity})`;
       qtyWrap.appendChild(owned);
     }
     row.appendChild(qtyWrap);
 
-    const accept = document.createElement('button');
-    accept.type = 'button';
+    const accept = document.createElement("button");
+    accept.type = "button";
     accept.innerHTML = '<i class="fa-regular fa-circle-check"></i>';
-    accept.className = 'touch-btn text-success';
-    accept.setAttribute('aria-label', t('accept_action'));
-    accept.setAttribute('title', t('accept_action'));
-    accept.addEventListener('click', () => {
+    accept.className = "touch-btn text-success";
+    accept.setAttribute("aria-label", t("accept_action"));
+    accept.setAttribute("title", t("accept_action"));
+    accept.addEventListener("click", () => {
       state.dismissedSuggestions.add(p.name);
       addToShoppingList(p.name, qty);
       row.remove();
     });
-    const reject = document.createElement('button');
-    reject.type = 'button';
+    const reject = document.createElement("button");
+    reject.type = "button";
     reject.innerHTML = '<i class="fa-regular fa-circle-xmark"></i>';
-    reject.className = 'touch-btn text-error';
-    reject.setAttribute('aria-label', t('reject_action'));
-    reject.setAttribute('title', t('reject_action'));
-    reject.addEventListener('click', () => {
+    reject.className = "touch-btn text-error";
+    reject.setAttribute("aria-label", t("reject_action"));
+    reject.setAttribute("title", t("reject_action"));
+    reject.addEventListener("click", () => {
       state.dismissedSuggestions.add(p.name);
       row.remove();
     });
@@ -312,8 +339,7 @@ export function renderSuggestions() {
     frag.appendChild(row);
   });
   requestAnimationFrame(() => {
-    container.innerHTML = '';
+    container.innerHTML = "";
     container.appendChild(frag);
   });
 }
-

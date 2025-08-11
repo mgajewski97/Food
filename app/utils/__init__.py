@@ -7,16 +7,17 @@
 
 import json
 import logging
+import math
 import os
 import threading
 from typing import Any, Callable, Dict, List, Optional, Tuple
-import math
 
 import jsonschema
 
 DEFAULT_UNIT = "szt"
 
 logger = logging.getLogger(__name__)
+
 
 def _safe_float(value: Any, default: float = 0.0) -> float:
     """Convert value to float or return default on failure."""
@@ -27,6 +28,7 @@ def _safe_float(value: Any, default: float = 0.0) -> float:
         return val
     except (TypeError, ValueError):
         return default
+
 
 def _load_schema(schema_path: str) -> Optional[Dict[str, Any]]:
     """Load JSON schema from path if it exists."""
@@ -73,11 +75,15 @@ def _validate(
         valid_items = []
         for idx, item in enumerate(data):
             validator_to_use = item_validator or validator
-            item_errors = sorted(validator_to_use.iter_errors(item), key=lambda e: e.path)
+            item_errors = sorted(
+                validator_to_use.iter_errors(item), key=lambda e: e.path
+            )
             if item_errors:
                 for err in item_errors:
                     path = ".".join(str(p) for p in err.path)
-                    errors.append(f"item {idx}{('.' + path) if path else ''}: {err.message}")
+                    errors.append(
+                        f"item {idx}{('.' + path) if path else ''}: {err.message}"
+                    )
             else:
                 valid_items.append(item)
         return valid_items, errors
@@ -90,6 +96,7 @@ def _validate(
         return None, errors
 
     return data, []
+
 
 def normalize_product(data: Dict[str, Any]) -> Dict[str, Any]:
     """Return product dict with defaults and sanitized numeric fields."""
@@ -199,8 +206,12 @@ def file_lock(path: str) -> threading.Lock:
 
 # --- Validation & IO helpers -------------------------------------------------
 
+
 def load_json_validated(
-    path: str, schema_path: str, *, normalize: Optional[Callable[[Dict[str, Any]], Dict[str, Any]]] = None
+    path: str,
+    schema_path: str,
+    *,
+    normalize: Optional[Callable[[Dict[str, Any]], Dict[str, Any]]] = None,
 ) -> List[Dict[str, Any]]:
     """Load JSON file, normalize entries and validate against schema."""
     with open(path, "r", encoding="utf-8") as f:
@@ -216,9 +227,7 @@ def load_json_validated(
         if errors:
             err = errors[0]
             field = ".".join(str(p) for p in err.path) or "(root)"
-            raise ValueError(
-                f"{os.path.basename(path)}[{idx}].{field}: {err.message}"
-            )
+            raise ValueError(f"{os.path.basename(path)}[{idx}].{field}: {err.message}")
         result.append(item)
     return result
 
@@ -243,6 +252,7 @@ def safe_write(path: str, data: Any) -> None:
         json.dump(data, f, ensure_ascii=False, indent=2)
     os.replace(tmp, path)
 
+
 def load_json(
     path: str,
     default: Any,
@@ -263,6 +273,7 @@ def load_json(
     if return_errors:
         return validated if validated is not None else default, errors
     return validated if validated is not None else default
+
 
 def save_json(
     path: str,
@@ -286,8 +297,6 @@ def validate_file(
     coerce: Optional[Callable[[Any], Any]] = None,
 ) -> Tuple[int, List[str]]:
     """Validate file returning number of valid entries and list of errors."""
-    data, errors = load_json(
-        path, default, schema_path, coerce, return_errors=True
-    )
+    data, errors = load_json(path, default, schema_path, coerce, return_errors=True)
     count = len(data) if isinstance(data, list) else (1 if data is not None else 0)
     return count, errors

@@ -1,8 +1,9 @@
 import os
 import sys
+
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-from app import create_app
 import app.routes as routes
+from app import create_app
 
 
 def test_products_error_returns_traceid(monkeypatch):

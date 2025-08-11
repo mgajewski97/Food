@@ -6,6 +6,27 @@ repos:
         name: Format JSON
         args: ["--autofix", "--indent=2", "--no-ensure-ascii"]
         files: ^app/data/.*\.json$
+  - repo: https://github.com/psf/black
+    rev: 24.4.2
+    hooks:
+      - id: black
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.0.0
+    hooks:
+      - id: flake8
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.6.0
+    hooks:
+      - id: prettier
+        additional_dependencies: ["prettier@3.6.0"]
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v9.13.0
+    hooks:
+      - id: eslint
   - repo: local
     hooks:
       - id: validate-data
