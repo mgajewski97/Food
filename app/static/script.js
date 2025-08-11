@@ -10,7 +10,8 @@ import {
   normalizeProduct,
   applyTranslations,
   isSpice,
-  debounce
+  debounce,
+  DEBUG
 } from './js/helpers.js';
 import * as ProductTable from './js/components/product-table.js';
 import * as Shopping from './js/components/shopping-list.js';
@@ -19,12 +20,8 @@ import { initReceiptImport } from './js/components/ocr-modal.js';
 import { toast, showNotification, checkLowStockToast } from './js/components/toast.js';
 import './js/components/recipe-detail.js';
 
-window.__BOOT_TRACE = [];
 function trace(p){
-  window.__BOOT_TRACE.push(p);
-  console.info('[BOOT]', p);
-  const el=document.getElementById('boot-trace');
-  if(el){ el.textContent = window.__BOOT_TRACE.join(' › ');} 
+  if (DEBUG) console.info('[BOOT]', p);
 }
 window.trace = trace;
 
@@ -54,10 +51,10 @@ async function loadProducts() {
     ProductTable.renderProducts();
     Shopping.renderSuggestions();
     checkLowStockToast(APP.state.products, activateTab, Shopping.renderSuggestions, Shopping.renderShoppingList);
-    if (!APP._productsLoaded) {
-      console.info('Products loaded:', APP.state.products.length);
-      APP._productsLoaded = true;
-    }
+      if (!APP._productsLoaded) {
+        if (DEBUG) console.info('Products loaded:', APP.state.products.length);
+        APP._productsLoaded = true;
+      }
     trace('loadProducts:ok');
   } catch (e) {
     console.error(e);

@@ -17,7 +17,8 @@ import {
   productName,
   categoryName,
   unitName,
-  getProduct
+  getProduct,
+  DEBUG
 } from '../helpers.js';
 import { toast } from './toast.js';
 
@@ -594,7 +595,7 @@ export function renderProducts() {
     }
     updateDeleteButton();
     const summaryIds = data.slice(0, 3).map(p => p.id);
-    console.debug('renderProducts', data.length, summaryIds);
+    if (DEBUG) console.debug('renderProducts', data.length, summaryIds);
   });
 }
 
