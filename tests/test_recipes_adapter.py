@@ -16,6 +16,11 @@ def test_recipes_endpoint_returns_normalized_items():
     assert len(data) > 0
     sample = data[0]
     assert 'id' in sample and 'names' in sample and 'servings' in sample
+    # stable shape defaults on recipe
+    assert sample['amount'] == 0
+    assert sample['threshold'] == 0
+    assert sample['storage'] == 'pantry'
+    assert sample['flags'] is False
     assert isinstance(sample.get('ingredients'), list)
     assert sample['ingredients'], 'ingredients should not be empty'
     first_ing = sample['ingredients'][0]
