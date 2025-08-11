@@ -51,30 +51,43 @@
     <span data-i18n="error">Error</span>
     <button id="health-retry" class="btn btn-sm" data-i18n="retry">Retry</button>
 </div>
-<div class="corner-icons flex justify-end gap-2 md:gap-3 bg-base-100 z-10">
-    <button id="layout-toggle" aria-label="Toggle layout" class="text-xl p-2 bg-transparent border-0">
-        <i id="layout-icon" class="fa-solid fa-mobile-screen-button"></i>
-    </button>
-    <button id="lang-toggle" aria-label="Toggle language" class="text-xl p-2 bg-transparent border-0">PL</button>
-      <button id="theme-toggle" aria-label="Toggle theme" class="text-xl p-2 bg-transparent border-0">
-          <i id="theme-icon" class="fa-solid fa-desktop"></i>
-      </button>
-    <button id="install-btn" aria-label="Install app" class="text-xl p-2 bg-transparent border-0" style="display:none;">
-        <i class="fa-solid fa-download"></i>
-    </button>
-    <button id="settings-btn" aria-label="Settings" class="text-xl p-2 bg-transparent border-0">
-        <i class="fa-solid fa-gear"></i>
-    </button>
-</div>
 <div id="notification-container" class="toast toast-end top-auto bottom-[4.5rem] z-40" aria-live="polite"></div>
-<div id="top-banner-container" class="sticky top-0 z-20"></div>
-<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-4 md:pt-6 space-y-4 main-container">
-    <div class="tabs tabs-bordered flex-nowrap overflow-x-auto whitespace-nowrap mb-6 desktop-nav">
+<div id="top-banner-container" class="sticky top-0 z-30"></div>
+<header class="app-bar bg-base-100 px-4 sm:px-6 lg:px-8">
+  <div class="left flex items-center gap-2">
+    <span class="app-title font-bold text-lg">Food App</span>
+    <span id="locale-chip" class="badge">PL</span>
+  </div>
+  <div class="tabs-wrap">
+    <div class="tabs tabs-bordered flex-nowrap overflow-x-auto whitespace-nowrap desktop-nav">
         <a class="tab tab-active font-bold" data-tab-target="tab-products" data-i18n="tab_products">Produkty</a>
         <a class="tab" data-tab-target="tab-recipes" data-i18n="tab_recipes">Przepisy</a>
         <a class="tab" data-tab-target="tab-history" data-i18n="tab_history">Historia dań</a>
         <a class="tab" data-tab-target="tab-shopping" data-i18n="tab_shopping">Lista zakupów</a>
     </div>
+  </div>
+  <div class="actions flex justify-end gap-2 md:gap-3 pointer-events-auto">
+    <button id="layout-toggle" aria-label="Toggle layout" class="text-xl p-2 bg-transparent border-0">
+        <i id="layout-icon" class="fa-solid fa-mobile-screen-button"></i>
+    </button>
+    <button id="lang-toggle" aria-label="Toggle language" class="flex items-center gap-1 text-xl p-2 bg-transparent border-0">
+        <i class="fa-solid fa-language"></i>
+        <span class="action-label hidden md:inline" data-i18n="language">Language</span>
+    </button>
+      <button id="theme-toggle" aria-label="Toggle theme" class="flex items-center gap-1 text-xl p-2 bg-transparent border-0">
+          <i id="theme-icon" class="fa-solid fa-desktop"></i>
+          <span class="action-label hidden md:inline" data-i18n="theme">Theme</span>
+      </button>
+    <button id="install-btn" aria-label="Install app" class="text-xl p-2 bg-transparent border-0" style="display:none;">
+        <i class="fa-solid fa-download"></i>
+    </button>
+    <button id="settings-btn" aria-label="Settings" class="flex items-center gap-1 text-xl p-2 bg-transparent border-0">
+        <i class="fa-solid fa-gear"></i>
+        <span class="action-label hidden md:inline" data-i18n="tab_settings">Settings</span>
+    </button>
+  </div>
+</header>
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-4 md:pt-6 space-y-4 main-container">
         <div id="tab-products" class="tab-panel">
             <h1 class="text-xl md:text-2xl font-semibold mb-3 md:mb-4" data-i18n="heading_products">Produkty</h1>
             <div id="controls" class="flex flex-wrap items-center gap-4 mb-4">

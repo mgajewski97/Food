@@ -12,6 +12,30 @@ html[data-theme='dark'] {
   height: 3rem;
 }
 
+/* Header bar layout */
+.app-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.app-bar .tabs-wrap {
+  overflow-x: auto;
+}
+
+.app-bar .actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  pointer-events: auto;
+  z-index: 10;
+}
+
 html[data-layout="mobile"] #controls {
   flex-direction: column;
   align-items: stretch;

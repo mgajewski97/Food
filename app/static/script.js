@@ -374,12 +374,17 @@ function initNavigationAndEvents() {
   initAddForm();
 
   const langBtn = document.getElementById('lang-toggle');
-  langBtn.textContent = state.currentLang.toUpperCase();
+  const localeChip = document.getElementById('locale-chip');
+  if (localeChip) {
+    localeChip.textContent = state.currentLang.toUpperCase();
+  }
   langBtn.addEventListener('click', () => {
     const scroll = window.scrollY;
     state.currentLang = state.currentLang === 'pl' ? 'en' : 'pl';
     localStorage.setItem('lang', state.currentLang);
-    langBtn.textContent = state.currentLang.toUpperCase();
+    if (localeChip) {
+      localeChip.textContent = state.currentLang.toUpperCase();
+    }
     document.documentElement.setAttribute('lang', state.currentLang);
     applyTranslations();
     ProductTable.renderProducts();
