@@ -238,9 +238,12 @@ export async function saveProduct(payload) {
     toast.success(t('save_success'), '', {
       label: t('toast_go_products'),
       onClick: () => {
-        window.activateTab('tab-products');
-        localStorage.setItem('activeTab', 'tab-products');
-        history.pushState({ tab: 'tab-products' }, '');
+        const hash = '#products';
+        if (location.hash === hash) {
+          window.activateTab('tab-products');
+        } else {
+          location.hash = hash;
+        }
       }
     });
   } catch (err) {

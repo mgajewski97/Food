@@ -37,9 +37,12 @@ export function addToShoppingList(name, quantity = 1) {
   toast.success(t('manual_add_success'), '', {
     label: t('toast_go_shopping'),
     onClick: () => {
-      window.activateTab('tab-shopping');
-      localStorage.setItem('activeTab', 'tab-shopping');
-      history.pushState({ tab: 'tab-shopping' }, '');
+      const hash = '#shopping';
+      if (location.hash === hash) {
+        window.activateTab('tab-shopping');
+      } else {
+        location.hash = hash;
+      }
       renderSuggestions();
       renderShoppingList();
     }
