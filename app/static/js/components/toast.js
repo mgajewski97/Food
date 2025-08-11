@@ -86,9 +86,12 @@ export function showLowStockToast(activateTab, renderSuggestions, renderShopping
   btn.dataset.action = 'shopping';
   btn.textContent = t('toast_go_shopping');
   btn.addEventListener('click', () => {
-    activateTab('tab-shopping');
-    localStorage.setItem('activeTab', 'tab-shopping');
-    history.pushState({ tab: 'tab-shopping' }, '');
+    const hash = '#shopping';
+    if (location.hash === hash) {
+      activateTab('tab-shopping');
+    } else {
+      location.hash = hash;
+    }
     renderSuggestions();
     renderShoppingList();
     alert.remove();

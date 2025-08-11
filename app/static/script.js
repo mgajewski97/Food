@@ -175,32 +175,55 @@ async function activateTab(targetId) {
   APP.activeTab = targetId;
 }
 
+const hashToTab = hash => {
+  const id = (hash || '').replace('#', '');
+  const map = {
+    products: 'tab-products',
+    recipes: 'tab-recipes',
+    history: 'tab-history',
+    shopping: 'tab-shopping'
+  };
+  return map[id] || 'tab-products';
+};
+
+const tabToHash = tabId => {
+  const map = {
+    'tab-products': '#products',
+    'tab-recipes': '#recipes',
+    'tab-history': '#history',
+    'tab-shopping': '#shopping'
+  };
+  return map[tabId] || '#products';
+};
+
+async function handleTabClick(e) {
+  const target = e.currentTarget.dataset.tabTarget;
+  const hash = tabToHash(target);
+  if (location.hash === hash) {
+    await activateTab(target);
+  } else {
+    location.hash = hash;
+  }
+}
+
 function mountNavigation() {
   document.querySelectorAll('[data-tab-target]').forEach(tab => {
-    tab.addEventListener('click', async () => {
-      const target = tab.dataset.tabTarget;
-      if (target === APP.activeTab) return;
-      await activateTab(target);
-      localStorage.setItem('activeTab', target);
-      history.pushState({ tab: target }, '');
-    }, { once: false });
+    tab.removeEventListener('click', handleTabClick);
+    tab.addEventListener('click', handleTabClick);
   });
-  const initial = localStorage.getItem('activeTab') || 'tab-products';
-  history.replaceState({ tab: initial }, '');
-  window.addEventListener('popstate', async e => {
-    const target = e.state?.tab || 'tab-products';
-    await activateTab(target);
-    localStorage.setItem('activeTab', target);
-  });
+  if (!APP._hashBound) {
+    window.addEventListener('hashchange', () => {
+      const target = hashToTab(location.hash);
+      activateTab(target);
+    });
+    APP._hashBound = true;
+  }
 }
 
 window.addEventListener('pageshow', e => {
   if (e.persisted) {
-    const target = localStorage.getItem('activeTab') || 'tab-products';
-    if (target === 'tab-products') {
-      resetProductFilters();
-      ProductTable.renderProducts();
-    }
+    const target = hashToTab(location.hash);
+    activateTab(target);
   }
 });
 
@@ -560,8 +583,14 @@ function initNavigationAndEvents() {
 
 function initialRender() {
   APP.state.view = 'grouped';
-  resetProductFilters();
-  activateTab('tab-products');
+  const initial = hashToTab(location.hash);
+  if (initial === 'tab-products') {
+    resetProductFilters();
+  }
+  activateTab(initial);
+  if (!location.hash) {
+    location.hash = tabToHash(initial);
+  }
 }
 
 async function boot() {
