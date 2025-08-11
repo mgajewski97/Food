@@ -1,23 +1,22 @@
 import { state, t, toggleFavorite, productName, unitName } from '../helpers.js';
 
 function renderRecipeDetail(r) {
-  const nameTr = t(r.name);
-  const title = nameTr && nameTr.trim() !== '' ? nameTr : r.name;
+  const title = r.names?.[state.currentLang] || r.names?.en || r.id;
 
   const meta = [];
   if (r.time) {
     meta.push(`<div class="flex items-center gap-1"><i class="fa-regular fa-clock"></i><span>${r.time}</span></div>`);
   }
-  if (r.portions != null) {
-    meta.push(`<div class="flex items-center gap-1"><i class="fa-solid fa-users"></i><span>${r.portions}</span></div>`);
+  if (r.servings != null) {
+    meta.push(`<div class="flex items-center gap-1"><i class="fa-solid fa-users"></i><span>${r.servings}</span></div>`);
   }
   const metaHtml = meta.length ? `<div class="flex gap-4 text-sm mb-4">${meta.join('')}</div>` : '';
 
   const ingRows = (r.ingredients || [])
     .map(i => {
-      const name = productName(i.product);
-      const qty = (i.quantity ?? '').toString();
-      const unit = i.unit ? unitName(i.unit) : '';
+      const name = i.productName || productName(i.productId) || t('unknown');
+      const qty = (i.qty ?? '').toString();
+      const unit = i.unitName || (i.unitId ? unitName(i.unitId) : '');
       const qtyStr = [qty, unit].filter(Boolean).join(' ');
       const unknown = name === t('unknown') ? ' opacity-60' : '';
       return `<tr><td class="pr-4${unknown}">${name}</td><td class="text-right">${qtyStr}</td></tr>`;
@@ -26,7 +25,7 @@ function renderRecipeDetail(r) {
 
   const steps = (r.steps || []).map(s => `<li class="mb-2">${s}</li>`).join('');
 
-  const favIcon = state.favoriteRecipes.has(r.name)
+  const favIcon = state.favoriteRecipes.has(r.id)
     ? '<i class="fa-solid fa-heart"></i>'
     : '<i class="fa-regular fa-heart"></i>';
 
@@ -63,8 +62,8 @@ export function openRecipeDetails(r) {
     const prev = favBtn.innerHTML;
     favBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
     try {
-      await toggleFavorite(r.name);
-      favBtn.innerHTML = state.favoriteRecipes.has(r.name)
+      await toggleFavorite(r.id);
+      favBtn.innerHTML = state.favoriteRecipes.has(r.id)
         ? '<i class="fa-solid fa-heart"></i>'
         : '<i class="fa-regular fa-heart"></i>';
       favChanged = true;
@@ -85,4 +84,3 @@ export function openRecipeDetails(r) {
 
   modal.showModal();
 }
-

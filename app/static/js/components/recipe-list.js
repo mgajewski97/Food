@@ -4,7 +4,6 @@ import {
   parseTimeToMinutes,
   timeToBucket,
   toggleFavorite,
-  normalizeRecipe,
   fetchJson,
   debounce,
   getProduct
@@ -21,16 +20,16 @@ import { openRecipeDetails } from './recipe-detail.js';
 export function renderRecipes() {
   const list = document.getElementById('recipe-list');
   if (!list) return;
-  let data = state.recipesData.slice();
+  let data = (state.domain.recipes || []).slice();
   if (state.recipeTimeFilter) data = data.filter(r => r.timeBucket === state.recipeTimeFilter);
   if (state.recipePortionsFilter) {
     if (state.recipePortionsFilter === '5+') {
-      data = data.filter(r => (r.portions || 0) >= 5);
+      data = data.filter(r => (r.servings || 0) >= 5);
     } else {
-      data = data.filter(r => String(r.portions) === state.recipePortionsFilter);
+      data = data.filter(r => String(r.servings) === state.recipePortionsFilter);
     }
   }
-  if (state.showFavoritesOnly) data = data.filter(r => state.favoriteRecipes.has(r.name));
+  if (state.showFavoritesOnly) data = data.filter(r => state.favoriteRecipes.has(r.id));
   data.sort((a, b) => {
     if (state.recipeSortField === 'time') {
       const ta = parseTimeToMinutes(a.time);
@@ -40,11 +39,13 @@ export function renderRecipes() {
       return state.recipeSortDir === 'asc' ? taVal - tbVal : tbVal - taVal;
     }
     if (state.recipeSortField === 'portions') {
-      const pa = a.portions == null ? Infinity : a.portions;
-      const pb = b.portions == null ? Infinity : b.portions;
+      const pa = a.servings == null ? Infinity : a.servings;
+      const pb = b.servings == null ? Infinity : b.servings;
       return state.recipeSortDir === 'asc' ? pa - pb : pb - pa;
     }
-    return a.name.localeCompare(b.name);
+    const an = a.names?.[state.currentLang] || a.names?.en || a.id;
+    const bn = b.names?.[state.currentLang] || b.names?.en || b.id;
+    return an.localeCompare(bn);
   });
   const frag = document.createDocumentFragment();
   if (data.length === 0) {
@@ -67,8 +68,8 @@ export function renderRecipes() {
       titleWrap.className = 'flex items-center gap-2';
       const title = document.createElement('h3');
       title.className = 'card-title';
-      const nameTr = t(r.name);
-      title.textContent = nameTr && nameTr.trim() !== '' ? nameTr : r.name;
+      const nameStr = r.names?.[state.currentLang] || r.names?.en || r.id;
+      title.textContent = nameStr;
       titleWrap.appendChild(title);
       if (r.available) {
         const badge = document.createElement('span');
@@ -78,7 +79,7 @@ export function renderRecipes() {
       }
       const favBtn = document.createElement('button');
       favBtn.className = 'btn btn-ghost btn-xs';
-      favBtn.innerHTML = state.favoriteRecipes.has(r.name)
+      favBtn.innerHTML = state.favoriteRecipes.has(r.id)
         ? '<i class="fa-solid fa-heart"></i>'
         : '<i class="fa-regular fa-heart"></i>';
       favBtn.addEventListener('click', async e => {
@@ -87,11 +88,11 @@ export function renderRecipes() {
         const prev = favBtn.innerHTML;
         favBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
         try {
-          await toggleFavorite(r.name);
-          favBtn.innerHTML = state.favoriteRecipes.has(r.name)
+          await toggleFavorite(r.id);
+          favBtn.innerHTML = state.favoriteRecipes.has(r.id)
             ? '<i class="fa-solid fa-heart"></i>'
             : '<i class="fa-regular fa-heart"></i>';
-          if (state.showFavoritesOnly && !state.favoriteRecipes.has(r.name)) {
+          if (state.showFavoritesOnly && !state.favoriteRecipes.has(r.id)) {
             card.remove();
           }
         } catch (err) {
@@ -115,12 +116,12 @@ export function renderRecipes() {
         timeDiv.appendChild(span);
         meta.appendChild(timeDiv);
       }
-      if (r.portions != null) {
+      if (r.servings != null) {
         const portionsDiv = document.createElement('div');
         portionsDiv.className = 'flex items-center gap-1';
         portionsDiv.innerHTML = '<i class="fa-solid fa-users"></i>';
         const span = document.createElement('span');
-        span.textContent = String(r.portions);
+        span.textContent = String(r.servings);
         portionsDiv.appendChild(span);
         meta.appendChild(portionsDiv);
       }
@@ -141,7 +142,7 @@ export function renderRecipes() {
 }
 
 export async function loadRecipes() {
-  if (state.recipesLoaded || state.recipesLoading) return state.recipesData;
+  if (state.recipesLoaded || state.recipesLoading) return state.domain.recipes;
   const panel = document.getElementById('tab-recipes');
   if (panel && panel.style.display === 'none') {
     if (!state.recipesLoadQueued) {
@@ -149,18 +150,18 @@ export async function loadRecipes() {
       tab?.addEventListener('click', () => loadRecipes(), { once: true });
       state.recipesLoadQueued = true;
     }
-    return state.recipesData;
+    return state.domain.recipes;
   }
   state.recipesLoading = true;
   try {
-    const data = await fetchJson('/api/recipes');
-    const processed = data
-      .map(r => normalizeRecipe(r))
-      .map(r => ({
-        ...r,
-        timeBucket: timeToBucket(r.time),
-        available: (r.ingredients || []).every(i => getProduct(i.product))
-      }));
+    const locale = state.currentLang || 'pl';
+    const data = await fetchJson(`/api/recipes?locale=${locale}`);
+    const processed = data.map(r => ({
+      ...r,
+      timeBucket: timeToBucket(r.time),
+      available: (r.ingredients || []).every(i => getProduct(i.productId))
+    }));
+    state.domain.recipes = processed;
     state.recipesData = processed;
     state.recipesLoaded = true;
     renderRecipes();

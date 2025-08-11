@@ -90,7 +90,7 @@ export const state = {
   favoriteRecipes: new Set(storedFavs),
   currentLang: localStorage.getItem('lang') || 'pl',
   uiTranslations: { pl: {}, en: {} },
-  domain: { products: {}, categories: {}, units: {}, aliases: {} },
+  domain: { products: {}, categories: {}, units: {}, aliases: {}, recipes: [] },
   units: {},
   lowStockToastShown: false
 };
@@ -263,7 +263,7 @@ export async function loadDomain() {
     const data = await fetchJson('/api/domain');
     window.__domain = data;
     const domainData = data.domain || data;
-    state.domain = { products: {}, categories: {}, units: {}, aliases: {} };
+    state.domain = { products: {}, categories: {}, units: {}, aliases: {}, recipes: [] };
     (domainData.products || []).forEach(p => {
       state.domain.products[p.id] = p;
       (p.aliases || []).forEach(a => {
@@ -300,7 +300,7 @@ export async function loadDomain() {
     window.trace?.('loadDomain:ok');
   } catch (err) {
     console.error('Failed to load domain', err);
-    state.domain = { products: {}, categories: {}, units: {}, aliases: {} };
+    state.domain = { products: {}, categories: {}, units: {}, aliases: {}, recipes: [] };
     showTopBanner('Failed to load domain', {
       actionLabel: t('retry'),
       onAction: loadDomain
@@ -383,13 +383,13 @@ export async function loadFavorites() {
   }
 }
 
-export async function toggleFavorite(name) {
-  if (!name) throw new Error('invalid name');
-  const had = state.favoriteRecipes.has(name);
+export async function toggleFavorite(id) {
+  if (!id) throw new Error('invalid id');
+  const had = state.favoriteRecipes.has(id);
   if (had) {
-    state.favoriteRecipes.delete(name);
+    state.favoriteRecipes.delete(id);
   } else {
-    state.favoriteRecipes.add(name);
+    state.favoriteRecipes.add(id);
   }
   const arr = Array.from(state.favoriteRecipes);
   localStorage.setItem('favoriteRecipes', JSON.stringify(arr));
@@ -400,8 +400,8 @@ export async function toggleFavorite(name) {
     });
   } catch (err) {
     // revert change on failure
-    if (had) state.favoriteRecipes.add(name);
-    else state.favoriteRecipes.delete(name);
+    if (had) state.favoriteRecipes.add(id);
+    else state.favoriteRecipes.delete(id);
     localStorage.setItem('favoriteRecipes', JSON.stringify(Array.from(state.favoriteRecipes)));
     throw err;
   }
