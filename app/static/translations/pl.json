@@ -143,6 +143,8 @@
   "Note": "Notatka",
   "reject": "ukryj",
   "reject_action": "Odrzuć",
+  "reload": "Przeładuj",
+  "reload_to_update": "Przeładuj, aby zaktualizować",
   "remove": "Usuń",
   "resolve": "Rozwiąż",
   "retry": "Ponów",

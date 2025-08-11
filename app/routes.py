@@ -250,7 +250,7 @@ def remove_used_products(used_ingredients):
         safe_write(PRODUCTS_PATH, products)
 
 
-APP_VERSION = "3"
+APP_VERSION = "4"
 
 
 @bp.route("/")

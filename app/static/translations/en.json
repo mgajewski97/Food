@@ -143,6 +143,8 @@
   "Note": "Note",
   "reject": "reject",
   "reject_action": "Reject",
+  "reload": "Reload",
+  "reload_to_update": "Reload to update",
   "remove": "Remove",
   "resolve": "Resolve",
   "retry": "Retry",
