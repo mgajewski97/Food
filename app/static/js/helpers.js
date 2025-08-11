@@ -53,7 +53,7 @@ export const STORAGE_ICONS = {
   freezer: '❄️'
 };
 
-export const DEBUG = false;
+export const DEBUG = Boolean(window.DEBUG);
 export function dlog(...args) {
   if (DEBUG) console.warn(...args);
 }
@@ -292,10 +292,11 @@ export async function loadDomain() {
     });
     state.recipesLoaded = true;
     state.domainLoaded = true;
-    console.debug('domain:ready', {
-      products: APP.state.products.length,
-      recipes: state.recipesData.length
-    });
+    if (DEBUG)
+      console.debug('domain:ready', {
+        products: APP.state.products.length,
+        recipes: state.recipesData.length
+      });
     document.dispatchEvent(new Event('domain:ready'));
     window.trace?.('loadDomain:ok');
   } catch (err) {
@@ -319,12 +320,12 @@ export function getProduct(id) {
 
 export function productName(id) {
   if (!id) {
-    console.warn('Missing product id');
+    if (DEBUG) console.warn('Missing product id');
     return t('unknown');
   }
   const p = resolveProduct(id);
   if (!p) {
-    console.warn('Unknown product', id);
+    if (DEBUG) console.warn('Unknown product', id);
     return t('unknown');
   }
   return p.names[state.currentLang] ?? p.names.en ?? t('unknown');
@@ -333,7 +334,7 @@ export function productName(id) {
 export function categoryName(id) {
   const c = state.domain.categories[id];
   if (!c) {
-    console.warn('Unknown category', id);
+    if (DEBUG) console.warn('Unknown category', id);
     return t('unknown');
   }
   return c.names[state.currentLang] ?? c.names.en ?? t('unknown');
@@ -342,7 +343,7 @@ export function categoryName(id) {
 export function unitName(id) {
   const u = state.domain.units[id];
   if (!u) {
-    console.warn('Unknown unit', id);
+    if (DEBUG) console.warn('Unknown unit', id);
     return t('unknown');
   }
   return u.names[state.currentLang] ?? u.names.en ?? t('unknown');
