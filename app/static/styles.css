@@ -2,10 +2,16 @@
 
 html[data-theme='light'] {
   color-scheme: light;
+  --theme-color: #ffffff;
+  --ingredient-divider: rgba(0, 0, 0, 0.08);
+  --card-bg: var(--base-200);
 }
 
 html[data-theme='dark'] {
   color-scheme: dark;
+  --theme-color: #1d232a;
+  --ingredient-divider: rgba(255, 255, 255, 0.08);
+  --card-bg: var(--base-200);
 }
 
 /* Spacing variables */
@@ -465,7 +471,7 @@ html[data-layout="mobile"] #edit-json {
 .recipe-card {
   border-radius: 12px;
   padding: 16px;
-  background: var(--base-200);
+  background: var(--card-bg);
 }
 
 .recipe-detail {
@@ -481,12 +487,8 @@ html[data-layout="mobile"] #edit-json {
   padding: 6px 0;
 }
 
-html[data-theme='dark'] .ingredient-list li:not(:last-child) {
-  border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
-}
-
-html[data-theme='light'] .ingredient-list li:not(:last-child) {
-  border-bottom: 1px dashed rgba(0, 0, 0, 0.08);
+.ingredient-list li:not(:last-child) {
+  border-bottom: 1px dashed var(--ingredient-divider);
 }
 
 @media (min-width: 769px) {
