@@ -108,11 +108,13 @@ async function checkHealth() {
 
 function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
-    let refreshing;
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (refreshing) return;
-      refreshing = true;
-      window.location.reload();
+    navigator.serviceWorker.addEventListener('message', event => {
+      if (event.data && event.data.type === 'RELOAD_PROMPT') {
+        toast.info(t('reload_to_update'), '', {
+          label: t('reload'),
+          onClick: () => window.location.reload()
+        });
+      }
     });
     window.addEventListener('load', () => {
       const v = window.APP_VERSION || '0';

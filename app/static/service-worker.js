@@ -1,4 +1,4 @@
-const APP_VERSION = '3';
+const APP_VERSION = '4';
 const CACHE_NAME = `food-cache-${APP_VERSION}`;
 const OFFLINE_URL = '/offline';
 const OFFLINE_HTML = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Offline</title></head><body><h1>You're offline</h1></body></html>`;
@@ -16,10 +16,21 @@ const PRECACHE_URLS = [
 
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      cache.addAll(PRECACHE_URLS);
-      cache.put(OFFLINE_URL, new Response(OFFLINE_HTML, { headers: { 'Content-Type': 'text/html' } }));
-    }).then(() => self.skipWaiting())
+    caches
+      .open(CACHE_NAME)
+      .then(cache => {
+        cache.addAll(PRECACHE_URLS);
+        cache.put(OFFLINE_URL, new Response(OFFLINE_HTML, { headers: { 'Content-Type': 'text/html' } }));
+      })
+      .then(() => {
+        if (self.registration.active) {
+          return self.clients
+            .matchAll({ type: 'window', includeUncontrolled: true })
+            .then(clients => {
+              clients.forEach(client => client.postMessage({ type: 'RELOAD_PROMPT' }));
+            });
+        }
+      })
   );
 });
 
