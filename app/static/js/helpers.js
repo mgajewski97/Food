@@ -318,36 +318,61 @@ export function getProduct(id) {
   return resolveProduct(id);
 }
 
-export function productName(id) {
+const UNKNOWN_LABELS = { pl: 'Nieznane', en: 'Unknown' };
+const warnedIds = { products: new Set(), units: new Set(), categories: new Set() };
+
+function unknownLabel(locale = state.currentLang) {
+  return UNKNOWN_LABELS[locale] || UNKNOWN_LABELS.en;
+}
+
+function warnOnce(type, id) {
+  if (!id) return;
+  const set = warnedIds[type];
+  if (DEBUG && set && !set.has(id)) {
+    set.add(id);
+    console.warn(`Unknown ${type.slice(0, -1)} id`, id);
+  }
+}
+
+export function labelProduct(id, locale = state.currentLang) {
   if (!id) {
-    if (DEBUG) console.warn('Missing product id');
-    return t('unknown');
+    warnOnce('products', id);
+    return unknownLabel(locale);
   }
   const p = resolveProduct(id);
   if (!p) {
-    if (DEBUG) console.warn('Unknown product', id);
-    return t('unknown');
+    warnOnce('products', id);
+    return unknownLabel(locale);
   }
-  return p.names[state.currentLang] ?? p.names.en ?? t('unknown');
+  return p.names[locale] ?? p.names.en ?? unknownLabel(locale);
 }
 
-export function categoryName(id) {
+export function labelCategory(id, locale = state.currentLang) {
+  if (!id) {
+    warnOnce('categories', id);
+    return unknownLabel(locale);
+  }
   const c = state.domain.categories[id];
   if (!c) {
-    if (DEBUG) console.warn('Unknown category', id);
-    return t('unknown');
+    warnOnce('categories', id);
+    return unknownLabel(locale);
   }
-  return c.names[state.currentLang] ?? c.names.en ?? t('unknown');
+  return c.names[locale] ?? c.names.en ?? unknownLabel(locale);
 }
 
-export function unitName(id) {
+export function labelUnit(id, locale = state.currentLang) {
+  if (!id) {
+    warnOnce('units', id);
+    return unknownLabel(locale);
+  }
   const u = state.domain.units[id];
   if (!u) {
-    if (DEBUG) console.warn('Unknown unit', id);
-    return t('unknown');
+    warnOnce('units', id);
+    return unknownLabel(locale);
   }
-  return u.names[state.currentLang] ?? u.names.en ?? t('unknown');
+  return u.names[locale] ?? u.names.en ?? unknownLabel(locale);
 }
+
 
 export async function searchProducts(query) {
   if (!query) return [];

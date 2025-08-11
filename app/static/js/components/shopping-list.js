@@ -1,5 +1,5 @@
 // FIX: Render & responsive boot (2025-08-09)
-import { t, state, isSpice, stockLevel, fetchJson, debounce, productName } from '../helpers.js';
+import { t, state, isSpice, stockLevel, fetchJson, debounce, labelProduct } from '../helpers.js';
 import { toast } from './toast.js';
 
 function saveShoppingList() {
@@ -49,7 +49,7 @@ function sortShoppingList() {
   state.shoppingList.sort((a, b) => {
     if (a.inCart && b.inCart) return (a.cartTime || 0) - (b.cartTime || 0);
     if (a.inCart !== b.inCart) return a.inCart ? 1 : -1;
-    return productName(a.name).localeCompare(productName(b.name));
+    return labelProduct(a.name, state.currentLang).localeCompare(labelProduct(b.name, state.currentLang));
   });
 }
 
@@ -71,9 +71,11 @@ function renderShoppingItem(item, idx) {
   nameWrap.className = 'flex items-center gap-1 flex-1 overflow-hidden';
   const nameEl = document.createElement('span');
   nameEl.className = 'truncate';
-  nameEl.textContent = productName(item.name);
-  nameEl.title = productName(item.name);
-  if (productName(item.name) === t('unknown')) nameEl.classList.add('opacity-60');
+  const lbl = labelProduct(item.name, state.currentLang);
+  nameEl.textContent = lbl;
+  nameEl.title = lbl;
+  const unknownLabel = state.currentLang === 'pl' ? 'Nieznane' : 'Unknown';
+  if (lbl === unknownLabel) nameEl.classList.add('opacity-60');
   if (item.inCart) nameEl.classList.add('line-through');
   nameWrap.appendChild(nameEl);
   row.appendChild(nameWrap);
@@ -217,7 +219,7 @@ export function renderSuggestions() {
       return p.main && (p.quantity === 0 || (p.threshold != null && p.quantity <= p.threshold));
     })
     .filter(p => !state.dismissedSuggestions.has(p.name))
-    .sort((a, b) => productName(a.id).localeCompare(productName(b.id)));
+    .sort((a, b) => labelProduct(a.id, state.currentLang).localeCompare(labelProduct(b.id, state.currentLang)));
   const frag = document.createDocumentFragment();
   suggestions.forEach(p => {
     let qty = p.threshold != null ? p.threshold : 1;
@@ -232,9 +234,11 @@ export function renderSuggestions() {
     nameWrap.className = 'flex items-center gap-1 flex-1 overflow-hidden';
     const nameEl = document.createElement('span');
     nameEl.className = 'truncate';
-    nameEl.textContent = productName(p.id);
-    nameEl.title = productName(p.id);
-    if (!productName(p.id) || productName(p.id) === t('unknown')) nameEl.classList.add('opacity-60');
+    const lbl = labelProduct(p.id, state.currentLang);
+    nameEl.textContent = lbl;
+    nameEl.title = lbl;
+    const unknownLabel = state.currentLang === 'pl' ? 'Nieznane' : 'Unknown';
+    if (!lbl || lbl === unknownLabel) nameEl.classList.add('opacity-60');
     nameWrap.appendChild(nameEl);
     row.appendChild(nameWrap);
 
