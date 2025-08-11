@@ -1,4 +1,4 @@
-const APP_VERSION = '2';
+const APP_VERSION = '3';
 const CACHE_NAME = `food-cache-${APP_VERSION}`;
 const OFFLINE_URL = '/offline';
 const OFFLINE_HTML = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Offline</title></head><body><h1>You're offline</h1></body></html>`;

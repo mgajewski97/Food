@@ -19,6 +19,15 @@
           const apply = t => {
             document.documentElement.setAttribute('data-theme', t);
             document.documentElement.style.colorScheme = t;
+            const meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) {
+              const update = () => {
+                const color = getComputedStyle(document.documentElement).getPropertyValue('--theme-color').trim();
+                if (color) meta.setAttribute('content', color);
+              };
+              update();
+              window.addEventListener('load', update, { once: true });
+            }
           };
           const resolve = () => {
             const stored = localStorage.getItem(key) || 'system';
@@ -470,6 +479,7 @@
             <span class="text-xs" data-i18n="tab_shopping">Lista zakupów</span>
         </a>
     </nav>
+      <script>window.APP_VERSION = {{ app_version|tojson }};</script>
       <script type="module" src="/static/script.js?v={{ app_version }}"></script>
 </body>
 </html>

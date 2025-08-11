@@ -115,7 +115,8 @@ function registerServiceWorker() {
       window.location.reload();
     });
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/service-worker.js');
+      const v = window.APP_VERSION || '0';
+      navigator.serviceWorker.register(`/service-worker.js?v=${v}`);
     });
   }
 }
