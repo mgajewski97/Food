@@ -53,7 +53,7 @@
 </div>
 <div id="notification-container" class="toast toast-end top-auto bottom-[4.5rem] z-40" aria-live="polite"></div>
 <div id="top-banner-container" class="sticky top-0 z-30"></div>
-<header class="app-bar bg-base-100 px-4 sm:px-6 lg:px-8">
+<header class="app-bar bg-base-100">
   <div class="left flex items-center gap-2">
     <span class="app-title font-bold text-lg">Food App</span>
     <span id="locale-chip" class="badge">PL</span>
@@ -66,7 +66,7 @@
         <a class="tab" data-tab-target="tab-shopping" data-i18n="tab_shopping">Lista zakupów</a>
     </div>
   </div>
-  <div class="actions flex justify-end gap-2 md:gap-3 pointer-events-auto">
+  <div class="actions">
     <button id="layout-toggle" aria-label="Toggle layout" class="text-xl p-2 bg-transparent border-0">
         <i id="layout-icon" class="fa-solid fa-mobile-screen-button"></i>
     </button>
@@ -87,7 +87,7 @@
     </button>
   </div>
 </header>
-<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-4 md:pt-6 space-y-4 main-container">
+  <main class="main-container">
         <div id="tab-products" class="tab-panel">
             <h1 class="text-xl md:text-2xl font-semibold mb-3 md:mb-4" data-i18n="heading_products">Produkty</h1>
             <div id="controls" class="flex flex-wrap items-center gap-4 mb-4">
@@ -441,7 +441,7 @@
             <button id="units-save" class="btn btn-primary btn-sm mt-4" data-i18n="save_button">Zapisz</button>
         </div>
 
-    </div>
+  </main>
 
     <dialog id="recipe-detail-modal" class="modal">
         <form method="dialog" class="modal-box max-w-2xl">
