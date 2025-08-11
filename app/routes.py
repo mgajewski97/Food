@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional, Tuple
 # FIX: 2024-05-06
 
 from flask import Blueprint, current_app, render_template, request, jsonify
-from .utils.logging import log_error_with_trace
+from .utils.logging import log_error_with_trace, log_warning_with_trace
 
 from .utils import (
     load_json,
@@ -88,7 +88,7 @@ def run_initial_validation() -> None:
         validate_file(_path, [], _schema, _norm)
 
 
-def _load_products_compat():
+def _load_products_compat(context: Dict[str, Any]):
     """Return legacy product list built from normalized domain data."""
     try:
         with open(PRODUCTS_PATH, "r", encoding="utf-8") as f:
@@ -98,23 +98,21 @@ def _load_products_compat():
 
     categories = {c.get("id"): c for c in data.get("categories", [])}
     units = {u.get("id"): u for u in data.get("units", [])}
-    legacy = []
+    legacy: List[Dict[str, Any]] = []
 
     for prod in data.get("products", []):
         cat = categories.get(prod.get("categoryId"))
         unit = units.get(prod.get("unitId"))
         if not cat:
-            logger.warning(
-                "product %s references missing category %s",
-                prod.get("id"),
-                prod.get("categoryId"),
+            log_warning_with_trace(
+                f"product {prod.get('id')} missing category {prod.get('categoryId')}",
+                context,
             )
             continue
         if not unit:
-            logger.warning(
-                "product %s references missing unit %s",
-                prod.get("id"),
-                prod.get("unitId"),
+            log_warning_with_trace(
+                f"product {prod.get('id')} missing unit {prod.get('unitId')}",
+                context,
             )
             continue
 
@@ -130,6 +128,7 @@ def _load_products_compat():
             "category": category_key,
             "unit": unit_key,
             "quantity": 0,
+            "amount": 0,
             "threshold": 0,
             "storage": "pantry",
             "main": True,
@@ -139,6 +138,7 @@ def _load_products_compat():
             "is_spice": category_key == "spices",
             "aliases": prod.get("aliases", []),
             "tags": [],
+            "flags": False,
         }
 
         if item["is_spice"]:
@@ -147,10 +147,12 @@ def _load_products_compat():
         legacy.append(item)
 
     legacy.sort(key=lambda p: p.get("name_pl", "").lower())
+    if data.get("products") and not legacy:
+        log_warning_with_trace("no valid products emitted", context)
     return legacy
 
 
-def _load_recipes(locale: str = "pl"):
+def _load_recipes(locale: str = "pl", context: Optional[Dict[str, Any]] = None):
     """Return normalized recipes enriched with display names.
 
     Ingredients keep their identifiers while ``productName`` and ``unitName``
@@ -168,11 +170,17 @@ def _load_recipes(locale: str = "pl"):
     units = {u.get("id"): u for u in products_data.get("units", [])}
 
     try:
-        recipes = load_json_validated(
-            RECIPES_PATH, RECIPES_SCHEMA, normalize=normalize_recipe
+        recipes, errors = load_json(
+            RECIPES_PATH,
+            [],
+            RECIPES_SCHEMA,
+            normalize_recipe,
+            return_errors=True,
         )
-    except ValueError as exc:
+    except Exception as exc:  # pragma: no cover - defensive
         raise ValueError(str(exc))
+    if errors:
+        log_warning_with_trace("; ".join(errors), context or {})
 
     result = []
     for rec in recipes:
@@ -206,7 +214,7 @@ def _load_recipes(locale: str = "pl"):
                     "qty": ing.get("qty"),
                     "unitId": uid,
                     "unitName": unit_name,
-                    "optional": ing.get("optional"),
+                    "optional": ing.get("optional", False),
                     "note": ing.get("note"),
                 }
             )
@@ -219,10 +227,16 @@ def _load_recipes(locale: str = "pl"):
                 "servings": rec.get("portions"),
                 "steps": rec.get("steps", []),
                 "ingredients": ing_list,
+                "amount": 0,
+                "threshold": 0,
+                "storage": "pantry",
+                "flags": False,
             }
         )
 
     result.sort(key=lambda r: r.get("names", {}).get("pl", "").lower())
+    if recipes and not result:
+        log_warning_with_trace("no valid recipes emitted", context or {})
     return result
 
 
@@ -317,7 +331,7 @@ def products():
     try:
         if request.method == "GET":
             try:
-                products = _load_products_compat()
+                products = _load_products_compat(context)
             except ValueError as exc:  # pragma: no cover - defensive
                 trace_id = log_error_with_trace(exc, context)
                 return (
@@ -431,7 +445,7 @@ def recipes():
     locale = request.args.get("locale", "pl")
     try:
         try:
-            recipes = _load_recipes(locale)
+            recipes = _load_recipes(locale, context)
         except ValueError as exc:  # pragma: no cover - defensive
             trace_id = log_error_with_trace(exc, context)
             return (
@@ -642,7 +656,7 @@ def health_new():
     """Lightweight health check exposing dataset stats."""
     context = {"endpoint": "/api/_health", "args": request.args.to_dict()}
     try:
-        products = _load_products_compat()
+        products = _load_products_compat(context)
         recipes = load_json_validated(
             RECIPES_PATH, RECIPES_SCHEMA, normalize=normalize_recipe
         )

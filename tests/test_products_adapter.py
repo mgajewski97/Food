@@ -16,3 +16,8 @@ def test_products_endpoint_returns_mapped_items():
     first = data[0]
     # ensure legacy fields exist
     assert 'id' in first and 'name_pl' in first and 'unit' in first
+    # stable shape defaults
+    assert first['amount'] == 0
+    assert first['threshold'] == 0
+    assert first['storage'] == 'pantry'
+    assert first['flags'] is False
