@@ -13,9 +13,6 @@ import {
   isSpice,
   debounce,
   dlog,
-  labelProduct,
-  labelCategory,
-  labelUnit,
   getProduct,
   DEBUG,
 } from "../helpers.js";
@@ -281,7 +278,7 @@ function createFlatRow(p, idx, editable) {
     // name
     const nameTd = document.createElement("td");
     nameTd.className = "name-cell";
-    nameTd.textContent = labelProduct(p.id, state.currentLang);
+    nameTd.textContent = t(p.id, "products");
     if (!getProduct(p.id)) nameTd.classList.add("opacity-60");
     tr.appendChild(nameTd);
     // quantity with steppers
@@ -298,7 +295,7 @@ function createFlatRow(p, idx, editable) {
       Object.keys(state.units).forEach((u) => {
         const opt = document.createElement("option");
         opt.value = u;
-        opt.textContent = labelUnit(u, state.currentLang);
+        opt.textContent = t(u, "units");
         if (u === p.unit) opt.selected = true;
         unitSel.appendChild(opt);
       });
@@ -313,7 +310,7 @@ function createFlatRow(p, idx, editable) {
     Object.keys(state.domain.categories).forEach((c) => {
       const opt = document.createElement("option");
       opt.value = c;
-      opt.textContent = labelCategory(c, state.currentLang);
+      opt.textContent = t(c, "categories");
       if (c === (p.category || "")) opt.selected = true;
       catSel.appendChild(opt);
     });
@@ -344,17 +341,17 @@ function createFlatRow(p, idx, editable) {
     tr.appendChild(statusTd);
   } else {
     const nameTd = document.createElement("td");
-    nameTd.textContent = labelProduct(p.id, state.currentLang);
+    nameTd.textContent = t(p.id, "products");
     if (!getProduct(p.id)) nameTd.classList.add("opacity-60");
     tr.appendChild(nameTd);
     const qtyTd = document.createElement("td");
     qtyTd.textContent = formatPackQuantity(p);
     tr.appendChild(qtyTd);
     const unitTd = document.createElement("td");
-    unitTd.textContent = isSpice(p) ? "" : labelUnit(p.unit, state.currentLang);
+    unitTd.textContent = isSpice(p) ? "" : t(p.unit, "units");
     tr.appendChild(unitTd);
     const catTd = document.createElement("td");
-    catTd.textContent = labelCategory(p.category, state.currentLang);
+    catTd.textContent = t(p.category, "categories");
     if (!state.domain.categories[p.category]) catTd.classList.add("opacity-60");
     tr.appendChild(catTd);
     const storTd = document.createElement("td");
@@ -394,12 +391,12 @@ export function renderProducts() {
       ...dp,
       ...existing,
       id: dp.id,
-      name: labelProduct(dp.id, state.currentLang),
+      name: t(dp.id, "products"),
     });
     return {
       ...merged,
-      unitLabel: labelUnit(merged.unit, state.currentLang),
-      categoryLabel: labelCategory(merged.category, state.currentLang),
+      unitLabel: t(merged.unit, "units"),
+      categoryLabel: t(merged.category, "categories"),
       storageLabel: t(STORAGE_KEYS[merged.storage] || merged.storage),
       status: stockLevel(merged),
     };
@@ -411,7 +408,7 @@ export function renderProducts() {
     (p) =>
       matchesFilter(p, filter) &&
       (!term ||
-        labelProduct(p.id, state.currentLang).toLowerCase().includes(term) ||
+        t(p.id, "products").toLowerCase().includes(term) ||
         p.name.toLowerCase().includes(term)),
   );
 
@@ -513,9 +510,7 @@ export function renderProducts() {
               .sort(
                 (a, b) =>
                   (CATEGORY_ORDER[a] || 0) - (CATEGORY_ORDER[b] || 0) ||
-                  labelCategory(a, state.currentLang).localeCompare(
-                    labelCategory(b, state.currentLang),
-                  ),
+                  t(a, "categories").localeCompare(t(b, "categories")),
               )
               .forEach((cat) => {
                 const catBlock = document.createElement("div");
@@ -529,7 +524,7 @@ export function renderProducts() {
                   catHeader.classList.add("cursor-pointer");
                 const catSpan = document.createElement("span");
                 catSpan.className = "font-medium";
-                catSpan.textContent = labelCategory(cat, state.currentLang);
+                catSpan.textContent = t(cat, "categories");
                 if (!state.domain.categories[cat])
                   catSpan.classList.add("opacity-60");
                 const catBtn = document.createElement("button");
@@ -609,13 +604,13 @@ export function renderProducts() {
                     cbTd.appendChild(cb);
                     tr.appendChild(cbTd);
                     const n = document.createElement("td");
-                    n.textContent = labelProduct(p.id, state.currentLang);
+                    n.textContent = t(p.id, "products");
                     if (!getProduct(p.id)) n.classList.add("opacity-60");
                     tr.appendChild(n);
                     const q = buildQtyCell(p, tr);
                     tr.appendChild(q);
                     const u = document.createElement("td");
-                    u.textContent = labelUnit(p.unit, state.currentLang);
+                    u.textContent = t(p.unit, "units");
                     tr.appendChild(u);
                     const s = document.createElement("td");
                     const ic = getStatusIcon(p);
@@ -626,12 +621,12 @@ export function renderProducts() {
                     tr.appendChild(s);
                   } else {
                     const n = document.createElement("td");
-                    n.textContent = labelProduct(p.id, state.currentLang);
+                    n.textContent = t(p.id, "products");
                     if (!getProduct(p.id)) n.classList.add("opacity-60");
                     const q = document.createElement("td");
                     q.textContent = formatPackQuantity(p);
                     const u = document.createElement("td");
-                    u.textContent = labelUnit(p.unit, state.currentLang);
+                    u.textContent = t(p.unit, "units");
                     const s = document.createElement("td");
                     const ic = getStatusIcon(p);
                     if (ic) {

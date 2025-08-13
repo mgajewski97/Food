@@ -1,10 +1,4 @@
-import {
-  state,
-  t,
-  toggleFavorite,
-  labelProduct,
-  labelUnit,
-} from "../helpers.js";
+import { state, t, toggleFavorite } from "../helpers.js";
 
 function renderRecipeDetail(r) {
   const title = r.names?.[state.currentLang] || r.names?.en || r.id;
@@ -26,14 +20,11 @@ function renderRecipeDetail(r) {
 
   const ingRows = (r.ingredients || [])
     .map((i) => {
-      const name =
-        i.productName || labelProduct(i.productId, state.currentLang);
+      const name = i.productName || t(i.productId, "products");
       const qty = (i.qty ?? "").toString();
-      const unit =
-        i.unitName || (i.unitId ? labelUnit(i.unitId, state.currentLang) : "");
+      const unit = i.unitName || (i.unitId ? t(i.unitId, "units") : "");
       const qtyStr = [qty, unit].filter(Boolean).join(" ");
-      const unknownLabel = state.currentLang === "pl" ? "Nieznane" : "Unknown";
-      const unknown = name === unknownLabel ? " opacity-60" : "";
+      const unknown = name === i.productId ? " opacity-60" : "";
       return `<tr><td class="pr-4${unknown}">${name}</td><td class="text-right">${qtyStr}</td></tr>`;
     })
     .join("");

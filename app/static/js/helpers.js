@@ -111,8 +111,34 @@ export function throttle(fn, delay = 200) {
   };
 }
 
-export function t(key) {
+export function t(key, ns = "ui") {
   if (!key) return key;
+  if (ns === "products") {
+    const p =
+      state.domain.products[key] ||
+      state.domain.products[state.domain.aliases[key]];
+    if (!p) {
+      warnOnce("products", key);
+      return key;
+    }
+    return p.names[state.currentLang] ?? p.names.en ?? key;
+  }
+  if (ns === "categories") {
+    const c = state.domain.categories[key];
+    if (!c) {
+      warnOnce("categories", key);
+      return key;
+    }
+    return c.names[state.currentLang] ?? c.names.en ?? key;
+  }
+  if (ns === "units") {
+    const u = state.domain.units[key];
+    if (!u) {
+      warnOnce("units", key);
+      return key;
+    }
+    return u.names[state.currentLang] ?? u.names.en ?? key;
+  }
   return (
     state.uiTranslations[state.currentLang]?.[key] ??
     state.uiTranslations.en?.[key] ??
@@ -344,16 +370,11 @@ export function getProduct(id) {
   return resolveProduct(id);
 }
 
-const UNKNOWN_LABELS = { pl: "Nieznane", en: "Unknown" };
 const warnedIds = {
   products: new Set(),
   units: new Set(),
   categories: new Set(),
 };
-
-function unknownLabel(locale = state.currentLang) {
-  return UNKNOWN_LABELS[locale] || UNKNOWN_LABELS.en;
-}
 
 function warnOnce(type, id) {
   if (!id) return;
@@ -362,45 +383,6 @@ function warnOnce(type, id) {
     set.add(id);
     console.warn(`Unknown ${type.slice(0, -1)} id`, id);
   }
-}
-
-export function labelProduct(id, locale = state.currentLang) {
-  if (!id) {
-    warnOnce("products", id);
-    return unknownLabel(locale);
-  }
-  const p = resolveProduct(id);
-  if (!p) {
-    warnOnce("products", id);
-    return unknownLabel(locale);
-  }
-  return p.names[locale] ?? p.names.en ?? unknownLabel(locale);
-}
-
-export function labelCategory(id, locale = state.currentLang) {
-  if (!id) {
-    warnOnce("categories", id);
-    return unknownLabel(locale);
-  }
-  const c = state.domain.categories[id];
-  if (!c) {
-    warnOnce("categories", id);
-    return unknownLabel(locale);
-  }
-  return c.names[locale] ?? c.names.en ?? unknownLabel(locale);
-}
-
-export function labelUnit(id, locale = state.currentLang) {
-  if (!id) {
-    warnOnce("units", id);
-    return unknownLabel(locale);
-  }
-  const u = state.domain.units[id];
-  if (!u) {
-    warnOnce("units", id);
-    return unknownLabel(locale);
-  }
-  return u.names[locale] ?? u.names.en ?? unknownLabel(locale);
 }
 
 export async function searchProducts(query) {
