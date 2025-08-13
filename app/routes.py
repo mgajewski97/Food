@@ -361,10 +361,33 @@ def products():
             except ValueError as exc:  # pragma: no cover - defensive
                 trace_id = log_error_with_trace(exc, context)
                 return error_response("Internal Server Error", 500, trace_id)
-            first_id = products[0].get("id") if products else None
+
+            sort_by = request.args.get("sort_by", "name")
+            order = request.args.get("order", "asc").lower()
+            page = int(max(1, _safe_float(request.args.get("page", 1), 1)))
+            page_size = int(
+                max(1, min(200, _safe_float(request.args.get("page_size", 50), 50)))
+            )
+
+            if sort_by:
+                def _key(p):
+                    val = p.get(sort_by)
+                    if isinstance(val, str):
+                        return val.lower()
+                    return val
+
+                products.sort(key=_key)
+                if order == "desc":
+                    products.reverse()
+
+            total = len(products)
+            start = (page - 1) * page_size
+            end = start + page_size
+            items = products[start:end]
+            first_id = items[0].get("id") if items else None
             logger.info(
                 "products count=%d first=%s",
-                len(products),
+                total,
                 first_id,
             )
 
@@ -389,7 +412,9 @@ def products():
                         return resp
                 except (TypeError, ValueError, OverflowError):
                     pass
-            resp = jsonify(products)
+            resp = jsonify(
+                {"items": items, "page": page, "page_size": page_size, "total": total}
+            )
             resp.headers["ETag"] = etag
             resp.headers["Last-Modified"] = last_modified
             return resp
@@ -491,8 +516,38 @@ def recipes():
         except ValueError as exc:  # pragma: no cover - defensive
             trace_id = log_error_with_trace(exc, context)
             return error_response("Internal Server Error", 500, trace_id)
-        first_id = recipes[0].get("id") if recipes else None
-        logger.info("recipes count=%d first=%s", len(recipes), first_id)
+
+        sort_by = request.args.get("sort_by", "name")
+        order = request.args.get("order", "asc").lower()
+        page = int(max(1, _safe_float(request.args.get("page", 1), 1)))
+        page_size = int(
+            max(1, min(200, _safe_float(request.args.get("page_size", 50), 50)))
+        )
+
+        if sort_by:
+            def _key(r):
+                if sort_by == "name":
+                    nm = (
+                        r.get("names", {}).get(locale)
+                        or r.get("names", {}).get("en")
+                        or r.get("id")
+                    )
+                    return nm.lower()
+                val = r.get(sort_by)
+                if isinstance(val, str):
+                    return val.lower()
+                return val
+
+            recipes.sort(key=_key)
+            if order == "desc":
+                recipes.reverse()
+
+        total = len(recipes)
+        start = (page - 1) * page_size
+        end = start + page_size
+        items = recipes[start:end]
+        first_id = items[0].get("id") if items else None
+        logger.info("recipes count=%d first=%s", total, first_id)
 
         etag = file_etag(RECIPES_PATH)
         last_modified = file_mtime_rfc1123(RECIPES_PATH)
@@ -515,7 +570,9 @@ def recipes():
                     return resp
             except (TypeError, ValueError, OverflowError):
                 pass
-        resp = jsonify(recipes)
+        resp = jsonify(
+            {"items": items, "page": page, "page_size": page_size, "total": total}
+        )
         resp.headers["ETag"] = etag
         resp.headers["Last-Modified"] = last_modified
         return resp

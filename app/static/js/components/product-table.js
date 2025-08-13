@@ -20,6 +20,14 @@ import { toast } from "./toast.js";
 
 const APP = (window.APP = window.APP || {});
 
+const productPager = {
+  page: 1,
+  page_size: 50,
+  sort_by: "name",
+  order: "asc",
+  total: 0,
+};
+
 // --- delete selected handling (button state only; actual deletion handled in script.js)
 let deleteBtn;
 
@@ -229,11 +237,53 @@ function buildQtyCell(p, tr) {
   return td;
 }
 
+function renderProductPager() {
+  let pager = document.getElementById("product-pager");
+  if (!pager) {
+    pager = document.createElement("div");
+    pager.id = "product-pager";
+    pager.className = "flex justify-end gap-2 my-4";
+    const table = document.getElementById("product-table");
+    table?.parentElement?.appendChild(pager);
+  }
+  pager.innerHTML = "";
+  const prev = document.createElement("button");
+  prev.className = "btn btn-sm";
+  prev.textContent = t("prev");
+  prev.disabled = productPager.page <= 1;
+  prev.addEventListener("click", () => {
+    productPager.page -= 1;
+    refreshProducts();
+  });
+  const next = document.createElement("button");
+  next.className = "btn btn-sm";
+  next.textContent = t("next");
+  const maxPage = Math.ceil(productPager.total / productPager.page_size);
+  next.disabled = productPager.page >= maxPage;
+  next.addEventListener("click", () => {
+    productPager.page += 1;
+    refreshProducts();
+  });
+  pager.append(prev, next);
+}
+
 export async function refreshProducts() {
   try {
-    const data = await fetchJson("/api/products");
-    APP.state.products = Array.isArray(data) ? data.map(normalizeProduct) : [];
+    const params = new URLSearchParams({
+      page: String(productPager.page),
+      page_size: String(productPager.page_size),
+      sort_by: productPager.sort_by,
+      order: productPager.order,
+    });
+    const data = await fetchJson(`/api/products?${params.toString()}`);
+    productPager.page = data.page;
+    productPager.page_size = data.page_size;
+    productPager.total = data.total;
+    APP.state.products = Array.isArray(data.items)
+      ? data.items.map(normalizeProduct)
+      : [];
     renderProducts();
+    renderProductPager();
   } catch (err) {
     toast.error(t("notify_error_title"), err.message);
   }

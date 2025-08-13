@@ -11,6 +11,9 @@ import {
 import { toast } from "./toast.js";
 import { openRecipeDetails } from "./recipe-detail.js";
 
+state.recipePage = state.recipePage || 1;
+state.recipePageSize = state.recipePageSize || 50;
+
 export function renderRecipes() {
   const list = document.getElementById("recipe-list");
   if (!list) return;
@@ -28,23 +31,6 @@ export function renderRecipes() {
   }
   if (state.showFavoritesOnly)
     data = data.filter((r) => state.favoriteRecipes.has(r.id));
-  data.sort((a, b) => {
-    if (state.recipeSortField === "time") {
-      const ta = parseTimeToMinutes(a.time);
-      const tb = parseTimeToMinutes(b.time);
-      const taVal = ta == null ? Infinity : ta;
-      const tbVal = tb == null ? Infinity : tb;
-      return state.recipeSortDir === "asc" ? taVal - tbVal : tbVal - taVal;
-    }
-    if (state.recipeSortField === "portions") {
-      const pa = a.servings == null ? Infinity : a.servings;
-      const pb = b.servings == null ? Infinity : b.servings;
-      return state.recipeSortDir === "asc" ? pa - pb : pb - pa;
-    }
-    const an = a.names?.[state.currentLang] || a.names?.en || a.id;
-    const bn = b.names?.[state.currentLang] || b.names?.en || b.id;
-    return an.localeCompare(bn);
-  });
   const frag = document.createDocumentFragment();
   if (data.length === 0) {
     const empty = document.createElement("div");
@@ -139,10 +125,40 @@ export function renderRecipes() {
   });
 }
 
+function renderRecipePager() {
+  let pager = document.getElementById("recipe-pager");
+  if (!pager) {
+    pager = document.createElement("div");
+    pager.id = "recipe-pager";
+    pager.className = "flex justify-end gap-2 my-4";
+    const list = document.getElementById("recipe-list");
+    list?.parentElement?.appendChild(pager);
+  }
+  pager.innerHTML = "";
+  const prev = document.createElement("button");
+  prev.className = "btn btn-sm";
+  prev.textContent = t("prev");
+  prev.disabled = state.recipePage <= 1;
+  prev.addEventListener("click", () => {
+    state.recipePage -= 1;
+    loadRecipes();
+  });
+  const next = document.createElement("button");
+  next.className = "btn btn-sm";
+  next.textContent = t("next");
+  const maxPage = Math.ceil((state.recipesTotal || 0) / state.recipePageSize);
+  next.disabled = state.recipePage >= maxPage;
+  next.addEventListener("click", () => {
+    state.recipePage += 1;
+    loadRecipes();
+  });
+  pager.append(prev, next);
+}
+
 export async function loadRecipes() {
-  if (state.recipesLoaded || state.recipesLoading) return state.domain.recipes;
+  if (state.recipesLoading) return state.domain.recipes;
   const panel = document.getElementById("tab-recipes");
-  if (panel && panel.style.display === "none") {
+  if (!state.recipesLoaded && panel && panel.style.display === "none") {
     if (!state.recipesLoadQueued) {
       const tab = document.querySelector('[data-tab-target="tab-recipes"]');
       tab?.addEventListener("click", () => loadRecipes(), { once: true });
@@ -153,8 +169,15 @@ export async function loadRecipes() {
   state.recipesLoading = true;
   try {
     const locale = state.currentLang || "pl";
-    const data = await fetchJson(`/api/recipes?locale=${locale}`);
-    const processed = data.map((r) => ({
+    const params = new URLSearchParams({
+      locale,
+      page: String(state.recipePage),
+      page_size: String(state.recipePageSize),
+      sort_by: state.recipeSortField,
+      order: state.recipeSortDir,
+    });
+    const data = await fetchJson(`/api/recipes?${params.toString()}`);
+    const processed = (data.items || []).map((r) => ({
       ...r,
       timeBucket: timeToBucket(r.time),
       available: (r.ingredients || []).every((i) => getProduct(i.productId)),
@@ -162,7 +185,10 @@ export async function loadRecipes() {
     state.domain.recipes = processed;
     state.recipesData = processed;
     state.recipesLoaded = true;
+    state.recipePage = data.page;
+    state.recipesTotal = data.total;
     renderRecipes();
+    renderRecipePager();
     return processed;
   } catch (err) {
     toast.error(t("recipes_load_failed"), err.status || err.message, {
@@ -200,18 +226,21 @@ export function bindRecipeEvents() {
     "change",
     debounce(() => {
       state.recipeSortField = sortField.value;
-      renderRecipes();
+      state.recipePage = 1;
+      loadRecipes();
     }, 150),
   );
   sortAsc?.addEventListener("click", () => {
     state.recipeSortDir = "asc";
     updateSortButtons();
-    renderRecipes();
+    state.recipePage = 1;
+    loadRecipes();
   });
   sortDesc?.addEventListener("click", () => {
     state.recipeSortDir = "desc";
     updateSortButtons();
-    renderRecipes();
+    state.recipePage = 1;
+    loadRecipes();
   });
   sortMobile?.addEventListener(
     "change",
@@ -220,7 +249,8 @@ export function bindRecipeEvents() {
       state.recipeSortField = field;
       state.recipeSortDir = dir;
       updateSortButtons();
-      renderRecipes();
+       state.recipePage = 1;
+      loadRecipes();
     }, 150),
   );
 
@@ -228,21 +258,24 @@ export function bindRecipeEvents() {
     "change",
     debounce(() => {
       state.recipeTimeFilter = timeFilter.value;
-      renderRecipes();
+      state.recipePage = 1;
+      loadRecipes();
     }, 150),
   );
   portionsFilter?.addEventListener(
     "change",
     debounce(() => {
       state.recipePortionsFilter = portionsFilter.value;
-      renderRecipes();
+      state.recipePage = 1;
+      loadRecipes();
     }, 150),
   );
   favToggle?.addEventListener("click", () => {
     state.showFavoritesOnly = !state.showFavoritesOnly;
     favToggle.classList.toggle("btn-primary", state.showFavoritesOnly);
     favToggle.classList.toggle("btn-outline", !state.showFavoritesOnly);
-    renderRecipes();
+    state.recipePage = 1;
+    loadRecipes();
   });
   clearBtn?.addEventListener("click", () => {
     state.recipeSortField = "name";
@@ -257,7 +290,8 @@ export function bindRecipeEvents() {
     favToggle?.classList.remove("btn-primary");
     favToggle?.classList.add("btn-outline");
     updateSortButtons();
-    renderRecipes();
+    state.recipePage = 1;
+    loadRecipes();
   });
 
   updateSortButtons();
@@ -265,12 +299,12 @@ export function bindRecipeEvents() {
 
 // Render recipe list once the domain data is ready.
 if (window.__domain) {
-  renderRecipes();
+  loadRecipes();
 } else {
   document.addEventListener(
     "domain:ready",
     () => {
-      renderRecipes();
+      loadRecipes();
     },
     { once: true },
   );

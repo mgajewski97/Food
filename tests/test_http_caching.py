@@ -22,7 +22,7 @@ def test_products_etag_and_conditional_headers():
     assert resp.status_code == 200
     etag = resp.headers.get("ETag")
     last_mod = resp.headers.get("Last-Modified")
-    first = resp.get_json()
+    first = resp.get_json()["items"]
 
     # Subsequent request with matching ETag should yield 304
     resp2 = client.get("/api/products", headers={"If-None-Match": etag})
@@ -44,7 +44,7 @@ def test_products_etag_and_conditional_headers():
         resp4 = client.get("/api/products")
         assert resp4.status_code == 200
         assert resp4.headers.get("ETag") != etag
-        data4 = resp4.get_json()
+        data4 = resp4.get_json()["items"]
         assert data4 != first
     finally:
         with open(PRODUCTS_PATH, "w", encoding="utf-8") as fh:
@@ -59,7 +59,7 @@ def test_recipes_etag_and_conditional_headers():
     assert resp.status_code == 200
     etag = resp.headers.get("ETag")
     last_mod = resp.headers.get("Last-Modified")
-    first = resp.get_json()
+    first = resp.get_json()["items"]
 
     resp2 = client.get(
         "/api/recipes?locale=en", headers={"If-None-Match": etag}
@@ -81,7 +81,7 @@ def test_recipes_etag_and_conditional_headers():
         resp4 = client.get("/api/recipes?locale=en")
         assert resp4.status_code == 200
         assert resp4.headers.get("ETag") != etag
-        data4 = resp4.get_json()
+        data4 = resp4.get_json()["items"]
         assert data4 != first
     finally:
         with open(RECIPES_PATH, "w", encoding="utf-8") as fh:
