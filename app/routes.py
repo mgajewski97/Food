@@ -5,7 +5,7 @@ from datetime import date, datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
 from email.utils import parsedate_to_datetime
-from flask import Blueprint, current_app, jsonify, render_template, request
+from flask import Blueprint, current_app, g, jsonify, render_template, request
 
 from .errors import DomainError, error_response
 
@@ -27,6 +27,12 @@ from .utils import (
     validate_payload,
 )
 from .utils.logging import log_error_with_trace, log_warning_with_trace
+
+
+def _log_error(exc: Exception, context: Dict[str, Any]) -> str:
+    trace_id = log_error_with_trace(exc, context)
+    g.trace_id = trace_id
+    return trace_id
 
 # FIX: 2024-05-06
 
@@ -334,7 +340,7 @@ def ui_strings(lang):
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
     except Exception as exc:  # pragma: no cover - defensive
-        trace_id = log_error_with_trace(
+        trace_id = _log_error(
             exc, {"endpoint": "/api/ui/<lang>", "lang": lang}
         )
         return error_response("Internal Server Error", 500, trace_id)
@@ -350,7 +356,7 @@ def domain():
         with open(PRODUCTS_PATH, "r", encoding="utf-8") as f:
             data = json.load(f)
     except Exception as exc:  # pragma: no cover - defensive
-        trace_id = log_error_with_trace(exc, context)
+        trace_id = _log_error(exc, context)
         return error_response("Internal Server Error", 500, trace_id)
 
     products = data.get("products", [])
@@ -389,7 +395,7 @@ def products():
             try:
                 products = _load_products_compat(context)
             except ValueError as exc:  # pragma: no cover - defensive
-                trace_id = log_error_with_trace(exc, context)
+                trace_id = _log_error(exc, context)
                 return error_response("Internal Server Error", 500, trace_id)
 
             sort_by = request.args.get("sort_by", "name")
@@ -467,7 +473,7 @@ def products():
                     PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
                 )
             except ValueError as exc:
-                trace_id = log_error_with_trace(exc, context)
+                trace_id = _log_error(exc, context)
                 return error_response("Internal Server Error", 500, trace_id)
             existing = {p["name"]: p for p in products}
             for item in items:
@@ -478,7 +484,7 @@ def products():
     except DomainError:
         raise
     except Exception as exc:  # pragma: no cover - defensive
-        trace_id = log_error_with_trace(exc, context)
+        trace_id = _log_error(exc, context)
         return error_response("Internal Server Error", 500, trace_id)
 
 
@@ -492,13 +498,13 @@ def delete_product(name):
                     PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
                 )
             except ValueError as exc:
-                trace_id = log_error_with_trace(exc, context)
+                trace_id = _log_error(exc, context)
                 return error_response("Internal Server Error", 500, trace_id)
             products = [p for p in products if p.get("name") != name]
             safe_write(PRODUCTS_PATH, products)
         return "", 204
     except Exception as exc:  # pragma: no cover - defensive
-        trace_id = log_error_with_trace(exc, context)
+        trace_id = _log_error(exc, context)
         return error_response("Internal Server Error", 500, trace_id)
 
 
@@ -548,7 +554,7 @@ def recipes():
         try:
             recipes = _load_recipes(locale, context)
         except ValueError as exc:  # pragma: no cover - defensive
-            trace_id = log_error_with_trace(exc, context)
+            trace_id = _log_error(exc, context)
             return error_response("Internal Server Error", 500, trace_id)
 
         sort_by = request.args.get("sort_by", "name")
@@ -611,7 +617,7 @@ def recipes():
         resp.headers["Last-Modified"] = last_modified
         return resp
     except Exception as exc:  # pragma: no cover - defensive
-        trace_id = log_error_with_trace(exc, context)
+        trace_id = _log_error(exc, context)
         return error_response("Internal Server Error", 500, trace_id)
 
 
@@ -640,7 +646,7 @@ def favorites():
             return jsonify(favs)
         return jsonify(load_json(FAVORITES_PATH, []))
     except Exception as exc:  # pragma: no cover - defensive
-        trace_id = log_error_with_trace(exc, context)
+        trace_id = _log_error(exc, context)
         return error_response("Internal Server Error", 500, trace_id)
 
 
@@ -798,7 +804,7 @@ def health():
         load_json_validated(PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product)
         load_json_validated(RECIPES_PATH, RECIPES_SCHEMA, normalize=normalize_recipe)
     except ValueError as exc:
-        trace_id = log_error_with_trace(exc, {"endpoint": "/api/health"})
+        trace_id = _log_error(exc, {"endpoint": "/api/health"})
         return error_response("Internal Server Error", 500, trace_id)
     return jsonify({"ok": True})
 
@@ -828,7 +834,7 @@ def health_new():
             }
         )
     except Exception as exc:  # pragma: no cover - defensive
-        trace_id = log_error_with_trace(exc, context)
+        trace_id = _log_error(exc, context)
         return error_response("Internal Server Error", 500, trace_id)
 
 
