@@ -1,11 +1,4 @@
-import {
-  t,
-  state,
-  isSpice,
-  stockLevel,
-  fetchJson,
-  labelProduct,
-} from "../helpers.js";
+import { t, state, isSpice, stockLevel, fetchJson } from "../helpers.js";
 import { toast } from "./toast.js";
 
 function saveShoppingList() {
@@ -60,9 +53,7 @@ function sortShoppingList() {
   state.shoppingList.sort((a, b) => {
     if (a.inCart && b.inCart) return (a.cartTime || 0) - (b.cartTime || 0);
     if (a.inCart !== b.inCart) return a.inCart ? 1 : -1;
-    return labelProduct(a.name, state.currentLang).localeCompare(
-      labelProduct(b.name, state.currentLang),
-    );
+    return t(a.name, "products").localeCompare(t(b.name, "products"));
   });
 }
 
@@ -87,11 +78,10 @@ function renderShoppingItem(item, idx) {
   nameWrap.className = "flex items-center gap-1 overflow-hidden";
   const nameEl = document.createElement("span");
   nameEl.className = "truncate";
-  const lbl = labelProduct(item.name, state.currentLang);
+  const lbl = t(item.name, "products");
   nameEl.textContent = lbl;
   nameEl.title = lbl;
-  const unknownLabel = state.currentLang === "pl" ? "Nieznane" : "Unknown";
-  if (lbl === unknownLabel) nameEl.classList.add("opacity-60");
+  if (lbl === item.name) nameEl.classList.add("opacity-60");
   if (item.inCart) nameEl.classList.add("line-through");
   nameWrap.appendChild(nameEl);
   if (stock && stock.quantity > 0) {
@@ -244,9 +234,7 @@ export function renderSuggestions() {
     })
     .filter((p) => !state.dismissedSuggestions.has(p.name))
     .sort((a, b) =>
-      labelProduct(a.id, state.currentLang).localeCompare(
-        labelProduct(b.id, state.currentLang),
-      ),
+      t(a.id, "products").localeCompare(t(b.id, "products")),
     );
   const frag = document.createDocumentFragment();
   suggestions.forEach((p) => {
@@ -262,11 +250,10 @@ export function renderSuggestions() {
     nameWrap.className = "flex items-center gap-1 overflow-hidden";
     const nameEl = document.createElement("span");
     nameEl.className = "truncate";
-    const lbl = labelProduct(p.id, state.currentLang);
+    const lbl = t(p.id, "products");
     nameEl.textContent = lbl;
     nameEl.title = lbl;
-    const unknownLabel = state.currentLang === "pl" ? "Nieznane" : "Unknown";
-    if (!lbl || lbl === unknownLabel) nameEl.classList.add("opacity-60");
+    if (lbl === p.id) nameEl.classList.add("opacity-60");
     nameWrap.appendChild(nameEl);
     if (p.quantity > 0) {
       const owned = document.createElement("span");
