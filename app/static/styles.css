@@ -440,6 +440,13 @@ html[data-layout="mobile"] .touch-btn {
   opacity: 0.6;
 }
 
+.shopping-item,
+.suggestion-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  align-items: center;
+}
+
 .owned-info {
   font-size: 0.75rem;
   color: hsl(var(--bc));

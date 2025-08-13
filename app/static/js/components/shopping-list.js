@@ -4,7 +4,6 @@ import {
   isSpice,
   stockLevel,
   fetchJson,
-  debounce,
   labelProduct,
 } from "../helpers.js";
 import { toast } from "./toast.js";
@@ -24,9 +23,9 @@ export function addToShoppingList(name, quantity = 1) {
     existing.quantity += quantity;
     saveShoppingList();
     const row = document.querySelector(
-      `#shopping-list .shopping-item[data-name="${CSS.escape(name)}"] input`,
+      `#shopping-list .shopping-item[data-name="${CSS.escape(name)}"] .qty-value`,
     );
-    if (row) row.value = existing.quantity;
+    if (row) row.textContent = existing.quantity;
   } else {
     const item = { name, quantity, inCart: false };
     state.shoppingList.push(item);
@@ -70,7 +69,7 @@ function sortShoppingList() {
 function renderShoppingItem(item, idx) {
   const row = document.createElement("div");
   row.className =
-    "shopping-item flex items-center gap-2 h-11 hover:bg-base-200 transition-colors";
+    "shopping-item gap-2 h-11 hover:bg-base-200 transition-colors";
   row.dataset.index = idx;
   row.dataset.name = item.name;
   if (item.inCart) row.classList.add("in-cart");
@@ -85,7 +84,7 @@ function renderShoppingItem(item, idx) {
   }
 
   const nameWrap = document.createElement("div");
-  nameWrap.className = "flex items-center gap-1 flex-1 overflow-hidden";
+  nameWrap.className = "flex items-center gap-1 overflow-hidden";
   const nameEl = document.createElement("span");
   nameEl.className = "truncate";
   const lbl = labelProduct(item.name, state.currentLang);
@@ -95,6 +94,12 @@ function renderShoppingItem(item, idx) {
   if (lbl === unknownLabel) nameEl.classList.add("opacity-60");
   if (item.inCart) nameEl.classList.add("line-through");
   nameWrap.appendChild(nameEl);
+  if (stock && stock.quantity > 0) {
+    const owned = document.createElement("span");
+    owned.className = "owned-info";
+    owned.textContent = `(${t("owned")}: ${stock.quantity})`;
+    nameWrap.appendChild(owned);
+  }
   row.appendChild(nameWrap);
 
   const qtyWrap = document.createElement("div");
@@ -105,12 +110,10 @@ function renderShoppingItem(item, idx) {
   dec.className = "touch-btn";
   dec.setAttribute("aria-label", t("decrease_quantity"));
   dec.disabled = item.inCart;
-  const qtyInput = document.createElement("input");
-  qtyInput.type = "number";
-  qtyInput.min = "1";
-  qtyInput.value = item.quantity;
-  qtyInput.className = "input input-bordered w-16 h-11 text-center no-spinner";
-  qtyInput.disabled = item.inCart;
+  const qtyEl = document.createElement("span");
+  qtyEl.className = "qty-value w-10 text-center";
+  qtyEl.setAttribute("aria-live", "polite");
+  qtyEl.textContent = item.quantity;
   const inc = document.createElement("button");
   inc.type = "button";
   inc.innerHTML = '<i class="fa-solid fa-plus"></i>';
@@ -118,33 +121,25 @@ function renderShoppingItem(item, idx) {
   inc.setAttribute("aria-label", t("increase_quantity"));
   inc.disabled = item.inCart;
   dec.addEventListener("click", () => {
-    const newVal = Math.max(1, (parseInt(qtyInput.value) || 1) - 1);
+    const newVal = Math.max(1, item.quantity - 1);
     item.quantity = newVal;
-    qtyInput.value = newVal;
+    qtyEl.textContent = newVal;
     saveShoppingList();
   });
   inc.addEventListener("click", () => {
-    const newVal = (parseInt(qtyInput.value) || 1) + 1;
+    const newVal = item.quantity + 1;
     item.quantity = newVal;
-    qtyInput.value = newVal;
+    qtyEl.textContent = newVal;
     saveShoppingList();
   });
-  qtyInput.addEventListener(
-    "input",
-    debounce(() => {
-      const val = Math.max(1, parseInt(qtyInput.value) || 1);
-      item.quantity = val;
-      qtyInput.value = val;
-      saveShoppingList();
-    }, 150),
-  );
-  qtyWrap.append(dec, qtyInput, inc);
+  qtyWrap.append(dec, qtyEl, inc);
   row.appendChild(qtyWrap);
 
   const cartBtn = document.createElement("button");
   cartBtn.type = "button";
   cartBtn.innerHTML = '<i class="fa-solid fa-cart-shopping"></i>';
   cartBtn.className = "touch-btn";
+  cartBtn.style.margin = "0 auto";
   cartBtn.classList.toggle("text-primary", item.inCart);
   cartBtn.setAttribute("aria-label", t("in_cart"));
   cartBtn.setAttribute("title", t("in_cart"));
@@ -189,27 +184,31 @@ function renderShoppingItem(item, idx) {
       [...list.children].forEach((el, i) => (el.dataset.index = i));
     });
   });
-  const actions = document.createElement("div");
-  actions.className = "flex items-center gap-2 min-w-[88px] justify-end";
-  actions.appendChild(cartBtn);
+  row.appendChild(cartBtn);
 
   const delBtn = document.createElement("button");
   delBtn.type = "button";
   delBtn.className = "touch-btn text-error";
+  delBtn.style.margin = "0 auto";
   delBtn.innerHTML = '<i class="fa-solid fa-circle-minus"></i>';
   delBtn.setAttribute("aria-label", t("delete_confirm_button"));
   delBtn.setAttribute("title", t("delete_confirm_button"));
   delBtn.addEventListener("click", () => {
-    if (!confirm(t("delete_confirm_button"))) return;
-    const list = document.getElementById("shopping-list");
-    const idx = parseInt(row.dataset.index, 10);
-    state.shoppingList.splice(idx, 1);
-    row.remove();
-    saveShoppingList();
-    if (list) [...list.children].forEach((el, i) => (el.dataset.index = i));
+    const modal = document.getElementById("shopping-delete-modal");
+    const confirmBtn = document.getElementById("confirm-remove-item");
+    modal.showModal();
+    confirmBtn.onclick = () => {
+      const list = document.getElementById("shopping-list");
+      const idx = parseInt(row.dataset.index, 10);
+      state.shoppingList.splice(idx, 1);
+      row.remove();
+      saveShoppingList();
+      if (list) [...list.children].forEach((el, i) => (el.dataset.index = i));
+      modal.close();
+      confirmBtn.onclick = null;
+    };
   });
-  actions.appendChild(delBtn);
-  row.appendChild(actions);
+  row.appendChild(delBtn);
 
   return row;
 }
@@ -254,13 +253,13 @@ export function renderSuggestions() {
     let qty = p.threshold != null ? p.threshold : 1;
     const row = document.createElement("div");
     row.className =
-      "suggestion-item flex items-center gap-2 h-11 hover:bg-base-200 transition-colors";
+      "suggestion-item gap-2 h-11 hover:bg-base-200 transition-colors";
     const level = stockLevel(p);
     if (level === "low") row.classList.add("product-low");
     if (level === "none") row.classList.add("product-missing");
 
     const nameWrap = document.createElement("div");
-    nameWrap.className = "flex items-center gap-1 flex-1 overflow-hidden";
+    nameWrap.className = "flex items-center gap-1 overflow-hidden";
     const nameEl = document.createElement("span");
     nameEl.className = "truncate";
     const lbl = labelProduct(p.id, state.currentLang);
@@ -269,6 +268,12 @@ export function renderSuggestions() {
     const unknownLabel = state.currentLang === "pl" ? "Nieznane" : "Unknown";
     if (!lbl || lbl === unknownLabel) nameEl.classList.add("opacity-60");
     nameWrap.appendChild(nameEl);
+    if (p.quantity > 0) {
+      const owned = document.createElement("span");
+      owned.className = "owned-info";
+      owned.textContent = `(${t("owned")}: ${p.quantity})`;
+      nameWrap.appendChild(owned);
+    }
     row.appendChild(nameWrap);
 
     const qtyWrap = document.createElement("div");
@@ -278,12 +283,10 @@ export function renderSuggestions() {
     dec.innerHTML = '<i class="fa-solid fa-minus"></i>';
     dec.className = "touch-btn";
     dec.setAttribute("aria-label", t("decrease_quantity"));
-    const qtyInput = document.createElement("input");
-    qtyInput.type = "number";
-    qtyInput.min = "1";
-    qtyInput.value = qty;
-    qtyInput.className =
-      "input input-bordered w-16 h-11 text-center no-spinner";
+    const qtyEl = document.createElement("span");
+    qtyEl.className = "w-10 text-center";
+    qtyEl.setAttribute("aria-live", "polite");
+    qtyEl.textContent = qty;
     const inc = document.createElement("button");
     inc.type = "button";
     inc.innerHTML = '<i class="fa-solid fa-plus"></i>';
@@ -291,32 +294,20 @@ export function renderSuggestions() {
     inc.setAttribute("aria-label", t("increase_quantity"));
     dec.addEventListener("click", () => {
       qty = Math.max(1, qty - 1);
-      qtyInput.value = qty;
+      qtyEl.textContent = qty;
     });
     inc.addEventListener("click", () => {
       qty += 1;
-      qtyInput.value = qty;
+      qtyEl.textContent = qty;
     });
-    qtyInput.addEventListener(
-      "input",
-      debounce(() => {
-        qty = Math.max(1, parseInt(qtyInput.value) || 1);
-        qtyInput.value = qty;
-      }, 150),
-    );
-    qtyWrap.append(dec, qtyInput, inc);
-    if (p.quantity > 0) {
-      const owned = document.createElement("span");
-      owned.className = "owned-info";
-      owned.textContent = `(${t("owned")}: ${p.quantity})`;
-      qtyWrap.appendChild(owned);
-    }
+    qtyWrap.append(dec, qtyEl, inc);
     row.appendChild(qtyWrap);
 
     const accept = document.createElement("button");
     accept.type = "button";
     accept.innerHTML = '<i class="fa-regular fa-circle-check"></i>';
     accept.className = "touch-btn text-success";
+    accept.style.margin = "0 auto";
     accept.setAttribute("aria-label", t("accept_action"));
     accept.setAttribute("title", t("accept_action"));
     accept.addEventListener("click", () => {
@@ -328,6 +319,7 @@ export function renderSuggestions() {
     reject.type = "button";
     reject.innerHTML = '<i class="fa-regular fa-circle-xmark"></i>';
     reject.className = "touch-btn text-error";
+    reject.style.margin = "0 auto";
     reject.setAttribute("aria-label", t("reject_action"));
     reject.setAttribute("title", t("reject_action"));
     reject.addEventListener("click", () => {
