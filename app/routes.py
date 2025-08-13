@@ -277,12 +277,41 @@ def remove_used_products(used_ingredients):
         safe_write(PRODUCTS_PATH, products)
 
 
-APP_VERSION = "4"
+def _compute_app_version() -> str:
+    """Return a short hash representing current static/data mtimes."""
+    import hashlib
+
+    paths = []
+    static_dir = os.path.join(BASE_DIR, "static")
+    for root, _, files in os.walk(static_dir):
+        for fn in files:
+            paths.append(os.path.join(root, fn))
+    paths.extend([PRODUCTS_PATH, RECIPES_PATH])
+
+    mtimes: List[str] = []
+    for p in paths:
+        try:
+            mtimes.append(str(os.path.getmtime(p)))
+        except OSError:  # pragma: no cover - missing file
+            continue
+    digest = hashlib.sha256("".join(sorted(mtimes)).encode("utf-8")).hexdigest()
+    return digest[:8]
 
 
 @bp.route("/")
 def index():
-    return render_template("index.html", app_version=APP_VERSION)
+    version = _compute_app_version()
+    return render_template("index.html", app_version=version)
+
+
+@bp.route("/version.txt")
+def version_txt():
+    version = _compute_app_version()
+    return (
+        version,
+        200,
+        {"Content-Type": "text/plain", "Cache-Control": "no-cache"},
+    )
 
 
 @bp.route("/manifest.json")
