@@ -33,11 +33,7 @@
         };
         const resolve = () => {
           const stored = localStorage.getItem(key) || "system";
-          return stored === "system"
-            ? mql.matches
-              ? "dark"
-              : "light"
-            : stored;
+          return stored === "system" ? (mql.matches ? "dark" : "light") : stored;
         };
         apply(resolve());
         if (window.DEBUG) console.info("theme:", resolve());
@@ -74,9 +70,7 @@
     <div id="top-sentinel"></div>
     <div id="health-banner" class="alert alert-error hidden justify-between">
       <span data-i18n="error">Error</span>
-      <button id="health-retry" class="btn btn-sm" data-i18n="retry">
-        Retry
-      </button>
+      <button id="health-retry" class="btn btn-sm" data-i18n="retry">Retry</button>
     </div>
     <div
       id="notification-container"
@@ -84,30 +78,24 @@
       aria-live="polite"
     ></div>
     <div id="top-banner-container" class="sticky top-0 z-30"></div>
-    <header class="sticky top-0 z-20 grid grid-cols-[auto,1fr,auto] items-center gap-2 px-4 sm:px-6 lg:px-8 py-2 bg-base-100 max-w-screen-xl mx-auto">
+    <header
+      class="sticky top-0 z-20 grid grid-cols-[auto,1fr,auto] items-center gap-2 px-4 sm:px-6 lg:px-8 py-2 bg-base-100 max-w-screen-xl mx-auto"
+    >
       <div class="flex items-center gap-2">
         <span class="font-bold text-lg">Food App</span>
         <span id="locale-chip" class="badge">PL</span>
       </div>
       <div class="overflow-x-auto">
-        <div
-          class="tabs tabs-bordered flex-nowrap overflow-x-auto whitespace-nowrap desktop-nav"
-        >
+        <div class="tabs tabs-bordered flex-nowrap overflow-x-auto whitespace-nowrap desktop-nav">
           <a
             class="tab tab-active font-bold"
             data-tab-target="tab-products"
             data-i18n="tab_products"
             >Produkty</a
           >
-          <a class="tab" data-tab-target="tab-recipes" data-i18n="tab_recipes"
-            >Przepisy</a
-          >
-          <a class="tab" data-tab-target="tab-history" data-i18n="tab_history"
-            >Historia dań</a
-          >
-          <a class="tab" data-tab-target="tab-shopping" data-i18n="tab_shopping"
-            >Lista zakupów</a
-          >
+          <a class="tab" data-tab-target="tab-recipes" data-i18n="tab_recipes">Przepisy</a>
+          <a class="tab" data-tab-target="tab-history" data-i18n="tab_history">Historia dań</a>
+          <a class="tab" data-tab-target="tab-shopping" data-i18n="tab_shopping">Lista zakupów</a>
         </div>
       </div>
       <div class="flex items-center justify-end gap-2">
@@ -124,9 +112,7 @@
           class="flex items-center gap-1 text-xl p-2 bg-transparent border-0"
         >
           <i class="fa-solid fa-language"></i>
-          <span class="action-label hidden md:inline" data-i18n="language"
-            >Language</span
-          >
+          <span class="action-label hidden md:inline" data-i18n="language">Language</span>
         </button>
         <button
           id="theme-toggle"
@@ -134,9 +120,7 @@
           class="flex items-center gap-1 text-xl p-2 bg-transparent border-0"
         >
           <i id="theme-icon" class="fa-solid fa-desktop"></i>
-          <span class="action-label hidden md:inline" data-i18n="theme"
-            >Theme</span
-          >
+          <span class="action-label hidden md:inline" data-i18n="theme">Theme</span>
         </button>
         <button
           id="install-btn"
@@ -152,50 +136,33 @@
           class="flex items-center gap-1 text-xl p-2 bg-transparent border-0"
         >
           <i class="fa-solid fa-gear"></i>
-          <span class="action-label hidden md:inline" data-i18n="tab_settings"
-            >Settings</span
-          >
+          <span class="action-label hidden md:inline" data-i18n="tab_settings">Settings</span>
         </button>
       </div>
     </header>
-    <main class="max-w-screen-xl mx-auto p-4 md:p-6 pb-24" style="padding-bottom: calc(env(safe-area-inset-bottom)+6rem)">
+    <main
+      class="max-w-screen-xl mx-auto p-4 md:p-6 pb-24"
+      style="padding-bottom: calc(env(safe-area-inset-bottom)+6rem)"
+    >
       <div id="tab-products" class="tab-panel">
-        <h1
-          class="text-xl md:text-2xl font-semibold mb-4 md:mb-6"
-          data-i18n="heading_products"
-        >
+        <h1 class="text-xl md:text-2xl font-semibold mb-4 md:mb-6" data-i18n="heading_products">
           Produkty
         </h1>
         <div id="controls" class="flex flex-wrap items-center gap-4 mb-4">
-          <div
-            class="flex flex-col md:flex-row gap-2 items-start md:items-center flex-1"
-          >
+          <div class="flex flex-col md:flex-row gap-2 items-start md:items-center flex-1">
             <input
               id="product-search"
               placeholder="Szukaj produktu"
               data-i18n="search_placeholder"
               class="input input-bordered flex-1 min-w-[200px]"
             />
-            <select
-              id="state-filter"
-              class="select select-bordered w-full md:w-auto"
-            >
-              <option value="all" data-i18n="state_filter_all">
-                Wszystkie
-              </option>
-              <option
-                value="available"
-                data-i18n="state_filter_available"
-                selected
-              >
+            <select id="state-filter" class="select select-bordered w-full md:w-auto">
+              <option value="all" data-i18n="state_filter_all">Wszystkie</option>
+              <option value="available" data-i18n="state_filter_available" selected>
                 Dostępne
               </option>
-              <option value="missing" data-i18n="state_filter_missing">
-                Brakujące
-              </option>
-              <option value="low" data-i18n="state_filter_low">
-                Kończące się
-              </option>
+              <option value="missing" data-i18n="state_filter_missing">Brakujące</option>
+              <option value="low" data-i18n="state_filter_low">Kończące się</option>
             </select>
           </div>
           <button
@@ -239,10 +206,7 @@
           </button>
         </div>
         <div class="overflow-x-auto">
-          <table
-            id="product-table"
-            class="table table-zebra table-fixed w-full text-sm"
-          >
+          <table id="product-table" class="table table-zebra table-fixed w-full text-sm">
             <colgroup>
               <col class="w-[6%]" />
               <col class="w-[24%]" />
@@ -264,9 +228,7 @@
                   <span class="tooltip" data-i18n-tip="stock_legend"
                     ><i class="fa-solid fa-circle-info"></i
                   ></span>
-                  <span class="status-label" data-i18n="table_header_status"
-                    >Status</span
-                  >
+                  <span class="status-label" data-i18n="table_header_status">Status</span>
                 </th>
               </tr>
             </thead>
@@ -277,9 +239,7 @@
 
         <dialog id="delete-modal" class="modal">
           <form method="dialog" class="modal-box">
-            <h3 class="font-bold text-lg" data-i18n="delete_modal_title">
-              Potwierdź usunięcie
-            </h3>
+            <h3 class="font-bold text-lg" data-i18n="delete_modal_title">Potwierdź usunięcie</h3>
             <p class="py-4" data-i18n="delete_modal_question">
               Czy na pewno chcesz usunąć zaznaczone produkty?
             </p>
@@ -308,16 +268,10 @@
         <div id="add-section" style="display: none">
           <hr class="border-t border-base-300 my-6" />
 
-          <h2
-            class="text-xl font-semibold mt-6 mb-4"
-            data-i18n="heading_add_edit_product"
-          >
+          <h2 class="text-xl font-semibold mt-6 mb-4" data-i18n="heading_add_edit_product">
             Dodaj / edytuj produkt
           </h2>
-          <form
-            id="add-form"
-            class="grid grid-cols-1 sm:grid-cols-8 gap-2 mb-6 items-end"
-          >
+          <form id="add-form" class="grid grid-cols-1 sm:grid-cols-8 gap-2 mb-6 items-end">
             <input
               name="name"
               placeholder="nazwa"
@@ -360,103 +314,51 @@
             />
             <div class="mb-4">
               <div id="category-checkboxes" class="flex flex-wrap gap-2 mb-2">
-                <select
-                  name="category"
-                  required
-                  class="select select-bordered w-full"
-                >
-                  <option
-                    value="uncategorized"
-                    data-i18n="category_uncategorized"
-                  >
+                <select name="category" required class="select select-bordered w-full">
+                  <option value="uncategorized" data-i18n="category_uncategorized">
                     brak kategorii
                   </option>
-                  <option value="fresh_veg" data-i18n="category_fresh_veg">
-                    Świeże warzywa
-                  </option>
-                  <option value="mushrooms" data-i18n="category_mushrooms">
-                    Grzyby
-                  </option>
-                  <option value="dairy_eggs" data-i18n="category_dairy_eggs">
-                    Nabiał i jajka
-                  </option>
-                  <option
-                    value="opened_preserves"
-                    data-i18n="category_opened_preserves"
-                  >
+                  <option value="fresh_veg" data-i18n="category_fresh_veg">Świeże warzywa</option>
+                  <option value="mushrooms" data-i18n="category_mushrooms">Grzyby</option>
+                  <option value="dairy_eggs" data-i18n="category_dairy_eggs">Nabiał i jajka</option>
+                  <option value="opened_preserves" data-i18n="category_opened_preserves">
                     Otwarte konserwy i przetwory
                   </option>
-                  <option
-                    value="ready_sauces"
-                    data-i18n="category_ready_sauces"
-                  >
-                    Sosy
-                  </option>
-                  <option value="dry_veg" data-i18n="category_dry_veg">
-                    Warzywa suche
-                  </option>
-                  <option value="bread" data-i18n="category_bread">
-                    Pieczywo
-                  </option>
-                  <option value="pasta" data-i18n="category_pasta">
-                    Makarony
-                  </option>
+                  <option value="ready_sauces" data-i18n="category_ready_sauces">Sosy</option>
+                  <option value="dry_veg" data-i18n="category_dry_veg">Warzywa suche</option>
+                  <option value="bread" data-i18n="category_bread">Pieczywo</option>
+                  <option value="pasta" data-i18n="category_pasta">Makarony</option>
                   <option value="rice" data-i18n="category_rice">Ryże</option>
-                  <option value="grains" data-i18n="category_grains">
-                    Kasze
-                  </option>
-                  <option
-                    value="dried_legumes"
-                    data-i18n="category_dried_legumes"
-                  >
+                  <option value="grains" data-i18n="category_grains">Kasze</option>
+                  <option value="dried_legumes" data-i18n="category_dried_legumes">
                     Suche rośliny strączkowe
                   </option>
                   <option value="sauces" data-i18n="category_sauces">
                     Sosy i przyprawy płynne
                   </option>
                   <option value="oils" data-i18n="category_oils">Oleje</option>
-                  <option value="spreads" data-i18n="category_spreads">
-                    Smarowidła i pasty
-                  </option>
-                  <option value="spices" data-i18n="category_spices">
-                    Przyprawy
-                  </option>
+                  <option value="spreads" data-i18n="category_spreads">Smarowidła i pasty</option>
+                  <option value="spices" data-i18n="category_spices">Przyprawy</option>
                   <option value="frozen_veg" data-i18n="category_frozen_veg">
                     Mrożone warzywa
                   </option>
-                  <option
-                    value="frozen_sauces"
-                    data-i18n="category_frozen_sauces"
-                  >
+                  <option value="frozen_sauces" data-i18n="category_frozen_sauces">
                     Mrożone sosy
                   </option>
-                  <option
-                    value="frozen_meals"
-                    data-i18n="category_frozen_meals"
-                  >
+                  <option value="frozen_meals" data-i18n="category_frozen_meals">
                     Mrożone dania / zupy
                   </option>
                 </select>
                 <label class="flex items-center gap-2 w-full">
                   <input type="checkbox" name="main" class="checkbox" />
-                  <span data-i18n="checkbox_main_label"
-                    >Produkt podstawowy</span
-                  >
+                  <span data-i18n="checkbox_main_label">Produkt podstawowy</span>
                 </label>
               </div>
             </div>
-            <select
-              name="storage"
-              required
-              class="select select-bordered w-full"
-            >
+            <select name="storage" required class="select select-bordered w-full">
               <option value="fridge" data-i18n="storage_fridge">Lodówka</option>
-              <option value="pantry" selected data-i18n="storage_pantry">
-                Szafka
-              </option>
-              <option value="freezer" data-i18n="storage_freezer">
-                Zamrażarka
-              </option>
+              <option value="pantry" selected data-i18n="storage_pantry">Szafka</option>
+              <option value="freezer" data-i18n="storage_freezer">Zamrażarka</option>
             </select>
             <button
               type="submit"
@@ -469,10 +371,7 @@
           <hr class="border-t border-base-300 my-6" />
         </div>
 
-        <h3
-          class="text-lg font-semibold mt-6 mb-2"
-          data-i18n="heading_edit_json"
-        >
+        <h3 class="text-lg font-semibold mt-6 mb-2" data-i18n="heading_edit_json">
           Edytuj produkty (JSON)
         </h3>
         <textarea
@@ -501,54 +400,25 @@
       </div>
 
       <div id="tab-recipes" class="tab-panel" style="display: none">
-        <h1
-          class="text-xl md:text-2xl font-semibold mb-3 md:mb-4"
-          data-i18n="heading_recipes"
-        >
+        <h1 class="text-xl md:text-2xl font-semibold mb-3 md:mb-4" data-i18n="heading_recipes">
           Przepisy
         </h1>
-        <div
-          id="recipe-controls"
-          class="flex flex-col sm:flex-row flex-wrap gap-4 mb-4"
-        >
-          <div
-            class="flex flex-col sm:flex-row items-start sm:items-center gap-2"
-          >
+        <div id="recipe-controls" class="flex flex-col sm:flex-row flex-wrap gap-4 mb-4">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
             <span data-i18n="recipe_sort_label">Sortuj według:</span>
-            <div
-              id="recipe-sort-mobile-container"
-              class="w-full"
-              style="display: none"
-            >
-              <select
-                id="recipe-sort-mobile"
-                class="select select-bordered select-sm w-full"
-              >
-                <option value="name-asc" data-i18n="recipe_sort_mobile_name">
-                  Nazwy (A→Z)
-                </option>
-                <option
-                  value="time-asc"
-                  data-i18n="recipe_sort_mobile_time_asc"
-                >
+            <div id="recipe-sort-mobile-container" class="w-full" style="display: none">
+              <select id="recipe-sort-mobile" class="select select-bordered select-sm w-full">
+                <option value="name-asc" data-i18n="recipe_sort_mobile_name">Nazwy (A→Z)</option>
+                <option value="time-asc" data-i18n="recipe_sort_mobile_time_asc">
                   Czasu (rosnąco)
                 </option>
-                <option
-                  value="time-desc"
-                  data-i18n="recipe_sort_mobile_time_desc"
-                >
+                <option value="time-desc" data-i18n="recipe_sort_mobile_time_desc">
                   Czasu (malejąco)
                 </option>
-                <option
-                  value="portions-asc"
-                  data-i18n="recipe_sort_mobile_portions_asc"
-                >
+                <option value="portions-asc" data-i18n="recipe_sort_mobile_portions_asc">
                   Porcji (rosnąco)
                 </option>
-                <option
-                  value="portions-desc"
-                  data-i18n="recipe_sort_mobile_portions_desc"
-                >
+                <option value="portions-desc" data-i18n="recipe_sort_mobile_portions_desc">
                   Porcji (malejąco)
                 </option>
               </select>
@@ -564,9 +434,7 @@
               >
                 <option value="name" data-i18n="recipe_sort_name">Nazwy</option>
                 <option value="time" data-i18n="recipe_sort_time">Czasu</option>
-                <option value="portions" data-i18n="recipe_sort_portions">
-                  Porcji
-                </option>
+                <option value="portions" data-i18n="recipe_sort_portions">Porcji</option>
               </select>
               <div class="join">
                 <button
@@ -588,40 +456,20 @@
               </div>
             </div>
           </div>
-          <div
-            class="flex flex-col sm:flex-row items-start sm:items-center gap-2"
-          >
-            <label for="recipe-time-filter" data-i18n="recipe_filter_time_label"
-              >Czas:</label
-            >
-            <select
-              id="recipe-time-filter"
-              class="select select-bordered w-full sm:w-auto"
-            >
+          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+            <label for="recipe-time-filter" data-i18n="recipe_filter_time_label">Czas:</label>
+            <select id="recipe-time-filter" class="select select-bordered w-full sm:w-auto">
               <option value="" data-i18n="filter_all">Wszystkie</option>
-              <option value="lt30" data-i18n="recipe_filter_time_lt30">
-                &lt;30min
-              </option>
-              <option value="30-60" data-i18n="recipe_filter_time_30_60">
-                30–60min
-              </option>
-              <option value="gt60" data-i18n="recipe_filter_time_gt60">
-                &gt;60min
-              </option>
+              <option value="lt30" data-i18n="recipe_filter_time_lt30">&lt;30min</option>
+              <option value="30-60" data-i18n="recipe_filter_time_30_60">30–60min</option>
+              <option value="gt60" data-i18n="recipe_filter_time_gt60">&gt;60min</option>
             </select>
           </div>
-          <div
-            class="flex flex-col sm:flex-row items-start sm:items-center gap-2"
-          >
-            <label
-              for="recipe-portions-filter"
-              data-i18n="recipe_filter_portions_label"
+          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+            <label for="recipe-portions-filter" data-i18n="recipe_filter_portions_label"
               >Porcje</label
             >
-            <select
-              id="recipe-portions-filter"
-              class="select select-bordered w-full sm:w-auto"
-            >
+            <select id="recipe-portions-filter" class="select select-bordered w-full sm:w-auto">
               <option value="" data-i18n="filter_all">Wszystkie</option>
               <option value="1">1</option>
               <option value="2">2</option>
@@ -654,10 +502,7 @@
       </div>
 
       <div id="tab-history" class="tab-panel" style="display: none">
-        <h1
-          class="text-xl md:text-2xl font-semibold mb-3 md:mb-4"
-          data-i18n="heading_history"
-        >
+        <h1 class="text-xl md:text-2xl font-semibold mb-3 md:mb-4" data-i18n="heading_history">
           Historia dań
         </h1>
         <ul id="history-list" class="list-disc pl-4"></ul>
@@ -669,43 +514,21 @@
               <div>
                 <span data-i18n="label_taste" class="block mb-2">Smak:</span>
                 <div class="rating flex gap-1 text-2xl" data-name="taste">
-                  <i
-                    class="fa-regular fa-star star cursor-pointer text-base-300"
-                  ></i>
-                  <i
-                    class="fa-regular fa-star star cursor-pointer text-base-300"
-                  ></i>
-                  <i
-                    class="fa-regular fa-star star cursor-pointer text-base-300"
-                  ></i>
-                  <i
-                    class="fa-regular fa-star star cursor-pointer text-base-300"
-                  ></i>
-                  <i
-                    class="fa-regular fa-star star cursor-pointer text-base-300"
-                  ></i>
+                  <i class="fa-regular fa-star star cursor-pointer text-base-300"></i>
+                  <i class="fa-regular fa-star star cursor-pointer text-base-300"></i>
+                  <i class="fa-regular fa-star star cursor-pointer text-base-300"></i>
+                  <i class="fa-regular fa-star star cursor-pointer text-base-300"></i>
+                  <i class="fa-regular fa-star star cursor-pointer text-base-300"></i>
                 </div>
               </div>
               <div>
-                <span data-i18n="label_prep_time" class="block mb-2"
-                  >Czas przygotowania:</span
-                >
+                <span data-i18n="label_prep_time" class="block mb-2">Czas przygotowania:</span>
                 <div class="rating flex gap-1 text-2xl" data-name="time">
-                  <i
-                    class="fa-regular fa-star star cursor-pointer text-base-300"
-                  ></i>
-                  <i
-                    class="fa-regular fa-star star cursor-pointer text-base-300"
-                  ></i>
-                  <i
-                    class="fa-regular fa-star star cursor-pointer text-base-300"
-                  ></i>
-                  <i
-                    class="fa-regular fa-star star cursor-pointer text-base-300"
-                  ></i>
-                  <i
-                    class="fa-regular fa-star star cursor-pointer text-base-300"
-                  ></i>
+                  <i class="fa-regular fa-star star cursor-pointer text-base-300"></i>
+                  <i class="fa-regular fa-star star cursor-pointer text-base-300"></i>
+                  <i class="fa-regular fa-star star cursor-pointer text-base-300"></i>
+                  <i class="fa-regular fa-star star cursor-pointer text-base-300"></i>
+                  <i class="fa-regular fa-star star cursor-pointer text-base-300"></i>
                 </div>
               </div>
               <div>
@@ -718,11 +541,7 @@
               </div>
             </div>
             <div class="modal-action">
-              <button
-                type="submit"
-                class="btn btn-success btn-sm"
-                data-i18n="save_button"
-              >
+              <button type="submit" class="btn btn-success btn-sm" data-i18n="save_button">
                 Zapisz
               </button>
               <button
@@ -737,21 +556,12 @@
           </form>
         </dialog>
 
-        <dialog
-          id="history-detail-modal"
-          class="modal"
-          aria-labelledby="history-detail-title"
-        >
+        <dialog id="history-detail-modal" class="modal" aria-labelledby="history-detail-title">
           <div class="modal-box max-w-lg">
             <h3 id="history-detail-title" class="font-bold text-lg mb-4"></h3>
             <div class="space-y-4">
               <div id="history-detail-ingredients-wrap">
-                <h4
-                  class="font-semibold mb-2"
-                  data-i18n="recipe_ingredients_header"
-                >
-                  Składniki
-                </h4>
+                <h4 class="font-semibold mb-2" data-i18n="recipe_ingredients_header">Składniki</h4>
                 <ul id="history-detail-ingredients" class="list-disc pl-4"></ul>
               </div>
               <div id="history-detail-rating-wrap" class="space-y-1">
@@ -789,11 +599,7 @@
           class="fixed inset-0 bg-base-100 z-50 hidden flex flex-col items-center justify-center p-4"
         >
           <div id="cooking-step" class="text-xl text-center mb-6"></div>
-          <button
-            id="cooking-next"
-            class="btn btn-primary mb-4"
-            data-i18n="next_step_button"
-          >
+          <button id="cooking-next" class="btn btn-primary mb-4" data-i18n="next_step_button">
             Dalej
           </button>
           <form id="cooking-form" class="w-full max-w-md space-y-4 hidden">
@@ -806,115 +612,58 @@
             <div>
               <span data-i18n="label_taste" class="block mb-2">Smak:</span>
               <div class="rating flex gap-1 text-2xl" data-name="taste">
-                <i
-                  class="fa-regular fa-star star cursor-pointer text-base-300"
-                ></i>
-                <i
-                  class="fa-regular fa-star star cursor-pointer text-base-300"
-                ></i>
-                <i
-                  class="fa-regular fa-star star cursor-pointer text-base-300"
-                ></i>
-                <i
-                  class="fa-regular fa-star star cursor-pointer text-base-300"
-                ></i>
-                <i
-                  class="fa-regular fa-star star cursor-pointer text-base-300"
-                ></i>
+                <i class="fa-regular fa-star star cursor-pointer text-base-300"></i>
+                <i class="fa-regular fa-star star cursor-pointer text-base-300"></i>
+                <i class="fa-regular fa-star star cursor-pointer text-base-300"></i>
+                <i class="fa-regular fa-star star cursor-pointer text-base-300"></i>
+                <i class="fa-regular fa-star star cursor-pointer text-base-300"></i>
               </div>
             </div>
             <div>
-              <span data-i18n="label_prep_time" class="block mb-2"
-                >Czas przygotowania:</span
-              >
+              <span data-i18n="label_prep_time" class="block mb-2">Czas przygotowania:</span>
               <div class="rating flex gap-1 text-2xl" data-name="time">
-                <i
-                  class="fa-regular fa-star star cursor-pointer text-base-300"
-                ></i>
-                <i
-                  class="fa-regular fa-star star cursor-pointer text-base-300"
-                ></i>
-                <i
-                  class="fa-regular fa-star star cursor-pointer text-base-300"
-                ></i>
-                <i
-                  class="fa-regular fa-star star cursor-pointer text-base-300"
-                ></i>
-                <i
-                  class="fa-regular fa-star star cursor-pointer text-base-300"
-                ></i>
+                <i class="fa-regular fa-star star cursor-pointer text-base-300"></i>
+                <i class="fa-regular fa-star star cursor-pointer text-base-300"></i>
+                <i class="fa-regular fa-star star cursor-pointer text-base-300"></i>
+                <i class="fa-regular fa-star star cursor-pointer text-base-300"></i>
+                <i class="fa-regular fa-star star cursor-pointer text-base-300"></i>
               </div>
             </div>
-            <button
-              type="submit"
-              class="btn btn-success"
-              data-i18n="save_button"
-            >
-              Zapisz
-            </button>
+            <button type="submit" class="btn btn-success" data-i18n="save_button">Zapisz</button>
           </form>
         </div>
       </div>
 
       <div id="tab-shopping" class="tab-panel" style="display: none">
-        <h1 class="text-2xl font-bold mb-6" data-i18n="heading_shopping">
-          Lista zakupów
-        </h1>
-        <button
-          id="receipt-btn"
-          class="btn btn-secondary btn-sm mb-4"
-          data-i18n="receipt_import"
-        >
+        <h1 class="text-2xl font-bold mb-6" data-i18n="heading_shopping">Lista zakupów</h1>
+        <button id="receipt-btn" class="btn btn-secondary btn-sm mb-4" data-i18n="receipt_import">
           Dodaj z paragonu
         </button>
         <input id="receipt-input" type="file" accept="image/*" class="hidden" />
         <dialog id="receipt-sheet" class="modal modal-bottom sm:modal-middle">
           <form method="dialog" class="modal-box">
-            <button
-              id="receipt-camera"
-              class="btn w-full mb-2"
-              data-i18n="camera"
-            >
-              Aparat
-            </button>
-            <button
-              id="receipt-upload"
-              class="btn w-full"
-              data-i18n="choose_file"
-            >
+            <button id="receipt-camera" class="btn w-full mb-2" data-i18n="camera">Aparat</button>
+            <button id="receipt-upload" class="btn w-full" data-i18n="choose_file">
               Wybierz plik
             </button>
           </form>
         </dialog>
         <dialog id="receipt-upload-modal" class="modal">
           <form method="dialog" class="modal-box">
-            <div
-              id="receipt-drop-area"
-              class="border-2 border-dashed rounded p-8 text-center"
-            >
-              <button id="receipt-choose" class="btn" data-i18n="choose_file">
-                Wybierz plik
-              </button>
+            <div id="receipt-drop-area" class="border-2 border-dashed rounded p-8 text-center">
+              <button id="receipt-choose" class="btn" data-i18n="choose_file">Wybierz plik</button>
             </div>
           </form>
         </dialog>
         <div id="suggestions-section" class="mb-8">
-          <h2
-            class="text-xl font-semibold mb-4"
-            data-i18n="heading_suggestions"
-          >
-            Propozycje
-          </h2>
+          <h2 class="text-xl font-semibold mb-4" data-i18n="heading_suggestions">Propozycje</h2>
           <div
             id="suggestion-list"
             class="border border-base-300 rounded-lg divide-y divide-base-300"
           ></div>
         </div>
         <div id="shopping-list-section" class="mb-8">
-          <h2
-            class="text-xl font-semibold mb-4"
-            data-i18n="heading_shopping_list"
-          >
+          <h2 class="text-xl font-semibold mb-4" data-i18n="heading_shopping_list">
             Lista zakupów
           </h2>
           <div
@@ -923,13 +672,8 @@
           ></div>
         </div>
         <hr class="border-t border-base-300 mt-6 mb-4" />
-        <div
-          id="manual-add-section"
-          class="mb-8 p-4 shadow rounded bg-base-100"
-        >
-          <h2 class="text-xl font-bold mb-4" data-i18n="heading_add_product">
-            Dodaj produkt
-          </h2>
+        <div id="manual-add-section" class="mb-8 p-4 shadow rounded bg-base-100">
+          <h2 class="text-xl font-bold mb-4" data-i18n="heading_add_product">Dodaj produkt</h2>
           <div class="flex flex-wrap items-center gap-2">
             <input
               id="manual-name"
@@ -939,12 +683,7 @@
               data-i18n="add_form_name_placeholder"
             />
             <div class="flex items-center gap-2">
-              <button
-                id="manual-dec"
-                type="button"
-                class="text-xl touch-btn"
-                aria-label="-"
-              >
+              <button id="manual-dec" type="button" class="text-xl touch-btn" aria-label="-">
                 <i class="fa-solid fa-minus"></i>
               </button>
               <span
@@ -952,20 +691,11 @@
                 class="w-10 h-10 inline-flex items-center justify-center text-center mx-2"
                 >1</span
               >
-              <button
-                id="manual-inc"
-                type="button"
-                class="text-xl touch-btn"
-                aria-label="+"
-              >
+              <button id="manual-inc" type="button" class="text-xl touch-btn" aria-label="+">
                 <i class="fa-solid fa-plus"></i>
               </button>
             </div>
-            <button
-              id="manual-add-btn"
-              class="btn btn-primary btn-sm"
-              data-i18n="save_button"
-            >
+            <button id="manual-add-btn" class="btn btn-primary btn-sm" data-i18n="save_button">
               Zapisz
             </button>
           </div>
@@ -973,9 +703,7 @@
         </div>
         <dialog id="receipt-modal" class="modal">
           <form method="dialog" class="modal-box w-11/12 max-w-3xl">
-            <h3 class="font-bold text-lg" data-i18n="receipt_import">
-              Dodaj z paragonu
-            </h3>
+            <h3 class="font-bold text-lg" data-i18n="receipt_import">Dodaj z paragonu</h3>
             <div class="overflow-x-auto">
               <table id="receipt-table" class="table w-full">
                 <thead>
@@ -990,24 +718,16 @@
               </table>
             </div>
             <div class="modal-action">
-              <button
-                id="receipt-confirm"
-                class="btn btn-primary"
-                data-i18n="confirm_import"
-              >
+              <button id="receipt-confirm" class="btn btn-primary" data-i18n="confirm_import">
                 Zatwierdź import
               </button>
-              <button class="btn btn-outline" data-i18n="delete_cancel_button">
-                Anuluj
-              </button>
+              <button class="btn btn-outline" data-i18n="delete_cancel_button">Anuluj</button>
             </div>
           </form>
         </dialog>
         <dialog id="shopping-delete-modal" class="modal">
           <form method="dialog" class="modal-box">
-            <h3 class="font-bold text-lg" data-i18n="delete_modal_title">
-              Potwierdź usunięcie
-            </h3>
+            <h3 class="font-bold text-lg" data-i18n="delete_modal_title">Potwierdź usunięcie</h3>
             <p class="py-4" data-i18n="delete_item_question">
               Czy na pewno chcesz usunąć ten produkt?
             </p>
@@ -1033,18 +753,10 @@
       </div>
 
       <div id="tab-settings" class="tab-panel" style="display: none">
-        <h1
-          class="text-xl md:text-2xl font-semibold mb-3 md:mb-4"
-          data-i18n="heading_settings"
-        >
+        <h1 class="text-xl md:text-2xl font-semibold mb-3 md:mb-4" data-i18n="heading_settings">
           Ustawienia
         </h1>
-        <h2
-          class="text-xl font-semibold mb-4"
-          data-i18n="settings_units_header"
-        >
-          Jednostki
-        </h2>
+        <h2 class="text-xl font-semibold mb-4" data-i18n="settings_units_header">Jednostki</h2>
         <div class="overflow-x-auto">
           <table id="units-table" class="table table-zebra w-full">
             <colgroup>
@@ -1062,11 +774,7 @@
             <tbody></tbody>
           </table>
         </div>
-        <button
-          id="units-save"
-          class="btn btn-primary btn-sm mt-4"
-          data-i18n="save_button"
-        >
+        <button id="units-save" class="btn btn-primary btn-sm mt-4" data-i18n="save_button">
           Zapisz
         </button>
       </div>
@@ -1081,7 +789,10 @@
       </form>
     </dialog>
 
-    <nav class="fixed bottom-0 left-0 w-full z-50 bg-base-100 flex border-t border-base-300" style="padding-bottom: env(safe-area-inset-bottom)">
+    <nav
+      class="fixed bottom-0 left-0 w-full z-50 bg-base-100 flex border-t border-base-300"
+      style="padding-bottom: env(safe-area-inset-bottom)"
+    >
       <a
         class="tab tab-active font-bold flex flex-col items-center justify-center flex-1 py-3 px-2 border-r border-base-300 min-h-11 text-center"
         data-tab-target="tab-products"

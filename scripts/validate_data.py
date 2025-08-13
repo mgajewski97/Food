@@ -98,9 +98,7 @@ def validate_recipes(
                     f"recipe[{r_idx}] ingredient[{i_idx}]: unknown productId {product_id}"
                 )
             if unit_id and unit_id not in unit_ids:
-                errors.append(
-                    f"recipe[{r_idx}] ingredient[{i_idx}]: unknown unitId {unit_id}"
-                )
+                errors.append(f"recipe[{r_idx}] ingredient[{i_idx}]: unknown unitId {unit_id}")
             if category_id and category_id not in category_ids:
                 errors.append(
                     f"recipe[{r_idx}] ingredient[{i_idx}]: unknown categoryId {category_id}"

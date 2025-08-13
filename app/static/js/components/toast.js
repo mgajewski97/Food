@@ -1,20 +1,11 @@
 import { t, state, isSpice } from "../helpers.js";
 
-function createToast({
-  type = "success",
-  title = "",
-  message = "",
-  action = null,
-}) {
+function createToast({ type = "success", title = "", message = "", action = null }) {
   const container = document.getElementById("notification-container");
   if (!container) return;
   const alert = document.createElement("div");
   const alertClass =
-    type === "error"
-      ? "alert-error"
-      : type === "info"
-        ? "alert-info"
-        : "alert-success";
+    type === "error" ? "alert-error" : type === "info" ? "alert-info" : "alert-success";
   alert.className = `alert ${alertClass} shadow-lg relative`;
   alert.setAttribute("role", "status");
   alert.setAttribute("aria-live", "polite");
@@ -72,21 +63,12 @@ export const toast = {
     createToast({ type: "error", title, message, action }),
 };
 
-export function showNotification({
-  type = "info",
-  title = "",
-  message = "",
-  action = null,
-}) {
+export function showNotification({ type = "info", title = "", message = "", action = null }) {
   const fn = toast[type] || toast.info;
   fn(title, message, action);
 }
 
-export function showLowStockToast(
-  activateTab,
-  renderSuggestions,
-  renderShoppingList,
-) {
+export function showLowStockToast(activateTab, renderSuggestions, renderShoppingList) {
   const container = document.getElementById("notification-container");
   if (!container) return;
   const existing = container.querySelector('[data-toast="low-stock"]');
@@ -140,9 +122,7 @@ export function checkLowStockToast(
     return p.main && p.threshold !== null && p.quantity <= p.threshold;
   });
   const container = document.getElementById("notification-container");
-  const toast = container
-    ? container.querySelector('[data-toast="low-stock"]')
-    : null;
+  const toast = container ? container.querySelector('[data-toast="low-stock"]') : null;
   if (low) {
     if (!state.lowStockToastShown) {
       showLowStockToast(activateTab, renderSuggestions, renderShoppingList);
@@ -163,8 +143,7 @@ export function showTopBanner(message, { actionLabel, onAction } = {}) {
   const container = document.getElementById("top-banner-container");
   if (!container) return;
   const banner = document.createElement("div");
-  banner.className =
-    "alert alert-error flex items-center justify-between gap-4";
+  banner.className = "alert alert-error flex items-center justify-between gap-4";
   const msg = document.createElement("span");
   msg.textContent = message;
   banner.appendChild(msg);

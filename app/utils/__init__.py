@@ -75,15 +75,11 @@ def _validate(
         valid_items = []
         for idx, item in enumerate(data):
             validator_to_use = item_validator or validator
-            item_errors = sorted(
-                validator_to_use.iter_errors(item), key=lambda e: e.path
-            )
+            item_errors = sorted(validator_to_use.iter_errors(item), key=lambda e: e.path)
             if item_errors:
                 for err in item_errors:
                     path = ".".join(str(p) for p in err.path)
-                    errors.append(
-                        f"item {idx}{('.' + path) if path else ''}: {err.message}"
-                    )
+                    errors.append(f"item {idx}{('.' + path) if path else ''}: {err.message}")
             else:
                 valid_items.append(item)
         return valid_items, errors
@@ -122,9 +118,7 @@ def normalize_product(data: Dict[str, Any]) -> Dict[str, Any]:
             "threshold": 1,
             "main": True,
             "package_size": max(0.0, _safe_float(data.get("package_size", 1), 1)),
-            "pack_size": (
-                max(0.0, _safe_float(pack)) if pack is not None else None
-            ),
+            "pack_size": (max(0.0, _safe_float(pack)) if pack is not None else None),
             "tags": [str(t) for t in data.get("tags", []) if isinstance(t, str)],
             "level": level,
             "is_spice": True,
@@ -138,9 +132,7 @@ def normalize_product(data: Dict[str, Any]) -> Dict[str, Any]:
         "threshold": max(0.0, _safe_float(data.get("threshold", 1), 1)),
         "main": bool(data.get("main", True)),
         "package_size": max(0.0, _safe_float(data.get("package_size", 1), 1)),
-        "pack_size": (
-            max(0.0, _safe_float(pack)) if pack is not None else None
-        ),
+        "pack_size": (max(0.0, _safe_float(pack)) if pack is not None else None),
         "tags": [str(t) for t in data.get("tags", []) if isinstance(t, str)],
         "level": level if level in {"none", "low", "medium", "high"} else None,
         "is_spice": False,

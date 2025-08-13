@@ -3,41 +3,41 @@
   "type": "object",
   "required": ["id", "names", "portions", "ingredients", "steps"],
   "properties": {
-    "id": {"type": "string"},
+    "id": { "type": "string" },
     "names": {
       "type": "object",
       "required": ["pl", "en"],
       "properties": {
-        "pl": {"type": "string"},
-        "en": {"type": "string"}
+        "pl": { "type": "string" },
+        "en": { "type": "string" }
       },
       "additionalProperties": false
     },
-    "portions": {"type": "number"},
-    "time": {"type": "string"},
+    "portions": { "type": "number" },
+    "time": { "type": "string" },
     "ingredients": {
       "type": "array",
       "items": {
         "type": "object",
         "required": ["productId", "qty", "unitId", "optional"],
         "properties": {
-          "productId": {"type": ["string", "null"]},
-          "qty": {"type": ["number", "null"]},
-          "unitId": {"type": ["string", "null"]},
-          "optional": {"type": "boolean"},
-          "note": {"type": "string"},
-          "unresolved": {"type": "boolean"}
+          "productId": { "type": ["string", "null"] },
+          "qty": { "type": ["number", "null"] },
+          "unitId": { "type": ["string", "null"] },
+          "optional": { "type": "boolean" },
+          "note": { "type": "string" },
+          "unresolved": { "type": "boolean" }
         },
         "additionalProperties": false
       }
     },
     "steps": {
       "type": "array",
-      "items": {"type": "string"}
+      "items": { "type": "string" }
     },
     "tags": {
       "type": "array",
-      "items": {"type": "string"}
+      "items": { "type": "string" }
     }
   },
   "additionalProperties": false

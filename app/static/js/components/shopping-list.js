@@ -59,15 +59,12 @@ function sortShoppingList() {
 
 function renderShoppingItem(item, idx) {
   const row = document.createElement("div");
-  row.className =
-    "shopping-item gap-2 h-11 hover:bg-base-200 transition-colors";
+  row.className = "shopping-item gap-2 h-11 hover:bg-base-200 transition-colors";
   row.dataset.index = idx;
   row.dataset.name = item.name;
   if (item.inCart) row.classList.add("in-cart");
 
-  const stock = (window.APP?.state?.products || []).find(
-    (p) => p.name === item.name,
-  );
+  const stock = (window.APP?.state?.products || []).find((p) => p.name === item.name);
   if (stock) {
     const level = getStockState(stock);
     if (level === "low") row.classList.add("product-low");
@@ -208,9 +205,7 @@ export function renderShoppingList() {
   if (!list) return;
   sortShoppingList();
   const frag = document.createDocumentFragment();
-  state.shoppingList.forEach((item, idx) =>
-    frag.appendChild(renderShoppingItem(item, idx)),
-  );
+  state.shoppingList.forEach((item, idx) => frag.appendChild(renderShoppingItem(item, idx)));
   requestAnimationFrame(() => {
     list.innerHTML = "";
     list.appendChild(frag);
@@ -227,10 +222,7 @@ export function renderSuggestions() {
       if (isSpice(p)) {
         return ["low", "zero"].includes(getStockState(p));
       }
-      return (
-        p.main &&
-        (p.quantity === 0 || (p.threshold != null && p.quantity <= p.threshold))
-      );
+      return p.main && (p.quantity === 0 || (p.threshold != null && p.quantity <= p.threshold));
     })
     .filter((p) => !state.dismissedSuggestions.has(p.name))
     .sort((a, b) => t(a.id, "products").localeCompare(t(b.id, "products")));
@@ -238,8 +230,7 @@ export function renderSuggestions() {
   suggestions.forEach((p) => {
     let qty = p.threshold != null ? p.threshold : 1;
     const row = document.createElement("div");
-    row.className =
-      "suggestion-item gap-2 h-11 hover:bg-base-200 transition-colors";
+    row.className = "suggestion-item gap-2 h-11 hover:bg-base-200 transition-colors";
     const level = getStockState(p);
     if (level === "low") row.classList.add("product-low");
     if (level === "zero") row.classList.add("product-missing");

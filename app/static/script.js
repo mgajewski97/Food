@@ -16,11 +16,7 @@ import * as ProductTable from "./js/components/product-table.js";
 import * as Shopping from "./js/components/shopping-list.js";
 import * as Recipes from "./js/components/recipe-list.js";
 import { initReceiptImport } from "./js/components/ocr-modal.js";
-import {
-  toast,
-  showNotification,
-  checkLowStockToast,
-} from "./js/components/toast.js";
+import { toast, showNotification, checkLowStockToast } from "./js/components/toast.js";
 import "./js/components/recipe-detail.js";
 
 function trace(p) {
@@ -144,9 +140,7 @@ async function activateTab(targetId) {
     .forEach((t) => t.classList.remove("tab-active", "font-bold"));
   const tab = document.querySelector(`[data-tab-target="${targetId}"]`);
   if (tab) tab.classList.add("tab-active", "font-bold");
-  document
-    .querySelectorAll(".tab-panel")
-    .forEach((panel) => (panel.style.display = "none"));
+  document.querySelectorAll(".tab-panel").forEach((panel) => (panel.style.display = "none"));
   const panel = document.getElementById(targetId);
   if (panel) panel.style.display = "block";
   if (targetId === "tab-products") {
@@ -335,11 +329,7 @@ function initAddForm() {
       toast.success(t("product_added"));
       setTimeout(() => {
         if (container) {
-          container.classList.remove(
-            "toast-center",
-            "top-[4.5rem]",
-            "bottom-auto",
-          );
+          container.classList.remove("toast-center", "top-[4.5rem]", "bottom-auto");
           container.classList.add("toast-end", "top-auto", "bottom-[4.5rem]");
         }
       }, 5000);
@@ -365,21 +355,14 @@ async function saveEdits() {
     const idx = Number(r.dataset.index);
     const orig = APP.editBackup?.[idx];
     if (!orig) return;
-    const level =
-      r.querySelector('.qty-cell input[type="radio"]:checked')?.value ||
-      orig.level;
+    const level = r.querySelector('.qty-cell input[type="radio"]:checked')?.value || orig.level;
     const qtyInput = r.querySelector('.qty-cell input[type="number"]');
     const qty = qtyInput ? Math.max(0, parseFloat(qtyInput.value) || 0) : 0;
     const unit = r.querySelector(".unit-cell select")?.value || orig.unit;
-    const cat =
-      r.querySelector(".category-cell select")?.value || orig.category;
+    const cat = r.querySelector(".category-cell select")?.value || orig.category;
     const stor = r.querySelector(".storage-cell select")?.value || orig.storage;
     if (isSpice(orig)) {
-      if (
-        level !== orig.level ||
-        cat !== orig.category ||
-        stor !== orig.storage
-      ) {
+      if (level !== orig.level || cat !== orig.category || stor !== orig.storage) {
         updates.push({ ...orig, level, category: cat, storage: stor });
       }
     } else if (
@@ -557,9 +540,7 @@ function initNavigationAndEvents() {
   });
 
   deleteBtn?.addEventListener("click", async () => {
-    const checked = Array.from(
-      document.querySelectorAll(".product-select:checked"),
-    );
+    const checked = Array.from(document.querySelectorAll(".product-select:checked"));
     if (!checked.length) return;
     const names = [...new Set(checked.map((cb) => cb.dataset.name))];
     if (!confirm(t("delete_modal_question"))) return;
@@ -645,11 +626,7 @@ function initNavigationAndEvents() {
   function updateAriaLabels() {
     viewBtn?.setAttribute(
       "aria-label",
-      t(
-        APP.state.view === "grouped"
-          ? "change_view_toggle_flat"
-          : "change_view_toggle_grouped",
-      ),
+      t(APP.state.view === "grouped" ? "change_view_toggle_flat" : "change_view_toggle_grouped"),
     );
     viewBtn?.setAttribute("aria-pressed", APP.state.view === "grouped");
     editBtn?.setAttribute(
@@ -662,24 +639,14 @@ function initNavigationAndEvents() {
     document
       .getElementById("confirm-delete")
       ?.setAttribute("aria-label", t("delete_confirm_button"));
-    document
-      .getElementById("cancel-delete")
-      ?.setAttribute("aria-label", t("delete_cancel_button"));
-    document
-      .getElementById("confirm-remove-item")
-      ?.setAttribute("aria-label", t("confirm_button"));
+    document.getElementById("cancel-delete")?.setAttribute("aria-label", t("delete_cancel_button"));
+    document.getElementById("confirm-remove-item")?.setAttribute("aria-label", t("confirm_button"));
     document
       .querySelector("#shopping-delete-modal .btn-outline")
       ?.setAttribute("aria-label", t("delete_cancel_button"));
-    document
-      .getElementById("history-detail-close")
-      ?.setAttribute("aria-label", t("close"));
-    document
-      .getElementById("manual-dec")
-      ?.setAttribute("aria-label", t("decrease_quantity"));
-    document
-      .getElementById("manual-inc")
-      ?.setAttribute("aria-label", t("increase_quantity"));
+    document.getElementById("history-detail-close")?.setAttribute("aria-label", t("close"));
+    document.getElementById("manual-dec")?.setAttribute("aria-label", t("decrease_quantity"));
+    document.getElementById("manual-inc")?.setAttribute("aria-label", t("increase_quantity"));
   }
 
   updateAriaLabels();

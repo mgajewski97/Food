@@ -43,10 +43,7 @@ export async function handleReceiptUpload(file) {
   );
   const {
     data: { text },
-  } = await Tesseract.recognize(
-    file,
-    state.currentLang === "pl" ? "pol" : "eng",
-  );
+  } = await Tesseract.recognize(file, state.currentLang === "pl" ? "pol" : "eng");
   const lines = text
     .split("\n")
     .map((l) => l.trim())
@@ -68,9 +65,7 @@ export async function handleReceiptUpload(file) {
     const nameInput = document.createElement("input");
     nameInput.type = "text";
     const firstMatch = item.matches[0];
-    nameInput.value = firstMatch
-      ? t(firstMatch.name, "products")
-      : item.original;
+    nameInput.value = firstMatch ? t(firstMatch.name, "products") : item.original;
     if (firstMatch) nameInput.dataset.key = firstMatch.name;
     nameInput.className = "input input-bordered w-full";
     nameTd.appendChild(nameInput);
@@ -105,11 +100,8 @@ export async function handleReceiptUpload(file) {
       statusTd.appendChild(select);
     } else {
       const span = document.createElement("span");
-      span.className =
-        "badge " + (item.matches.length ? "badge-success" : "badge-warning");
-      span.textContent = item.matches.length
-        ? t("ok")
-        : t("ocr_not_recognized");
+      span.className = "badge " + (item.matches.length ? "badge-success" : "badge-warning");
+      span.textContent = item.matches.length ? t("ok") : t("ocr_not_recognized");
       statusTd.appendChild(span);
     }
     tr.appendChild(statusTd);

@@ -15,19 +15,15 @@ export function renderRecipes() {
   const list = document.getElementById("recipe-list");
   if (!list) return;
   let data = (state.domain.recipes || []).slice();
-  if (state.recipeTimeFilter)
-    data = data.filter((r) => r.timeBucket === state.recipeTimeFilter);
+  if (state.recipeTimeFilter) data = data.filter((r) => r.timeBucket === state.recipeTimeFilter);
   if (state.recipePortionsFilter) {
     if (state.recipePortionsFilter === "5+") {
       data = data.filter((r) => (r.servings || 0) >= 5);
     } else {
-      data = data.filter(
-        (r) => String(r.servings) === state.recipePortionsFilter,
-      );
+      data = data.filter((r) => String(r.servings) === state.recipePortionsFilter);
     }
   }
-  if (state.showFavoritesOnly)
-    data = data.filter((r) => state.favoriteRecipes.has(r.id));
+  if (state.showFavoritesOnly) data = data.filter((r) => state.favoriteRecipes.has(r.id));
   data.sort((a, b) => {
     if (state.recipeSortField === "time") {
       const ta = parseTimeToMinutes(a.time);

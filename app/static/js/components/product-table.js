@@ -24,15 +24,11 @@ const APP = (window.APP = window.APP || {});
 let deleteBtn;
 
 function updateDeleteButton() {
-  const selected = document.querySelectorAll(
-    "input.product-select:checked",
-  ).length;
+  const selected = document.querySelectorAll("input.product-select:checked").length;
   if (deleteBtn) {
     deleteBtn.disabled = selected === 0;
     deleteBtn.textContent =
-      selected > 0
-        ? `${t("delete_selected_button")} (${selected})`
-        : t("delete_selected_button");
+      selected > 0 ? `${t("delete_selected_button")} (${selected})` : t("delete_selected_button");
   }
 }
 
@@ -75,9 +71,7 @@ function initExpandDefaults(container) {
     sec.querySelectorAll(".category-section").forEach((cat) => {
       const catKey = cat.dataset.category;
       if (!cMap.has(catKey)) {
-        const cStored = localStorage.getItem(
-          `products:category:${storage}::${catKey}`,
-        );
+        const cStored = localStorage.getItem(`products:category:${storage}::${catKey}`);
         cMap.set(catKey, cStored !== "false");
       }
     });
@@ -143,14 +137,11 @@ function highlightRow(tr, p) {
   );
   const level = getStockState(p);
   if (p.main) {
-    if (level === "zero")
-      tr.classList.add("text-error", "bg-error/10", "font-semibold");
+    if (level === "zero") tr.classList.add("text-error", "bg-error/10", "font-semibold");
     else if (level === "low") tr.classList.add("text-warning", "bg-warning/10");
   } else {
-    if (level === "zero")
-      tr.classList.add("text-error", "bg-error/10", "opacity-60");
-    else if (level === "low")
-      tr.classList.add("text-warning", "bg-warning/10", "opacity-60");
+    if (level === "zero") tr.classList.add("text-error", "bg-error/10", "opacity-60");
+    else if (level === "low") tr.classList.add("text-warning", "bg-warning/10", "opacity-60");
   }
 }
 
@@ -472,9 +463,7 @@ export function renderProducts() {
         storages[s][c].push(p);
       });
       Object.keys(STORAGE_KEYS)
-        .sort((a, b) =>
-          t(STORAGE_KEYS[a] || a).localeCompare(t(STORAGE_KEYS[b] || b)),
-        )
+        .sort((a, b) => t(STORAGE_KEYS[a] || a).localeCompare(t(STORAGE_KEYS[b] || b)))
         .forEach((stor) => {
           const block = document.createElement("section");
           block.className =
@@ -483,20 +472,17 @@ export function renderProducts() {
 
           const header = document.createElement("header");
           header.className = "storage-header flex items-center gap-2";
-          if (state.displayMode === "mobile")
-            header.classList.add("cursor-pointer");
+          if (state.displayMode === "mobile") header.classList.add("cursor-pointer");
           const nameSpan = document.createElement("span");
           nameSpan.className = "inline-flex items-center text-xl font-semibold";
           nameSpan.textContent = `${STORAGE_ICONS[stor] || ""} ${t(STORAGE_KEYS[stor] || stor)}`;
           const btn = document.createElement("button");
           btn.type = "button";
-          btn.className =
-            "toggle-storage ml-auto h-8 w-8 flex items-center justify-center";
+          btn.className = "toggle-storage ml-auto h-8 w-8 flex items-center justify-center";
           btn.setAttribute("aria-expanded", "true");
           btn.setAttribute("title", t("collapse"));
           btn.setAttribute("aria-label", t("collapse"));
-          btn.innerHTML =
-            '<i class="fa-regular fa-caret-up transition-transform rotate-180"></i>';
+          btn.innerHTML = '<i class="fa-regular fa-caret-up transition-transform rotate-180"></i>';
           header.append(nameSpan, btn);
           block.appendChild(header);
 
@@ -523,13 +509,11 @@ export function renderProducts() {
 
                 const catHeader = document.createElement("header");
                 catHeader.className = "category-header flex items-center gap-2";
-                if (state.displayMode === "mobile")
-                  catHeader.classList.add("cursor-pointer");
+                if (state.displayMode === "mobile") catHeader.classList.add("cursor-pointer");
                 const catSpan = document.createElement("span");
                 catSpan.className = "font-medium";
                 catSpan.textContent = t(cat, "categories");
-                if (!state.domain.categories[cat])
-                  catSpan.classList.add("opacity-60");
+                if (!state.domain.categories[cat]) catSpan.classList.add("opacity-60");
                 const catBtn = document.createElement("button");
                 catBtn.type = "button";
                 catBtn.className =
@@ -661,8 +645,7 @@ export function renderProducts() {
 
 function attachCollapses(root) {
   if (!root) return;
-  if (root._toggleHandler)
-    root.removeEventListener("click", root._toggleHandler);
+  if (root._toggleHandler) root.removeEventListener("click", root._toggleHandler);
 
   const toggleHandler = (e) => {
     if (APP.state && APP.state.editing) return;
@@ -695,10 +678,7 @@ function attachCollapses(root) {
       const cMap = categoryState.get(storage);
       const next = !(cMap.get(cat) !== false);
       cMap.set(cat, next);
-      localStorage.setItem(
-        `products:category:${storage}::${cat}`,
-        String(next),
-      );
+      localStorage.setItem(`products:category:${storage}::${cat}`, String(next));
       const parentOpen = storageState.get(storage) !== false;
       setCategoryUI(section, parentOpen && next);
     }

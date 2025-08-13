@@ -14,9 +14,7 @@ function renderRecipeDetail(r) {
       `<div class="flex items-center gap-1"><i class="fa-solid fa-users"></i><span>${r.servings}</span></div>`,
     );
   }
-  const metaHtml = meta.length
-    ? `<div class="flex gap-4 text-sm mb-4">${meta.join("")}</div>`
-    : "";
+  const metaHtml = meta.length ? `<div class="flex gap-4 text-sm mb-4">${meta.join("")}</div>` : "";
 
   const ingRows = (r.ingredients || [])
     .map((i) => {
@@ -29,9 +27,7 @@ function renderRecipeDetail(r) {
     })
     .join("");
 
-  const steps = (r.steps || [])
-    .map((s) => `<li class="mb-2">${s}</li>`)
-    .join("");
+  const steps = (r.steps || []).map((s) => `<li class="mb-2">${s}</li>`).join("");
 
   const favIcon = state.favoriteRecipes.has(r.id)
     ? '<i class="fa-solid fa-heart"></i>'

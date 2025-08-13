@@ -48,9 +48,7 @@ if os.path.exists(_DATA_PATH):
             for al in aliases:
                 tokens.update(al.split())
             strings = [name_norm] + aliases
-            _INDEX[locale].append(
-                {"id": prod.get("id"), "tokens": tokens, "strings": strings}
-            )
+            _INDEX[locale].append({"id": prod.get("id"), "tokens": tokens, "strings": strings})
 
 
 def search_products(query: str, locale: str) -> List[Dict[str, object]]:

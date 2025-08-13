@@ -67,8 +67,7 @@ try {
 }
 
 export const state = {
-  displayMode:
-    document.documentElement.getAttribute("data-layout") || "desktop",
+  displayMode: document.documentElement.getAttribute("data-layout") || "desktop",
   expandedStorages: {},
   expandedCategories: {},
   shoppingList: storedShopping,
@@ -114,9 +113,7 @@ export function throttle(fn, delay = 200) {
 export function t(key, ns = "ui") {
   if (!key) return key;
   if (ns === "products") {
-    const p =
-      state.domain.products[key] ||
-      state.domain.products[state.domain.aliases[key]];
+    const p = state.domain.products[key] || state.domain.products[state.domain.aliases[key]];
     if (!p) {
       warnOnce("products", key);
       return key;
@@ -142,9 +139,7 @@ export function t(key, ns = "ui") {
     const name = u.names[state.currentLang] || u.names.en;
     return name || key;
   }
-  const val =
-    state.uiTranslations[state.currentLang]?.[key] ||
-    state.uiTranslations.en?.[key];
+  const val = state.uiTranslations[state.currentLang]?.[key] || state.uiTranslations.en?.[key];
   return val || key;
 }
 
@@ -203,11 +198,7 @@ export async function fetchJson(url, options = {}) {
     },
     ...options,
   };
-  if (
-    opts.body &&
-    typeof opts.body !== "string" &&
-    !(opts.body instanceof FormData)
-  ) {
+  if (opts.body && typeof opts.body !== "string" && !(opts.body instanceof FormData)) {
     opts.body = JSON.stringify(opts.body);
     opts.headers["Content-Type"] = "application/json";
   }
@@ -273,10 +264,7 @@ export function getStatusIcon(p) {
 export async function loadTranslations() {
   window.trace?.("loadTranslations:enter");
   try {
-    const [plRes, enRes] = await Promise.all([
-      fetch("/api/ui/pl"),
-      fetch("/api/ui/en"),
-    ]);
+    const [plRes, enRes] = await Promise.all([fetch("/api/ui/pl"), fetch("/api/ui/en")]);
     if (!plRes.ok || !enRes.ok) throw new Error("translation load failed");
     let pl = {};
     let en = {};
@@ -317,16 +305,12 @@ function validateRecipes(list = []) {
   const errs = [];
   list.forEach((r, idx) => {
     if (!r.id) errs.push(`recipes[${idx}].id`);
-    if (!r.names || !r.names.pl || !r.names.en)
-      errs.push(`recipes[${idx}].names`);
-    if (typeof r.portions !== "number")
-      errs.push(`recipes[${idx}].portions`);
-    if (!Array.isArray(r.ingredients))
-      errs.push(`recipes[${idx}].ingredients`);
+    if (!r.names || !r.names.pl || !r.names.en) errs.push(`recipes[${idx}].names`);
+    if (typeof r.portions !== "number") errs.push(`recipes[${idx}].portions`);
+    if (!Array.isArray(r.ingredients)) errs.push(`recipes[${idx}].ingredients`);
     else {
       r.ingredients.forEach((ing, i) => {
-        if (!ing.product)
-          errs.push(`recipes[${idx}].ingredients[${i}].product`);
+        if (!ing.product) errs.push(`recipes[${idx}].ingredients[${i}].product`);
       });
     }
     if (!Array.isArray(r.steps)) errs.push(`recipes[${idx}].steps`);
@@ -408,11 +392,7 @@ export async function loadDomain() {
 }
 
 function resolveProduct(id) {
-  return (
-    state.domain.products[id] ||
-    state.domain.products[state.domain.aliases[id]] ||
-    null
-  );
+  return state.domain.products[id] || state.domain.products[state.domain.aliases[id]] || null;
 }
 
 export function getProduct(id) {
@@ -438,9 +418,7 @@ export async function searchProducts(query) {
   if (!query) return [];
   try {
     const locale = state.currentLang || "pl";
-    const res = await fetchJson(
-      `/api/search?q=${encodeURIComponent(query)}&locale=${locale}`,
-    );
+    const res = await fetchJson(`/api/search?q=${encodeURIComponent(query)}&locale=${locale}`);
     return Array.isArray(res) ? res : [];
   } catch (err) {
     console.error("searchProducts failed", err);
@@ -453,10 +431,7 @@ export async function loadFavorites() {
   try {
     const data = await fetchJson("/api/favorites");
     state.favoriteRecipes = new Set(data);
-    localStorage.setItem(
-      "favoriteRecipes",
-      JSON.stringify(Array.from(state.favoriteRecipes)),
-    );
+    localStorage.setItem("favoriteRecipes", JSON.stringify(Array.from(state.favoriteRecipes)));
     window.trace?.("loadFavorites:ok");
   } catch (err) {
     let localFavs = [];
@@ -493,10 +468,7 @@ export async function toggleFavorite(id) {
     // revert change on failure
     if (had) state.favoriteRecipes.add(id);
     else state.favoriteRecipes.delete(id);
-    localStorage.setItem(
-      "favoriteRecipes",
-      JSON.stringify(Array.from(state.favoriteRecipes)),
-    );
+    localStorage.setItem("favoriteRecipes", JSON.stringify(Array.from(state.favoriteRecipes)));
     throw err;
   }
 }

@@ -4,8 +4,8 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-from app.utils import validate_file, normalize_product, normalize_recipe
 from app.routes import PRODUCTS_SCHEMA, RECIPES_SCHEMA
+from app.utils import normalize_product, normalize_recipe, validate_file
 
 
 def test_minimal_product_and_recipe_validate(tmp_path):

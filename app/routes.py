@@ -8,17 +8,17 @@ from flask import Blueprint, current_app, jsonify, render_template, request
 
 from .search import search_products
 from .utils import (
+    _safe_float,
+    _validate,
     file_lock,
     load_json,
     load_json_validated,
     normalize_product,
     normalize_recipe,
-    _safe_float,
     safe_write,
     save_json,
     validate_file,
     validate_items,
-    _validate,
 )
 from .utils.logging import log_error_with_trace, log_warning_with_trace
 
@@ -90,9 +90,7 @@ def _validate_products_file() -> Tuple[int, List[str]]:
     except Exception as exc:  # pragma: no cover - defensive
         return 0, [str(exc)]
     products = data if isinstance(data, list) else data.get("products", [])
-    validated, errors = _validate(
-        products, PRODUCTS_SCHEMA, coerce=normalize_product
-    )
+    validated, errors = _validate(products, PRODUCTS_SCHEMA, coerce=normalize_product)
     count = len(validated) if isinstance(validated, list) else 0
     return count, errors
 
@@ -264,9 +262,7 @@ def _load_recipes(locale: str = "pl", context: Optional[Dict[str, Any]] = None):
 def remove_used_products(used_ingredients):
     """Remove used ingredients from stored products."""
     with file_lock(PRODUCTS_PATH):
-        products = load_json_validated(
-            PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
-        )
+        products = load_json_validated(PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product)
         products = [p for p in products if p.get("name") not in used_ingredients]
         safe_write(PRODUCTS_PATH, products)
 
@@ -436,9 +432,7 @@ def units():
 def ocr_match():
     payload = request.json or {}
     items = payload.get("items", [])
-    products = load_json_validated(
-        PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
-    )
+    products = load_json_validated(PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product)
     results = []
     for raw in items:
         text = str(raw).strip().lower()
@@ -518,9 +512,7 @@ def favorites():
 
 
 def _generate_shopping_list(selection: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    recipes = load_json_validated(
-        RECIPES_PATH, RECIPES_SCHEMA, normalize=normalize_recipe
-    )
+    recipes = load_json_validated(RECIPES_PATH, RECIPES_SCHEMA, normalize=normalize_recipe)
     recipes_map = {r.get("id"): r for r in recipes}
     aggregate: Dict[Tuple[str, str], float] = {}
     optional_map: Dict[Tuple[str, str], bool] = {}
@@ -546,9 +538,7 @@ def _generate_shopping_list(selection: List[Dict[str, Any]]) -> List[Dict[str, A
             else:
                 optional_map.setdefault(key, False)
     try:
-        products = load_json_validated(
-            PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
-        )
+        products = load_json_validated(PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product)
     except ValueError:
         products = []
     stock: Dict[Tuple[str, str], float] = {}
@@ -620,9 +610,7 @@ def _update_pantry(items: List[Dict[str, Any]]) -> None:
             unit_name = UNIT_ID_TO_NAME.get(unit_id, unit_id)
             if pid in prod_map:
                 product = prod_map[pid]
-                prod_unit_id = UNIT_NAME_TO_ID.get(
-                    product.get("unit", unit_name), unit_name
-                )
+                prod_unit_id = UNIT_NAME_TO_ID.get(product.get("unit", unit_name), unit_name)
                 converted = _convert_qty(qty, unit_id, prod_unit_id)
                 if converted is None:
                     continue
@@ -679,15 +667,9 @@ def health_new():
     context = {"endpoint": "/api/_health", "args": request.args.to_dict()}
     try:
         products = _load_products_compat(context)
-        recipes = load_json_validated(
-            RECIPES_PATH, RECIPES_SCHEMA, normalize=normalize_recipe
-        )
-        last_updated_ts = max(
-            os.path.getmtime(PRODUCTS_PATH), os.path.getmtime(RECIPES_PATH)
-        )
-        last_updated = datetime.fromtimestamp(
-            last_updated_ts, tz=timezone.utc
-        ).isoformat()
+        recipes = load_json_validated(RECIPES_PATH, RECIPES_SCHEMA, normalize=normalize_recipe)
+        last_updated_ts = max(os.path.getmtime(PRODUCTS_PATH), os.path.getmtime(RECIPES_PATH))
+        last_updated = datetime.fromtimestamp(last_updated_ts, tz=timezone.utc).isoformat()
         return jsonify(
             {
                 "status": "ok",

@@ -1,4 +1,8 @@
+import js from "@eslint/js";
+import prettier from "eslint-plugin-prettier";
+
 export default [
+  js.configs.recommended,
   {
     files: ["**/*.js"],
     ignores: ["**/vendor/**"],
@@ -14,11 +18,13 @@ export default [
         console: "readonly",
         setTimeout: "readonly",
         clearTimeout: "readonly",
-      }
+      },
     },
+    plugins: { prettier },
     rules: {
       "no-unused-vars": "error",
-      "prefer-const": "error"
-    }
-  }
+      "prefer-const": "error",
+      "prettier/prettier": "error",
+    },
+  },
 ];

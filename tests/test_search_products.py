@@ -1,5 +1,3 @@
-import pytest
-
 from app.search import search_products
 
 
