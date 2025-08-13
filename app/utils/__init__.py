@@ -10,6 +10,9 @@ import logging
 import math
 import os
 import threading
+import hashlib
+from datetime import datetime, timezone
+from email.utils import format_datetime
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import jsonschema
@@ -17,6 +20,26 @@ import jsonschema
 DEFAULT_UNIT = "szt"
 
 logger = logging.getLogger(__name__)
+
+
+def file_etag(path: str) -> str:
+    """Return SHA256 hex digest for the file at ``path``.
+
+    The ETag is stable for a given file content and can be used for HTTP
+    caching. The file is read in binary mode to ensure the hash reflects the
+    exact bytes served.
+    """
+
+    with open(path, "rb") as fh:
+        return hashlib.sha256(fh.read()).hexdigest()
+
+
+def file_mtime_rfc1123(path: str) -> str:
+    """Return the file modification time formatted per RFC1123."""
+
+    ts = os.path.getmtime(path)
+    dt = datetime.fromtimestamp(ts, tz=timezone.utc)
+    return format_datetime(dt, usegmt=True)
 
 
 def _safe_float(value: Any, default: float = 0.0) -> float:

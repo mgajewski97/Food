@@ -91,6 +91,9 @@ export const state = {
   lowStockToastShown: false,
 };
 
+// In-memory cache metadata for conditional requests
+const httpCache = {};
+
 // Utility helpers for performance-sensitive handlers
 export function debounce(fn, delay = 200) {
   let timer;
@@ -196,6 +199,11 @@ export function timeToBucket(str) {
  * @returns {Promise<any>}
  */
 export async function fetchJson(url, options = {}) {
+  const cacheKey =
+    url.startsWith("/api/products") || url.startsWith("/api/recipes")
+      ? url
+      : null;
+  const meta = cacheKey ? httpCache[cacheKey] : null;
   const opts = {
     headers: {
       Accept: "application/json",
@@ -203,6 +211,10 @@ export async function fetchJson(url, options = {}) {
     },
     ...options,
   };
+  if (meta) {
+    if (meta.etag) opts.headers["If-None-Match"] = meta.etag;
+    if (meta.lastModified) opts.headers["If-Modified-Since"] = meta.lastModified;
+  }
   if (
     opts.body &&
     typeof opts.body !== "string" &&
@@ -218,12 +230,23 @@ export async function fetchJson(url, options = {}) {
     if (!opts.silent) showTopBanner(err.message || "Network error");
     throw err;
   }
+  if (cacheKey) {
+    const etag = res.headers.get("ETag") || meta?.etag;
+    const lm = res.headers.get("Last-Modified") || meta?.lastModified;
+    httpCache[cacheKey] = { etag, lastModified: lm, data: meta?.data };
+  }
+  if (res.status === 304 && cacheKey && httpCache[cacheKey]?.data !== undefined) {
+    return httpCache[cacheKey].data;
+  }
   const text = await res.text();
   let data = null;
   try {
     data = text ? JSON.parse(text) : null;
   } catch {
     /* ignore parse error */
+  }
+  if (cacheKey) {
+    httpCache[cacheKey].data = data;
   }
   if (!res.ok) {
     const snippet = text.slice(0, 100);

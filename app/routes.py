@@ -4,6 +4,7 @@ import os
 from datetime import date, datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
+from email.utils import parsedate_to_datetime
 from flask import Blueprint, current_app, jsonify, render_template, request
 
 from .errors import error_response
@@ -11,6 +12,8 @@ from .errors import error_response
 from .search import search_products
 from .utils import (
     file_lock,
+    file_etag,
+    file_mtime_rfc1123,
     load_json,
     load_json_validated,
     normalize_product,
@@ -364,7 +367,32 @@ def products():
                 len(products),
                 first_id,
             )
-            return jsonify(products)
+
+            etag = file_etag(PRODUCTS_PATH)
+            last_modified = file_mtime_rfc1123(PRODUCTS_PATH)
+            inm = request.headers.get("If-None-Match")
+            ims = request.headers.get("If-Modified-Since")
+            mtime = datetime.fromtimestamp(os.path.getmtime(PRODUCTS_PATH), timezone.utc)
+            mtime = mtime.replace(microsecond=0)
+            if inm == etag:
+                resp = current_app.response_class(status=304)
+                resp.headers["ETag"] = etag
+                resp.headers["Last-Modified"] = last_modified
+                return resp
+            if ims:
+                try:
+                    since = parsedate_to_datetime(ims)
+                    if since >= mtime:
+                        resp = current_app.response_class(status=304)
+                        resp.headers["ETag"] = etag
+                        resp.headers["Last-Modified"] = last_modified
+                        return resp
+                except (TypeError, ValueError, OverflowError):
+                    pass
+            resp = jsonify(products)
+            resp.headers["ETag"] = etag
+            resp.headers["Last-Modified"] = last_modified
+            return resp
 
         payload = request.get_json(silent=True) or []
         if isinstance(payload, dict):
@@ -465,7 +493,32 @@ def recipes():
             return error_response("Internal Server Error", 500, trace_id)
         first_id = recipes[0].get("id") if recipes else None
         logger.info("recipes count=%d first=%s", len(recipes), first_id)
-        return jsonify(recipes)
+
+        etag = file_etag(RECIPES_PATH)
+        last_modified = file_mtime_rfc1123(RECIPES_PATH)
+        inm = request.headers.get("If-None-Match")
+        ims = request.headers.get("If-Modified-Since")
+        mtime = datetime.fromtimestamp(os.path.getmtime(RECIPES_PATH), timezone.utc)
+        mtime = mtime.replace(microsecond=0)
+        if inm == etag:
+            resp = current_app.response_class(status=304)
+            resp.headers["ETag"] = etag
+            resp.headers["Last-Modified"] = last_modified
+            return resp
+        if ims:
+            try:
+                since = parsedate_to_datetime(ims)
+                if since >= mtime:
+                    resp = current_app.response_class(status=304)
+                    resp.headers["ETag"] = etag
+                    resp.headers["Last-Modified"] = last_modified
+                    return resp
+            except (TypeError, ValueError, OverflowError):
+                pass
+        resp = jsonify(recipes)
+        resp.headers["ETag"] = etag
+        resp.headers["Last-Modified"] = last_modified
+        return resp
     except Exception as exc:  # pragma: no cover - defensive
         trace_id = log_error_with_trace(exc, context)
         return error_response("Internal Server Error", 500, trace_id)
