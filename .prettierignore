@@ -1,2 +1,1 @@
-app/data/*.json
 app/data/**/*.json
