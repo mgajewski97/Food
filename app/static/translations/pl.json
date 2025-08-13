@@ -163,6 +163,7 @@
   "state_filter_missing": "Brak produktu",
   "status_low": "Końcówka",
   "status_missing": "Brak produktu",
+  "status_legend": "Legenda: żółty – końcówka; czerwony – brak",
   "storage.freezer": "Zamrażarka",
   "storage.fridge": "Lodówka",
   "storage.pantry": "Spiżarka",

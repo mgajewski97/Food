@@ -130,6 +130,12 @@ export function applyTranslations() {
       el.textContent = txt;
     }
   });
+  document.querySelectorAll("[data-i18n-tip]").forEach((el) => {
+    const key = el.getAttribute("data-i18n-tip");
+    const txt = t(key);
+    el.setAttribute("data-tip", txt);
+    el.setAttribute("title", txt);
+  });
 }
 
 export function parseTimeToMinutes(value) {
@@ -218,14 +224,14 @@ export function formatPackQuantity(p) {
 }
 
 export function getStatusIcon(p) {
-  const level = stockLevel(p);
-  if (level === "none") {
+  const stockState = getStockState(p);
+  if (stockState === "zero") {
     return {
       html: '<i class="fa-regular fa-circle-exclamation text-red-600"></i>',
       title: t("status_missing"),
     };
   }
-  if (level === "low") {
+  if (stockState === "low") {
     return {
       html: '<i class="fa-regular fa-triangle-exclamation text-yellow-500"></i>',
       title: t("status_low"),
@@ -520,28 +526,31 @@ export function isSpice(p = {}) {
   return p.category === "spices" || p.is_spice === true;
 }
 
-export function stockLevel(p = {}) {
+export function getStockState(p = {}) {
   if (isSpice(p)) {
     const lvl = String(p.level || "").toLowerCase();
-    if (lvl === "brak" || lvl === "none") return "none";
+    if (lvl === "brak" || lvl === "none" || lvl === "zero") return "zero";
     if (lvl === "malo" || lvl === "low") return "low";
     return "ok";
   }
-  if (p.quantity === 0) return "none";
-  if (p.threshold != null && p.quantity <= p.threshold) return "low";
+  const qty = Number(p.quantity);
+  if (!Number.isFinite(qty)) return "ok";
+  if (qty === 0) return "zero";
+  if (p.threshold != null && qty <= p.threshold) return "low";
   return "ok";
 }
 
+export const stockLevel = getStockState;
+
 export function matchesFilter(p = {}, filter = "all") {
-  const level = stockLevel(p);
+  const stockState = getStockState(p);
   switch (filter) {
     case "available":
-      if (p.quantity == null || p.quantity === 0) return true;
-      return level === "ok";
+      return stockState === "ok";
     case "low":
-      return level === "low";
+      return stockState === "low";
     case "missing":
-      return level === "none";
+      return stockState === "zero";
     default:
       return true;
   }

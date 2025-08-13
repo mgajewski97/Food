@@ -2,7 +2,7 @@ import {
   t,
   state,
   isSpice,
-  stockLevel,
+  getStockState,
   fetchJson,
   debounce,
   labelProduct,
@@ -79,9 +79,9 @@ function renderShoppingItem(item, idx) {
     (p) => p.name === item.name,
   );
   if (stock) {
-    const level = stockLevel(stock);
-    if (level === "low") row.classList.add("product-low");
-    if (level === "none") row.classList.add("product-missing");
+    const stockState = getStockState(stock);
+    if (stockState === "low") row.classList.add("product-low");
+    if (stockState === "zero") row.classList.add("product-missing");
   }
 
   const nameWrap = document.createElement("div");
@@ -255,9 +255,9 @@ export function renderSuggestions() {
     const row = document.createElement("div");
     row.className =
       "suggestion-item flex items-center gap-2 h-11 hover:bg-base-200 transition-colors";
-    const level = stockLevel(p);
-    if (level === "low") row.classList.add("product-low");
-    if (level === "none") row.classList.add("product-missing");
+    const stockState = getStockState(p);
+    if (stockState === "low") row.classList.add("product-low");
+    if (stockState === "zero") row.classList.add("product-missing");
 
     const nameWrap = document.createElement("div");
     nameWrap.className = "flex items-center gap-1 flex-1 overflow-hidden";

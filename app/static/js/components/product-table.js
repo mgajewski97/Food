@@ -7,7 +7,7 @@ import {
   CATEGORY_ORDER,
   STORAGE_KEYS,
   matchesFilter,
-  stockLevel,
+  getStockState,
   normalizeProduct,
   fetchJson,
   isSpice,
@@ -134,15 +134,16 @@ function highlightRow(tr, p) {
     "opacity-60",
     "font-semibold",
   );
-  const level = stockLevel(p);
+  const stockState = getStockState(p);
   if (p.main) {
-    if (level === "none")
+    if (stockState === "zero")
       tr.classList.add("text-error", "bg-error/10", "font-semibold");
-    else if (level === "low") tr.classList.add("text-warning", "bg-warning/10");
+    else if (stockState === "low")
+      tr.classList.add("text-warning", "bg-warning/10");
   } else {
-    if (level === "none")
+    if (stockState === "zero")
       tr.classList.add("text-error", "bg-error/10", "opacity-60");
-    else if (level === "low")
+    else if (stockState === "low")
       tr.classList.add("text-warning", "bg-warning/10", "opacity-60");
   }
 }
@@ -391,7 +392,7 @@ export function renderProducts() {
       unitLabel: labelUnit(merged.unit, state.currentLang),
       categoryLabel: labelCategory(merged.category, state.currentLang),
       storageLabel: t(STORAGE_KEYS[merged.storage] || merged.storage),
-      status: stockLevel(merged),
+      status: getStockState(merged),
     };
   });
   APP.state.products = data;
@@ -577,8 +578,24 @@ export function renderProducts() {
                     ];
                 headers.forEach((txt, i) => {
                   const th = document.createElement("th");
-                  th.textContent = txt;
-                  if (editing && i === 0) th.className = "checkbox-cell";
+                  if (editing && i === 0) {
+                    th.className = "checkbox-cell";
+                    th.textContent = txt;
+                  } else if (i === headers.length - 1) {
+                    th.className = "status-header text-center";
+                    const tip = document.createElement("span");
+                    tip.className = "tooltip tooltip-bottom";
+                    tip.dataset.i18nTip = "status_legend";
+                    tip.dataset.tip = t("status_legend");
+                    tip.innerHTML = '<i class="fa-solid fa-circle-info"></i>';
+                    const lbl = document.createElement("span");
+                    lbl.className = "status-label";
+                    lbl.dataset.i18n = "table_header_status";
+                    lbl.textContent = t("table_header_status");
+                    th.append(tip, " ", lbl);
+                  } else {
+                    th.textContent = txt;
+                  }
                   hr.appendChild(th);
                 });
                 thead.appendChild(hr);
