@@ -1,13 +1,13 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v4.6.0
     hooks:
       - id: pretty-format-json
         name: Format JSON
-        args: ["--autofix", "--indent=2", "--no-ensure-ascii"]
+        args: ["--autofix", "--no-sort-keys", "--indent", "2"]
         files: ^app/data/.*\.json$
   - repo: https://github.com/psf/black
-    rev: 24.4.2
+    rev: 24.8.0
     hooks:
       - id: black
   - repo: https://github.com/pycqa/isort
@@ -15,7 +15,7 @@ repos:
     hooks:
       - id: isort
   - repo: https://github.com/pycqa/flake8
-    rev: 7.0.0
+    rev: 7.1.0
     hooks:
       - id: flake8
   - repo: https://github.com/pre-commit/mirrors-prettier
@@ -23,6 +23,7 @@ repos:
     hooks:
       - id: prettier
         files: ^app/static/.*\.js$
+        exclude: ^app/data/.*\.json$
         additional_dependencies: ["prettier@3.0.3"]
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: v9.13.0
