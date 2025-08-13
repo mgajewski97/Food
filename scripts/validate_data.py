@@ -2,6 +2,7 @@ import json
 import sys
 import unicodedata
 from pathlib import Path
+from typing import Any, Dict, List, Set, Tuple
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "app" / "data"
@@ -15,20 +16,22 @@ def normalize_alias(alias: str) -> str:
     return "".join(c for c in normalized if not unicodedata.combining(c)).lower()
 
 
-def load_json(path: Path):
+def load_json(path: Path) -> Any:
     with path.open("r", encoding="utf-8") as fh:
         return json.load(fh)
 
 
-def validate_products(products_data):
-    errors = []
+def validate_products(
+    products_data: Dict[str, Any],
+) -> Tuple[List[str], Set[str], Dict[str, str], Set[str], Set[str]]:
+    errors: List[str] = []
 
     products = products_data.get("products", [])
     categories = {c.get("id") for c in products_data.get("categories", [])}
     units = {u.get("id") for u in products_data.get("units", [])}
 
-    id_set = set()
-    alias_map = {}
+    id_set: Set[str] = set()
+    alias_map: Dict[str, str] = {}
 
     for idx, prod in enumerate(products):
         prod_id = prod.get("id")
@@ -74,8 +77,13 @@ def validate_products(products_data):
     return errors, id_set, alias_map, units, categories
 
 
-def validate_recipes(recipes_data, product_ids, unit_ids, category_ids):
-    errors = []
+def validate_recipes(
+    recipes_data: List[Dict[str, Any]],
+    product_ids: Set[str],
+    unit_ids: Set[str],
+    category_ids: Set[str],
+) -> List[str]:
+    errors: List[str] = []
 
     for r_idx, recipe in enumerate(recipes_data):
         ingredients = recipe.get("ingredients", [])
@@ -100,7 +108,7 @@ def validate_recipes(recipes_data, product_ids, unit_ids, category_ids):
     return errors
 
 
-def main():
+def main() -> None:
     products_path = DATA_DIR / "products.json"
     recipes_path = DATA_DIR / "recipes.json"
 
@@ -118,7 +126,9 @@ def main():
         errors.append(f"unable to load recipes.json: {e}")
         recipes_data = []
 
-    p_errors, product_ids, alias_map, unit_ids, category_ids = validate_products(products_data)
+    p_errors, product_ids, alias_map, unit_ids, category_ids = validate_products(
+        products_data
+    )
     errors.extend(p_errors)
 
     r_errors = validate_recipes(recipes_data, product_ids, unit_ids, category_ids)

@@ -6,8 +6,8 @@ import pytest
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-from app import create_app
 import app.routes as routes
+from app import create_app
 
 
 def _setup_data(tmp_path):
@@ -142,7 +142,12 @@ def test_mark_and_finalize_updates_pantry(tmp_path):
 
     client.post(
         "/api/shopping",
-        json={"recipes": [{"id": "recipe.a", "servings": 4}, {"id": "recipe.b", "servings": 2}]},
+        json={
+            "recipes": [
+                {"id": "recipe.a", "servings": 4},
+                {"id": "recipe.b", "servings": 2},
+            ]
+        },
     )
 
     client.patch("/api/shopping/prod.rice", json={"inCart": True})

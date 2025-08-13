@@ -1,8 +1,9 @@
 import logging
 import uuid
-from typing import Dict, Any
+from typing import Any, Dict
 
 logger = logging.getLogger(__name__)
+
 
 def log_error_with_trace(exc: Exception, context: Dict[str, Any]) -> str:
     """Log an exception with a short trace identifier.

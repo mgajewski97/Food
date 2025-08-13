@@ -4,23 +4,24 @@ import os
 from datetime import date, datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
-# FIX: 2024-05-06
+from flask import Blueprint, current_app, jsonify, render_template, request
 
-from flask import Blueprint, current_app, render_template, request, jsonify
-from .utils.logging import log_error_with_trace, log_warning_with_trace
-
+from .search import search_products
 from .utils import (
+    file_lock,
     load_json,
     load_json_validated,
     normalize_product,
     normalize_recipe,
     safe_write,
+    save_json,
     validate_file,
     validate_items,
-    file_lock,
-    save_json,
 )
-from .search import search_products
+from .utils.logging import log_error_with_trace, log_warning_with_trace
+
+# FIX: 2024-05-06
+
 
 """Flask application providing basic CRUD APIs for a pantry manager."""
 

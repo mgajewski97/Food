@@ -11,4 +11,3 @@ def create_app() -> Flask:
     run_initial_validation()
 
     return app
-
