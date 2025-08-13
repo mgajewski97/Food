@@ -164,6 +164,7 @@
   "state_filter_missing": "Out of stock",
   "status_low": "Low stock",
   "status_missing": "Out of stock",
+  "stock_legend": "Low stock highlighted in orange; out of stock in red",
   "storage.freezer": "Freezer",
   "storage.fridge": "Fridge",
   "storage.pantry": "Pantry",

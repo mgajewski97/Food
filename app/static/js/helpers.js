@@ -156,6 +156,14 @@ export function applyTranslations() {
       el.textContent = txt;
     }
   });
+  document.querySelectorAll("[data-i18n-title]").forEach((el) => {
+    const key = el.getAttribute("data-i18n-title");
+    el.title = t(key);
+  });
+  document.querySelectorAll("[data-i18n-tip]").forEach((el) => {
+    const key = el.getAttribute("data-i18n-tip");
+    el.setAttribute("data-tip", t(key));
+  });
 }
 
 export function parseTimeToMinutes(value) {
@@ -244,8 +252,8 @@ export function formatPackQuantity(p) {
 }
 
 export function getStatusIcon(p) {
-  const level = stockLevel(p);
-  if (level === "none") {
+  const level = getStockState(p);
+  if (level === "zero") {
     return {
       html: '<i class="fa-regular fa-circle-exclamation text-red-600"></i>',
       title: t("status_missing"),
@@ -502,28 +510,27 @@ export function isSpice(p = {}) {
   return p.category === "spices" || p.is_spice === true;
 }
 
-export function stockLevel(p = {}) {
+export function getStockState(p = {}) {
   if (isSpice(p)) {
     const lvl = String(p.level || "").toLowerCase();
-    if (lvl === "brak" || lvl === "none") return "none";
+    if (lvl === "brak" || lvl === "none" || lvl === "zero") return "zero";
     if (lvl === "malo" || lvl === "low") return "low";
     return "ok";
   }
-  if (p.quantity === 0) return "none";
+  if (p.quantity === 0) return "zero";
   if (p.threshold != null && p.quantity <= p.threshold) return "low";
   return "ok";
 }
 
 export function matchesFilter(p = {}, filter = "all") {
-  const level = stockLevel(p);
+  const state = getStockState(p);
   switch (filter) {
     case "available":
-      if (p.quantity == null || p.quantity === 0) return true;
-      return level === "ok";
+      return state === "ok";
     case "low":
-      return level === "low";
+      return state === "low";
     case "missing":
-      return level === "none";
+      return state === "zero";
     default:
       return true;
   }

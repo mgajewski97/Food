@@ -1,4 +1,4 @@
-import { t, state, isSpice, stockLevel, fetchJson } from "../helpers.js";
+import { t, state, isSpice, getStockState, fetchJson } from "../helpers.js";
 import { toast } from "./toast.js";
 
 function saveShoppingList() {
@@ -69,9 +69,9 @@ function renderShoppingItem(item, idx) {
     (p) => p.name === item.name,
   );
   if (stock) {
-    const level = stockLevel(stock);
+    const level = getStockState(stock);
     if (level === "low") row.classList.add("product-low");
-    if (level === "none") row.classList.add("product-missing");
+    if (level === "zero") row.classList.add("product-missing");
   }
 
   const nameWrap = document.createElement("div");
@@ -225,7 +225,7 @@ export function renderSuggestions() {
   const suggestions = products
     .filter((p) => {
       if (isSpice(p)) {
-        return ["none", "low"].includes(p.level);
+        return ["low", "zero"].includes(getStockState(p));
       }
       return (
         p.main &&
@@ -233,18 +233,16 @@ export function renderSuggestions() {
       );
     })
     .filter((p) => !state.dismissedSuggestions.has(p.name))
-    .sort((a, b) =>
-      t(a.id, "products").localeCompare(t(b.id, "products")),
-    );
+    .sort((a, b) => t(a.id, "products").localeCompare(t(b.id, "products")));
   const frag = document.createDocumentFragment();
   suggestions.forEach((p) => {
     let qty = p.threshold != null ? p.threshold : 1;
     const row = document.createElement("div");
     row.className =
       "suggestion-item gap-2 h-11 hover:bg-base-200 transition-colors";
-    const level = stockLevel(p);
+    const level = getStockState(p);
     if (level === "low") row.classList.add("product-low");
-    if (level === "none") row.classList.add("product-missing");
+    if (level === "zero") row.classList.add("product-missing");
 
     const nameWrap = document.createElement("div");
     nameWrap.className = "flex items-center gap-1 overflow-hidden";
