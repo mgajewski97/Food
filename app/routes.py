@@ -17,6 +17,7 @@ from .utils import (
     save_json,
     validate_file,
     validate_items,
+    _validate,
 )
 from .utils.logging import log_error_with_trace, log_warning_with_trace
 
@@ -80,13 +81,29 @@ def _to_base(qty: float, unit: str) -> Tuple[float, str]:
     return converted, base
 
 
+def _validate_products_file() -> Tuple[int, List[str]]:
+    """Validate the domain products file against the product schema."""
+    try:
+        with open(PRODUCTS_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception as exc:  # pragma: no cover - defensive
+        return 0, [str(exc)]
+    products = data if isinstance(data, list) else data.get("products", [])
+    validated, errors = _validate(
+        products, PRODUCTS_SCHEMA, coerce=normalize_product
+    )
+    count = len(validated) if isinstance(validated, list) else 0
+    return count, errors
+
+
 def run_initial_validation() -> None:
     """Validate core datasets once on application startup."""
-    for _path, _schema, _norm in [
-        (PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize_product),
-        (RECIPES_PATH, RECIPES_SCHEMA, normalize_recipe),
-    ]:
-        validate_file(_path, [], _schema, _norm)
+    count, errors = _validate_products_file()
+    for err in errors:
+        logger.info("products.json: %s", err)
+    count, errors = validate_file(RECIPES_PATH, [], RECIPES_SCHEMA, normalize_recipe)
+    for err in errors:
+        logger.info("recipes.json: %s", err)
 
 
 def _load_products_compat(context: Dict[str, Any]):
@@ -688,7 +705,7 @@ def health_new():
 def validate_route():
     """Return validation summary for core datasets."""
     summary = {}
-    count, errors = validate_file(PRODUCTS_PATH, [], PRODUCTS_SCHEMA, normalize_product)
+    count, errors = _validate_products_file()
     summary["products"] = {"count": count, "errors": errors[:5]}
     count, errors = validate_file(RECIPES_PATH, [], RECIPES_SCHEMA, normalize_recipe)
     summary["recipes"] = {"count": count, "errors": errors[:5]}
