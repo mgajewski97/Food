@@ -6,6 +6,8 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from flask import Blueprint, current_app, jsonify, render_template, request
 
+from .errors import error_response
+
 from .search import search_products
 from .utils import (
     file_lock,
@@ -294,13 +296,15 @@ def ui_strings(lang):
     """Return UI translation strings for a given locale."""
     path = os.path.join(BASE_DIR, "static", "translations", f"{lang}.json")
     if not os.path.exists(path):
-        return jsonify({"error": "not found"}), 404
+        return error_response("not found", 404)
     try:
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
     except Exception as exc:  # pragma: no cover - defensive
-        logger.info(str(exc))
-        return jsonify({"error": str(exc)}), 500
+        trace_id = log_error_with_trace(
+            exc, {"endpoint": "/api/ui/<lang>", "lang": lang}
+        )
+        return error_response("Internal Server Error", 500, trace_id)
     return jsonify(data)
 
 
@@ -314,10 +318,7 @@ def domain():
             data = json.load(f)
     except Exception as exc:  # pragma: no cover - defensive
         trace_id = log_error_with_trace(exc, context)
-        return (
-            jsonify({"error": "Internal Server Error", "traceId": trace_id}),
-            500,
-        )
+        return error_response("Internal Server Error", 500, trace_id)
 
     products = data.get("products", [])
     categories = data.get("categories", [])
@@ -343,7 +344,7 @@ def search():
         results = search_products(query, locale)
     except ValueError as exc:
         logger.info(str(exc))
-        return jsonify({"error": str(exc)}), 400
+        return error_response(str(exc), 400)
     return jsonify(results)
 
 
@@ -356,10 +357,7 @@ def products():
                 products = _load_products_compat(context)
             except ValueError as exc:  # pragma: no cover - defensive
                 trace_id = log_error_with_trace(exc, context)
-                return (
-                    jsonify({"error": "Internal Server Error", "traceId": trace_id}),
-                    500,
-                )
+                return error_response("Internal Server Error", 500, trace_id)
             first_id = products[0].get("id") if products else None
             logger.info(
                 "products count=%d first=%s",
@@ -376,7 +374,7 @@ def products():
             validate_items(items, PRODUCTS_SCHEMA)
         except ValueError as exc:
             logger.info("request: %s", exc)
-            return jsonify({"error": str(exc)}), 400
+            return error_response(str(exc), 400)
 
         with file_lock(PRODUCTS_PATH):
             try:
@@ -384,8 +382,8 @@ def products():
                     PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
                 )
             except ValueError as exc:
-                logger.info(str(exc))
-                return jsonify({"error": str(exc)}), 500
+                trace_id = log_error_with_trace(exc, context)
+                return error_response("Internal Server Error", 500, trace_id)
             existing = {p["name"]: p for p in products}
             for item in items:
                 existing[item["name"]] = item
@@ -394,10 +392,7 @@ def products():
         return jsonify(products)
     except Exception as exc:  # pragma: no cover - defensive
         trace_id = log_error_with_trace(exc, context)
-        return (
-            jsonify({"error": "Internal Server Error", "traceId": trace_id}),
-            500,
-        )
+        return error_response("Internal Server Error", 500, trace_id)
 
 
 @bp.route("/api/products/<string:name>", methods=["DELETE"])
@@ -410,17 +405,14 @@ def delete_product(name):
                     PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
                 )
             except ValueError as exc:
-                logger.info(str(exc))
-                return jsonify({"error": str(exc)}), 500
+                trace_id = log_error_with_trace(exc, context)
+                return error_response("Internal Server Error", 500, trace_id)
             products = [p for p in products if p.get("name") != name]
             safe_write(PRODUCTS_PATH, products)
         return "", 204
     except Exception as exc:  # pragma: no cover - defensive
         trace_id = log_error_with_trace(exc, context)
-        return (
-            jsonify({"error": "Internal Server Error", "traceId": trace_id}),
-            500,
-        )
+        return error_response("Internal Server Error", 500, trace_id)
 
 
 @bp.route("/api/units", methods=["GET", "PUT"])
@@ -470,19 +462,13 @@ def recipes():
             recipes = _load_recipes(locale, context)
         except ValueError as exc:  # pragma: no cover - defensive
             trace_id = log_error_with_trace(exc, context)
-            return (
-                jsonify({"error": "Internal Server Error", "traceId": trace_id}),
-                500,
-            )
+            return error_response("Internal Server Error", 500, trace_id)
         first_id = recipes[0].get("id") if recipes else None
         logger.info("recipes count=%d first=%s", len(recipes), first_id)
         return jsonify(recipes)
     except Exception as exc:  # pragma: no cover - defensive
         trace_id = log_error_with_trace(exc, context)
-        return (
-            jsonify({"error": "Internal Server Error", "traceId": trace_id}),
-            500,
-        )
+        return error_response("Internal Server Error", 500, trace_id)
 
 
 @bp.route("/api/history", methods=["GET", "POST"])
@@ -511,10 +497,7 @@ def favorites():
         return jsonify(load_json(FAVORITES_PATH, []))
     except Exception as exc:  # pragma: no cover - defensive
         trace_id = log_error_with_trace(exc, context)
-        return (
-            jsonify({"error": "Internal Server Error", "traceId": trace_id}),
-            500,
-        )
+        return error_response("Internal Server Error", 500, trace_id)
 
 
 def _generate_shopping_list(selection: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -668,8 +651,8 @@ def health():
         load_json_validated(PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product)
         load_json_validated(RECIPES_PATH, RECIPES_SCHEMA, normalize=normalize_recipe)
     except ValueError as exc:
-        logger.info("health check failed: %s", exc)
-        return jsonify({"ok": False, "error": str(exc)}), 500
+        trace_id = log_error_with_trace(exc, {"endpoint": "/api/health"})
+        return error_response("Internal Server Error", 500, trace_id)
     return jsonify({"ok": True})
 
 
@@ -699,10 +682,7 @@ def health_new():
         )
     except Exception as exc:  # pragma: no cover - defensive
         trace_id = log_error_with_trace(exc, context)
-        return (
-            jsonify({"error": "Internal Server Error", "traceId": trace_id}),
-            500,
-        )
+        return error_response("Internal Server Error", 500, trace_id)
 
 
 @bp.route("/api/validate")
