@@ -351,13 +351,16 @@ function createFlatRow(p, idx, editable) {
     unitTd.textContent = isSpice(p) ? "" : t(p.unit, "units");
     tr.appendChild(unitTd);
     const catTd = document.createElement("td");
+    catTd.className = "hidden md:table-cell";
     catTd.textContent = t(p.category, "categories");
     if (!state.domain.categories[p.category]) catTd.classList.add("opacity-60");
     tr.appendChild(catTd);
     const storTd = document.createElement("td");
+    storTd.className = "hidden md:table-cell";
     storTd.textContent = t(STORAGE_KEYS[p.storage] || p.storage);
     tr.appendChild(storTd);
     const statusTd = document.createElement("td");
+    statusTd.className = "text-center hidden md:table-cell";
     const status = getStatusIcon(p);
     if (status) {
       statusTd.innerHTML = status.html;
