@@ -32,13 +32,19 @@ const APP = window.APP;
 APP.state = APP.state || {
   products: [],
   view: "flat",
-  filter: "all",
+  filter: "available",
   search: "",
   editing: false,
 };
 APP.ui = APP.ui || {};
 APP.activeTab = APP.activeTab || null;
 APP.editBackup = APP.editBackup || null;
+APP.searches = APP.searches || {
+  "tab-products": "",
+  "tab-recipes": "",
+  "tab-history": "",
+  "tab-shopping": "",
+};
 
 async function loadProducts() {
   trace("loadProducts:enter");
@@ -101,16 +107,11 @@ function registerServiceWorker() {
 }
 
 function resetProductFilters() {
-  APP.state.filter = "all";
-  APP.state.search = "";
+  APP.state.filter = "available";
   const sel = document.getElementById("state-filter");
-  if (sel) sel.value = "all";
+  if (sel) sel.value = "available";
   const selMobile = document.getElementById("state-filter-mobile");
-  if (selMobile) selMobile.value = "all";
-  const search = document.getElementById("product-search");
-  if (search) search.value = "";
-  const searchMobile = document.getElementById("product-search-mobile");
-  if (searchMobile) searchMobile.value = "";
+  if (selMobile) selMobile.value = "available";
 }
 
 function resetRecipeFilters() {
@@ -135,6 +136,9 @@ function resetRecipeFilters() {
 }
 
 async function activateTab(targetId) {
+  if (APP.activeTab === "tab-products" && targetId !== "tab-products") {
+    resetProductFilters();
+  }
   document
     .querySelectorAll("[data-tab-target]")
     .forEach((t) => t.classList.remove("tab-active", "font-bold"));
@@ -147,6 +151,12 @@ async function activateTab(targetId) {
   if (panel) panel.style.display = "block";
   if (targetId === "tab-products") {
     resetProductFilters();
+    const val = APP.searches["tab-products"] || "";
+    const search = document.getElementById("product-search");
+    if (search) search.value = val;
+    const searchMobile = document.getElementById("product-search-mobile");
+    if (searchMobile) searchMobile.value = val;
+    APP.state.search = val;
     if (!APP.state.products || APP.state.products.length === 0) {
       try {
         await loadProducts();
@@ -154,8 +164,11 @@ async function activateTab(targetId) {
     }
     ProductTable.renderProducts();
   } else if (targetId === "tab-recipes") {
+    APP.state.search = APP.searches["tab-recipes"] || "";
     resetRecipeFilters();
     Recipes.renderRecipes();
+  } else {
+    APP.state.search = APP.searches[targetId] || "";
   }
   APP.activeTab = targetId;
 }
@@ -570,16 +583,24 @@ function initNavigationAndEvents() {
   searchInput?.addEventListener(
     "input",
     debounce(() => {
-      APP.state.search = searchInput.value.trim().toLowerCase();
-      ProductTable.renderProducts();
+      const val = searchInput.value.trim().toLowerCase();
+      APP.searches["tab-products"] = val;
+      if (APP.activeTab === "tab-products") {
+        APP.state.search = val;
+        ProductTable.renderProducts();
+      }
     }, 150),
   );
   const searchInputMobile = document.getElementById("product-search-mobile");
   searchInputMobile?.addEventListener(
     "input",
     debounce(() => {
-      APP.state.search = searchInputMobile.value.trim().toLowerCase();
-      ProductTable.renderProducts();
+      const val = searchInputMobile.value.trim().toLowerCase();
+      APP.searches["tab-products"] = val;
+      if (APP.activeTab === "tab-products") {
+        APP.state.search = val;
+        ProductTable.renderProducts();
+      }
     }, 150),
   );
   const copyBtn = document.getElementById("copy-btn");
