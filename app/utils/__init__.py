@@ -17,6 +17,8 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import jsonschema
 
+from ..errors import DomainError
+
 DEFAULT_UNIT = "szt"
 
 logger = logging.getLogger(__name__)
@@ -119,6 +121,34 @@ def _validate(
         return None, errors
 
     return data, []
+
+
+def validate_payload(payload: Any, schema_name: str) -> Any:
+    """Validate a request payload against a named schema.
+
+    Args:
+        payload: JSON-decoded data from the client.
+        schema_name: Filename of the schema located in ``app/schemas``.
+
+    Returns:
+        The original payload if validation succeeds.
+
+    Raises:
+        DomainError: If validation fails or the schema is missing.
+    """
+
+    schema_dir = os.path.join(os.path.dirname(__file__), "..", "schemas")
+    schema_path = os.path.join(schema_dir, schema_name)
+    schema = _load_schema(schema_path)
+    if schema is None:
+        raise DomainError(f"schema {schema_name} not found")
+    validator = jsonschema.Draft7Validator(schema)
+    errors = sorted(validator.iter_errors(payload), key=lambda e: e.path)
+    if errors:
+        err = errors[0]
+        path = ".".join(str(p) for p in err.path) or "(root)"
+        raise DomainError(f"{path}: {err.message}")
+    return payload
 
 
 def normalize_product(data: Dict[str, Any]) -> Dict[str, Any]:

@@ -3,8 +3,8 @@
 from flask import Flask, request
 from werkzeug.exceptions import HTTPException
 
-from .errors import error_response
-from .utils.logging import log_error_with_trace
+from .errors import DomainError, error_response
+from .utils.logging import log_error_with_trace, log_warning_with_trace
 
 
 def create_app() -> Flask:
@@ -19,6 +19,13 @@ def create_app() -> Flask:
     @app.errorhandler(404)
     def handle_404(error):
         return error_response("not found", 404)
+
+    @app.errorhandler(DomainError)
+    def handle_domain(error: DomainError):
+        trace_id = log_warning_with_trace(
+            str(error), {"path": request.path, "args": request.args.to_dict()}
+        )
+        return error_response(str(error), 400, trace_id)
 
     @app.errorhandler(HTTPException)
     def handle_http(error: HTTPException):
