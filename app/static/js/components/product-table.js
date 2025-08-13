@@ -52,8 +52,11 @@ export function bindProductEvents() {
 
 // --- expand/collapse state
 // Track expand/collapse state and persist to localStorage
-const expandedStorages = new Map(); // storageId -> true/false
-const expandedCategories = new Map(); // storageId::categoryId -> true/false
+// Track expand/collapse state for storages and categories
+// storageState: storageKey -> boolean (true = expanded)
+// categoryState: storageKey -> Map(categoryKey -> boolean)
+const storageState = new Map();
+const categoryState = new Map();
 
 function setHidden(el, flag) {
   if (!el) return;
@@ -65,15 +68,20 @@ function setHidden(el, flag) {
 function initExpandDefaults(container) {
   container.querySelectorAll(".storage-section").forEach((sec) => {
     const storage = sec.dataset.storage;
-    if (!expandedStorages.has(storage)) {
+    if (!storageState.has(storage)) {
       const stored = localStorage.getItem(`products:storage:${storage}`);
-      expandedStorages.set(storage, stored !== "false");
+      storageState.set(storage, stored !== "false");
     }
+
+    if (!categoryState.has(storage)) categoryState.set(storage, new Map());
+    const cMap = categoryState.get(storage);
     sec.querySelectorAll(".category-section").forEach((cat) => {
-      const key = `${storage}::${cat.dataset.category}`;
-      if (!expandedCategories.has(key)) {
-        const cStored = localStorage.getItem(`products:category:${key}`);
-        expandedCategories.set(key, cStored !== "false");
+      const catKey = cat.dataset.category;
+      if (!cMap.has(catKey)) {
+        const cStored = localStorage.getItem(
+          `products:category:${storage}::${catKey}`,
+        );
+        cMap.set(catKey, cStored !== "false");
       }
     });
   });
@@ -83,8 +91,8 @@ function initExpandDefaults(container) {
 function syncAllToggles(container) {
   container.querySelectorAll(".storage-section").forEach((sec) => {
     const storage = sec.dataset.storage;
-    const storageOpen = expandedStorages.get(storage) !== false;
-    setStorageUI(sec, storageOpen);
+    const open = storageState.get(storage) !== false;
+    setStorageUI(sec, open);
   });
 }
 
@@ -103,9 +111,11 @@ function setStorageUI(storageSection, open) {
   const content = storageSection.querySelector(".storage-content");
   setHidden(content, !open);
   if (open && content) {
+    const storage = storageSection.dataset.storage;
+    const cMap = categoryState.get(storage) || new Map();
     content.querySelectorAll(".category-section").forEach((cat) => {
-      const key = `${storageSection.dataset.storage}::${cat.dataset.category}`;
-      const catOpen = expandedCategories.get(key) !== false;
+      const catKey = cat.dataset.category;
+      const catOpen = cMap.get(catKey) !== false;
       setCategoryUI(cat, catOpen);
     });
   }
@@ -653,56 +663,51 @@ export function renderProducts() {
 
 function attachCollapses(root) {
   if (!root) return;
-  if (root._collapseHandler)
-    root.removeEventListener("click", root._collapseHandler);
-  if (root._headerHandler)
-    root.removeEventListener("click", root._headerHandler);
+  if (root._toggleHandler)
+    root.removeEventListener("click", root._toggleHandler);
 
-  const collapseHandler = (e) => {
+  const toggleHandler = (e) => {
     if (APP.state && APP.state.editing) return;
-    const storageBtn = e.target.closest(".toggle-storage");
-    const catBtn = e.target.closest(".toggle-category");
 
-    if (storageBtn) {
-      e.stopPropagation();
-      const section = storageBtn.closest(".storage-section");
-      const id = section.dataset.storage;
-      const next = !expandedStorages.get(id);
-      expandedStorages.set(id, next);
-      localStorage.setItem(`products:storage:${id}`, String(next));
-      setStorageUI(section, next);
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    let btn;
+    if (isMobile) {
+      const hdr = e.target.closest(".storage-header, .category-header");
+      if (!hdr) return;
+      btn = hdr.querySelector(".toggle-storage, .toggle-category");
+    } else {
+      btn = e.target.closest(".toggle-storage, .toggle-category");
+      if (!btn) return;
     }
 
-    if (catBtn) {
-      e.stopPropagation();
-      const section = catBtn.closest(".category-section");
+    e.stopPropagation();
+
+    if (btn.classList.contains("toggle-storage")) {
+      const section = btn.closest(".storage-section");
+      const id = section.dataset.storage;
+      const next = !(storageState.get(id) !== false);
+      storageState.set(id, next);
+      localStorage.setItem(`products:storage:${id}`, String(next));
+      setStorageUI(section, next);
+    } else if (btn.classList.contains("toggle-category")) {
+      const section = btn.closest(".category-section");
       const storage = section.dataset.storage;
       const cat = section.dataset.category;
-      const key = `${storage}::${cat}`;
-      const next = !expandedCategories.get(key);
-      expandedCategories.set(key, next);
-      localStorage.setItem(`products:category:${key}`, String(next));
-      const parentOpen = expandedStorages.get(storage) !== false;
+      if (!categoryState.has(storage)) categoryState.set(storage, new Map());
+      const cMap = categoryState.get(storage);
+      const next = !(cMap.get(cat) !== false);
+      cMap.set(cat, next);
+      localStorage.setItem(
+        `products:category:${storage}::${cat}`,
+        String(next),
+      );
+      const parentOpen = storageState.get(storage) !== false;
       setCategoryUI(section, parentOpen && next);
     }
   };
 
-  const headerHandler = (e) => {
-    if (APP.state && APP.state.editing) return;
-    const hdr = e.target.closest(".category-header, .storage-header");
-    if (!hdr) return;
-    if (!window.matchMedia("(max-width: 768px)").matches) return;
-    const btn = hdr.querySelector(".toggle-category, .toggle-storage");
-    if (btn) {
-      e.stopPropagation();
-      btn.click();
-    }
-  };
-
-  root.addEventListener("click", collapseHandler);
-  root.addEventListener("click", headerHandler);
-  root._collapseHandler = collapseHandler;
-  root._headerHandler = headerHandler;
+  root.addEventListener("click", toggleHandler);
+  root._toggleHandler = toggleHandler;
 }
 
 const groupedRoot = document.getElementById("products-by-category");
