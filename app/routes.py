@@ -13,6 +13,7 @@ from .utils import (
     load_json_validated,
     normalize_product,
     normalize_recipe,
+    _safe_float,
     safe_write,
     save_json,
     validate_file,
@@ -115,7 +116,8 @@ def _load_products_compat(context: Dict[str, Any]):
         raise ValueError(str(exc))
 
     categories = {c.get("id"): c for c in data.get("categories", [])}
-    units = {u.get("id"): u for u in data.get("units", [])}
+    units_list = load_json(UNITS_PATH, [])
+    units = {u.get("id"): u for u in units_list}
     legacy: List[Dict[str, Any]] = []
 
     for prod in data.get("products", []):
@@ -185,7 +187,8 @@ def _load_recipes(locale: str = "pl", context: Optional[Dict[str, Any]] = None):
         raise ValueError(str(exc))
 
     products = {p.get("id"): p for p in products_data.get("products", [])}
-    units = {u.get("id"): u for u in products_data.get("units", [])}
+    units_list = load_json(UNITS_PATH, [])
+    units = {u.get("id"): u for u in units_list}
 
     try:
         recipes, errors = load_json(
@@ -318,7 +321,8 @@ def domain():
 
     products = data.get("products", [])
     categories = data.get("categories", [])
-    units = data.get("units", [])
+    units = load_json(UNITS_PATH, [])
+    data["units"] = units
     first_id = products[0].get("id") if products else None
     logger.info(
         "domain products=%d categories=%d units=%d first_product=%s",
@@ -422,10 +426,10 @@ def delete_product(name):
 @bp.route("/api/units", methods=["GET", "PUT"])
 def units():
     if request.method == "PUT":
-        units = request.json or {}
+        units = request.json or []
         save_json(UNITS_PATH, units)
         return jsonify(units)
-    return jsonify(load_json(UNITS_PATH, {}))
+    return jsonify(load_json(UNITS_PATH, []))
 
 
 @bp.route("/api/ocr-match", methods=["POST"])
@@ -522,7 +526,7 @@ def _generate_shopping_list(selection: List[Dict[str, Any]]) -> List[Dict[str, A
     optional_map: Dict[Tuple[str, str], bool] = {}
     for sel in selection:
         rid = sel.get("id")
-        servings = float(sel.get("servings", 0))
+        servings = max(0.0, _safe_float(sel.get("servings", 0)))
         recipe = recipes_map.get(rid)
         if not recipe:
             continue
@@ -611,7 +615,7 @@ def _update_pantry(items: List[Dict[str, Any]]) -> None:
         prod_map = {p.get("name"): p for p in products}
         for it in items:
             pid = it.get("productId")
-            qty = it.get("quantity_to_buy", 0)
+            qty = max(0.0, _safe_float(it.get("quantity_to_buy", 0)))
             unit_id = it.get("unitId")
             unit_name = UNIT_ID_TO_NAME.get(unit_id, unit_id)
             if pid in prod_map:

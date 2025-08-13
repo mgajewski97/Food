@@ -506,7 +506,7 @@ export function normalizeProduct(p = {}) {
   const id = p.id || p.name || "";
   const isSp = p.is_spice === true || p.category === "spices";
   let qty = Number(p.quantity ?? p.amount);
-  if (isNaN(qty)) qty = 0;
+  if (isNaN(qty) || qty < 0) qty = 0;
   let level = p.level;
   if (isSp) {
     if (!level) {
@@ -521,9 +521,9 @@ export function normalizeProduct(p = {}) {
     name: p.name || id,
     unit: p.unit || "szt",
     quantity: qty,
-    package_size: Number(p.package_size) || 1,
-    pack_size: p.pack_size != null ? Number(p.pack_size) : null,
-    threshold: p.threshold != null ? Number(p.threshold) : 1,
+    package_size: Math.max(0, Number(p.package_size) || 1),
+    pack_size: p.pack_size != null ? Math.max(0, Number(p.pack_size)) : null,
+    threshold: p.threshold != null ? Math.max(0, Number(p.threshold)) : 1,
     main: isSp ? true : p.main !== false,
     category: isSp ? "spices" : p.category || "uncategorized",
     storage: p.storage || "pantry",
@@ -537,9 +537,13 @@ export function normalizeRecipe(r = {}) {
   const ingredients = Array.isArray(r.ingredients)
     ? r.ingredients.map((ing) => {
         if (typeof ing === "string") return { product: ing };
+        const qty =
+          ing.quantity != null && !isNaN(Number(ing.quantity))
+            ? Math.max(0, Number(ing.quantity))
+            : undefined;
         return {
           product: ing.product || "",
-          quantity: ing.quantity != null ? Number(ing.quantity) : undefined,
+          quantity: qty,
           unit: ing.unit || undefined,
         };
       })

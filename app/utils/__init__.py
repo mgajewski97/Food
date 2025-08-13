@@ -103,7 +103,7 @@ def normalize_product(data: Dict[str, Any]) -> Dict[str, Any]:
     pack = data.get("pack_size")
     category = data.get("category", "uncategorized")
     is_spice = data.get("is_spice") is True or category == "spices"
-    quantity = _safe_float(data.get("quantity", 0))
+    quantity = max(0.0, _safe_float(data.get("quantity", 0)))
     level = data.get("level")
     if is_spice:
         if level not in {"none", "low", "medium", "high"}:
@@ -121,8 +121,10 @@ def normalize_product(data: Dict[str, Any]) -> Dict[str, Any]:
             "storage": data.get("storage", "pantry"),
             "threshold": 1,
             "main": True,
-            "package_size": _safe_float(data.get("package_size", 1), 1),
-            "pack_size": _safe_float(pack) if pack is not None else None,
+            "package_size": max(0.0, _safe_float(data.get("package_size", 1), 1)),
+            "pack_size": (
+                max(0.0, _safe_float(pack)) if pack is not None else None
+            ),
             "tags": [str(t) for t in data.get("tags", []) if isinstance(t, str)],
             "level": level,
             "is_spice": True,
@@ -133,10 +135,12 @@ def normalize_product(data: Dict[str, Any]) -> Dict[str, Any]:
         "unit": data.get("unit", DEFAULT_UNIT),
         "category": category,
         "storage": data.get("storage", "pantry"),
-        "threshold": _safe_float(data.get("threshold", 1), 1) or 1,
+        "threshold": max(0.0, _safe_float(data.get("threshold", 1), 1)),
         "main": bool(data.get("main", True)),
-        "package_size": _safe_float(data.get("package_size", 1), 1),
-        "pack_size": _safe_float(pack) if pack is not None else None,
+        "package_size": max(0.0, _safe_float(data.get("package_size", 1), 1)),
+        "pack_size": (
+            max(0.0, _safe_float(pack)) if pack is not None else None
+        ),
         "tags": [str(t) for t in data.get("tags", []) if isinstance(t, str)],
         "level": level if level in {"none", "low", "medium", "high"} else None,
         "is_spice": False,
@@ -152,7 +156,7 @@ def normalize_recipe(data: Dict[str, Any]) -> Dict[str, Any]:
             if isinstance(ing, dict):
                 obj: Dict[str, Any] = {
                     "productId": ing.get("productId"),
-                    "qty": _safe_float(ing.get("qty", 0)),
+                    "qty": max(0.0, _safe_float(ing.get("qty", 0))),
                     "unitId": ing.get("unitId"),
                     "optional": bool(ing.get("optional", False)),
                 }
@@ -180,7 +184,7 @@ def normalize_recipe(data: Dict[str, Any]) -> Dict[str, Any]:
             "pl": data.get("names", {}).get("pl", ""),
             "en": data.get("names", {}).get("en", ""),
         },
-        "portions": _safe_float(data.get("portions", 1), 1) or 1,
+        "portions": max(1.0, _safe_float(data.get("portions", 1), 1)) or 1,
         "time": str(data.get("time", "")),
         "ingredients": _clean_list(data.get("ingredients", [])),
         "steps": [str(s) for s in data.get("steps", []) if isinstance(s, str)],

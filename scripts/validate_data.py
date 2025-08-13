@@ -23,12 +23,13 @@ def load_json(path: Path) -> Any:
 
 def validate_products(
     products_data: Dict[str, Any],
+    unit_ids: Set[str],
 ) -> Tuple[List[str], Set[str], Dict[str, str], Set[str], Set[str]]:
     errors: List[str] = []
 
     products = products_data.get("products", [])
     categories = {c.get("id") for c in products_data.get("categories", [])}
-    units = {u.get("id") for u in products_data.get("units", [])}
+    units = set(unit_ids)
 
     id_set: Set[str] = set()
     alias_map: Dict[str, str] = {}
@@ -126,8 +127,16 @@ def main() -> None:
         errors.append(f"unable to load recipes.json: {e}")
         recipes_data = []
 
+    units_path = DATA_DIR / "units.json"
+    try:
+        units_data = load_json(units_path)
+    except Exception as e:
+        errors.append(f"unable to load units.json: {e}")
+        units_data = []
+
+    unit_ids_loaded = {u.get("id") for u in units_data}
     p_errors, product_ids, alias_map, unit_ids, category_ids = validate_products(
-        products_data
+        products_data, unit_ids_loaded
     )
     errors.extend(p_errors)
 
