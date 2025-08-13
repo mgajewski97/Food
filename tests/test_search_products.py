@@ -25,6 +25,37 @@ def test_synonyms_across_locales():
 
 def test_ranking_scores():
     prefix = _find(search_products("cashew", "en"), "prod.cashew-nuts")
-    token = _find(search_products("nuts", "en"), "prod.cashew-nuts")
-    substr = _find(search_products("she", "en"), "prod.cashew-nuts")
-    assert prefix["score"] > token["score"] > substr["score"]
+    contains = _find(search_products("she", "en"), "prod.cashew-nuts")
+    fuzzy = _find(search_products("cashew nts", "en"), "prod.cashew-nuts")
+    assert prefix["score"] > contains["score"] > fuzzy["score"]
+
+
+def test_fuzzy_rank_lower_than_contains():
+    contains = _find(search_products("she", "en"), "prod.cashew-nuts")
+    fuzzy = _find(search_products("cashew nts", "en"), "prod.cashew-nuts")
+    assert contains["score"] > fuzzy["score"]
+
+
+def test_name_over_alias(monkeypatch):
+    from app import search as search_mod
+
+    custom = {
+        "en": [
+            {
+                "id": "prod.name",
+                "tokens": {"alpha"},
+                "strings": ["alpha"],
+                "name": "alpha",
+            },
+            {
+                "id": "prod.alias",
+                "tokens": {"alpha"},
+                "strings": ["beta", "alpha"],
+                "name": "beta",
+            },
+        ],
+        "pl": [],
+    }
+    monkeypatch.setattr(search_mod, "_INDEX", custom)
+    res = search_products("alpha", "en")
+    assert [r["productId"] for r in res] == ["prod.name", "prod.alias"]
