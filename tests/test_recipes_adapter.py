@@ -12,9 +12,11 @@ def test_recipes_endpoint_returns_normalized_items():
     resp = client.get("/api/recipes?locale=en")
     assert resp.status_code == 200
     data = resp.get_json()
-    assert isinstance(data, list)
-    assert len(data) > 0
-    sample = data[0]
+    assert isinstance(data, dict)
+    items = data.get("items", [])
+    assert isinstance(items, list)
+    assert len(items) > 0
+    sample = items[0]
     assert "id" in sample and "names" in sample and "servings" in sample
     # stable shape defaults on recipe
     assert sample["amount"] == 0

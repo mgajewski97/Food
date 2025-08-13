@@ -12,9 +12,11 @@ def test_products_endpoint_returns_mapped_items():
     resp = client.get("/api/products")
     assert resp.status_code == 200
     data = resp.get_json()
-    assert isinstance(data, list)
-    assert len(data) > 0
-    first = data[0]
+    assert isinstance(data, dict)
+    items = data.get("items", [])
+    assert isinstance(items, list)
+    assert len(items) > 0
+    first = items[0]
     # ensure legacy fields exist
     assert "id" in first and "name_pl" in first and "unit" in first
     # stable shape defaults
