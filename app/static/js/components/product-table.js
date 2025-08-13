@@ -286,7 +286,7 @@ function createFlatRow(p, idx, editable) {
     tr.appendChild(qtyTd);
     // unit select
     const unitTd = document.createElement("td");
-    unitTd.className = "unit-cell";
+    unitTd.className = "unit-cell hidden md:table-cell";
     if (isSpice(p)) {
       unitTd.textContent = "";
     } else {
@@ -304,7 +304,7 @@ function createFlatRow(p, idx, editable) {
     tr.appendChild(unitTd);
     // category select
     const catTd = document.createElement("td");
-    catTd.className = "category-cell";
+    catTd.className = "category-cell hidden md:table-cell";
     const catSel = document.createElement("select");
     catSel.className = "select select-bordered w-full";
     Object.keys(state.domain.categories).forEach((c) => {
@@ -318,7 +318,7 @@ function createFlatRow(p, idx, editable) {
     tr.appendChild(catTd);
     // storage select
     const storTd = document.createElement("td");
-    storTd.className = "storage-cell";
+    storTd.className = "storage-cell hidden md:table-cell";
     const storSel = document.createElement("select");
     storSel.className = "select select-bordered w-full";
     Object.keys(STORAGE_KEYS).forEach((s) => {
@@ -332,7 +332,7 @@ function createFlatRow(p, idx, editable) {
     tr.appendChild(storTd);
     // status
     const statusTd = document.createElement("td");
-    statusTd.className = "status-cell text-center";
+    statusTd.className = "status-cell text-center hidden md:table-cell";
     const status = getStatusIcon(p);
     if (status) {
       statusTd.innerHTML = status.html;
@@ -348,16 +348,20 @@ function createFlatRow(p, idx, editable) {
     qtyTd.textContent = formatPackQuantity(p);
     tr.appendChild(qtyTd);
     const unitTd = document.createElement("td");
+    unitTd.className = "hidden md:table-cell";
     unitTd.textContent = isSpice(p) ? "" : t(p.unit, "units");
     tr.appendChild(unitTd);
     const catTd = document.createElement("td");
+    catTd.className = "hidden md:table-cell";
     catTd.textContent = t(p.category, "categories");
     if (!state.domain.categories[p.category]) catTd.classList.add("opacity-60");
     tr.appendChild(catTd);
     const storTd = document.createElement("td");
+    storTd.className = "hidden md:table-cell";
     storTd.textContent = t(STORAGE_KEYS[p.storage] || p.storage);
     tr.appendChild(storTd);
     const statusTd = document.createElement("td");
+    statusTd.className = "text-center hidden md:table-cell";
     const status = getStatusIcon(p);
     if (status) {
       statusTd.innerHTML = status.html;
