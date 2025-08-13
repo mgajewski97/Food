@@ -58,16 +58,16 @@
 <div id="top-sentinel"></div>
 <div id="health-banner" class="alert alert-error hidden justify-between">
     <span data-i18n="error">Error</span>
-    <button id="health-retry" class="btn btn-sm" data-i18n="retry">Retry</button>
+    <button id="health-retry" class="btn h-11 md:btn-sm" data-i18n="retry">Retry</button>
 </div>
 <div id="notification-container" class="toast toast-end top-auto bottom-[4.5rem] z-40" aria-live="polite"></div>
 <div id="top-banner-container" class="sticky top-0 z-30"></div>
-<header class="app-bar bg-base-100">
+<header class="sticky top-0 z-20 grid grid-cols-[auto_1fr_auto] items-center gap-2 sm:gap-4 px-4 sm:px-6 max-w-7xl mx-auto bg-base-100">
   <div class="left flex items-center gap-2">
     <span class="app-title font-bold text-lg">Food App</span>
     <span id="locale-chip" class="badge">PL</span>
   </div>
-  <div class="tabs-wrap">
+  <div class="tabs-wrap overflow-x-auto">
     <div class="tabs tabs-bordered flex-nowrap overflow-x-auto whitespace-nowrap desktop-nav">
         <a class="tab tab-active font-bold" data-tab-target="tab-products" data-i18n="tab_products">Produkty</a>
         <a class="tab" data-tab-target="tab-recipes" data-i18n="tab_recipes">Przepisy</a>
@@ -75,7 +75,7 @@
         <a class="tab" data-tab-target="tab-shopping" data-i18n="tab_shopping">Lista zakupów</a>
     </div>
   </div>
-  <div class="actions">
+  <div class="flex items-center justify-end gap-2 sm:gap-3 pointer-events-auto z-10">
     <button id="layout-toggle" aria-label="Toggle layout" class="text-xl p-2 bg-transparent border-0">
         <i id="layout-icon" class="fa-solid fa-mobile-screen-button"></i>
     </button>
@@ -96,26 +96,26 @@
     </button>
   </div>
 </header>
-  <main class="main-container">
+<main class="max-w-7xl mx-auto p-4 sm:p-6 space-y-6 pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-8">
         <div id="tab-products" class="tab-panel">
-            <h1 class="text-xl md:text-2xl font-semibold mb-3 md:mb-4" data-i18n="heading_products">Produkty</h1>
-            <div id="controls" class="flex flex-wrap items-center gap-4 mb-4">
-                <div class="flex flex-col md:flex-row gap-2 items-start md:items-center flex-1">
+            <h1 class="text-xl md:text-2xl font-semibold mb-4 md:mb-6" data-i18n="heading_products">Produkty</h1>
+            <div id="controls" class="flex flex-col sm:flex-row flex-wrap items-center gap-4 mb-4">
+                <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto items-start sm:items-center flex-1">
                     <input id="product-search" placeholder="Szukaj produktu" data-i18n="search_placeholder" class="input input-bordered flex-1 min-w-[200px]" />
-                    <select id="state-filter" class="select select-bordered w-full md:w-auto">
+                    <select id="state-filter" class="select select-bordered w-full sm:w-auto">
                         <option value="all" data-i18n="state_filter_all" selected>Wszystkie</option>
                         <option value="available" data-i18n="state_filter_available">Dostępne</option>
                         <option value="missing" data-i18n="state_filter_missing">Brakujące</option>
                         <option value="low" data-i18n="state_filter_low">Kończące się</option>
                     </select>
                 </div>
-                <button id="view-toggle" class="btn btn-outline btn-primary btn-sm" role="switch" aria-pressed="false" aria-label="Widok z podziałem" data-i18n="change_view_toggle_grouped">Widok z podziałem</button>
-                <button id="edit-toggle" class="btn btn-outline btn-warning btn-sm" role="switch" aria-pressed="false" aria-label="Tryb edycji" data-i18n="edit_mode_button_on">Tryb edycji</button>
-                <button id="save-btn" style="display:none;" class="btn btn-success btn-sm" aria-label="Zapisz" data-i18n="save_button">Zapisz</button>
-                <button id="delete-selected" style="display:none;" class="btn btn-error btn-sm" disabled aria-label="Usuń zaznaczone" data-i18n="delete_selected_button">Usuń zaznaczone</button>
+                <button id="view-toggle" class="btn btn-outline btn-primary h-11 md:btn-sm" role="switch" aria-pressed="false" aria-label="Widok z podziałem" data-i18n="change_view_toggle_grouped">Widok z podziałem</button>
+                <button id="edit-toggle" class="btn btn-outline btn-warning h-11 md:btn-sm" role="switch" aria-pressed="false" aria-label="Tryb edycji" data-i18n="edit_mode_button_on">Tryb edycji</button>
+                <button id="save-btn" style="display:none;" class="btn btn-success h-11 md:btn-sm" aria-label="Zapisz" data-i18n="save_button">Zapisz</button>
+                <button id="delete-selected" style="display:none;" class="btn btn-error h-11 md:btn-sm" disabled aria-label="Usuń zaznaczone" data-i18n="delete_selected_button">Usuń zaznaczone</button>
             </div>
             <div class="overflow-x-auto">
-                <table id="product-table" class="table table-zebra table-fixed w-full text-sm">
+                <table id="product-table" class="table table-zebra table-fixed w-full text-xs sm:text-sm">
                     <colgroup>
                         <col style="width:6%">
                         <col style="width:24%">
@@ -125,15 +125,15 @@
                         <col style="width:17%">
                         <col style="width:12%">
                     </colgroup>
-                    <thead>
+                    <thead class="bg-base-100">
                         <tr>
-                            <th id="select-header" style="display:none;"></th>
-                            <th data-i18n="table_header_name">Nazwa</th>
-                            <th data-i18n="table_header_quantity">Ilość</th>
-                            <th data-i18n="table_header_unit">Jednostka</th>
-                            <th data-i18n="table_header_category">Kategoria</th>
-                            <th data-i18n="table_header_storage">Miejsce</th>
-                            <th class="status-header text-center"><i class="fa-solid fa-circle-info"></i> <span class="status-label" data-i18n="table_header_status">Status</span></th>
+                            <th id="select-header" class="sticky top-0 z-10 bg-base-100" style="display:none;"></th>
+                            <th class="sticky top-0 z-10 bg-base-100" data-i18n="table_header_name">Nazwa</th>
+                            <th class="sticky top-0 z-10 bg-base-100" data-i18n="table_header_quantity">Ilość</th>
+                            <th class="sticky top-0 z-10 bg-base-100" data-i18n="table_header_unit">Jednostka</th>
+                            <th class="sticky top-0 z-10 bg-base-100" data-i18n="table_header_category">Kategoria</th>
+                            <th class="sticky top-0 z-10 bg-base-100" data-i18n="table_header_storage">Miejsce</th>
+                            <th class="sticky top-0 z-10 bg-base-100 status-header text-center"><i class="fa-solid fa-circle-info"></i> <span class="status-label" data-i18n="table_header_status">Status</span></th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -147,8 +147,8 @@
                     <p class="py-4" data-i18n="delete_modal_question">Czy na pewno chcesz usunąć zaznaczone produkty?</p>
                     <div id="delete-summary" class="space-y-1"></div>
                     <div class="modal-action">
-                        <button id="confirm-delete" class="btn btn-error btn-sm" data-i18n="delete_confirm_button" aria-label="Usuń">Usuń</button>
-                        <button id="cancel-delete" class="btn btn-outline btn-sm" data-i18n="delete_cancel_button" aria-label="Anuluj">Anuluj</button>
+                        <button id="confirm-delete" class="btn btn-error h-11 md:btn-sm" data-i18n="delete_confirm_button" aria-label="Usuń">Usuń</button>
+                        <button id="cancel-delete" class="btn btn-outline h-11 md:btn-sm" data-i18n="delete_cancel_button" aria-label="Anuluj">Anuluj</button>
                     </div>
                 </form>
             </dialog>
@@ -197,7 +197,7 @@
                     <option value="pantry" selected data-i18n="storage_pantry">Szafka</option>
                     <option value="freezer" data-i18n="storage_freezer">Zamrażarka</option>
                 </select>
-                <button type="submit" class="btn btn-success btn-sm w-full sm:col-span-2" data-i18n="save_button">Zapisz</button>
+                <button type="submit" class="btn btn-success h-11 md:btn-sm w-full sm:col-span-2" data-i18n="save_button">Zapisz</button>
             </form>
             <hr class="border-t border-base-300 my-6">
             </div>
@@ -205,13 +205,13 @@
             <h3 class="text-lg font-semibold mt-6 mb-2" data-i18n="heading_edit_json">Edytuj produkty (JSON)</h3>
             <textarea id="edit-json" rows="10" placeholder='JSON' data-i18n="edit_json_placeholder" class="textarea textarea-bordered w-full max-w-full mb-4 h-60 overflow-y-auto overflow-x-hidden resize-none p-4"></textarea>
             <div class="flex flex-col sm:flex-row gap-2 mb-8">
-                <button id="edit-json-btn" class="btn btn-outline btn-primary btn-sm w-full sm:w-auto" data-i18n="edit_json_submit_button">Wyślij JSON</button>
-                <button id="copy-btn" class="btn btn-outline btn-sm w-full sm:w-auto" data-i18n="copy_structure_button">Pobierz strukturę</button>
+                <button id="edit-json-btn" class="btn btn-outline btn-primary h-11 md:btn-sm w-full sm:w-auto" data-i18n="edit_json_submit_button">Wyślij JSON</button>
+                <button id="copy-btn" class="btn btn-outline h-11 md:btn-sm w-full sm:w-auto" data-i18n="copy_structure_button">Pobierz strukturę</button>
             </div>
         </div>
 
         <div id="tab-recipes" class="tab-panel" style="display:none;">
-            <h1 class="text-xl md:text-2xl font-semibold mb-3 md:mb-4" data-i18n="heading_recipes">Przepisy</h1>
+            <h1 class="text-xl md:text-2xl font-semibold mb-4 md:mb-6" data-i18n="heading_recipes">Przepisy</h1>
             <div id="recipe-controls" class="flex flex-col sm:flex-row flex-wrap gap-4 mb-4">
                 <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                     <span data-i18n="recipe_sort_label">Sortuj według:</span>
@@ -231,8 +231,8 @@
                             <option value="portions" data-i18n="recipe_sort_portions">Porcji</option>
                         </select>
                         <div class="join">
-                            <button id="recipe-sort-dir-asc" type="button" class="btn btn-sm join-item" data-i18n="recipe_sort_dir_asc">Rosnąco</button>
-                            <button id="recipe-sort-dir-desc" type="button" class="btn btn-sm join-item" data-i18n="recipe_sort_dir_desc">Malejąco</button>
+                            <button id="recipe-sort-dir-asc" type="button" class="btn h-11 md:btn-sm join-item" data-i18n="recipe_sort_dir_asc">Rosnąco</button>
+                            <button id="recipe-sort-dir-desc" type="button" class="btn h-11 md:btn-sm join-item" data-i18n="recipe_sort_dir_desc">Malejąco</button>
                         </div>
                     </div>
                 </div>
@@ -256,14 +256,14 @@
                         <option value="5+">5+</option>
                     </select>
                 </div>
-                <button id="recipe-favorites-toggle" class="btn btn-outline btn-sm self-start" data-i18n="recipe_filter_favorites">Ulubione przepisy</button>
-                <button id="recipe-clear-filters" class="btn btn-outline btn-sm self-start" data-i18n="recipe_clear_filters">Wyczyść filtry</button>
+                <button id="recipe-favorites-toggle" class="btn btn-outline h-11 md:btn-sm self-start" data-i18n="recipe_filter_favorites">Ulubione przepisy</button>
+                <button id="recipe-clear-filters" class="btn btn-outline h-11 md:btn-sm self-start" data-i18n="recipe_clear_filters">Wyczyść filtry</button>
             </div>
             <div id="recipe-list" role="list" aria-live="polite" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"></div>
         </div>
 
         <div id="tab-history" class="tab-panel" style="display:none;">
-            <h1 class="text-xl md:text-2xl font-semibold mb-3 md:mb-4" data-i18n="heading_history">Historia dań</h1>
+            <h1 class="text-xl md:text-2xl font-semibold mb-4 md:mb-6" data-i18n="heading_history">Historia dań</h1>
             <ul id="history-list" class="list-disc pl-4"></ul>
 
             <dialog id="rating-modal" class="modal">
@@ -291,12 +291,12 @@
                             </div>
                         </div>
                         <div>
-                            <textarea name="comment" placeholder="Komentarz" data-i18n="comment_placeholder" class="textarea textarea-bordered w-full"></textarea>
+                            <textarea name="comment" placeholder="Komentarz" data-i18n="comment_placeholder" class="textarea textarea-bordered w-full max-w-full overflow-y-auto"></textarea>
                         </div>
                     </div>
                     <div class="modal-action">
-                        <button type="submit" class="btn btn-success btn-sm" data-i18n="save_button">Zapisz</button>
-                        <button type="button" id="rating-cancel" class="btn btn-outline btn-sm" data-i18n="delete_cancel_button">Anuluj</button>
+                        <button type="submit" class="btn btn-success h-11 md:btn-sm" data-i18n="save_button">Zapisz</button>
+                        <button type="button" id="rating-cancel" class="btn btn-outline h-11 md:btn-sm" data-i18n="delete_cancel_button">Anuluj</button>
                     </div>
                 </form>
             </dialog>
@@ -319,16 +319,16 @@
                         </div>
                     </div>
                     <div class="modal-action">
-                        <button id="history-detail-close" class="btn btn-sm" data-i18n="close" aria-label="Zamknij">Zamknij</button>
+                        <button id="history-detail-close" class="btn h-11 md:btn-sm" data-i18n="close" aria-label="Zamknij">Zamknij</button>
                     </div>
                 </div>
             </dialog>
 
             <div id="cooking-overlay" class="fixed inset-0 bg-base-100 z-50 hidden flex flex-col items-center justify-center p-4">
                 <div id="cooking-step" class="text-xl text-center mb-6"></div>
-                <button id="cooking-next" class="btn btn-primary mb-4" data-i18n="next_step_button">Dalej</button>
+                <button id="cooking-next" class="btn btn-primary mb-4 h-11" data-i18n="next_step_button">Dalej</button>
                 <form id="cooking-form" class="w-full max-w-md space-y-4 hidden">
-                    <textarea name="comment" placeholder="Komentarz" data-i18n="comment_placeholder" class="textarea textarea-bordered w-full"></textarea>
+                    <textarea name="comment" placeholder="Komentarz" data-i18n="comment_placeholder" class="textarea textarea-bordered w-full max-w-full overflow-y-auto"></textarea>
                     <div>
                         <span data-i18n="label_taste" class="block mb-2">Smak:</span>
                         <div class="rating flex gap-1 text-2xl" data-name="taste">
@@ -356,7 +356,7 @@
 
         <div id="tab-shopping" class="tab-panel" style="display:none;">
             <h1 class="text-2xl font-bold mb-6" data-i18n="heading_shopping">Lista zakupów</h1>
-            <button id="receipt-btn" class="btn btn-secondary btn-sm mb-4" data-i18n="receipt_import">Dodaj z paragonu</button>
+            <button id="receipt-btn" class="btn btn-secondary h-11 md:btn-sm mb-4" data-i18n="receipt_import">Dodaj z paragonu</button>
             <input id="receipt-input" type="file" accept="image/*" class="hidden" />
             <dialog id="receipt-sheet" class="modal modal-bottom sm:modal-middle">
                 <form method="dialog" class="modal-box">
@@ -385,11 +385,11 @@
                 <div class="flex flex-wrap items-center gap-2">
                     <input id="manual-name" list="product-datalist" class="input input-bordered flex-1" placeholder="nazwa" data-i18n="add_form_name_placeholder">
                     <div class="flex items-center gap-2">
-                        <button id="manual-dec" type="button" class="text-xl touch-btn" aria-label="-"><i class="fa-solid fa-minus"></i></button>
+                        <button id="manual-dec" type="button" class="text-xl w-11 h-11 flex items-center justify-center" aria-label="-"><i class="fa-solid fa-minus"></i></button>
                         <span id="manual-qty" class="w-10 h-10 inline-flex items-center justify-center text-center mx-2">1</span>
-                        <button id="manual-inc" type="button" class="text-xl touch-btn" aria-label="+"><i class="fa-solid fa-plus"></i></button>
+                        <button id="manual-inc" type="button" class="text-xl w-11 h-11 flex items-center justify-center" aria-label="+"><i class="fa-solid fa-plus"></i></button>
                     </div>
-                    <button id="manual-add-btn" class="btn btn-primary btn-sm" data-i18n="save_button">Zapisz</button>
+                    <button id="manual-add-btn" class="btn btn-primary h-11 md:btn-sm" data-i18n="save_button">Zapisz</button>
                 </div>
                 <datalist id="product-datalist"></datalist>
             </div>
@@ -397,7 +397,7 @@
                 <form method="dialog" class="modal-box w-11/12 max-w-3xl">
                     <h3 class="font-bold text-lg" data-i18n="receipt_import">Dodaj z paragonu</h3>
                     <div class="overflow-x-auto">
-                        <table id="receipt-table" class="table w-full">
+                        <table id="receipt-table" class="table w-full text-xs sm:text-sm">
                             <thead>
                                 <tr>
                                     <th data-i18n="table_header_name">Nazwa</th>
@@ -420,18 +420,18 @@
                     <h3 class="font-bold text-lg" data-i18n="delete_modal_title">Potwierdź usunięcie</h3>
                     <p class="py-4" data-i18n="delete_item_question">Czy na pewno chcesz usunąć ten produkt?</p>
                     <div class="modal-action">
-                        <button id="confirm-remove-item" class="btn btn-error btn-sm" data-i18n="confirm_button" aria-label="Potwierdź">Potwierdź</button>
-                        <button class="btn btn-outline btn-sm" data-i18n="delete_cancel_button" aria-label="Anuluj">Anuluj</button>
+                        <button id="confirm-remove-item" class="btn btn-error h-11 md:btn-sm" data-i18n="confirm_button" aria-label="Potwierdź">Potwierdź</button>
+                        <button class="btn btn-outline h-11 md:btn-sm" data-i18n="delete_cancel_button" aria-label="Anuluj">Anuluj</button>
                     </div>
                 </form>
             </dialog>
         </div>
 
         <div id="tab-settings" class="tab-panel" style="display:none;">
-            <h1 class="text-xl md:text-2xl font-semibold mb-3 md:mb-4" data-i18n="heading_settings">Ustawienia</h1>
+            <h1 class="text-xl md:text-2xl font-semibold mb-4 md:mb-6" data-i18n="heading_settings">Ustawienia</h1>
             <h2 class="text-xl font-semibold mb-4" data-i18n="settings_units_header">Jednostki</h2>
             <div class="overflow-x-auto">
-                <table id="units-table" class="table table-zebra w-full">
+                <table id="units-table" class="table table-zebra w-full text-xs sm:text-sm">
                     <colgroup>
                         <col class="w-1/3" />
                         <col class="w-1/3" />
@@ -447,7 +447,7 @@
                     <tbody></tbody>
                 </table>
             </div>
-            <button id="units-save" class="btn btn-primary btn-sm mt-4" data-i18n="save_button">Zapisz</button>
+            <button id="units-save" class="btn btn-primary h-11 md:btn-sm mt-4" data-i18n="save_button">Zapisz</button>
         </div>
 
   </main>
@@ -461,20 +461,20 @@
         </form>
     </dialog>
 
-    <nav class="mobile-nav fixed bottom-0 left-0 w-full z-50 bg-base-100 flex">
-        <a class="tab tab-active font-bold flex flex-col items-center justify-center flex-1 py-3 px-2 border-r border-base-300" data-tab-target="tab-products">
+    <nav class="mobile-nav sticky bottom-0 left-0 w-full z-50 bg-base-100 flex pb-[env(safe-area-inset-bottom)]">
+        <a class="tab tab-active font-bold flex flex-col items-center justify-center flex-1 py-3 px-2 border-r border-base-300 min-h-11" data-tab-target="tab-products">
             <i class="fa-solid fa-box text-xl"></i>
             <span class="text-xs" data-i18n="tab_products">Produkty</span>
         </a>
-        <a class="tab flex flex-col items-center justify-center flex-1 py-3 px-2 border-r border-base-300" data-tab-target="tab-recipes">
+        <a class="tab flex flex-col items-center justify-center flex-1 py-3 px-2 border-r border-base-300 min-h-11" data-tab-target="tab-recipes">
             <i class="fa-solid fa-utensils text-xl"></i>
             <span class="text-xs" data-i18n="tab_recipes">Przepisy</span>
         </a>
-        <a class="tab flex flex-col items-center justify-center flex-1 py-3 px-2 border-r border-base-300" data-tab-target="tab-history">
+        <a class="tab flex flex-col items-center justify-center flex-1 py-3 px-2 border-r border-base-300 min-h-11" data-tab-target="tab-history">
             <i class="fa-solid fa-clock-rotate-left text-xl"></i>
             <span class="text-xs" data-i18n="tab_history">Historia dań</span>
         </a>
-        <a class="tab flex flex-col items-center justify-center flex-1 py-3 px-2" data-tab-target="tab-shopping">
+        <a class="tab flex flex-col items-center justify-center flex-1 py-3 px-2 min-h-11" data-tab-target="tab-shopping">
             <i class="fa-solid fa-cart-shopping text-xl"></i>
             <span class="text-xs" data-i18n="tab_shopping">Lista zakupów</span>
         </a>

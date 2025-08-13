@@ -39,78 +39,14 @@ html[data-layout="mobile"] {
   height: 3rem;
 }
 
-/* Header bar layout */
-.app-bar {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: var(--tab-gap);
-  padding: var(--space-sm) var(--page-padding);
-  max-width: var(--container-max-width);
-  margin-left: auto;
-  margin-right: auto;
-}
+/* Header bar layout now handled by Tailwind utility classes */
 
-.app-bar .tabs-wrap {
-  overflow-x: auto;
-}
+/* product table layout handled by Tailwind classes */
 
-.app-bar .actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: var(--tab-gap);
-  pointer-events: auto;
-  z-index: 10;
-}
-
-.app-bar .tabs {
-  gap: var(--tab-gap);
-}
-
-.main-container {
-  max-width: var(--container-max-width);
-  margin-left: auto;
-  margin-right: auto;
-  padding: var(--page-padding);
-}
-
-.main-container > * + * {
-  margin-top: var(--section-margin);
-}
-
-#product-table {
-  table-layout: fixed;
-  width: 100%;
-  border-collapse: collapse;
-}
-
-#product-table th,
-#product-table td {
-  padding: var(--cell-padding-y) var(--cell-padding-x);
-}
-
-#product-table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background-color: hsl(var(--b1));
-}
-
-html[data-layout="mobile"] #controls {
-  flex-direction: column;
-  align-items: stretch;
-}
+/* mobile controls layout handled via responsive classes */
 
 .hidden {
   display: none !important;
-}
-
-html[data-layout="mobile"] #controls > * {
-  width: 100%;
 }
 
 html[data-layout="mobile"] #product-table:not(.edit-mode) th:nth-child(n+4),
@@ -118,60 +54,9 @@ html[data-layout="mobile"] #product-table:not(.edit-mode) td:nth-child(n+4) {
   display: none;
 }
 
-/* Add-product form layout */
-#add-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-#add-form .add-name {
-  flex: 2 1 12rem;
-}
-#add-form .add-qty,
-#add-form .add-unit,
-#add-form .add-category,
-#add-form .add-storage,
-#add-form .add-main,
-#add-form .add-submit {
-  flex: 1 1 8rem;
-}
-#add-form .add-main {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-#add-form [name="package_size"],
-#add-form [name="pack_size"],
-#add-form [name="threshold"] {
-  display: none;
-}
-@media (max-width: 639px) {
-  #add-form .add-name {
-    flex-basis: 100%;
-  }
-}
+/* add-product form layout handled by Tailwind grid utilities */
 
-html[data-layout="mobile"] {
-  font-size: 150%;
-}
-
-html[data-layout="mobile"] #product-table th,
-html[data-layout="mobile"] #product-table td,
-html[data-layout="mobile"] #products-by-category,
-html[data-layout="mobile"] #recipe-list,
-html[data-layout="mobile"] #history-list {
-  font-size: 1em;
-}
-
-html[data-layout="mobile"] button,
-html[data-layout="mobile"] .btn {
-  font-size: 1em;
-  padding: 0.75rem 1rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-}
+/* mobile typography handled via responsive Tailwind classes */
 
 /* Edit mode table layout */
 #product-table.edit-mode thead th,
@@ -409,16 +294,6 @@ input[type="number"] {
 }
 
 /* Touch-friendly buttons for mobile */
-.touch-btn {
-  width: 2.75rem;
-  height: 2.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.125rem;
-  margin: 0 0.25rem;
-}
-
 /* Hide native number input spinners */
 .no-spinner::-webkit-outer-spin-button,
 .no-spinner::-webkit-inner-spin-button {
@@ -428,12 +303,6 @@ input[type="number"] {
 
 .no-spinner {
   -moz-appearance: textfield;
-}
-
-html[data-layout="mobile"] .touch-btn {
-  width: 2.75rem;
-  height: 2.75rem;
-  font-size: 1.125rem;
 }
 
 .shopping-item.in-cart {
@@ -521,7 +390,6 @@ html[data-layout="mobile"] #edit-json {
 
 button:focus-visible,
 .btn:focus-visible,
-.touch-btn:focus-visible,
 [role="button"]:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 2px;
