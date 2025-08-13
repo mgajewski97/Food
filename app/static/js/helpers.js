@@ -121,7 +121,8 @@ export function t(key, ns = "ui") {
       warnOnce("products", key);
       return key;
     }
-    return p.names[state.currentLang] ?? p.names.en ?? key;
+    const name = p.names[state.currentLang] || p.names.en;
+    return name || key;
   }
   if (ns === "categories") {
     const c = state.domain.categories[key];
@@ -129,7 +130,8 @@ export function t(key, ns = "ui") {
       warnOnce("categories", key);
       return key;
     }
-    return c.names[state.currentLang] ?? c.names.en ?? key;
+    const name = c.names[state.currentLang] || c.names.en;
+    return name || key;
   }
   if (ns === "units") {
     const u = state.domain.units[key];
@@ -137,13 +139,13 @@ export function t(key, ns = "ui") {
       warnOnce("units", key);
       return key;
     }
-    return u.names[state.currentLang] ?? u.names.en ?? key;
+    const name = u.names[state.currentLang] || u.names.en;
+    return name || key;
   }
-  return (
-    state.uiTranslations[state.currentLang]?.[key] ??
-    state.uiTranslations.en?.[key] ??
-    key
-  );
+  const val =
+    state.uiTranslations[state.currentLang]?.[key] ||
+    state.uiTranslations.en?.[key];
+  return val || key;
 }
 
 export function applyTranslations() {
