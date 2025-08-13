@@ -303,6 +303,37 @@ export async function loadTranslations() {
   }
 }
 
+function validateProducts(list = []) {
+  const errs = [];
+  list.forEach((p, idx) => {
+    ["name", "quantity", "unit", "category", "storage"].forEach((k) => {
+      if (p[k] == null) errs.push(`products[${idx}].${k}`);
+    });
+  });
+  return errs;
+}
+
+function validateRecipes(list = []) {
+  const errs = [];
+  list.forEach((r, idx) => {
+    if (!r.id) errs.push(`recipes[${idx}].id`);
+    if (!r.names || !r.names.pl || !r.names.en)
+      errs.push(`recipes[${idx}].names`);
+    if (typeof r.portions !== "number")
+      errs.push(`recipes[${idx}].portions`);
+    if (!Array.isArray(r.ingredients))
+      errs.push(`recipes[${idx}].ingredients`);
+    else {
+      r.ingredients.forEach((ing, i) => {
+        if (!ing.product)
+          errs.push(`recipes[${idx}].ingredients[${i}].product`);
+      });
+    }
+    if (!Array.isArray(r.steps)) errs.push(`recipes[${idx}].steps`);
+  });
+  return errs;
+}
+
 export async function loadDomain() {
   window.trace?.("loadDomain:enter");
   try {
@@ -342,6 +373,14 @@ export async function loadDomain() {
         available: (rec.ingredients || []).every((i) => getProduct(i.product)),
       };
     });
+    const validationErrors = [
+      ...validateProducts(APP.state.products),
+      ...validateRecipes(state.recipesData),
+    ];
+    if (validationErrors.length) {
+      console.error("domain validation", validationErrors);
+      throw new Error("domain validation failed");
+    }
     state.recipesLoaded = true;
     state.domainLoaded = true;
     if (DEBUG)
