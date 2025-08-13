@@ -10,7 +10,7 @@ export function addToShoppingList(name, quantity = 1) {
     toast.error(t("notify_error_title"));
     return;
   }
-  quantity = parseFloat(quantity) || 1;
+  quantity = Math.max(1, parseFloat(quantity) || 1);
   const existing = state.shoppingList.find((item) => item.name === name);
   if (existing) {
     existing.quantity += quantity;

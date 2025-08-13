@@ -251,9 +251,10 @@ function initAddForm() {
   Object.keys(state.units).forEach((u) => {
     const opt = document.createElement("option");
     opt.value = u;
-    opt.textContent = t(u);
+    opt.textContent = t(u, "units");
     unitSel.appendChild(opt);
   });
+  qtyInput.min = "0";
   qtyInput.insertAdjacentElement("afterend", unitSel);
 
   const levelWrap = document.createElement("div");
@@ -311,11 +312,11 @@ function initAddForm() {
       payload.quantity = 0;
       payload.unit = "szt";
     } else {
-      payload.quantity = parseFloat(data.get("quantity")) || 0;
+      payload.quantity = Math.max(0, parseFloat(data.get("quantity")) || 0);
       payload.unit = data.get("unit");
       payload.main = data.get("main") === "on";
       const thr = parseFloat(data.get("threshold"));
-      if (!isNaN(thr)) payload.threshold = thr;
+      if (!isNaN(thr)) payload.threshold = Math.max(0, thr);
     }
     submitBtn.disabled = true;
     try {
@@ -368,7 +369,7 @@ async function saveEdits() {
       r.querySelector('.qty-cell input[type="radio"]:checked')?.value ||
       orig.level;
     const qtyInput = r.querySelector('.qty-cell input[type="number"]');
-    const qty = qtyInput ? parseFloat(qtyInput.value) || 0 : 0;
+    const qty = qtyInput ? Math.max(0, parseFloat(qtyInput.value) || 0) : 0;
     const unit = r.querySelector(".unit-cell select")?.value || orig.unit;
     const cat =
       r.querySelector(".category-cell select")?.value || orig.category;

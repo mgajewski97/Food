@@ -23,7 +23,7 @@ export function initReceiptImport() {
       const nameInput = tr.querySelector("td:first-child input");
       const qtyInput = tr.querySelector("td:nth-child(2) input");
       const name = nameInput.dataset.key || nameInput.value.trim();
-      const qty = parseInt(qtyInput.value) || 1;
+      const qty = Math.max(1, parseInt(qtyInput.value) || 1);
       if (name) addToShoppingList(name, qty);
     });
     renderShoppingList();
@@ -80,7 +80,12 @@ export async function handleReceiptUpload(file) {
     qtyInput.type = "number";
     qtyInput.min = "1";
     qtyInput.value = "1";
-    qtyInput.className = "input input-bordered w-20";
+    qtyInput.className = "input input-bordered w-20 no-spinner";
+    qtyInput.addEventListener("input", () => {
+      if (qtyInput.value !== "" && parseInt(qtyInput.value) < 1) {
+        qtyInput.value = "1";
+      }
+    });
     qtyTd.appendChild(qtyInput);
     tr.appendChild(qtyTd);
     const statusTd = document.createElement("td");
