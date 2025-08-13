@@ -10,7 +10,7 @@ on:
       - ".github/workflows/validation.yml"
       - ".flake8"
       - "pyproject.toml"
-      - "eslint.config.js"
+      - ".eslintrc.json"
       - ".prettierrc"
       - ".prettierignore"
   pull_request:
@@ -22,7 +22,7 @@ on:
       - ".github/workflows/validation.yml"
       - ".flake8"
       - "pyproject.toml"
-      - "eslint.config.js"
+      - ".eslintrc.json"
       - ".prettierignore"
       - ".prettierrc"
 
