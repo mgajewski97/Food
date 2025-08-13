@@ -1,3 +1,6 @@
+ci:
+  autofix_prs: true
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
@@ -5,7 +8,7 @@ repos:
       - id: pretty-format-json
         name: Format JSON
         args: ["--autofix", "--no-sort-keys", "--indent", "2"]
-        files: ^app/data/.*\.json$
+        exclude: ^app/data/.*\.json$
   - repo: https://github.com/psf/black
     rev: 24.8.0
     hooks:
@@ -22,8 +25,7 @@ repos:
     rev: v3.0.3
     hooks:
       - id: prettier
-        files: ^app/static/.*\.js$
-        exclude: ^app/data/.*\.json$
+        files: "\\.(js|json)$"
         additional_dependencies: ["prettier@3.0.3"]
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: v9.13.0
