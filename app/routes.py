@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from email.utils import parsedate_to_datetime
 from flask import Blueprint, current_app, jsonify, render_template, request
 
-from .errors import error_response
+from .errors import DomainError, error_response
 
 from .search import search_products
 from .utils import (
@@ -24,6 +24,7 @@ from .utils import (
     validate_file,
     validate_items,
     _validate,
+    validate_payload,
 )
 from .utils.logging import log_error_with_trace, log_warning_with_trace
 
@@ -419,15 +420,17 @@ def products():
             resp.headers["Last-Modified"] = last_modified
             return resp
 
-        payload = request.get_json(silent=True) or []
-        if isinstance(payload, dict):
-            payload = [payload]
-        items = [normalize_product(p) for p in payload]
+        payload = request.get_json(silent=True)
+        if payload is None:
+            raise DomainError("invalid or missing JSON payload")
+        raw_items = payload if isinstance(payload, list) else [payload]
+        for obj in raw_items:
+            validate_payload(obj, "product.schema.json")
+        items = [normalize_product(p) for p in raw_items]
         try:
             validate_items(items, PRODUCTS_SCHEMA)
         except ValueError as exc:
-            logger.info("request: %s", exc)
-            return error_response(str(exc), 400)
+            raise DomainError(str(exc)) from exc
 
         with file_lock(PRODUCTS_PATH):
             try:
@@ -443,6 +446,8 @@ def products():
             products = list(existing.values())
             safe_write(PRODUCTS_PATH, products)
         return jsonify(products)
+    except DomainError:
+        raise
     except Exception as exc:  # pragma: no cover - defensive
         trace_id = log_error_with_trace(exc, context)
         return error_response("Internal Server Error", 500, trace_id)
@@ -674,7 +679,8 @@ def _generate_shopping_list(selection: List[Dict[str, Any]]) -> List[Dict[str, A
 @bp.route("/api/shopping", methods=["GET", "POST"])
 def shopping():
     if request.method == "POST":
-        payload = request.json or {}
+        payload = request.get_json(silent=True)
+        validate_payload(payload, "shopping-selection.schema.json")
         selection = payload.get("recipes", [])
         items = _generate_shopping_list(selection)
         save_json(SHOPPING_PATH, items)
@@ -684,8 +690,10 @@ def shopping():
 
 @bp.route("/api/shopping/<string:product_id>", methods=["PATCH"])
 def shopping_mark(product_id: str):
+    payload = request.get_json(silent=True)
+    validate_payload(payload, "shopping-mark.schema.json")
     items = load_json(SHOPPING_PATH, [])
-    flag = bool((request.json or {}).get("inCart"))
+    flag = payload.get("inCart")
     updated = False
     for item in items:
         if item.get("productId") == product_id:
