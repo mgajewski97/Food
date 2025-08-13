@@ -101,9 +101,7 @@
   ],
   "products": [
     {
-      "aliases": [
-        "product.allspice"
-      ],
+      "aliases": ["product.allspice"],
       "categoryId": "category.spices",
       "id": "prod.allspice",
       "names": {
@@ -113,9 +111,7 @@
       "unitId": "unit.lvl"
     },
     {
-      "aliases": [
-        "product.barley"
-      ],
+      "aliases": ["product.barley"],
       "categoryId": "category.grains",
       "id": "prod.barley",
       "names": {
@@ -125,9 +121,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.basil"
-      ],
+      "aliases": ["product.basil"],
       "categoryId": "category.spices",
       "id": "prod.basil",
       "names": {
@@ -137,9 +131,7 @@
       "unitId": "unit.lvl"
     },
     {
-      "aliases": [
-        "product.bay_leaves"
-      ],
+      "aliases": ["product.bay_leaves"],
       "categoryId": "category.spices",
       "id": "prod.bay-leaves",
       "names": {
@@ -149,9 +141,7 @@
       "unitId": "unit.lvl"
     },
     {
-      "aliases": [
-        "product.beans_piekny_jas"
-      ],
+      "aliases": ["product.beans_piekny_jas"],
       "categoryId": "category.dried-legumes",
       "id": "prod.beans-piekny-jas",
       "names": {
@@ -161,9 +151,7 @@
       "unitId": "unit.g"
     },
     {
-      "aliases": [
-        "product.bell_peppers"
-      ],
+      "aliases": ["product.bell_peppers"],
       "categoryId": "category.fresh-veg",
       "id": "prod.bell-peppers",
       "names": {
@@ -173,9 +161,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.borscht"
-      ],
+      "aliases": ["product.borscht"],
       "categoryId": "category.frozen-meals",
       "id": "prod.borscht",
       "names": {
@@ -185,9 +171,7 @@
       "unitId": "unit.sloik"
     },
     {
-      "aliases": [
-        "product.bouillon_cubes"
-      ],
+      "aliases": ["product.bouillon_cubes"],
       "categoryId": "category.spices",
       "id": "prod.bouillon-cubes",
       "names": {
@@ -197,9 +181,7 @@
       "unitId": "unit.lvl"
     },
     {
-      "aliases": [
-        "product.breaded_schnitzel"
-      ],
+      "aliases": ["product.breaded_schnitzel"],
       "categoryId": "category.frozen-meals",
       "id": "prod.breaded-schnitzel",
       "names": {
@@ -209,9 +191,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.breaded_tofu_hot_spicy"
-      ],
+      "aliases": ["product.breaded_tofu_hot_spicy"],
       "categoryId": "category.dairy-eggs",
       "id": "prod.breaded-tofu-hot-spicy",
       "names": {
@@ -221,9 +201,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.buckwheat"
-      ],
+      "aliases": ["product.buckwheat"],
       "categoryId": "category.grains",
       "id": "prod.buckwheat",
       "names": {
@@ -233,9 +211,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.bulgur"
-      ],
+      "aliases": ["product.bulgur"],
       "categoryId": "category.grains",
       "id": "prod.bulgur",
       "names": {
@@ -245,9 +221,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.cardamom"
-      ],
+      "aliases": ["product.cardamom"],
       "categoryId": "category.spices",
       "id": "prod.cardamom",
       "names": {
@@ -257,9 +231,7 @@
       "unitId": "unit.lvl"
     },
     {
-      "aliases": [
-        "product.carrot"
-      ],
+      "aliases": ["product.carrot"],
       "categoryId": "category.fresh-veg",
       "id": "prod.carrot",
       "names": {
@@ -269,9 +241,7 @@
       "unitId": "unit.g"
     },
     {
-      "aliases": [
-        "product.cashew_nuts"
-      ],
+      "aliases": ["product.cashew_nuts"],
       "categoryId": "category.spreads",
       "id": "prod.cashew-nuts",
       "names": {
@@ -281,9 +251,7 @@
       "unitId": "unit.g"
     },
     {
-      "aliases": [
-        "product.cauliflower_soup"
-      ],
+      "aliases": ["product.cauliflower_soup"],
       "categoryId": "category.frozen-meals",
       "id": "prod.cauliflower-soup",
       "names": {
@@ -293,9 +261,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.cayenne_chilli"
-      ],
+      "aliases": ["product.cayenne_chilli"],
       "categoryId": "category.spices",
       "id": "prod.cayenne-chilli",
       "names": {
@@ -305,9 +271,7 @@
       "unitId": "unit.lvl"
     },
     {
-      "aliases": [
-        "product.champignons"
-      ],
+      "aliases": ["product.champignons"],
       "categoryId": "category.mushrooms",
       "id": "prod.champignons",
       "names": {
@@ -317,9 +281,7 @@
       "unitId": "unit.g"
     },
     {
-      "aliases": [
-        "product.cheese_slices"
-      ],
+      "aliases": ["product.cheese_slices"],
       "categoryId": "category.dairy-eggs",
       "id": "prod.cheese-slices",
       "names": {
@@ -329,9 +291,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.chickpeas"
-      ],
+      "aliases": ["product.chickpeas"],
       "categoryId": "category.opened-preserves",
       "id": "prod.chickpeas",
       "names": {
@@ -341,9 +301,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.chinese_cabbage"
-      ],
+      "aliases": ["product.chinese_cabbage"],
       "categoryId": "category.fresh-veg",
       "id": "prod.chinese-cabbage",
       "names": {
@@ -353,9 +311,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.chinese_sauce"
-      ],
+      "aliases": ["product.chinese_sauce"],
       "categoryId": "category.frozen-meals",
       "id": "prod.chinese-sauce",
       "names": {
@@ -365,9 +321,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.cloves"
-      ],
+      "aliases": ["product.cloves"],
       "categoryId": "category.spices",
       "id": "prod.cloves",
       "names": {
@@ -377,9 +331,7 @@
       "unitId": "unit.lvl"
     },
     {
-      "aliases": [
-        "product.coriander_leaves"
-      ],
+      "aliases": ["product.coriander_leaves"],
       "categoryId": "category.spices",
       "id": "prod.coriander-leaves",
       "names": {
@@ -389,9 +341,7 @@
       "unitId": "unit.lvl"
     },
     {
-      "aliases": [
-        "product.corn"
-      ],
+      "aliases": ["product.corn"],
       "categoryId": "category.opened-preserves",
       "id": "prod.corn",
       "names": {
@@ -401,9 +351,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.curry_powder"
-      ],
+      "aliases": ["product.curry_powder"],
       "categoryId": "category.spices",
       "id": "prod.curry-powder",
       "names": {
@@ -413,9 +361,7 @@
       "unitId": "unit.lvl"
     },
     {
-      "aliases": [
-        "product.dark_gravy_sauce"
-      ],
+      "aliases": ["product.dark_gravy_sauce"],
       "categoryId": "category.spices",
       "id": "prod.dark-gravy-sauce",
       "names": {
@@ -425,9 +371,7 @@
       "unitId": "unit.lvl"
     },
     {
-      "aliases": [
-        "product.dijon_mustard"
-      ],
+      "aliases": ["product.dijon_mustard"],
       "categoryId": "category.opened-preserves",
       "id": "prod.dijon-mustard",
       "names": {
@@ -437,9 +381,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.ditalini_rigati_pasta"
-      ],
+      "aliases": ["product.ditalini_rigati_pasta"],
       "categoryId": "category.pasta",
       "id": "prod.ditalini-rigati-pasta",
       "names": {
@@ -449,9 +391,7 @@
       "unitId": "unit.g"
     },
     {
-      "aliases": [
-        "product.eggplant"
-      ],
+      "aliases": ["product.eggplant"],
       "categoryId": "category.fresh-veg",
       "id": "prod.eggplant",
       "names": {
@@ -461,9 +401,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.eggs"
-      ],
+      "aliases": ["product.eggs"],
       "categoryId": "category.dairy-eggs",
       "id": "prod.eggs",
       "names": {
@@ -473,9 +411,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.french_mustard"
-      ],
+      "aliases": ["product.french_mustard"],
       "categoryId": "category.opened-preserves",
       "id": "prod.french-mustard",
       "names": {
@@ -485,9 +421,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.fries"
-      ],
+      "aliases": ["product.fries"],
       "categoryId": "category.fresh-veg",
       "id": "prod.fries",
       "names": {
@@ -497,9 +431,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.garlic"
-      ],
+      "aliases": ["product.garlic"],
       "categoryId": "category.dry-veg",
       "id": "prod.garlic",
       "names": {
@@ -509,9 +441,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.garlic_in_oil"
-      ],
+      "aliases": ["product.garlic_in_oil"],
       "categoryId": "category.opened-preserves",
       "id": "prod.garlic-in-oil",
       "names": {
@@ -521,9 +451,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.garlic_powder"
-      ],
+      "aliases": ["product.garlic_powder"],
       "categoryId": "category.spices",
       "id": "prod.garlic-powder",
       "names": {
@@ -533,9 +461,7 @@
       "unitId": "unit.lvl"
     },
     {
-      "aliases": [
-        "product.gravy"
-      ],
+      "aliases": ["product.gravy"],
       "categoryId": "category.frozen-meals",
       "id": "prod.gravy",
       "names": {
@@ -545,9 +471,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.green_beans"
-      ],
+      "aliases": ["product.green_beans"],
       "categoryId": "category.fresh-veg",
       "id": "prod.green-beans",
       "names": {
@@ -557,9 +481,7 @@
       "unitId": "unit.g"
     },
     {
-      "aliases": [
-        "product.green_peas"
-      ],
+      "aliases": ["product.green_peas"],
       "categoryId": "category.opened-preserves",
       "id": "prod.green-peas",
       "names": {
@@ -569,9 +491,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.herbes_de_provence_duo"
-      ],
+      "aliases": ["product.herbes_de_provence_duo"],
       "categoryId": "category.spices",
       "id": "prod.herbes-de-provence-duo",
       "names": {
@@ -581,9 +501,7 @@
       "unitId": "unit.lvl"
     },
     {
-      "aliases": [
-        "product.hot_paprika"
-      ],
+      "aliases": ["product.hot_paprika"],
       "categoryId": "category.spices",
       "id": "prod.hot-paprika",
       "names": {
@@ -593,9 +511,7 @@
       "unitId": "unit.lvl"
     },
     {
-      "aliases": [
-        "product.large_green_olives"
-      ],
+      "aliases": ["product.large_green_olives"],
       "categoryId": "category.opened-preserves",
       "id": "prod.large-green-olives",
       "names": {
@@ -605,9 +521,7 @@
       "unitId": "unit.g"
     },
     {
-      "aliases": [
-        "product.lemon"
-      ],
+      "aliases": ["product.lemon"],
       "categoryId": "category.dry-veg",
       "id": "prod.lemon",
       "names": {
@@ -617,9 +531,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.lemon_pepper"
-      ],
+      "aliases": ["product.lemon_pepper"],
       "categoryId": "category.spices",
       "id": "prod.lemon-pepper",
       "names": {
@@ -629,9 +541,7 @@
       "unitId": "unit.lvl"
     },
     {
-      "aliases": [
-        "product.lentils_green"
-      ],
+      "aliases": ["product.lentils_green"],
       "categoryId": "category.dried-legumes",
       "id": "prod.lentils-green",
       "names": {
@@ -641,9 +551,7 @@
       "unitId": "unit.opak-350g"
     },
     {
-      "aliases": [
-        "product.lentils_red"
-      ],
+      "aliases": ["product.lentils_red"],
       "categoryId": "category.dried-legumes",
       "id": "prod.lentils-red",
       "names": {
@@ -653,9 +561,7 @@
       "unitId": "unit.opak-350g"
     },
     {
-      "aliases": [
-        "product.lime"
-      ],
+      "aliases": ["product.lime"],
       "categoryId": "category.dry-veg",
       "id": "prod.lime",
       "names": {
@@ -665,9 +571,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.lovage"
-      ],
+      "aliases": ["product.lovage"],
       "categoryId": "category.spices",
       "id": "prod.lovage",
       "names": {
@@ -677,9 +581,7 @@
       "unitId": "unit.lvl"
     },
     {
-      "aliases": [
-        "product.natural_tofu"
-      ],
+      "aliases": ["product.natural_tofu"],
       "categoryId": "category.dairy-eggs",
       "id": "prod.natural-tofu",
       "names": {
@@ -689,9 +591,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.new_potatoes"
-      ],
+      "aliases": ["product.new_potatoes"],
       "categoryId": "category.fresh-veg",
       "id": "prod.new-potatoes",
       "names": {
@@ -701,9 +601,7 @@
       "unitId": "unit.g"
     },
     {
-      "aliases": [
-        "product.nutmeg"
-      ],
+      "aliases": ["product.nutmeg"],
       "categoryId": "category.spices",
       "id": "prod.nutmeg",
       "names": {
@@ -713,9 +611,7 @@
       "unitId": "unit.lvl"
     },
     {
-      "aliases": [
-        "product.oregano"
-      ],
+      "aliases": ["product.oregano"],
       "categoryId": "category.spices",
       "id": "prod.oregano",
       "names": {
@@ -725,9 +621,7 @@
       "unitId": "unit.lvl"
     },
     {
-      "aliases": [
-        "product.oyster_mushrooms"
-      ],
+      "aliases": ["product.oyster_mushrooms"],
       "categoryId": "category.mushrooms",
       "id": "prod.oyster-mushrooms",
       "names": {
@@ -737,9 +631,7 @@
       "unitId": "unit.g"
     },
     {
-      "aliases": [
-        "product.parsley"
-      ],
+      "aliases": ["product.parsley"],
       "categoryId": "category.fresh-veg",
       "id": "prod.parsley",
       "names": {
@@ -749,9 +641,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.peanut_butter"
-      ],
+      "aliases": ["product.peanut_butter"],
       "categoryId": "category.spreads",
       "id": "prod.peanut-butter",
       "names": {
@@ -761,9 +651,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.penne_pasta"
-      ],
+      "aliases": ["product.penne_pasta"],
       "categoryId": "category.pasta",
       "id": "prod.penne-pasta",
       "names": {
@@ -773,9 +661,7 @@
       "unitId": "unit.g"
     },
     {
-      "aliases": [
-        "product.pickled_pearl_onions"
-      ],
+      "aliases": ["product.pickled_pearl_onions"],
       "categoryId": "category.opened-preserves",
       "id": "prod.pickled-pearl-onions",
       "names": {
@@ -785,9 +671,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.pink_tomatoes"
-      ],
+      "aliases": ["product.pink_tomatoes"],
       "categoryId": "category.fresh-veg",
       "id": "prod.pink-tomatoes",
       "names": {
@@ -797,9 +681,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.pistachio_cream"
-      ],
+      "aliases": ["product.pistachio_cream"],
       "categoryId": "category.spreads",
       "id": "prod.pistachio-cream",
       "names": {
@@ -809,9 +691,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.plant_fat"
-      ],
+      "aliases": ["product.plant_fat"],
       "categoryId": "category.oils",
       "id": "prod.plant-fat",
       "names": {
@@ -821,9 +701,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.radish"
-      ],
+      "aliases": ["product.radish"],
       "categoryId": "category.fresh-veg",
       "id": "prod.radish",
       "names": {
@@ -833,9 +711,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.red_beans"
-      ],
+      "aliases": ["product.red_beans"],
       "categoryId": "category.opened-preserves",
       "id": "prod.red-beans",
       "names": {
@@ -845,9 +721,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.red_onion"
-      ],
+      "aliases": ["product.red_onion"],
       "categoryId": "category.dry-veg",
       "id": "prod.red-onion",
       "names": {
@@ -857,9 +731,7 @@
       "unitId": "unit.g"
     },
     {
-      "aliases": [
-        "product.rice_arborio"
-      ],
+      "aliases": ["product.rice_arborio"],
       "categoryId": "category.grains",
       "id": "prod.rice-arborio",
       "names": {
@@ -869,9 +741,7 @@
       "unitId": "unit.g"
     },
     {
-      "aliases": [
-        "product.rice_basmati"
-      ],
+      "aliases": ["product.rice_basmati"],
       "categoryId": "category.grains",
       "id": "prod.rice-basmati",
       "names": {
@@ -881,9 +751,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.rice_jasmine"
-      ],
+      "aliases": ["product.rice_jasmine"],
       "categoryId": "category.grains",
       "id": "prod.rice-jasmine",
       "names": {
@@ -893,9 +761,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.rosemary"
-      ],
+      "aliases": ["product.rosemary"],
       "categoryId": "category.spices",
       "id": "prod.rosemary",
       "names": {
@@ -905,9 +771,7 @@
       "unitId": "unit.lvl"
     },
     {
-      "aliases": [
-        "product.sauce_alla_norma"
-      ],
+      "aliases": ["product.sauce_alla_norma"],
       "categoryId": "category.ready-sauces",
       "id": "prod.sauce-alla-norma",
       "names": {
@@ -917,9 +781,7 @@
       "unitId": "unit.g"
     },
     {
-      "aliases": [
-        "product.sauce_alla_puttanesca"
-      ],
+      "aliases": ["product.sauce_alla_puttanesca"],
       "categoryId": "category.ready-sauces",
       "id": "prod.sauce-alla-puttanesca",
       "names": {
@@ -929,9 +791,7 @@
       "unitId": "unit.g"
     },
     {
-      "aliases": [
-        "product.sauce_basilico"
-      ],
+      "aliases": ["product.sauce_basilico"],
       "categoryId": "category.ready-sauces",
       "id": "prod.sauce-basilico",
       "names": {
@@ -941,9 +801,7 @@
       "unitId": "unit.g"
     },
     {
-      "aliases": [
-        "product.sauce_bearnaise"
-      ],
+      "aliases": ["product.sauce_bearnaise"],
       "categoryId": "category.ready-sauces",
       "id": "prod.sauce-bearnaise",
       "names": {
@@ -953,9 +811,7 @@
       "unitId": "unit.g"
     },
     {
-      "aliases": [
-        "product.sauce_cacio_e_pepe"
-      ],
+      "aliases": ["product.sauce_cacio_e_pepe"],
       "categoryId": "category.ready-sauces",
       "id": "prod.sauce-cacio-e-pepe",
       "names": {
@@ -965,9 +821,7 @@
       "unitId": "unit.g"
     },
     {
-      "aliases": [
-        "product.sauce_napoletana"
-      ],
+      "aliases": ["product.sauce_napoletana"],
       "categoryId": "category.ready-sauces",
       "id": "prod.sauce-napoletana",
       "names": {
@@ -977,9 +831,7 @@
       "unitId": "unit.g"
     },
     {
-      "aliases": [
-        "product.sciatelli_al_limone_pasta"
-      ],
+      "aliases": ["product.sciatelli_al_limone_pasta"],
       "categoryId": "category.pasta",
       "id": "prod.sciatelli-al-limone-pasta",
       "names": {
@@ -989,9 +841,7 @@
       "unitId": "unit.g"
     },
     {
-      "aliases": [
-        "product.sesame_oil"
-      ],
+      "aliases": ["product.sesame_oil"],
       "categoryId": "category.oils",
       "id": "prod.sesame-oil",
       "names": {
@@ -1001,9 +851,7 @@
       "unitId": "unit.butelka"
     },
     {
-      "aliases": [
-        "product.smoked_paprika"
-      ],
+      "aliases": ["product.smoked_paprika"],
       "categoryId": "category.spices",
       "id": "prod.smoked-paprika",
       "names": {
@@ -1013,9 +861,7 @@
       "unitId": "unit.lvl"
     },
     {
-      "aliases": [
-        "product.soup_veg"
-      ],
+      "aliases": ["product.soup_veg"],
       "categoryId": "category.fresh-veg",
       "id": "prod.soup-veg",
       "names": {
@@ -1025,9 +871,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.sour_cream_18"
-      ],
+      "aliases": ["product.sour_cream_18"],
       "categoryId": "category.dairy-eggs",
       "id": "prod.sour-cream-18",
       "names": {
@@ -1037,9 +881,7 @@
       "unitId": "unit.250g"
     },
     {
-      "aliases": [
-        "product.spinach"
-      ],
+      "aliases": ["product.spinach"],
       "categoryId": "category.frozen-meals",
       "id": "prod.spinach",
       "names": {
@@ -1049,9 +891,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.spring_onion"
-      ],
+      "aliases": ["product.spring_onion"],
       "categoryId": "category.dry-veg",
       "id": "prod.spring-onion",
       "names": {
@@ -1061,9 +901,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.stir_fry_vegetables"
-      ],
+      "aliases": ["product.stir_fry_vegetables"],
       "categoryId": "category.frozen-meals",
       "id": "prod.stir-fry-vegetables",
       "names": {
@@ -1073,9 +911,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.sun_dried_tomatoes"
-      ],
+      "aliases": ["product.sun_dried_tomatoes"],
       "categoryId": "category.oils",
       "id": "prod.sun-dried-tomatoes",
       "names": {
@@ -1085,9 +921,7 @@
       "unitId": "unit.x270g"
     },
     {
-      "aliases": [
-        "product.thai_spice_mix"
-      ],
+      "aliases": ["product.thai_spice_mix"],
       "categoryId": "category.spreads",
       "id": "prod.thai-spice-mix",
       "names": {
@@ -1097,9 +931,7 @@
       "unitId": "unit.g"
     },
     {
-      "aliases": [
-        "product.thyme"
-      ],
+      "aliases": ["product.thyme"],
       "categoryId": "category.spices",
       "id": "prod.thyme",
       "names": {
@@ -1109,9 +941,7 @@
       "unitId": "unit.lvl"
     },
     {
-      "aliases": [
-        "product.toast_bread"
-      ],
+      "aliases": ["product.toast_bread"],
       "categoryId": "category.bread",
       "id": "prod.toast-bread",
       "names": {
@@ -1121,9 +951,7 @@
       "unitId": "unit.szt"
     },
     {
-      "aliases": [
-        "product.tomato_garlic_basil_mix"
-      ],
+      "aliases": ["product.tomato_garlic_basil_mix"],
       "categoryId": "category.spices",
       "id": "prod.tomato-garlic-basil-mix",
       "names": {
@@ -1133,9 +961,7 @@
       "unitId": "unit.lvl"
     },
     {
-      "aliases": [
-        "product.tomato_puree"
-      ],
+      "aliases": ["product.tomato_puree"],
       "categoryId": "category.fresh-veg",
       "id": "prod.tomato-puree",
       "names": {
@@ -1145,9 +971,7 @@
       "unitId": "unit.g"
     },
     {
-      "aliases": [
-        "product.turmeric"
-      ],
+      "aliases": ["product.turmeric"],
       "categoryId": "category.spices",
       "id": "prod.turmeric",
       "names": {
@@ -1157,9 +981,7 @@
       "unitId": "unit.lvl"
     },
     {
-      "aliases": [
-        "product.zucchini"
-      ],
+      "aliases": ["product.zucchini"],
       "categoryId": "category.fresh-veg",
       "id": "prod.zucchini",
       "names": {
