@@ -152,6 +152,7 @@
   "save_button": "Zapisz",
   "save_failed": "Nie udało się zapisać",
   "save_success": "Zapisano",
+  "save_changes_prompt": "Zapisać zmiany?",
   "search_placeholder": "Szukaj produktu",
   "settings_unit_code": "Kod",
   "settings_unit_en": "Angielski",
