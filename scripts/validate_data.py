@@ -21,9 +21,19 @@ def load_json(path: Path) -> Any:
         return json.load(fh)
 
 
+def find_line(lines: List[str], needle: str) -> int:
+    """Return 1-based line number of ``needle`` in ``lines`` or 0 if not found."""
+    for idx, line in enumerate(lines, 1):
+        if needle in line:
+            return idx
+    return 0
+
+
 def validate_products(
     products_data: Dict[str, Any],
     unit_ids: Set[str],
+    path: Path,
+    lines: List[str],
 ) -> Tuple[List[str], Set[str], Dict[str, str], Set[str], Set[str]]:
     errors: List[str] = []
 
@@ -53,24 +63,35 @@ def validate_products(
         if not unit_id:
             missing_fields.append("unitId")
         if missing_fields:
-            errors.append(f"product[{idx}]: missing {', '.join(missing_fields)}")
+            line_no = find_line(lines, f'"id": "{prod_id}"') if prod_id else 0
+            errors.append(
+                f"{path}:{line_no}: product[{idx}]: missing {', '.join(missing_fields)}"
+            )
             continue
 
         if prod_id in id_set:
-            errors.append(f"duplicate product id: {prod_id}")
+            line_no = find_line(lines, f'"id": "{prod_id}"')
+            errors.append(f"{path}:{line_no}: duplicate product id: {prod_id}")
         else:
             id_set.add(prod_id)
 
         if category_id not in categories:
-            errors.append(f"product {prod_id}: unknown categoryId {category_id}")
+            line_no = find_line(lines, f'"id": "{prod_id}"')
+            errors.append(
+                f"{path}:{line_no}: product {prod_id}: unknown categoryId {category_id}"
+            )
         if unit_id not in units:
-            errors.append(f"product {prod_id}: unknown unitId {unit_id}")
+            line_no = find_line(lines, f'"id": "{prod_id}"')
+            errors.append(
+                f"{path}:{line_no}: product {prod_id}: unknown unitId {unit_id}"
+            )
 
         for alias in aliases:
             norm = normalize_alias(alias)
             if norm in alias_map and alias_map[norm] != prod_id:
+                line_no = find_line(lines, f'"id": "{prod_id}"')
                 errors.append(
-                    f"alias '{alias}' for {prod_id} duplicates alias for {alias_map[norm]}"
+                    f"{path}:{line_no}: alias '{alias}' for {prod_id} duplicates alias for {alias_map[norm]}"
                 )
             else:
                 alias_map[norm] = prod_id
@@ -83,6 +104,8 @@ def validate_recipes(
     product_ids: Set[str],
     unit_ids: Set[str],
     category_ids: Set[str],
+    path: Path,
+    lines: List[str],
 ) -> List[str]:
     errors: List[str] = []
 
@@ -94,17 +117,29 @@ def validate_recipes(
             category_id = ing.get("categoryId")
 
             if product_id and product_id not in product_ids:
+                line_no = find_line(lines, f'"productId": "{product_id}"')
                 errors.append(
-                    f"recipe[{r_idx}] ingredient[{i_idx}]: unknown productId {product_id}"
+                    f"{path}:{line_no}: recipe[{r_idx}] ingredient[{i_idx}]: unknown productId {product_id}"
                 )
             if unit_id and unit_id not in unit_ids:
+                line_no = find_line(lines, f'"unitId": "{unit_id}"')
                 errors.append(
-                    f"recipe[{r_idx}] ingredient[{i_idx}]: unknown unitId {unit_id}"
+                    f"{path}:{line_no}: recipe[{r_idx}] ingredient[{i_idx}]: unknown unitId {unit_id}"
                 )
             if category_id and category_id not in category_ids:
+                line_no = find_line(lines, f'"categoryId": "{category_id}"')
                 errors.append(
-                    f"recipe[{r_idx}] ingredient[{i_idx}]: unknown categoryId {category_id}"
+                    f"{path}:{line_no}: recipe[{r_idx}] ingredient[{i_idx}]: unknown categoryId {category_id}"
                 )
+
+        tags = recipe.get("tags", [])
+        if tags:
+            tags_line = find_line(lines, '"tags"')
+            for t_idx, tag in enumerate(tags):
+                if not isinstance(tag, str):
+                    errors.append(
+                        f"{path}:{tags_line}: recipe[{r_idx}] tag[{t_idx}] not a string"
+                    )
 
     return errors
 
@@ -113,19 +148,25 @@ def main() -> None:
     products_path = DATA_DIR / "products.json"
     recipes_path = DATA_DIR / "recipes.json"
 
-    errors = []
+    errors: List[str] = []
 
     try:
-        products_data = load_json(products_path)
+        products_text = products_path.read_text(encoding="utf-8")
+        products_data = json.loads(products_text)
+        products_lines = products_text.splitlines()
     except Exception as e:
         errors.append(f"unable to load products.json: {e}")
         products_data = {}
+        products_lines = []
 
     try:
-        recipes_data = load_json(recipes_path)
+        recipes_text = recipes_path.read_text(encoding="utf-8")
+        recipes_data = json.loads(recipes_text)
+        recipes_lines = recipes_text.splitlines()
     except Exception as e:
         errors.append(f"unable to load recipes.json: {e}")
         recipes_data = []
+        recipes_lines = []
 
     units_path = DATA_DIR / "units.json"
     try:
@@ -136,11 +177,13 @@ def main() -> None:
 
     unit_ids_loaded = {u.get("id") for u in units_data}
     p_errors, product_ids, alias_map, unit_ids, category_ids = validate_products(
-        products_data, unit_ids_loaded
+        products_data, unit_ids_loaded, products_path, products_lines
     )
     errors.extend(p_errors)
 
-    r_errors = validate_recipes(recipes_data, product_ids, unit_ids, category_ids)
+    r_errors = validate_recipes(
+        recipes_data, product_ids, unit_ids, category_ids, recipes_path, recipes_lines
+    )
     errors.extend(r_errors)
 
     if errors:
