@@ -1,6 +1,7 @@
 {
   "accept": "accept",
   "accept_action": "Add",
+  "app_title": "Food App",
   "add_form_name_placeholder": "name",
   "add_form_pack_size_placeholder": "pack",
   "add_form_package_size_placeholder": "in package",

@@ -1,6 +1,7 @@
 {
   "accept": "dodaj",
   "accept_action": "Dodaj",
+  "app_title": "Food App",
   "add_form_name_placeholder": "nazwa",
   "add_form_pack_size_placeholder": "paczka",
   "add_form_package_size_placeholder": "w opak.",

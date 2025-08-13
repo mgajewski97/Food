@@ -238,7 +238,7 @@ function initAddForm() {
   Object.keys(state.units).forEach((u) => {
     const opt = document.createElement("option");
     opt.value = u;
-    opt.textContent = t(u);
+    opt.textContent = t(`unit.${u}`);
     unitSel.appendChild(opt);
   });
   qtyInput.insertAdjacentElement("afterend", unitSel);
@@ -435,7 +435,7 @@ function initNavigationAndEvents() {
     const unitSel = document.querySelector('#add-form select[name="unit"]');
     if (unitSel) {
       Array.from(unitSel.options).forEach((opt) => {
-        opt.textContent = t(opt.value);
+        opt.textContent = t(`unit.${opt.value}`);
       });
     }
     window.scrollTo(0, scroll);

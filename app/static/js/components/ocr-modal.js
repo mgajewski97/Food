@@ -1,4 +1,4 @@
-import { t, state, fetchJson, labelProduct } from "../helpers.js";
+import { t, state, fetchJson } from "../helpers.js";
 import { addToShoppingList, renderShoppingList } from "./shopping-list.js";
 import { toast } from "./toast.js";
 
@@ -68,9 +68,7 @@ export async function handleReceiptUpload(file) {
     const nameInput = document.createElement("input");
     nameInput.type = "text";
     const firstMatch = item.matches[0];
-    nameInput.value = firstMatch
-      ? labelProduct(firstMatch.name, state.currentLang)
-      : item.original;
+    nameInput.value = firstMatch ? t(`prod.${firstMatch.name}`) : item.original;
     if (firstMatch) nameInput.dataset.key = firstMatch.name;
     nameInput.className = "input input-bordered w-full";
     nameTd.appendChild(nameInput);
@@ -90,11 +88,11 @@ export async function handleReceiptUpload(file) {
       item.matches.forEach((m) => {
         const opt = document.createElement("option");
         opt.value = m.name;
-        opt.textContent = labelProduct(m.name, state.currentLang);
+        opt.textContent = t(`prod.${m.name}`);
         select.appendChild(opt);
       });
       select.addEventListener("change", () => {
-        nameInput.value = labelProduct(select.value, state.currentLang);
+        nameInput.value = t(`prod.${select.value}`);
         nameInput.dataset.key = select.value;
       });
       statusTd.appendChild(select);
