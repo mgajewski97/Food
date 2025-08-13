@@ -152,6 +152,7 @@
   "save_button": "Save",
   "save_failed": "Save failed",
   "save_success": "Saved",
+  "save_changes_prompt": "Save changes?",
   "search_placeholder": "Search product",
   "settings_unit_code": "Code",
   "settings_unit_en": "English",
