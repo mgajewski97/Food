@@ -7,7 +7,7 @@ import {
   CATEGORY_ORDER,
   STORAGE_KEYS,
   matchesFilter,
-  stockLevel,
+  getStockState,
   normalizeProduct,
   fetchJson,
   isSpice,
@@ -141,13 +141,13 @@ function highlightRow(tr, p) {
     "opacity-60",
     "font-semibold",
   );
-  const level = stockLevel(p);
+  const level = getStockState(p);
   if (p.main) {
-    if (level === "none")
+    if (level === "zero")
       tr.classList.add("text-error", "bg-error/10", "font-semibold");
     else if (level === "low") tr.classList.add("text-warning", "bg-warning/10");
   } else {
-    if (level === "none")
+    if (level === "zero")
       tr.classList.add("text-error", "bg-error/10", "opacity-60");
     else if (level === "low")
       tr.classList.add("text-warning", "bg-warning/10", "opacity-60");
@@ -398,7 +398,7 @@ export function renderProducts() {
       unitLabel: t(merged.unit, "units"),
       categoryLabel: t(merged.category, "categories"),
       storageLabel: t(STORAGE_KEYS[merged.storage] || merged.storage),
-      status: stockLevel(merged),
+      status: getStockState(merged),
     };
   });
   APP.state.products = data;
