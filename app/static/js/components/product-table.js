@@ -504,6 +504,8 @@ export async function refreshProducts() {
     renderProducts();
     renderProductPager();
   } catch (err) {
+    APP.state.products = null;
+    renderProducts();
     toast.error(t("notify_error_title"), err.message);
   }
 }
@@ -646,7 +648,6 @@ function createFlatRow(p, idx, editable) {
 function renderProductsImmediate() {
   populateCategories();
   const {
-    products = [],
     view = "flat",
     editing = false,
     search = "",
@@ -654,6 +655,37 @@ function renderProductsImmediate() {
     filterStorage = '',
     filterCategory = '',
   } = APP.state || {};
+  const products = APP.state?.products;
+
+  const table = document.getElementById("product-table");
+  const list = document.getElementById("products-by-category");
+  if (!table || !list) return;
+  const tbody = table.querySelector("tbody");
+  list.innerHTML = "";
+
+  function renderFallback(message) {
+    table.style.display = "";
+    list.style.display = "none";
+    table.classList.toggle("edit-mode", editing);
+    tbody.innerHTML = "";
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+    td.colSpan = editing ? 7 : 6;
+    td.className = "text-center";
+    td.textContent = message;
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+    updateBulkActions();
+  }
+
+  if (products == null) {
+    renderFallback("Błąd podczas ładowania danych");
+    return;
+  }
+  if (Array.isArray(products) && products.length === 0) {
+    renderFallback("Brak produktów");
+    return;
+  }
 
   const domainList = Object.values(state.domain.products || {});
   const data = domainList.map((dp) => {
@@ -714,26 +746,12 @@ function renderProductsImmediate() {
 
   dlog("renderProducts", filtered.length);
 
-  const table = document.getElementById("product-table");
-  const list = document.getElementById("products-by-category");
-  if (!table || !list) return;
-  const tbody = table.querySelector("tbody");
-  list.innerHTML = "";
-
   if (view === "flat") {
     table.style.display = "";
     list.style.display = "none";
     table.classList.toggle("edit-mode", editing);
     if (data.length === 0) {
-      tbody.innerHTML = "";
-      const tr = document.createElement("tr");
-      const td = document.createElement("td");
-      td.colSpan = editing ? 7 : 6;
-      td.className = "text-center";
-      td.textContent = t("products_empty");
-      tr.appendChild(td);
-      tbody.appendChild(tr);
-      updateBulkActions();
+      renderFallback("Brak produktów");
       return;
     }
     if (flatCacheEditing !== editing) {
