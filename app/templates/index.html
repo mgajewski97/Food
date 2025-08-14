@@ -92,75 +92,152 @@
       <div class="overflow-x-auto">
         <div
           class="tabs tabs-bordered flex-nowrap overflow-x-auto whitespace-nowrap desktop-nav"
+          role="tablist"
         >
           <a
             class="tab tab-active font-bold"
+            role="tab"
+            tabindex="0"
+            aria-selected="true"
             data-tab-target="tab-products"
             data-i18n="tab_products"
             >Produkty</a
           >
-          <a class="tab" data-tab-target="tab-recipes" data-i18n="tab_recipes"
+          <a
+            class="tab"
+            role="tab"
+            tabindex="-1"
+            aria-selected="false"
+            data-tab-target="tab-recipes"
+            data-i18n="tab_recipes"
             >Przepisy</a
           >
-          <a class="tab" data-tab-target="tab-history" data-i18n="tab_history"
+          <a
+            class="tab"
+            role="tab"
+            tabindex="-1"
+            aria-selected="false"
+            data-tab-target="tab-history"
+            data-i18n="tab_history"
             >Historia dań</a
           >
-          <a class="tab" data-tab-target="tab-shopping" data-i18n="tab_shopping"
+          <a
+            class="tab"
+            role="tab"
+            tabindex="-1"
+            aria-selected="false"
+            data-tab-target="tab-shopping"
+            data-i18n="tab_shopping"
             >Lista zakupów</a
           >
         </div>
       </div>
       <div class="flex items-center justify-end gap-2">
-        <button
-          id="layout-toggle"
-          aria-label="Toggle layout"
-          class="text-xl p-2 bg-transparent border-0"
-          type="button"
-        >
-          <i id="layout-icon" class="fa-solid fa-mobile-screen-button"></i>
-        </button>
-        <button
-          id="lang-toggle"
-          aria-label="Toggle language"
-          class="flex items-center gap-1 text-xl p-2 bg-transparent border-0"
-          type="button"
-        >
-          <i class="fa-solid fa-language"></i>
-          <span class="action-label hidden md:inline" data-i18n="language"
-            >Language</span
+        <div id="tab-actions" class="flex items-center gap-2">
+          <button
+            id="add-product-btn"
+            data-action-tab="tab-products"
+            class="btn btn-primary btn-sm"
+            data-i18n="heading_add_product"
+            type="button"
+            style="display: none"
           >
-        </button>
-        <button
-          id="theme-toggle"
-          aria-label="Toggle theme"
-          class="flex items-center gap-1 text-xl p-2 bg-transparent border-0"
-          type="button"
-        >
-          <i id="theme-icon" class="fa-solid fa-desktop"></i>
-          <span class="action-label hidden md:inline" data-i18n="theme"
-            >Theme</span
+            Dodaj produkt
+          </button>
+          <button
+            id="edit-json-header"
+            data-action-tab="tab-products"
+            class="btn btn-outline btn-sm"
+            data-i18n="heading_edit_json"
+            type="button"
+            style="display: none"
           >
-        </button>
-        <button
-          id="install-btn"
-          aria-label="Install app"
-          class="text-xl p-2 bg-transparent border-0"
-          style="display: none"
-          type="button"
-        >
-          <i class="fa-solid fa-download"></i>
-        </button>
-        <button
-          id="settings-btn"
-          aria-label="Settings"
-          class="flex items-center gap-1 text-xl p-2 bg-transparent border-0"
-          type="button"
-        >
-          <i class="fa-solid fa-gear"></i>
-          <span class="action-label hidden md:inline" data-i18n="tab_settings"
-            >Settings</span
+            Edytuj produkty (JSON)
+          </button>
+          <button
+            id="receipt-btn"
+            data-action-tab="tab-shopping"
+            class="btn btn-secondary btn-sm"
+            data-i18n="receipt_import"
+            type="button"
+            style="display: none"
           >
-        </button>
+            Dodaj z paragonu
+          </button>
+        </div>
+        <div class="dropdown dropdown-end">
+          <button
+            id="more-btn"
+            class="btn btn-ghost btn-sm" aria-haspopup="menu" aria-label="More actions" type="button">
+            <i class="fa-solid fa-ellipsis"></i>
+          </button>
+          <ul
+            id="more-menu"
+            class="dropdown-content menu menu-sm p-2 shadow bg-base-100 rounded-box right-0"
+            tabindex="0"
+          >
+            <li>
+              <button
+                id="layout-toggle"
+                aria-label="Toggle layout"
+                class="text-xl p-2 bg-transparent border-0"
+                type="button"
+              >
+                <i id="layout-icon" class="fa-solid fa-mobile-screen-button"></i>
+              </button>
+            </li>
+            <li>
+              <button
+                id="lang-toggle"
+                aria-label="Toggle language"
+                class="flex items-center gap-1 text-xl p-2 bg-transparent border-0"
+                type="button"
+              >
+                <i class="fa-solid fa-language"></i>
+                <span class="action-label hidden md:inline" data-i18n="language"
+                  >Language</span
+                >
+              </button>
+            </li>
+            <li>
+              <button
+                id="theme-toggle"
+                aria-label="Toggle theme"
+                class="flex items-center gap-1 text-xl p-2 bg-transparent border-0"
+                type="button"
+              >
+                <i id="theme-icon" class="fa-solid fa-desktop"></i>
+                <span class="action-label hidden md:inline" data-i18n="theme"
+                  >Theme</span
+                >
+              </button>
+            </li>
+            <li>
+              <button
+                id="install-btn"
+                aria-label="Install app"
+                class="text-xl p-2 bg-transparent border-0"
+                style="display: none"
+                type="button"
+              >
+                <i class="fa-solid fa-download"></i>
+              </button>
+            </li>
+            <li>
+              <button
+                id="settings-btn"
+                aria-label="Settings"
+                class="flex items-center gap-1 text-xl p-2 bg-transparent border-0"
+                type="button"
+              >
+                <i class="fa-solid fa-gear"></i>
+                <span class="action-label hidden md:inline" data-i18n="tab_settings"
+                  >Settings</span
+                >
+              </button>
+            </li>
+          </ul>
+        </div>
       </div>
     </header>
     <main class="max-w-screen-xl mx-auto p-4 md:p-6 pb-24" style="padding-bottom: calc(env(safe-area-inset-bottom)+6rem)">
@@ -877,14 +954,6 @@
         <h1 class="text-2xl font-bold mb-6" data-i18n="heading_shopping">
           Lista zakupów
         </h1>
-        <button
-          id="receipt-btn"
-          class="btn btn-secondary btn-sm mb-4"
-          data-i18n="receipt_import"
-          type="button"
-        >
-          Dodaj z paragonu
-        </button>
         <input id="receipt-input" type="file" accept="image/*" class="hidden" />
         <dialog id="receipt-sheet" class="modal modal-bottom sm:modal-middle">
           <form method="dialog" class="modal-box">

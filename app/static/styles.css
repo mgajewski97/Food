@@ -370,7 +370,8 @@ html[data-layout="mobile"] #edit-json {
 button:focus-visible,
 .btn:focus-visible,
 .touch-btn:focus-visible,
-[role="button"]:focus-visible {
+[role="button"]:focus-visible,
+[role="tab"]:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 2px;
 }

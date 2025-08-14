@@ -603,3 +603,76 @@ export function matchesFilter(p = {}, filter = "all") {
       return true;
   }
 }
+
+// Desktop tab accessibility and toolbar handling
+document.addEventListener("DOMContentLoaded", () => {
+  const tablist = document.querySelector(".desktop-nav");
+  if (tablist) {
+    tablist.setAttribute("role", "tablist");
+    const tabs = Array.from(tablist.querySelectorAll("[data-tab-target]"));
+    tabs.forEach((tab) => {
+      const active = tab.classList.contains("tab-active");
+      tab.setAttribute("role", "tab");
+      tab.setAttribute("tabindex", active ? "0" : "-1");
+      tab.setAttribute("aria-selected", active ? "true" : "false");
+    });
+    tablist.addEventListener("keydown", (e) => {
+      const tabs = Array.from(tablist.querySelectorAll("[role='tab']"));
+      const current = document.activeElement;
+      const index = tabs.indexOf(current);
+      if (index === -1) return;
+      let nextIndex = index;
+      switch (e.key) {
+        case "ArrowRight":
+          nextIndex = (index + 1) % tabs.length;
+          break;
+        case "ArrowLeft":
+          nextIndex = (index - 1 + tabs.length) % tabs.length;
+          break;
+        case "Home":
+          nextIndex = 0;
+          break;
+        case "End":
+          nextIndex = tabs.length - 1;
+          break;
+        case " ":
+        case "Enter":
+          current.click();
+          e.preventDefault();
+          return;
+        default:
+          return;
+      }
+      tabs[nextIndex].focus();
+      e.preventDefault();
+    });
+  }
+
+  const orig = window.activateTab;
+  if (typeof orig === "function") {
+    window.activateTab = async (id) => {
+      await orig(id);
+      const tabs = document.querySelectorAll(".desktop-nav [role='tab']");
+      tabs.forEach((tab) => {
+        const sel = tab.dataset.tabTarget === id;
+        tab.setAttribute("aria-selected", sel ? "true" : "false");
+        tab.setAttribute("tabindex", sel ? "0" : "-1");
+      });
+      document.querySelectorAll("[data-action-tab]").forEach((btn) => {
+        btn.style.display = btn.dataset.actionTab === id ? "" : "none";
+      });
+    };
+  }
+
+  document.getElementById("add-product-btn")?.addEventListener("click", () => {
+    const editToggle = document.getElementById("edit-toggle");
+    if (editToggle && editToggle.getAttribute("aria-pressed") === "false") {
+      editToggle.click();
+    }
+    document.getElementById("add-section")?.scrollIntoView({ behavior: "smooth" });
+  });
+
+  document.getElementById("edit-json-header")?.addEventListener("click", () => {
+    document.getElementById("edit-json")?.scrollIntoView({ behavior: "smooth" });
+  });
+});
