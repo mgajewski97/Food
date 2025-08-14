@@ -734,6 +734,79 @@ export function saveShoppingCollapsed() {
   } catch {}
 }
 
+function updateAddShortcutTooltip() {
+  const btn = document.querySelector('#add-form button[type="submit"]');
+  if (!btn) return;
+  const line =
+    state.currentLang === 'pl' ? 'Ctrl+Enter – Zapisz' : 'Ctrl+Enter – Save';
+  const parts = btn.title ? btn.title.split('\n') : [];
+  const idx = parts.findIndex((p) => p.startsWith('Ctrl+Enter'));
+  if (idx >= 0) parts[idx] = line;
+  else parts.push(line);
+  btn.title = parts.join('\n');
+}
+
+function isFormInput(el) {
+  if (!el) return false;
+  return (
+    el.tagName === 'INPUT' ||
+    el.tagName === 'TEXTAREA' ||
+    el.tagName === 'SELECT' ||
+    el.isContentEditable
+  );
+}
+
+document.addEventListener('keydown', (e) => {
+  if (state.displayMode !== 'desktop') return;
+  const active = document.activeElement;
+  const inInput = isFormInput(active);
+  if (e.key === 'Enter' && e.ctrlKey) {
+    const form = document.getElementById('add-form');
+    if (form && form.checkValidity()) {
+      e.preventDefault();
+      const submitBtn = form.querySelector('button[type="submit"]');
+      form.requestSubmit(submitBtn);
+    }
+    return;
+  }
+  if (inInput) return;
+  const app = window.APP || {};
+  if (e.key === '/' && app.activeTab === 'tab-products') {
+    e.preventDefault();
+    document.getElementById('product-search-input')?.focus();
+    return;
+  }
+  if ((e.key === 'n' || e.key === 'N') && app.activeTab === 'tab-products') {
+    e.preventDefault();
+    document.getElementById('add-product-btn')?.click();
+    return;
+  }
+  if (e.key === 'Delete' && app.activeTab === 'tab-products') {
+    const count = app.selectedProducts
+      ? app.selectedProducts.size
+      : document.querySelectorAll('.product-select:checked').length;
+    if (count > 0) {
+      e.preventDefault();
+      document.getElementById('delete-selected')?.click();
+    }
+    return;
+  }
+  if (e.altKey && !e.ctrlKey && !e.shiftKey) {
+    const map = {
+      '1': 'tab-products',
+      '2': 'tab-recipes',
+      '3': 'tab-shopping',
+      '4': 'tab-history',
+      '5': 'tab-settings',
+    };
+    const tab = map[e.key];
+    if (tab) {
+      e.preventDefault();
+      document.querySelector(`[data-tab-target="${tab}"]`)?.click();
+    }
+  }
+});
+
 // Desktop tab accessibility and toolbar handling
 document.addEventListener("DOMContentLoaded", () => {
   const tablist = document.querySelector(".desktop-nav");
@@ -804,5 +877,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("edit-json-header")?.addEventListener("click", () => {
     document.getElementById("edit-json")?.scrollIntoView({ behavior: "smooth" });
+  });
+
+  updateAddShortcutTooltip();
+  document.getElementById('lang-toggle')?.addEventListener('click', () => {
+    setTimeout(updateAddShortcutTooltip, 0);
   });
 });

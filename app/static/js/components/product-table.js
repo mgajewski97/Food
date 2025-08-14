@@ -39,6 +39,7 @@ let storageFilter,
 
 // --- bulk selection handling
 const selectedProducts = new Set();
+APP.selectedProducts = selectedProducts;
 let bulkBar;
 let bulkCount;
 let bulkButtons = [];
