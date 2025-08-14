@@ -1,7 +1,6 @@
 import {
   t,
   state,
-  parseTimeToMinutes,
   timeToBucket,
   toggleFavorite,
   fetchJson,
@@ -31,43 +30,31 @@ export function renderRecipes() {
   }
   if (state.showFavoritesOnly)
     data = data.filter((r) => state.favoriteRecipes.has(r.id));
+  state.renderedRecipes = data;
   const frag = document.createDocumentFragment();
   if (data.length === 0) {
     const empty = document.createElement("div");
-    empty.className = "card bg-base-200 shadow";
-    const body = document.createElement("div");
-    body.className = "card-body";
-    body.textContent = t("recipes_empty_state");
-    empty.appendChild(body);
+    empty.className = "p-4 text-center opacity-60";
+    empty.textContent = t("recipes_empty_state");
     frag.appendChild(empty);
   } else {
     data.forEach((r) => {
-      const card = document.createElement("div");
-      card.className = "card bg-base-200 shadow";
-      const body = document.createElement("div");
-      body.className = "card-body";
-      const header = document.createElement("div");
-      header.className = "flex justify-between items-start";
-      const titleWrap = document.createElement("div");
-      titleWrap.className = "flex items-center gap-2";
-      const title = document.createElement("h3");
-      title.className = "card-title";
+      const row = document.createElement("div");
+      row.className =
+        "recipe-item flex items-center justify-between p-2 rounded cursor-pointer hover:bg-base-200";
+      row.dataset.id = r.id;
       const nameStr = r.names?.[state.currentLang] || r.names?.en || r.id;
-      title.textContent = nameStr;
-      titleWrap.appendChild(title);
-      if (r.available) {
-        const badge = document.createElement("span");
-        badge.className = "badge badge-sm badge-outline";
-        badge.textContent = t("recipe_available");
-        titleWrap.appendChild(badge);
-      }
+      const name = document.createElement("span");
+      name.className = "truncate";
+      name.textContent = nameStr;
+      row.appendChild(name);
       const favBtn = document.createElement("button");
       favBtn.className = "btn btn-ghost btn-xs";
       favBtn.innerHTML = state.favoriteRecipes.has(r.id)
         ? '<i class="fa-solid fa-heart"></i>'
         : '<i class="fa-regular fa-heart"></i>';
       favBtn.addEventListener("click", async (e) => {
-        e.preventDefault();
+        e.stopPropagation();
         favBtn.disabled = true;
         const prev = favBtn.innerHTML;
         favBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
@@ -76,9 +63,7 @@ export function renderRecipes() {
           favBtn.innerHTML = state.favoriteRecipes.has(r.id)
             ? '<i class="fa-solid fa-heart"></i>'
             : '<i class="fa-regular fa-heart"></i>';
-          if (state.showFavoritesOnly && !state.favoriteRecipes.has(r.id)) {
-            card.remove();
-          }
+          document.dispatchEvent(new Event("favorites-changed"));
         } catch (err) {
           favBtn.innerHTML = prev;
           toast.error(t("notify_error_title"), err.message);
@@ -86,43 +71,30 @@ export function renderRecipes() {
           favBtn.disabled = false;
         }
       });
-      header.appendChild(titleWrap);
-      header.appendChild(favBtn);
-      body.appendChild(header);
-      const meta = document.createElement("div");
-      meta.className = "flex justify-between items-center text-sm";
-      if (r.time) {
-        const timeDiv = document.createElement("div");
-        timeDiv.className = "flex items-center gap-1";
-        timeDiv.innerHTML = '<i class="fa-regular fa-clock"></i>';
-        const span = document.createElement("span");
-        span.textContent = r.time;
-        timeDiv.appendChild(span);
-        meta.appendChild(timeDiv);
-      }
-      if (r.servings != null) {
-        const portionsDiv = document.createElement("div");
-        portionsDiv.className = "flex items-center gap-1";
-        portionsDiv.innerHTML = '<i class="fa-solid fa-users"></i>';
-        const span = document.createElement("span");
-        span.textContent = String(r.servings);
-        portionsDiv.appendChild(span);
-        meta.appendChild(portionsDiv);
-      }
-      if (meta.children.length) body.appendChild(meta);
-      const btn = document.createElement("button");
-      btn.className = "btn btn-primary";
-      btn.textContent = t("recipe_show_details");
-      btn.addEventListener("click", () => openRecipeDetails(r));
-      body.appendChild(btn);
-      card.appendChild(body);
-      frag.appendChild(card);
+      row.appendChild(favBtn);
+      row.addEventListener("click", () => openRecipeDetails(r));
+      frag.appendChild(row);
     });
   }
   requestAnimationFrame(() => {
     list.innerHTML = "";
     list.appendChild(frag);
+    highlightSelection();
   });
+}
+
+function highlightSelection(scroll = false) {
+  const list = document.getElementById("recipe-list");
+  if (!list) return;
+  [...list.children].forEach((el) =>
+    el.classList.toggle("bg-base-300", el.dataset.id === state.activeRecipeId),
+  );
+  if (scroll && state.activeRecipeId) {
+    const sel = list.querySelector(
+      `[data-id="${CSS.escape(state.activeRecipeId)}"]`,
+    );
+    sel?.scrollIntoView({ block: "nearest" });
+  }
 }
 
 function renderRecipePager() {
@@ -189,6 +161,10 @@ export async function loadRecipes() {
     state.recipesTotal = data.total;
     renderRecipes();
     renderRecipePager();
+    if (state.activeRecipeId) {
+      const cur = processed.find((r) => r.id === state.activeRecipeId);
+      if (cur) openRecipeDetails(cur);
+    }
     return processed;
   } catch (err) {
     toast.error(t("recipes_load_failed"), err.status || err.message, {
@@ -295,6 +271,53 @@ export function bindRecipeEvents() {
   });
 
   updateSortButtons();
+
+  function moveSelection(delta) {
+    const items = state.renderedRecipes || [];
+    if (!items.length) return;
+    let idx = items.findIndex((r) => r.id === state.activeRecipeId);
+    if (idx === -1) idx = delta > 0 ? -1 : 0;
+    idx = Math.min(items.length - 1, Math.max(0, idx + delta));
+    state.activeRecipeId = items[idx].id;
+    highlightSelection(true);
+  }
+
+  document.addEventListener("keydown", async (e) => {
+    const panel = document.getElementById("tab-recipes");
+    if (!panel || panel.style.display === "none") return;
+    if (["INPUT", "TEXTAREA", "SELECT"].includes(e.target.tagName)) return;
+    const items = state.renderedRecipes || [];
+    if (!items.length) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      moveSelection(1);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      moveSelection(-1);
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      const rec = items.find((r) => r.id === state.activeRecipeId);
+      if (rec) openRecipeDetails(rec);
+    } else if (e.key.toLowerCase() === "f") {
+      const id = state.activeRecipeId;
+      if (id) {
+        e.preventDefault();
+        try {
+          await toggleFavorite(id);
+          document.dispatchEvent(new Event("favorites-changed"));
+          const favIcon = document.querySelector("#recipe-detail #recipe-detail-fav");
+          if (favIcon && state.activeRecipeId === id) {
+            favIcon.innerHTML = state.favoriteRecipes.has(id)
+              ? '<i class="fa-solid fa-heart"></i>'
+              : '<i class="fa-regular fa-heart"></i>';
+          }
+          highlightSelection();
+        } catch (err) {
+          toast.error(t("notify_error_title"), err.message);
+        }
+      }
+    }
+  });
 }
 
 // Render recipe list once the domain data is ready.

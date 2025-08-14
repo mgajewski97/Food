@@ -177,6 +177,13 @@ html[data-layout="mobile"] #product-table .status-label {
   line-height: 1rem;
 }
 
+#recipe-layout {
+  height: 60vh;
+}
+#recipe-list {
+  overflow-y: auto;
+}
+
 #products-by-category .category-block table {
   margin-top: 0;
   margin-bottom: 0;

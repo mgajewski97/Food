@@ -639,10 +639,12 @@
         >
           Przepisy
         </h1>
-        <div
-          id="recipe-controls"
-          class="flex flex-col sm:flex-row flex-wrap gap-4 mb-4"
-        >
+        <div id="recipe-layout" class="md:grid md:grid-cols-2 md:gap-4">
+          <div class="flex flex-col md:h-[60vh]">
+            <div
+              id="recipe-controls"
+              class="flex flex-col sm:flex-row flex-wrap gap-4 mb-4"
+            >
           <div
             class="flex flex-col sm:flex-row items-start sm:items-center gap-2"
           >
@@ -770,21 +772,24 @@
         >
           Ulubione przepisy
         </button>
-        <button
-          id="recipe-clear-filters"
-          class="btn btn-outline btn-sm self-start"
-          data-i18n="recipe_clear_filters"
-          type="button"
-        >
-          Wyczyść filtry
-        </button>
-      </div>
-        <div
-          id="recipe-list"
-          role="list"
-          aria-live="polite"
-          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"
-        ></div>
+            <button
+              id="recipe-clear-filters"
+              class="btn btn-outline btn-sm self-start"
+              data-i18n="recipe_clear_filters"
+              type="button"
+            >
+              Wyczyść filtry
+            </button>
+          </div>
+          <div
+            id="recipe-list"
+            role="list"
+            aria-live="polite"
+            class="flex-1 overflow-y-auto mb-4"
+          ></div>
+        </div>
+        <div id="recipe-detail" class="hidden md:block md:h-[60vh] overflow-y-auto"></div>
+        </div>
       </div>
 
       <div id="tab-history" class="tab-panel" style="display: none">
@@ -1233,23 +1238,6 @@
         </button>
       </div>
     </main>
-
-    <dialog
-      id="recipe-detail-modal"
-      class="modal"
-      aria-labelledby="recipe-detail-title"
-      role="dialog"
-    >
-      <form method="dialog" class="modal-box max-w-2xl">
-        <h3 id="recipe-detail-title" class="sr-only" data-i18n="recipe_view_recipe">
-          Szczegóły przepisu
-        </h3>
-        <div id="recipe-detail-content"></div>
-        <div class="modal-action">
-          <button class="btn" data-i18n="close" type="button">Zamknij</button>
-        </div>
-      </form>
-    </dialog>
 
     <nav class="fixed bottom-0 left-0 w-full z-50 bg-base-100 flex border-t border-base-300" style="padding-bottom: env(safe-area-inset-bottom)">
       <a
