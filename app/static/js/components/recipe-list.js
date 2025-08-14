@@ -190,7 +190,6 @@ export function bindRecipeEvents() {
   const sortField = document.getElementById("recipe-sort-field");
   const sortAsc = document.getElementById("recipe-sort-dir-asc");
   const sortDesc = document.getElementById("recipe-sort-dir-desc");
-  const sortMobile = document.getElementById("recipe-sort-mobile");
   const timeFilter = document.getElementById("recipe-time-filter");
   const portionsFilter = document.getElementById("recipe-portions-filter");
   const favToggle = document.getElementById("recipe-favorites-toggle");
@@ -223,17 +222,6 @@ export function bindRecipeEvents() {
     state.recipePage = 1;
     loadRecipes();
   });
-  sortMobile?.addEventListener(
-    "change",
-    debounce(() => {
-      const [field, dir] = sortMobile.value.split("-");
-      state.recipeSortField = field;
-      state.recipeSortDir = dir;
-      updateSortButtons();
-       state.recipePage = 1;
-      loadRecipes();
-    }, 150),
-  );
 
   timeFilter?.addEventListener(
     "change",
@@ -265,7 +253,6 @@ export function bindRecipeEvents() {
     state.recipePortionsFilter = "";
     state.showFavoritesOnly = false;
     sortField && (sortField.value = "name");
-    sortMobile && (sortMobile.value = "name-asc");
     timeFilter && (timeFilter.value = "");
     portionsFilter && (portionsFilter.value = "");
     favToggle?.classList.remove("btn-primary");
