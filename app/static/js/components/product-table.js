@@ -12,6 +12,7 @@ import {
   fetchJson,
   isSpice,
   debounce,
+  debounceFrame,
   dlog,
   getProduct,
   DEBUG,
@@ -43,6 +44,10 @@ APP.selectedProducts = selectedProducts;
 let bulkBar;
 let bulkCount;
 let bulkButtons = [];
+
+// cache flat view rows to minimize DOM churn
+const flatRowCache = new Map();
+let flatCacheEditing = false;
 
 function updateBulkActions() {
   const count = selectedProducts.size;
@@ -185,17 +190,14 @@ function initFilterControls() {
     renderProducts();
     renderActiveFilterChips();
   });
-  searchInput?.addEventListener(
-    'input',
-    debounce(() => {
-      const val = searchInput.value.trim().toLowerCase();
-      APP.state.search = val;
-      saveFilters();
-      renderProducts();
-      renderActiveFilterChips();
-      searchClear?.classList.toggle('hidden', !val);
-    }, 250),
-  );
+  searchInput?.addEventListener('input', () => {
+    const val = searchInput.value.trim().toLowerCase();
+    APP.state.search = val;
+    saveFilters();
+    renderProducts();
+    renderActiveFilterChips();
+    searchClear?.classList.toggle('hidden', !val);
+  });
   searchClear?.addEventListener('click', () => {
     searchInput.value = '';
     APP.state.search = '';
@@ -639,13 +641,7 @@ function createFlatRow(p, idx, editable) {
   return tr;
 }
 
-export function renderProducts() {
-  if (!state.domainLoaded) {
-    document.addEventListener("domain:ready", () => renderProducts(), {
-      once: true,
-    });
-    return;
-  }
+function renderProductsImmediate() {
   populateCategories();
   const {
     products = [],
@@ -719,37 +715,54 @@ export function renderProducts() {
   const table = document.getElementById("product-table");
   const list = document.getElementById("products-by-category");
   if (!table || !list) return;
-  requestAnimationFrame(() => {
-    const tbody = table.querySelector("tbody");
-    tbody.innerHTML = "";
-    list.innerHTML = "";
+  const tbody = table.querySelector("tbody");
+  list.innerHTML = "";
 
-    if (view === "flat") {
-      table.style.display = "";
-      list.style.display = "none";
-      table.classList.toggle("edit-mode", editing);
-      if (data.length === 0) {
-        const tr = document.createElement("tr");
-        const td = document.createElement("td");
-        td.colSpan = editing ? 7 : 6;
-        td.className = "text-center";
-        td.textContent = t("products_empty");
-        tr.appendChild(td);
-        tbody.appendChild(tr);
-        updateBulkActions();
-        return;
-      }
-      if (filtered.length) {
-        filtered.forEach((p, idx) => {
-          const tr = createFlatRow(p, idx, editing);
-          tbody.appendChild(tr);
-        });
-      }
+  if (view === "flat") {
+    table.style.display = "";
+    list.style.display = "none";
+    table.classList.toggle("edit-mode", editing);
+    if (data.length === 0) {
+      tbody.innerHTML = "";
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.colSpan = editing ? 7 : 6;
+      td.className = "text-center";
+      td.textContent = t("products_empty");
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+      updateBulkActions();
+      return;
+    }
+    if (flatCacheEditing !== editing) {
+      flatRowCache.clear();
+      flatCacheEditing = editing;
+    }
+    if (filtered.length) {
+      const rows = [];
+      filtered.forEach((p, idx) => {
+        let tr = flatRowCache.get(p.id);
+        if (!tr) {
+          tr = createFlatRow(p, idx, editing);
+        }
+        tr.dataset.index = idx;
+        highlightRow(tr, p);
+        rows.push(tr);
+      });
+      flatRowCache.clear();
+      filtered.forEach((p, idx) => flatRowCache.set(p.id, rows[idx]));
+      tbody.replaceChildren(...rows);
     } else {
-      table.style.display = "none";
-      list.style.display = "";
-      if (data.length === 0) {
-        const empty = document.createElement("div");
+      tbody.innerHTML = "";
+    }
+  } else {
+    table.style.display = "none";
+    list.style.display = "";
+    tbody.innerHTML = "";
+    flatRowCache.clear();
+    flatCacheEditing = editing;
+    if (data.length === 0) {
+      const empty = document.createElement("div");
         empty.className = "p-4 text-center text-base-content/70";
         empty.textContent = t("products_empty");
         list.appendChild(empty);
@@ -957,7 +970,19 @@ export function renderProducts() {
     const summaryIds = data.slice(0, 3).map((p) => p.id);
     if (DEBUG) console.debug("renderProducts", data.length, summaryIds);
     updateSortIcons();
-  });
+  }
+}
+
+const scheduleRender = debounceFrame(renderProductsImmediate, 200);
+
+export function renderProducts() {
+  if (!state.domainLoaded) {
+    document.addEventListener("domain:ready", () => renderProducts(), {
+      once: true,
+    });
+    return;
+  }
+  scheduleRender();
 }
 
 function attachCollapses(root) {
