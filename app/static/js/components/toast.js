@@ -51,6 +51,7 @@ function createToast({
   alert.appendChild(body);
   if (action) {
     const btn = document.createElement("button");
+    btn.type = "button";
     btn.className = "btn btn-sm ml-auto mr-8";
     btn.textContent = action.label;
     btn.addEventListener("click", () => {
@@ -60,6 +61,7 @@ function createToast({
     alert.appendChild(btn);
   }
   const close = document.createElement("button");
+  close.type = "button";
   close.className = "btn btn-xs btn-circle btn-ghost absolute top-1 right-1";
   close.setAttribute("title", t("close"));
   close.setAttribute("aria-label", t("close"));
@@ -128,6 +130,7 @@ export function showLowStockToast(
   const span = document.createElement("span");
   span.textContent = t("toast_low_stock");
   const btn = document.createElement("button");
+  btn.type = "button";
   btn.className = "btn btn-sm ml-auto mr-8";
   btn.dataset.action = "shopping";
   btn.textContent = t("toast_go_shopping");
@@ -143,6 +146,7 @@ export function showLowStockToast(
     alert.remove();
   });
   const close = document.createElement("button");
+  close.type = "button";
   close.className = "btn btn-xs btn-circle btn-ghost absolute top-1 right-1";
   close.dataset.action = "close";
   close.setAttribute("title", t("close"));
@@ -204,6 +208,7 @@ export function showTopBanner(message, { actionLabel, onAction } = {}) {
   banner.appendChild(msg);
   if (actionLabel && onAction) {
     const btn = document.createElement("button");
+    btn.type = "button";
     btn.className = "btn btn-sm";
     btn.textContent = actionLabel;
     btn.addEventListener("click", () => {
@@ -213,6 +218,7 @@ export function showTopBanner(message, { actionLabel, onAction } = {}) {
     banner.appendChild(btn);
   }
   const close = document.createElement("button");
+  close.type = "button";
   close.className = "btn btn-xs btn-circle btn-ghost";
   close.innerHTML = '<i class="fa-regular fa-xmark"></i>';
   close.addEventListener("click", () => banner.remove());
