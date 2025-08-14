@@ -27,33 +27,47 @@ class JSONFormatter(logging.Formatter):
         return json.dumps(data)
 
 
-def create_app() -> Flask:
-    """Application factory for the Food project."""
-    app = Flask(__name__, static_folder="static", template_folder="templates")
+def _configure_logging() -> logging.Logger:
+    """Configure root logging once and return the logger."""
+    root_logger = logging.getLogger()
+    if root_logger.handlers:  # logging already configured
+        return root_logger
 
     if os.environ.get("APP_JSON_LOGS") == "1":
         log_dir = os.path.join(os.path.dirname(__file__), "..", "logs")
         os.makedirs(log_dir, exist_ok=True)
         handler = logging.FileHandler(os.path.join(log_dir, "app.log"))
         handler.setFormatter(JSONFormatter())
-        root_logger = logging.getLogger()
         root_logger.setLevel(logging.INFO)
-        root_logger.handlers = [handler]
-
-        @app.after_request
-        def _log_request(response):
-            record = {
-                "method": request.method,
-                "path": request.path,
-                "status": response.status_code,
-            }
-            trace_id = getattr(g, "trace_id", None)
-            if trace_id:
-                record["traceId"] = trace_id
-            root_logger.info(record)
-            return response
+        root_logger.addHandler(handler)
     else:  # pragma: no cover - no-op configuration
-        logging.getLogger().addHandler(logging.NullHandler())
+        root_logger.addHandler(logging.NullHandler())
+    return root_logger
+
+
+def _register_request_logging(app: Flask, logger: logging.Logger) -> None:
+    """Attach request logging to the app."""
+
+    @app.after_request
+    def _log_request(response):
+        record = {
+            "method": request.method,
+            "path": request.path,
+            "status": response.status_code,
+        }
+        trace_id = getattr(g, "trace_id", None)
+        if trace_id:
+            record["traceId"] = trace_id
+        logger.info(record)
+        return response
+
+
+def create_app() -> Flask:
+    """Application factory for the Food project."""
+    app = Flask(__name__, static_folder="static", template_folder="templates")
+
+    logger = _configure_logging()
+    _register_request_logging(app, logger)
 
     from .routes import bp, run_initial_validation
 
