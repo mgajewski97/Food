@@ -158,6 +158,21 @@ html[data-layout="mobile"] #product-table .status-label {
   padding-right: 0;
 }
 
+.field-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.field-group:last-child {
+  margin-bottom: 0;
+}
+.form-error {
+  color: #dc2626;
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
 #products-by-category .category-block table {
   margin-top: 0;
   margin-bottom: 0;

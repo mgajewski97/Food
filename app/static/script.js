@@ -11,6 +11,8 @@ import {
   isSpice,
   debounce,
   DEBUG,
+  setFieldError,
+  clearFieldError,
 } from "./js/helpers.js";
 import * as ProductTable from "./js/components/product-table.js";
 import * as Shopping from "./js/components/shopping-list.js";
@@ -233,21 +235,14 @@ function initAddForm() {
   if (!form) return;
   const nameInput = form.querySelector('input[name="name"]');
   const qtyInput = form.querySelector('input[name="quantity"]');
+  const unitSel = form.querySelector('select[name="unit"]');
   const catSelect = form.querySelector('select[name="category"]');
   const storSelect = form.querySelector('select[name="storage"]');
+  const threshold = form.querySelector('input[name="threshold"]');
   const mainLabel = form.querySelector('input[name="main"]')?.closest("label");
   const submitBtn = form.querySelector('button[type="submit"]');
-  const pkg = form.querySelector('input[name="package_size"]');
-  const pack = form.querySelector('input[name="pack_size"]');
-  const threshold = form.querySelector('input[name="threshold"]');
 
-  pkg?.remove();
-  pack?.remove();
-  threshold?.remove();
-
-  const unitSel = document.createElement("select");
-  unitSel.name = "unit";
-  unitSel.className = "select select-bordered w-full";
+  unitSel.innerHTML = "";
   Object.keys(state.units).forEach((u) => {
     const opt = document.createElement("option");
     opt.value = u;
@@ -255,7 +250,7 @@ function initAddForm() {
     unitSel.appendChild(opt);
   });
   qtyInput.min = "0";
-  qtyInput.insertAdjacentElement("afterend", unitSel);
+  unitSel.required = true;
 
   const levelWrap = document.createElement("div");
   levelWrap.className = "flex gap-2 hidden";
@@ -292,9 +287,54 @@ function initAddForm() {
     unitSel.classList.toggle("hidden", isSp);
     levelWrap.classList.toggle("hidden", !isSp);
     if (mainLabel) mainLabel.classList.toggle("hidden", isSp);
+    if (isSp) {
+      qtyInput.value = "";
+      unitSel.value = "";
+    }
+    validate();
   }
   catSelect.addEventListener("change", syncSpiceUI);
   syncSpiceUI();
+
+  const required = [nameInput, qtyInput, unitSel, catSelect, storSelect];
+  function validate() {
+    const msg = state.currentLang === "pl" ? "Wymagane" : "Required";
+    const isSp = catSelect.value === "spices";
+    required.forEach((el) => {
+      if (isSp && (el === qtyInput || el === unitSel)) {
+        clearFieldError(el);
+        return;
+      }
+      if (!el.value.trim()) setFieldError(el, msg);
+      else clearFieldError(el);
+    });
+    submitBtn.disabled = !required.every((el) => {
+      if (isSp && (el === qtyInput || el === unitSel)) return true;
+      return Boolean(el.value.trim());
+    });
+  }
+  required.forEach((el) => {
+    el.addEventListener("blur", validate);
+    el.addEventListener("input", validate);
+    el.addEventListener("change", validate);
+  });
+  validate();
+
+  let addAnother = false;
+  form.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && e.target.tagName !== "TEXTAREA") {
+      if (!form.checkValidity()) return;
+      e.preventDefault();
+      addAnother = e.shiftKey;
+      form.requestSubmit();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      APP.exitEditMode(true);
+    }
+  });
+  submitBtn.addEventListener("click", () => {
+    addAnother = false;
+  });
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -325,8 +365,13 @@ function initAddForm() {
       ProductTable.renderProducts();
       Shopping.renderShoppingList();
       form.reset();
+      validate();
       syncSpiceUI();
-      nameInput.focus();
+      if (addAnother) {
+        nameInput.focus();
+      } else {
+        APP.exitEditMode(false);
+      }
       const container = document.getElementById("notification-container");
       if (container) {
         container.classList.remove("toast-end", "top-auto", "bottom-[4.5rem]");
@@ -353,6 +398,12 @@ function initAddForm() {
       submitBtn.disabled = false;
     }
   });
+
+  const tooltip =
+    state.currentLang === "pl"
+      ? "Enter – Zapisz\nShift+Enter – Zapisz i dodaj kolejny\nEsc – Anuluj"
+      : "Enter – Save\nShift+Enter – Save and add another\nEsc – Cancel";
+  submitBtn.title = tooltip;
 }
 
 async function saveEdits() {
@@ -471,6 +522,13 @@ function initNavigationAndEvents() {
       Array.from(unitSel.options).forEach((opt) => {
         opt.textContent = t(opt.value);
       });
+    }
+    const addSubmit = document.querySelector('#add-form button[type="submit"]');
+    if (addSubmit) {
+      addSubmit.title =
+        state.currentLang === "pl"
+          ? "Enter – Zapisz\nShift+Enter – Zapisz i dodaj kolejny\nEsc – Anuluj"
+          : "Enter – Save\nShift+Enter – Save and add another\nEsc – Cancel";
     }
     window.scrollTo(0, scroll);
   });

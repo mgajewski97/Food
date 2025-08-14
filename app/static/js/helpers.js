@@ -165,6 +165,21 @@ export function throttle(fn, delay = 200) {
   };
 }
 
+export function setFieldError(el, msg) {
+  let err = el.nextElementSibling;
+  if (!err || !err.classList.contains("form-error")) {
+    err = document.createElement("p");
+    err.className = "form-error";
+    el.insertAdjacentElement("afterend", err);
+  }
+  err.textContent = msg || "";
+  err.style.display = msg ? "block" : "none";
+}
+
+export function clearFieldError(el) {
+  setFieldError(el, "");
+}
+
 export function t(key, ns = "ui") {
   if (!key) return key;
   if (ns === "products") {

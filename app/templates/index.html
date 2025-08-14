@@ -438,52 +438,40 @@
           >
             Dodaj / edytuj produkt
           </h2>
-          <form
-            id="add-form"
-            class="grid grid-cols-1 sm:grid-cols-8 gap-2 mb-6 items-end"
-          >
-            <input
-              name="name"
-              placeholder="nazwa"
-              data-i18n="add_form_name_placeholder"
-              required
-              class="input input-bordered w-full"
-            />
-            <input
-              name="quantity"
-              placeholder="ilość"
-              data-i18n="add_form_quantity_placeholder"
-              required
-              class="input input-bordered w-full no-spinner"
-              min="0"
-            />
-            <input
-              name="package_size"
-              placeholder="w opak."
-              data-i18n="add_form_package_size_placeholder"
-              class="input input-bordered w-full no-spinner"
-              type="number"
-              min="0"
-              value="1"
-            />
-            <input
-              name="pack_size"
-              placeholder="paczka"
-              data-i18n="add_form_pack_size_placeholder"
-              class="input input-bordered w-full no-spinner"
-              type="number"
-              min="0"
-            />
-            <input
-              name="threshold"
-              placeholder="próg"
-              data-i18n="add_form_threshold_placeholder"
-              class="input input-bordered w-full no-spinner"
-              type="number"
-              min="0"
-            />
-            <div class="mb-4">
-              <div id="category-checkboxes" class="flex flex-wrap gap-2 mb-2">
+          <form id="add-form" class="space-y-4 mb-6">
+            <div class="field-group">
+              <div class="flex flex-col flex-1">
+                <input
+                  name="name"
+                  placeholder="nazwa"
+                  data-i18n="add_form_name_placeholder"
+                  required
+                  class="input input-bordered w-full"
+                />
+                <p class="form-error" data-error-for="name"></p>
+              </div>
+              <div class="flex flex-col w-24">
+                <input
+                  name="quantity"
+                  placeholder="ilość"
+                  data-i18n="add_form_quantity_placeholder"
+                  required
+                  class="input input-bordered w-full no-spinner"
+                  min="0"
+                />
+                <p class="form-error" data-error-for="quantity"></p>
+              </div>
+              <div class="flex flex-col w-24">
+                <select
+                  name="unit"
+                  class="select select-bordered w-full"
+                  required
+                ></select>
+                <p class="form-error" data-error-for="unit"></p>
+              </div>
+            </div>
+            <div class="field-group">
+              <div class="flex flex-col flex-1">
                 <select
                   name="category"
                   required
@@ -561,31 +549,46 @@
                     Mrożone dania / zupy
                   </option>
                 </select>
-                <label class="flex items-center gap-2 w-full">
-                  <input type="checkbox" name="main" class="checkbox" />
-                  <span data-i18n="checkbox_main_label"
-                    >Produkt podstawowy</span
-                  >
-                </label>
+                <p class="form-error" data-error-for="category"></p>
+              </div>
+              <div class="flex flex-col flex-1">
+                <select
+                  name="storage"
+                  required
+                  class="select select-bordered w-full"
+                >
+                  <option value="fridge" data-i18n="storage_fridge">Lodówka</option>
+                  <option value="pantry" selected data-i18n="storage_pantry">
+                    Szafka
+                  </option>
+                  <option value="freezer" data-i18n="storage_freezer">
+                    Zamrażarka
+                  </option>
+                </select>
+                <p class="form-error" data-error-for="storage"></p>
               </div>
             </div>
-            <select
-              name="storage"
-              required
-              class="select select-bordered w-full"
-            >
-              <option value="fridge" data-i18n="storage_fridge">Lodówka</option>
-              <option value="pantry" selected data-i18n="storage_pantry">
-                Szafka
-              </option>
-              <option value="freezer" data-i18n="storage_freezer">
-                Zamrażarka
-              </option>
-            </select>
+            <div class="field-group items-center">
+              <div class="flex flex-col w-24">
+                <input
+                  name="threshold"
+                  placeholder="próg"
+                  data-i18n="add_form_threshold_placeholder"
+                  class="input input-bordered w-full no-spinner"
+                  type="number"
+                  min="0"
+                />
+              </div>
+              <label class="flex items-center gap-2">
+                <input type="checkbox" name="main" class="checkbox" />
+                <span data-i18n="checkbox_main_label">Produkt podstawowy</span>
+              </label>
+            </div>
             <button
               type="submit"
-              class="btn btn-primary btn-sm w-full sm:col-span-2"
+              class="btn btn-primary btn-sm"
               data-i18n="save_button"
+              title="Enter – Save\nShift+Enter – Save and add another\nEsc – Cancel"
             >
               Zapisz
             </button>
