@@ -455,6 +455,15 @@ button:focus-visible,
   margin-right: 0.25rem;
 }
 
+/* Toast container and stacking */
+#notification-container {
+  pointer-events: none;
+}
+
+#notification-container > .alert {
+  pointer-events: auto;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
