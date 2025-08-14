@@ -72,12 +72,22 @@ try {
   storedLastRecipe = "";
 }
 
+let storedCollapsed = {};
+try {
+  storedCollapsed = JSON.parse(
+    localStorage.getItem("shoppingCollapsed") || "{}",
+  );
+} catch {
+  storedCollapsed = {};
+}
+
 export const state = {
   displayMode:
     document.documentElement.getAttribute("data-layout") || "desktop",
   expandedStorages: {},
   expandedCategories: {},
   shoppingList: storedShopping,
+  shoppingCollapsed: storedCollapsed,
   dismissedSuggestions: new Set(),
   pendingRemoveIndex: null,
   recipesData: [],
@@ -706,6 +716,22 @@ export function matchesFilter(p = {}, filters = {}) {
   if (storage && p.storage !== storage) return false;
   if (category && p.category !== category) return false;
   return true;
+}
+
+export function getProductCategory(name) {
+  const prod = (window.APP?.state?.products || []).find(
+    (p) => p.name === name,
+  );
+  return prod?.category || "uncategorized";
+}
+
+export function saveShoppingCollapsed() {
+  try {
+    localStorage.setItem(
+      "shoppingCollapsed",
+      JSON.stringify(state.shoppingCollapsed),
+    );
+  } catch {}
 }
 
 // Desktop tab accessibility and toolbar handling

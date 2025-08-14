@@ -1061,8 +1061,34 @@
             Lista zakupów
           </h2>
           <div
+            id="shopping-summary"
+            class="flex items-center justify-between mb-4"
+          >
+            <div>
+              <span id="shopping-total">0</span> items,
+              <span id="shopping-purchased">0</span> purchased
+            </div>
+            <div class="flex gap-2">
+              <button
+                id="add-missing-recipes"
+                class="btn btn-sm"
+                type="button"
+              >
+                Add missing products from recipes
+              </button>
+              <button
+                id="clear-purchased"
+                class="btn btn-sm btn-error"
+                type="button"
+                disabled
+              >
+                Clear purchased
+              </button>
+            </div>
+          </div>
+          <div
             id="shopping-list"
-            class="border border-base-300 rounded-lg divide-y divide-base-300"
+            class="border border-base-300 rounded-lg"
           ></div>
         </div>
         <hr class="border-t border-base-300 mt-6 mb-4" />
@@ -1192,6 +1218,25 @@
               >
                 <i class="fa-solid fa-trash"></i>
                 <span data-i18n="delete_confirm_button">Usuń</span>
+              </button>
+            </div>
+          </form>
+        </dialog>
+        <dialog id="shopping-clear-modal" class="modal" role="dialog">
+          <form method="dialog" class="modal-box">
+            <h3 class="font-bold text-lg mb-4">Clear purchased?</h3>
+            <p>Remove all purchased items?</p>
+            <div class="modal-action justify-between">
+              <button class="btn btn-ghost btn-sm" type="button">
+                Cancel
+              </button>
+              <button
+                id="confirm-clear-purchased"
+                class="btn btn-error btn-sm"
+                data-modal-primary
+                type="button"
+              >
+                Confirm
               </button>
             </div>
           </form>
