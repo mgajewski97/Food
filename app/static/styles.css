@@ -158,6 +158,10 @@ html[data-layout="mobile"] #product-table .status-label {
   padding-right: 0;
 }
 
+.filter-chip {
+  cursor: pointer;
+}
+
 .field-group {
   display: flex;
   flex-wrap: wrap;
