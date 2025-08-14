@@ -329,6 +329,27 @@ html[data-layout="mobile"] .touch-btn {
   opacity: 0.6;
 }
 
+.shopping-item .qty-btn {
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: 0.75rem;
+  margin: 0 0.125rem;
+}
+
+.shopping-category .category-header {
+  cursor: pointer;
+  background-color: hsl(var(--b2));
+}
+
+.shopping-category .category-body {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.shopping-category.collapsed .category-body {
+  display: none;
+}
+
 .shopping-item,
 .suggestion-item {
   display: grid;
