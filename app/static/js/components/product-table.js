@@ -15,6 +15,8 @@ import {
   dlog,
   getProduct,
   DEBUG,
+  loadProductFilters,
+  saveProductFilters,
 } from "../helpers.js";
 import { toast } from "./toast.js";
 
@@ -27,6 +29,13 @@ const productPager = {
   order: "asc",
   total: 0,
 };
+
+let storageFilter,
+  statusFilter,
+  categoryFilter,
+  searchInput,
+  searchClear,
+  chipsContainer;
 
 // --- bulk selection handling
 const selectedProducts = new Set();
@@ -66,7 +75,161 @@ function updateSortIcons() {
   }
 }
 
+function saveFilters() {
+  saveProductFilters({
+    storage: APP.state.filterStorage || '',
+    status: APP.state.filterStatus || '',
+    category: APP.state.filterCategory || '',
+    search: APP.state.search || '',
+  });
+  APP.searches = APP.searches || {};
+  APP.searches['tab-products'] = APP.state.search || '';
+}
+
+function renderActiveFilterChips() {
+  if (!chipsContainer) chipsContainer = document.getElementById('active-filters');
+  if (!chipsContainer) return;
+  chipsContainer.innerHTML = '';
+  const chips = [];
+  if (APP.state.filterStorage) {
+    chips.push({
+      type: 'storage',
+      label: t(STORAGE_KEYS[APP.state.filterStorage] || APP.state.filterStorage),
+    });
+  }
+  if (APP.state.filterStatus) {
+    chips.push({
+      type: 'status',
+      label: t(`state_filter_${APP.state.filterStatus}`),
+    });
+  }
+  if (APP.state.filterCategory) {
+    chips.push({
+      type: 'category',
+      label: t(APP.state.filterCategory, 'categories'),
+    });
+  }
+  if (APP.state.search) {
+    chips.push({ type: 'search', label: APP.state.search });
+  }
+  chips.forEach((c) => {
+    const span = document.createElement('span');
+    span.className = 'badge badge-outline filter-chip flex items-center gap-1';
+    span.dataset.filter = c.type;
+    span.textContent = c.label;
+    const i = document.createElement('i');
+    i.className = 'fa-solid fa-xmark';
+    span.appendChild(i);
+    chipsContainer.appendChild(span);
+  });
+  chipsContainer.style.display = chips.length ? 'flex' : 'none';
+}
+
+function populateCategories() {
+  if (!categoryFilter) categoryFilter = document.getElementById('category-filter');
+  if (!categoryFilter) return;
+  const cats = Object.keys(state.domain.categories || {});
+  categoryFilter.innerHTML = '<option value="">All</option>';
+  cats
+    .sort((a, b) => t(a, 'categories').localeCompare(t(b, 'categories')))
+    .forEach((k) => {
+      const opt = document.createElement('option');
+      opt.value = k;
+      opt.textContent = t(k, 'categories');
+      categoryFilter.appendChild(opt);
+    });
+}
+
+function initFilterControls() {
+  storageFilter = document.getElementById('storage-filter');
+  statusFilter = document.getElementById('status-filter');
+  categoryFilter = document.getElementById('category-filter');
+  searchInput = document.getElementById('product-search-input');
+  searchClear = document.getElementById('search-clear');
+  chipsContainer = document.getElementById('active-filters');
+
+  populateCategories();
+
+  const saved = loadProductFilters();
+  APP.state.filterStorage = saved.storage || '';
+  APP.state.filterStatus = saved.status || '';
+  APP.state.filterCategory = saved.category || '';
+  APP.state.search = saved.search || '';
+  APP.searches = APP.searches || {};
+  APP.searches['tab-products'] = APP.state.search;
+
+  if (storageFilter) storageFilter.value = APP.state.filterStorage;
+  if (statusFilter) statusFilter.value = APP.state.filterStatus;
+  if (categoryFilter) categoryFilter.value = APP.state.filterCategory;
+  if (searchInput) {
+    searchInput.value = APP.state.search;
+    searchClear?.classList.toggle('hidden', !APP.state.search);
+  }
+
+  storageFilter?.addEventListener('change', () => {
+    APP.state.filterStorage = storageFilter.value;
+    saveFilters();
+    renderProducts();
+    renderActiveFilterChips();
+  });
+  statusFilter?.addEventListener('change', () => {
+    APP.state.filterStatus = statusFilter.value;
+    saveFilters();
+    renderProducts();
+    renderActiveFilterChips();
+  });
+  categoryFilter?.addEventListener('change', () => {
+    APP.state.filterCategory = categoryFilter.value;
+    saveFilters();
+    renderProducts();
+    renderActiveFilterChips();
+  });
+  searchInput?.addEventListener(
+    'input',
+    debounce(() => {
+      const val = searchInput.value.trim().toLowerCase();
+      APP.state.search = val;
+      saveFilters();
+      renderProducts();
+      renderActiveFilterChips();
+      searchClear?.classList.toggle('hidden', !val);
+    }, 250),
+  );
+  searchClear?.addEventListener('click', () => {
+    searchInput.value = '';
+    APP.state.search = '';
+    searchClear.classList.add('hidden');
+    saveFilters();
+    renderProducts();
+    renderActiveFilterChips();
+  });
+  chipsContainer?.addEventListener('click', (e) => {
+    const chip = e.target.closest('.filter-chip');
+    if (!chip) return;
+    const type = chip.dataset.filter;
+    if (type === 'storage') {
+      APP.state.filterStorage = '';
+      storageFilter && (storageFilter.value = '');
+    } else if (type === 'status') {
+      APP.state.filterStatus = '';
+      statusFilter && (statusFilter.value = '');
+    } else if (type === 'category') {
+      APP.state.filterCategory = '';
+      categoryFilter && (categoryFilter.value = '');
+    } else if (type === 'search') {
+      APP.state.search = '';
+      searchInput && (searchInput.value = '');
+      searchClear && searchClear.classList.add('hidden');
+    }
+    saveFilters();
+    renderProducts();
+    renderActiveFilterChips();
+  });
+  renderActiveFilterChips();
+}
+
 export function bindProductEvents() {
+  initFilterControls();
   bulkBar = document.getElementById('bulk-actions');
   bulkCount = document.getElementById('bulk-count');
   bulkButtons = [
@@ -480,12 +643,15 @@ export function renderProducts() {
     });
     return;
   }
+  populateCategories();
   const {
     products = [],
     view = "flat",
-    filter = "all",
     editing = false,
     search = "",
+    filterStatus = '',
+    filterStorage = '',
+    filterCategory = '',
   } = APP.state || {};
 
   const domainList = Object.values(state.domain.products || {});
@@ -510,11 +676,16 @@ export function renderProducts() {
   const term = (search || "").toLowerCase();
   const filtered = data.filter(
     (p) =>
-      matchesFilter(p, filter) &&
+      matchesFilter(p, {
+        status: filterStatus,
+        storage: filterStorage,
+        category: filterCategory,
+      }) &&
       (!term ||
         t(p.id, "products").toLowerCase().includes(term) ||
         p.name.toLowerCase().includes(term)),
   );
+  renderActiveFilterChips();
 
   const sortField = state.productSortField || 'name';
   const dir = state.productSortDir === 'desc' ? -1 : 1;

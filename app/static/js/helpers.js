@@ -165,6 +165,22 @@ export function throttle(fn, delay = 200) {
   };
 }
 
+export function loadProductFilters() {
+  if (state.displayMode !== "desktop") return {};
+  try {
+    return JSON.parse(localStorage.getItem("productFilters") || "{}");
+  } catch {
+    return {};
+  }
+}
+
+export function saveProductFilters(filters = {}) {
+  if (state.displayMode !== "desktop") return;
+  try {
+    localStorage.setItem("productFilters", JSON.stringify(filters));
+  } catch {}
+}
+
 export function setFieldError(el, msg) {
   let err = el.nextElementSibling;
   if (!err || !err.classList.contains("form-error")) {
@@ -656,18 +672,17 @@ export function getStockState(p = {}) {
   return "ok";
 }
 
-export function matchesFilter(p = {}, filter = "all") {
-  const state = getStockState(p);
-  switch (filter) {
-    case "available":
-      return state === "ok";
-    case "low":
-      return state === "low";
-    case "missing":
-      return state === "zero";
-    default:
-      return true;
+export function matchesFilter(p = {}, filters = {}) {
+  const { status, storage, category } = filters;
+  const st = getStockState(p);
+  if (status) {
+    if (status === "available" && st !== "ok") return false;
+    if (status === "low" && st !== "low") return false;
+    if (status === "missing" && st !== "zero") return false;
   }
+  if (storage && p.storage !== storage) return false;
+  if (category && p.category !== category) return false;
+  return true;
 }
 
 // Desktop tab accessibility and toolbar handling
