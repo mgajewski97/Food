@@ -497,7 +497,9 @@ function initNavigationAndEvents() {
   if (localeChip) {
     localeChip.textContent = state.currentLang.toUpperCase();
   }
-  langBtn.addEventListener("click", () => {
+  langBtn?.setAttribute("aria-label", t("language"));
+  langBtn?.setAttribute("title", t("language"));
+  langBtn?.addEventListener("click", () => {
     const scroll = window.scrollY;
     state.currentLang = state.currentLang === "pl" ? "en" : "pl";
     localStorage.setItem("lang", state.currentLang);
@@ -511,6 +513,8 @@ function initNavigationAndEvents() {
     Shopping.renderShoppingList();
     Shopping.renderSuggestions();
     updateAriaLabels();
+    langBtn.setAttribute("aria-label", t("language"));
+    langBtn.setAttribute("title", t("language"));
     const unitSel = document.querySelector('#add-form select[name="unit"]');
     if (unitSel) {
       Array.from(unitSel.options).forEach((opt) => {
@@ -532,10 +536,16 @@ function initNavigationAndEvents() {
   function updateThemeUI() {
     const current = localStorage.getItem("theme") || "system";
     const icons = { light: "fa-sun", dark: "fa-moon", system: "fa-desktop" };
+    const labels = {
+      light: t("theme_light"),
+      dark: t("theme_dark"),
+      system: t("theme"),
+    };
     if (themeIcon) {
       themeIcon.className = `fa-solid ${icons[current]}`;
     }
-    themeBtn?.setAttribute("aria-label", `Theme: ${current}`);
+    themeBtn?.setAttribute("aria-label", labels[current]);
+    themeBtn?.setAttribute("title", labels[current]);
   }
   themeBtn?.addEventListener("click", () => {
     const current = localStorage.getItem("theme") || "system";

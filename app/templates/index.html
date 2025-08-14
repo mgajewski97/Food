@@ -185,72 +185,48 @@
             Import receipt
           </button>
         </div>
-        <div class="dropdown dropdown-end">
+        <div class="flex items-center gap-2">
           <button
-            id="more-btn"
-            class="btn btn-ghost btn-sm" aria-haspopup="menu" aria-label="More actions" title="More actions" type="button">
-            <i class="fa-solid fa-ellipsis"></i>
-          </button>
-          <ul
-            id="more-menu"
-            class="dropdown-content menu menu-sm p-2 shadow bg-base-100 rounded-box right-0"
-            tabindex="0"
+            id="lang-toggle"
+            aria-label="Toggle language"
+            title="Toggle language"
+            class="btn btn-ghost btn-sm"
+            type="button"
           >
-            <li>
-              <button
-                id="lang-toggle"
-                aria-label="Toggle language"
-                title="Toggle language"
-                class="flex items-center gap-1 text-xl p-2 bg-transparent border-0"
-                type="button"
-              >
-                <i class="fa-solid fa-language"></i>
-                <span class="action-label hidden md:inline" data-i18n="language"
-                  >Language</span
-                >
-              </button>
-            </li>
-            <li>
-              <button
-                id="theme-toggle"
-                aria-label="Toggle theme"
-                title="Toggle theme"
-                class="flex items-center gap-1 text-xl p-2 bg-transparent border-0"
-                type="button"
-              >
-                <i id="theme-icon" class="fa-solid fa-desktop"></i>
-                <span class="action-label hidden md:inline" data-i18n="theme"
-                  >Theme</span
-                >
-              </button>
-            </li>
-            <li>
-              <button
-                id="install-btn"
-                aria-label="Install app"
-                title="Install app"
-                class="text-xl p-2 bg-transparent border-0"
-                style="display: none"
-                type="button"
-              >
-                <i class="fa-solid fa-download"></i>
-              </button>
-            </li>
-            <li>
-              <button
-                id="settings-btn"
-                aria-label="Settings"
-                title="Settings"
-                class="flex items-center gap-1 text-xl p-2 bg-transparent border-0"
-                type="button"
-              >
-                <i class="fa-solid fa-gear"></i>
-                <span class="action-label hidden md:inline" data-i18n="tab_settings"
-                  >Settings</span
-                >
-              </button>
-            </li>
-          </ul>
+            <i class="fa-solid fa-language"></i>
+            <span class="sr-only" data-i18n="language">Language</span>
+          </button>
+          <button
+            id="theme-toggle"
+            aria-label="Toggle theme"
+            title="Toggle theme"
+            class="btn btn-ghost btn-sm"
+            type="button"
+          >
+            <i id="theme-icon" class="fa-solid fa-desktop"></i>
+            <span class="sr-only" data-i18n="theme">Theme</span>
+          </button>
+          <button
+            id="install-btn"
+            aria-label="Install app"
+            title="Install app"
+            class="btn btn-ghost btn-sm"
+            style="display: none"
+            type="button"
+          >
+            <i class="fa-solid fa-download"></i>
+            <span class="sr-only">Install</span>
+          </button>
+          <button
+            id="settings-btn"
+            aria-label="Settings"
+            title="Settings"
+            class="btn btn-ghost btn-sm"
+            type="button"
+          >
+            <i class="fa-solid fa-gear"></i>
+            <span class="sr-only" data-i18n="tab_settings">Settings</span>
+          </button>
         </div>
       </div>
     </header>
