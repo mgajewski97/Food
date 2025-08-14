@@ -104,7 +104,7 @@
             role="tab"
             tabindex="0"
             aria-selected="true"
-            data-tab-target="tab-products"
+            aria-controls="tab-products" data-tab-target="tab-products"
             data-i18n="tab_products"
             title="Alt+1"
             >Products</a
@@ -114,7 +114,7 @@
             role="tab"
             tabindex="-1"
             aria-selected="false"
-            data-tab-target="tab-recipes"
+            aria-controls="tab-recipes" data-tab-target="tab-recipes"
             data-i18n="tab_recipes"
             title="Alt+2"
             >Recipes</a
@@ -124,7 +124,7 @@
             role="tab"
             tabindex="-1"
             aria-selected="false"
-            data-tab-target="tab-shopping"
+            aria-controls="tab-shopping" data-tab-target="tab-shopping"
             data-i18n="tab_shopping"
             title="Alt+3"
             >Shopping</a
@@ -134,7 +134,7 @@
             role="tab"
             tabindex="-1"
             aria-selected="false"
-            data-tab-target="tab-history"
+            aria-controls="tab-history" data-tab-target="tab-history"
             data-i18n="tab_history"
             title="Alt+4"
             >History</a
@@ -144,7 +144,7 @@
             role="tab"
             tabindex="-1"
             aria-selected="false"
-            data-tab-target="tab-settings"
+            aria-controls="tab-settings" data-tab-target="tab-settings"
             data-i18n="tab_settings"
             title="Alt+5"
             >Settings</a
@@ -274,27 +274,26 @@
           Produkty
         </h1>
         <div id="product-filters" class="flex flex-wrap items-center gap-2 mb-2">
-          <select id="storage-filter" class="select select-sm select-bordered">
+          <select id="storage-filter" class="select select-sm select-bordered w-32">
             <option value="">All storages</option>
             <option value="fridge">Fridge</option>
             <option value="freezer">Freezer</option>
             <option value="pantry">Pantry</option>
           </select>
-          <select id="status-filter" class="select select-sm select-bordered">
+          <select id="status-filter" class="select select-sm select-bordered w-32">
             <option value="">All status</option>
             <option value="available">Available</option>
             <option value="low">Low</option>
             <option value="missing">Missing</option>
           </select>
-          <select id="category-filter" class="select select-sm select-bordered">
+          <select id="category-filter" class="select select-sm select-bordered w-32">
             <option value="">All categories</option>
           </select>
           <div class="relative">
             <input
-              id="product-search-input"
-              placeholder="Search products"
+              id="product-search-input" placeholder="Search products"
               data-i18n="search_placeholder"
-              class="input input-sm input-bordered pr-8"
+              class="input input-sm input-bordered pr-8 w-64"
               title="Search (/)"
             />
             <button
@@ -1316,35 +1315,35 @@
     <nav class="fixed bottom-0 left-0 w-full z-50 bg-base-100 flex border-t border-base-300 bottom-nav">
       <a
         class="tab tab-active font-bold flex flex-col items-center justify-center flex-1 py-3 px-2 border-r border-base-300 min-h-11 text-center"
-        data-tab-target="tab-products"
+        aria-controls="tab-products" data-tab-target="tab-products"
       >
         <i class="fa-solid fa-box text-xl"></i>
         <span class="text-xs" data-i18n="tab_products">Products</span>
       </a>
       <a
         class="tab flex flex-col items-center justify-center flex-1 py-3 px-2 border-r border-base-300 min-h-11 text-center"
-        data-tab-target="tab-recipes"
+        aria-controls="tab-recipes" data-tab-target="tab-recipes"
       >
         <i class="fa-solid fa-utensils text-xl"></i>
         <span class="text-xs" data-i18n="tab_recipes">Recipes</span>
       </a>
       <a
         class="tab flex flex-col items-center justify-center flex-1 py-3 px-2 border-r border-base-300 min-h-11 text-center"
-        data-tab-target="tab-shopping"
+        aria-controls="tab-shopping" data-tab-target="tab-shopping"
       >
         <i class="fa-solid fa-cart-shopping text-xl"></i>
         <span class="text-xs" data-i18n="tab_shopping">Shopping</span>
       </a>
       <a
         class="tab flex flex-col items-center justify-center flex-1 py-3 px-2 border-r border-base-300 min-h-11 text-center"
-        data-tab-target="tab-history"
+        aria-controls="tab-history" data-tab-target="tab-history"
       >
         <i class="fa-solid fa-clock-rotate-left text-xl"></i>
         <span class="text-xs" data-i18n="tab_history">History</span>
       </a>
       <a
         class="tab flex flex-col items-center justify-center flex-1 py-3 px-2 min-h-11 text-center"
-        data-tab-target="tab-settings"
+        aria-controls="tab-settings" data-tab-target="tab-settings"
       >
         <i class="fa-solid fa-gear text-xl"></i>
         <span class="text-xs" data-i18n="tab_settings">Settings</span>
