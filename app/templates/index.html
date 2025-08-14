@@ -312,19 +312,40 @@
           >
             Zapisz
           </button>
-          <button
-            id="delete-selected"
-            style="display: none"
-            class="btn btn-error btn-sm min-h-11 justify-center"
-            disabled
-            aria-label="Usuń zaznaczone"
-            data-i18n="delete_selected_button"
-            type="button"
-          >
-            Usuń zaznaczone
-          </button>
         </div>
         <div class="overflow-x-auto">
+          <div
+            id="bulk-actions"
+            class="hidden items-center gap-2 p-2 bg-base-200 z-20"
+          >
+            <span id="bulk-count" class="font-semibold"></span>
+            <div class="ml-auto flex gap-2">
+              <button
+                id="delete-selected"
+                class="btn btn-error btn-sm"
+                disabled
+                type="button"
+              >
+                Usuń
+              </button>
+              <button
+                id="move-shopping"
+                class="btn btn-primary btn-sm"
+                disabled
+                type="button"
+              >
+                Move to Shopping
+              </button>
+              <button
+                id="mark-main"
+                class="btn btn-secondary btn-sm"
+                disabled
+                type="button"
+              >
+                Mark as Main
+              </button>
+            </div>
+          </div>
           <table
             id="product-table"
             class="table table-zebra table-fixed w-full text-sm"
@@ -341,18 +362,28 @@
             <thead>
               <tr>
                 <th id="select-header" style="display: none"></th>
-                <th data-i18n="table_header_name">Nazwa</th>
+                <th data-sort="name" class="sortable">
+                  <span data-i18n="table_header_name">Nazwa</span>
+                  <i class="fa-solid fa-sort opacity-50"></i>
+                </th>
                 <th data-i18n="table_header_quantity">Ilość</th>
                 <th data-i18n="table_header_unit">Jednostka</th>
-                <th class="hidden md:table-cell" data-i18n="table_header_category">Kategoria</th>
-                <th class="hidden md:table-cell" data-i18n="table_header_storage">Miejsce</th>
-                <th class="text-center hidden md:table-cell">
+                <th class="hidden md:table-cell sortable" data-sort="category">
+                  <span data-i18n="table_header_category">Kategoria</span>
+                  <i class="fa-solid fa-sort opacity-50"></i>
+                </th>
+                <th class="hidden md:table-cell sortable" data-sort="storage">
+                  <span data-i18n="table_header_storage">Miejsce</span>
+                  <i class="fa-solid fa-sort opacity-50"></i>
+                </th>
+                <th class="text-center hidden md:table-cell sortable" data-sort="status">
                   <span class="tooltip" data-i18n-tip="stock_legend"
                     ><i class="fa-solid fa-circle-info"></i
                   ></span>
                   <span class="status-label" data-i18n="table_header_status"
                     >Status</span
                   >
+                  <i class="fa-solid fa-sort opacity-50"></i>
                 </th>
               </tr>
             </thead>

@@ -89,6 +89,8 @@ export const state = {
   domain: { products: {}, categories: {}, units: {}, aliases: {}, recipes: [] },
   units: {},
   lowStockToastShown: false,
+  productSortField: "name",
+  productSortDir: "asc",
 };
 
 // In-memory cache metadata for conditional requests

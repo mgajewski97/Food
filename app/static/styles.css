@@ -197,6 +197,28 @@ html[data-layout="mobile"] #product-table .status-label {
   z-index: 1;
 }
 
+#product-table thead th {
+  position: sticky;
+  top: 0;
+  background-color: hsl(var(--b1));
+  z-index: 1;
+}
+
+#bulk-actions {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.sortable i {
+  margin-left: 0.25rem;
+}
+
 /* Recipe detail layout */
 .recipe-ingredients li {
   display: grid;

@@ -28,31 +28,80 @@ const productPager = {
   total: 0,
 };
 
-// --- delete selected handling (button state only; actual deletion handled in script.js)
-let deleteBtn;
+// --- bulk selection handling
+const selectedProducts = new Set();
+let bulkBar;
+let bulkCount;
+let bulkButtons = [];
 
-function updateDeleteButton() {
-  const selected = document.querySelectorAll(
-    "input.product-select:checked",
-  ).length;
-  if (deleteBtn) {
-    deleteBtn.disabled = selected === 0;
-    deleteBtn.textContent =
-      selected > 0
-        ? `${t("delete_selected_button")} (${selected})`
-        : t("delete_selected_button");
+function updateBulkActions() {
+  const count = selectedProducts.size;
+  const editing = APP.state?.editing;
+  if (bulkBar) bulkBar.style.display = count > 0 && editing ? "flex" : "none";
+  if (bulkCount)
+    bulkCount.textContent = count > 0 ? `${count} selected` : "";
+  bulkButtons.forEach((btn) => {
+    if (btn) btn.disabled = count === 0;
+  });
+  const headCells = document.querySelectorAll("#product-table thead th");
+  headCells.forEach((th) => {
+    th.style.top = count > 0 && bulkBar && editing ? `${bulkBar.offsetHeight}px` : "0";
+  });
+}
+
+function updateSortIcons() {
+  document
+    .querySelectorAll('#product-table thead th[data-sort] i')
+    .forEach((icon) => {
+      icon.className = 'fa-solid fa-sort opacity-50';
+    });
+  const active = document.querySelector(
+    `#product-table thead th[data-sort="${state.productSortField}"] i`,
+  );
+  if (active) {
+    active.className =
+      state.productSortDir === 'asc'
+        ? 'fa-solid fa-sort-up'
+        : 'fa-solid fa-sort-down';
   }
 }
 
 export function bindProductEvents() {
-  deleteBtn = document.getElementById("delete-selected");
-  document.addEventListener("change", (e) => {
-    if (e.target.matches("input.product-select")) updateDeleteButton();
+  bulkBar = document.getElementById('bulk-actions');
+  bulkCount = document.getElementById('bulk-count');
+  bulkButtons = [
+    document.getElementById('delete-selected'),
+    document.getElementById('move-shopping'),
+    document.getElementById('mark-main'),
+  ];
+  document.addEventListener('change', (e) => {
+    if (e.target.matches('input.product-select')) {
+      const id = e.target.dataset.id;
+      if (e.target.checked) selectedProducts.add(id);
+      else selectedProducts.delete(id);
+      updateBulkActions();
+    }
   });
-  document.addEventListener("click", (e) => {
-    if (e.target.closest(".qty-inc")) adjustRow(e.target.closest("tr"), 1);
-    if (e.target.closest(".qty-dec")) adjustRow(e.target.closest("tr"), -1);
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.qty-inc')) adjustRow(e.target.closest('tr'), 1);
+    if (e.target.closest('.qty-dec')) adjustRow(e.target.closest('tr'), -1);
   });
+  document
+    .querySelectorAll('#product-table thead th[data-sort]')
+    .forEach((th) => {
+      th.addEventListener('click', () => {
+        const field = th.dataset.sort;
+        if (state.productSortField === field) {
+          state.productSortDir = state.productSortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+          state.productSortField = field;
+          state.productSortDir = 'asc';
+        }
+        renderProducts();
+        updateSortIcons();
+      });
+    });
+  updateSortIcons();
 }
 
 // --- expand/collapse state
@@ -315,6 +364,7 @@ export async function saveProduct(payload) {
 function createFlatRow(p, idx, editable) {
   const tr = document.createElement("tr");
   tr.dataset.index = idx;
+  tr.dataset.productId = p.id != null ? p.id : idx;
   if (editable) {
     // checkbox
     const cbTd = document.createElement("td");
@@ -322,7 +372,8 @@ function createFlatRow(p, idx, editable) {
     const cb = document.createElement("input");
     cb.type = "checkbox";
     cb.className = "checkbox checkbox-sm product-select";
-    cb.dataset.name = p.name;
+    cb.dataset.id = p.id;
+    if (selectedProducts.has(p.id)) cb.checked = true;
     cbTd.appendChild(cb);
     tr.appendChild(cbTd);
     // name
@@ -465,6 +516,30 @@ export function renderProducts() {
         p.name.toLowerCase().includes(term)),
   );
 
+  const sortField = state.productSortField || 'name';
+  const dir = state.productSortDir === 'desc' ? -1 : 1;
+  const statusOrder = { zero: 0, low: 1, ok: 2 };
+  filtered.sort((a, b) => {
+    let va;
+    let vb;
+    if (sortField === 'category') {
+      va = a.categoryLabel;
+      vb = b.categoryLabel;
+    } else if (sortField === 'storage') {
+      va = a.storageLabel;
+      vb = b.storageLabel;
+    } else if (sortField === 'status') {
+      va = statusOrder[a.status] ?? 0;
+      vb = statusOrder[b.status] ?? 0;
+    } else {
+      va = a.name;
+      vb = b.name;
+    }
+    if (va < vb) return -1 * dir;
+    if (va > vb) return 1 * dir;
+    return 0;
+  });
+
   dlog("renderProducts", filtered.length);
 
   const table = document.getElementById("product-table");
@@ -487,7 +562,7 @@ export function renderProducts() {
         td.textContent = t("products_empty");
         tr.appendChild(td);
         tbody.appendChild(tr);
-        updateDeleteButton();
+        updateBulkActions();
         return;
       }
       if (filtered.length) {
@@ -504,11 +579,11 @@ export function renderProducts() {
         empty.className = "p-4 text-center text-base-content/70";
         empty.textContent = t("products_empty");
         list.appendChild(empty);
-        updateDeleteButton();
+        updateBulkActions();
         return;
       }
       if (!filtered.length) {
-        updateDeleteButton();
+        updateBulkActions();
         return;
       }
       const storages = {};
@@ -653,7 +728,8 @@ export function renderProducts() {
                     const cb = document.createElement("input");
                     cb.type = "checkbox";
                     cb.className = "checkbox checkbox-sm product-select";
-                    cb.dataset.name = p.name;
+                    cb.dataset.id = p.id;
+                    if (selectedProducts.has(p.id)) cb.checked = true;
                     cbTd.appendChild(cb);
                     tr.appendChild(cbTd);
                     const n = document.createElement("td");
@@ -703,9 +779,10 @@ export function renderProducts() {
       initExpandDefaults(list);
       attachCollapses(list);
     }
-    updateDeleteButton();
+    updateBulkActions();
     const summaryIds = data.slice(0, 3).map((p) => p.id);
     if (DEBUG) console.debug("renderProducts", data.length, summaryIds);
+    updateSortIcons();
   });
 }
 
