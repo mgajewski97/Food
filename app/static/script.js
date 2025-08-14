@@ -121,12 +121,10 @@ function resetRecipeFilters() {
   state.recipePortionsFilter = "";
   state.showFavoritesOnly = false;
   const sortField = document.getElementById("recipe-sort-field");
-  const sortMobile = document.getElementById("recipe-sort-mobile");
   const timeFilter = document.getElementById("recipe-time-filter");
   const portionsFilter = document.getElementById("recipe-portions-filter");
   const favToggle = document.getElementById("recipe-favorites-toggle");
   sortField && (sortField.value = "name");
-  sortMobile && (sortMobile.value = "name-asc");
   timeFilter && (timeFilter.value = "");
   portionsFilter && (portionsFilter.value = "");
   if (favToggle) {
