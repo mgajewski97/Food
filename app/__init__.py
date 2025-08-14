@@ -40,8 +40,11 @@ def _configure_logging() -> logging.Logger:
         handler.setFormatter(JSONFormatter())
         root_logger.setLevel(logging.INFO)
         root_logger.addHandler(handler)
-    else:  # pragma: no cover - no-op configuration
-        root_logger.addHandler(logging.NullHandler())
+    else:  # pragma: no cover - console logging for development
+        handler = logging.StreamHandler()
+        handler.setFormatter(logging.Formatter("%(levelname)s: %(message)s"))
+        root_logger.setLevel(logging.INFO)
+        root_logger.addHandler(handler)
     return root_logger
 
 
