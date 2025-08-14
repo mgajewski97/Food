@@ -82,8 +82,6 @@ try {
 }
 
 export const state = {
-  displayMode:
-    document.documentElement.getAttribute("data-layout") || "desktop",
   expandedStorages: {},
   expandedCategories: {},
   shoppingList: storedShopping,
@@ -204,7 +202,6 @@ export function throttle(fn, delay = 200) {
 }
 
 export function loadProductFilters() {
-  if (state.displayMode !== "desktop") return {};
   try {
     return JSON.parse(localStorage.getItem("productFilters") || "{}");
   } catch {
@@ -213,7 +210,6 @@ export function loadProductFilters() {
 }
 
 export function saveProductFilters(filters = {}) {
-  if (state.displayMode !== "desktop") return;
   try {
     localStorage.setItem("productFilters", JSON.stringify(filters));
   } catch {}
@@ -778,7 +774,6 @@ function isFormInput(el) {
 }
 
 document.addEventListener('keydown', (e) => {
-  if (state.displayMode !== 'desktop') return;
   const active = document.activeElement;
   const inInput = isFormInput(active);
   if (e.key === 'Enter' && e.ctrlKey) {

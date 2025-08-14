@@ -797,8 +797,6 @@ function renderProductsImmediate() {
 
           const header = document.createElement("header");
           header.className = "storage-header flex items-center gap-2";
-          if (state.displayMode === "mobile")
-            header.classList.add("cursor-pointer");
           const nameSpan = document.createElement("span");
           nameSpan.className = "inline-flex items-center text-xl font-semibold";
           nameSpan.textContent = `${STORAGE_ICONS[stor] || ""} ${t(STORAGE_KEYS[stor] || stor)}`;
@@ -837,8 +835,6 @@ function renderProductsImmediate() {
 
                 const catHeader = document.createElement("header");
                 catHeader.className = "category-header flex items-center gap-2";
-                if (state.displayMode === "mobile")
-                  catHeader.classList.add("cursor-pointer");
                 const catSpan = document.createElement("span");
                 catSpan.className = "font-medium";
                 catSpan.textContent = t(cat, "categories");
@@ -994,17 +990,8 @@ function attachCollapses(root) {
 
   const toggleHandler = (e) => {
     if (APP.state && APP.state.editing) return;
-
-    const isMobile = window.matchMedia("(max-width: 768px)").matches;
-    let btn;
-    if (isMobile) {
-      const hdr = e.target.closest(".storage-header, .category-header");
-      if (!hdr) return;
-      btn = hdr.querySelector(".toggle-storage, .toggle-category");
-    } else {
-      btn = e.target.closest(".toggle-storage, .toggle-category");
-      if (!btn) return;
-    }
+    const btn = e.target.closest(".toggle-storage, .toggle-category");
+    if (!btn) return;
 
     e.stopPropagation();
 
