@@ -152,12 +152,37 @@ def validate_payload(payload: Any, schema_name: str) -> Any:
 
 
 def normalize_product(data: Dict[str, Any]) -> Dict[str, Any]:
-    """Return product dict with defaults and sanitized numeric fields."""
+    """Return product dict with defaults and sanitized numeric fields.
+
+    The function primarily handles inventory items but many callers pass
+    domain objects loaded from the ``products.json`` dataset which uses a
+    different field layout (``names``, ``unitId`` etc.).  To keep behaviour
+    predictable we derive the minimal fields from those structures when the
+    canonical keys are missing instead of emitting ``None`` values that later
+    fail validation.
+    """
+
+    name = data.get("name")
+    if not name:
+        names = data.get("names")
+        if isinstance(names, dict):
+            name = names.get("pl") or names.get("en")
+        if not name:
+            aliases = data.get("aliases")
+            if isinstance(aliases, list) and aliases:
+                name = aliases[0]
+            else:
+                name = data.get("id")
+
+    unit = data.get("unit") or data.get("unitId") or DEFAULT_UNIT
+    category = data.get("category") or data.get("categoryId") or "uncategorized"
+    storage = data.get("storage", "pantry")
+
     pack = data.get("pack_size")
-    category = data.get("category", "uncategorized")
     is_spice = data.get("is_spice") is True or category == "spices"
     quantity = max(0.0, _safe_float(data.get("quantity", 0)))
     level = data.get("level")
+
     if is_spice:
         if level not in {"none", "low", "medium", "high"}:
             if quantity <= 0:
@@ -167,33 +192,30 @@ def normalize_product(data: Dict[str, Any]) -> Dict[str, Any]:
             else:
                 level = "medium"
         return {
-            "name": data.get("name"),
+            "name": name,
             "quantity": 0,
-            "unit": data.get("unit", DEFAULT_UNIT),
+            "unit": unit or DEFAULT_UNIT,
             "category": "spices",
-            "storage": data.get("storage", "pantry"),
+            "storage": storage,
             "threshold": 1,
             "main": True,
             "package_size": max(0.0, _safe_float(data.get("package_size", 1), 1)),
-            "pack_size": (
-                max(0.0, _safe_float(pack)) if pack is not None else None
-            ),
+            "pack_size": max(0.0, _safe_float(pack)) if pack is not None else None,
             "tags": [str(t) for t in data.get("tags", []) if isinstance(t, str)],
             "level": level,
             "is_spice": True,
         }
+
     return {
-        "name": data.get("name"),
+        "name": name,
         "quantity": quantity,
-        "unit": data.get("unit", DEFAULT_UNIT),
+        "unit": unit or DEFAULT_UNIT,
         "category": category,
-        "storage": data.get("storage", "pantry"),
+        "storage": storage,
         "threshold": max(0.0, _safe_float(data.get("threshold", 1), 1)),
         "main": bool(data.get("main", True)),
         "package_size": max(0.0, _safe_float(data.get("package_size", 1), 1)),
-        "pack_size": (
-            max(0.0, _safe_float(pack)) if pack is not None else None
-        ),
+        "pack_size": max(0.0, _safe_float(pack)) if pack is not None else None,
         "tags": [str(t) for t in data.get("tags", []) if isinstance(t, str)],
         "level": level if level in {"none", "low", "medium", "high"} else None,
         "is_spice": False,
