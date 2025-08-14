@@ -49,6 +49,7 @@ export function renderRecipes() {
       name.textContent = nameStr;
       row.appendChild(name);
       const favBtn = document.createElement("button");
+      favBtn.type = "button";
       favBtn.className = "btn btn-ghost btn-xs";
       favBtn.innerHTML = state.favoriteRecipes.has(r.id)
         ? '<i class="fa-solid fa-heart"></i>'
@@ -110,6 +111,7 @@ function renderRecipePager() {
   }
   pager.innerHTML = "";
   const prev = document.createElement("button");
+  prev.type = "button";
   prev.className = "btn btn-sm";
   prev.textContent = t("prev");
   prev.disabled = state.recipePage <= 1;
@@ -118,6 +120,7 @@ function renderRecipePager() {
     loadRecipes();
   });
   const next = document.createElement("button");
+  next.type = "button";
   next.className = "btn btn-sm";
   next.textContent = t("next");
   const maxPage = Math.ceil((state.recipesTotal || 0) / state.recipePageSize);

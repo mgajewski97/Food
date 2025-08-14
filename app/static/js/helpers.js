@@ -125,6 +125,7 @@ HTMLDialogElement.prototype.showModal = function (...args) {
       this.setAttribute("aria-labelledby", title.id);
     }
   }
+  const prevActive = document.activeElement;
   nativeShowModal.apply(this, args);
   const focusables = this.querySelectorAll(
     'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
@@ -151,9 +152,16 @@ HTMLDialogElement.prototype.showModal = function (...args) {
     }
   };
   this.addEventListener("keydown", trap);
-  this.addEventListener("close", () => {
-    this.removeEventListener("keydown", trap);
-  }, { once: true });
+  this.addEventListener(
+    "close",
+    () => {
+      this.removeEventListener("keydown", trap);
+      if (prevActive && typeof prevActive.focus === "function") {
+        prevActive.focus();
+      }
+    },
+    { once: true }
+  );
   if (primary) {
     if (!primary.getAttribute("aria-label")) {
       primary.setAttribute("aria-label", primary.textContent.trim());

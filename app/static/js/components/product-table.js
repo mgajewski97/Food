@@ -465,6 +465,7 @@ function renderProductPager() {
   }
   pager.innerHTML = "";
   const prev = document.createElement("button");
+  prev.type = "button";
   prev.className = "btn btn-sm";
   prev.textContent = t("prev");
   prev.disabled = productPager.page <= 1;
@@ -473,6 +474,7 @@ function renderProductPager() {
     refreshProducts();
   });
   const next = document.createElement("button");
+  next.type = "button";
   next.className = "btn btn-sm";
   next.textContent = t("next");
   const maxPage = Math.ceil(productPager.total / productPager.page_size);
