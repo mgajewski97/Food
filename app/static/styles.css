@@ -39,6 +39,15 @@ html[data-layout="mobile"] {
   height: 3rem;
 }
 
+/* layout helpers */
+.main-content {
+  padding-bottom: calc(env(safe-area-inset-bottom) + 6rem);
+}
+
+.bottom-nav {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
 /* removed header and main layout in favor of Tailwind */
 /* Edit mode table layout */
 #product-table.edit-mode thead th,
