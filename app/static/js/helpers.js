@@ -65,6 +65,12 @@ try {
 } catch {
   storedFavs = [];
 }
+let storedLastRecipe = "";
+try {
+  storedLastRecipe = localStorage.getItem("lastRecipeId") || "";
+} catch {
+  storedLastRecipe = "";
+}
 
 export const state = {
   displayMode:
@@ -84,6 +90,7 @@ export const state = {
   recipePortionsFilter: "",
   showFavoritesOnly: false,
   favoriteRecipes: new Set(storedFavs),
+  activeRecipeId: storedLastRecipe || null,
   currentLang: localStorage.getItem("lang") || "pl",
   uiTranslations: { pl: {}, en: {} },
   domain: { products: {}, categories: {}, units: {}, aliases: {}, recipes: [] },
@@ -603,6 +610,22 @@ export async function toggleFavorite(id) {
       JSON.stringify(Array.from(state.favoriteRecipes)),
     );
     throw err;
+  }
+}
+
+export function saveLastRecipe(id) {
+  try {
+    if (id) localStorage.setItem("lastRecipeId", id);
+    else localStorage.removeItem("lastRecipeId");
+  } catch {}
+  state.activeRecipeId = id || null;
+}
+
+export function loadLastRecipe() {
+  try {
+    return localStorage.getItem("lastRecipeId") || "";
+  } catch {
+    return "";
   }
 }
 
