@@ -80,8 +80,13 @@
     </div>
     <div
       id="notification-container"
-      class="toast toast-end top-auto bottom-[4.5rem] z-40"
+      class="fixed right-4 top-[4.5rem] z-40 flex flex-col items-end gap-2"
+    ></div>
+    <div
+      id="toast-live-region"
+      class="sr-only"
       aria-live="polite"
+      aria-atomic="true"
     ></div>
     <div id="top-banner-container" class="sticky top-0 z-30"></div>
     <header class="sticky top-0 z-20 grid grid-cols-[auto,1fr,auto] items-center gap-2 px-4 sm:px-6 lg:px-8 py-2 bg-base-100 max-w-screen-xl mx-auto">
