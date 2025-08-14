@@ -1059,3 +1059,20 @@ if (window.__domain) {
     { once: true },
   );
 }
+
+// Automatically load product data once the DOM is ready. This ensures that
+// the table is populated on initial page load without requiring any user
+// interaction. The listener is registered with `{ once: true }` so the fetch
+// occurs exactly one time.
+if (document.readyState === "loading") {
+  window.addEventListener(
+    "DOMContentLoaded",
+    () => {
+      refreshProducts();
+    },
+    { once: true },
+  );
+} else {
+  // DOM has already loaded, so we can refresh immediately.
+  refreshProducts();
+}
