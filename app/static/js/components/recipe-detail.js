@@ -39,7 +39,7 @@ function renderRecipeDetail(r) {
       <div class="flex-1">
         <div class="flex items-center gap-2">
           <h3 class="text-lg font-bold flex-1">${title}</h3>
-          <button id="recipe-detail-fav" class="btn btn-ghost btn-sm" type="button" aria-label="${t("checkbox_favorite_label")}">${favIcon}</button>
+          <button id="recipe-detail-fav" class="btn btn-ghost btn-sm" type="button" aria-label="${t("checkbox_favorite_label")}" title="${t("checkbox_favorite_label")}">${favIcon}</button>
         </div>
         ${badgeHtml}
       </div>

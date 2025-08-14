@@ -101,7 +101,7 @@
             aria-selected="true"
             data-tab-target="tab-products"
             data-i18n="tab_products"
-            >Produkty</a
+            >Products</a
           >
           <a
             class="tab"
@@ -110,16 +110,7 @@
             aria-selected="false"
             data-tab-target="tab-recipes"
             data-i18n="tab_recipes"
-            >Przepisy</a
-          >
-          <a
-            class="tab"
-            role="tab"
-            tabindex="-1"
-            aria-selected="false"
-            data-tab-target="tab-history"
-            data-i18n="tab_history"
-            >Historia dań</a
+            >Recipes</a
           >
           <a
             class="tab"
@@ -128,7 +119,25 @@
             aria-selected="false"
             data-tab-target="tab-shopping"
             data-i18n="tab_shopping"
-            >Lista zakupów</a
+            >Shopping</a
+          >
+          <a
+            class="tab"
+            role="tab"
+            tabindex="-1"
+            aria-selected="false"
+            data-tab-target="tab-history"
+            data-i18n="tab_history"
+            >History</a
+          >
+          <a
+            class="tab"
+            role="tab"
+            tabindex="-1"
+            aria-selected="false"
+            data-tab-target="tab-settings"
+            data-i18n="tab_settings"
+            >Settings</a
           >
         </div>
       </div>
@@ -142,7 +151,7 @@
             type="button"
             style="display: none"
           >
-            Dodaj produkt
+            Add product
           </button>
           <button
             id="edit-json-header"
@@ -152,7 +161,7 @@
             type="button"
             style="display: none"
           >
-            Edytuj produkty (JSON)
+            Bulk edit (JSON)
           </button>
           <button
             id="receipt-btn"
@@ -162,13 +171,13 @@
             type="button"
             style="display: none"
           >
-            Dodaj z paragonu
+            Import receipt
           </button>
         </div>
         <div class="dropdown dropdown-end">
           <button
             id="more-btn"
-            class="btn btn-ghost btn-sm" aria-haspopup="menu" aria-label="More actions" type="button">
+            class="btn btn-ghost btn-sm" aria-haspopup="menu" aria-label="More actions" title="More actions" type="button">
             <i class="fa-solid fa-ellipsis"></i>
           </button>
           <ul
@@ -180,6 +189,7 @@
               <button
                 id="layout-toggle"
                 aria-label="Toggle layout"
+                title="Toggle layout"
                 class="text-xl p-2 bg-transparent border-0"
                 type="button"
               >
@@ -190,6 +200,7 @@
               <button
                 id="lang-toggle"
                 aria-label="Toggle language"
+                title="Toggle language"
                 class="flex items-center gap-1 text-xl p-2 bg-transparent border-0"
                 type="button"
               >
@@ -203,6 +214,7 @@
               <button
                 id="theme-toggle"
                 aria-label="Toggle theme"
+                title="Toggle theme"
                 class="flex items-center gap-1 text-xl p-2 bg-transparent border-0"
                 type="button"
               >
@@ -216,6 +228,7 @@
               <button
                 id="install-btn"
                 aria-label="Install app"
+                title="Install app"
                 class="text-xl p-2 bg-transparent border-0"
                 style="display: none"
                 type="button"
@@ -227,6 +240,7 @@
               <button
                 id="settings-btn"
                 aria-label="Settings"
+                title="Settings"
                 class="flex items-center gap-1 text-xl p-2 bg-transparent border-0"
                 type="button"
               >
@@ -275,6 +289,7 @@
               id="search-clear"
               class="btn btn-ghost btn-xs absolute right-1 top-1/2 -translate-y-1/2 hidden"
               aria-label="Clear search"
+              title="Clear search"
               type="button"
             >
               <i class="fa-solid fa-xmark"></i>
@@ -309,11 +324,11 @@
             id="save-btn"
             style="display: none"
             class="btn btn-primary btn-sm min-h-11 justify-center"
-            aria-label="Zapisz"
+            aria-label="Save"
             data-i18n="save_button"
             type="button"
           >
-            Zapisz
+            Save
           </button>
         </div>
         <div class="overflow-x-auto">
@@ -330,7 +345,7 @@
                 type="button"
               >
                 <i class="fa-solid fa-trash"></i>
-                <span data-i18n="delete_selected_button">Usuń</span>
+                <span data-i18n="delete_selected_button">Delete</span>
               </button>
               <button
                 id="move-shopping"
@@ -414,10 +429,10 @@
                 id="cancel-delete"
                 class="btn btn-ghost btn-sm"
                 data-i18n="delete_cancel_button"
-                aria-label="Anuluj"
+                aria-label="Cancel"
                 type="button"
               >
-                Anuluj
+                Cancel
               </button>
               <button
                 id="confirm-delete"
@@ -426,7 +441,7 @@
                 type="button"
               >
                 <i class="fa-solid fa-trash"></i>
-                <span data-i18n="delete_confirm_button">Usuń</span>
+                <span data-i18n="delete_confirm_button">Delete</span>
               </button>
             </div>
           </form>
@@ -435,12 +450,12 @@
         <div id="add-section" style="display: none">
           <hr class="border-t border-base-300 my-6" />
 
-          <h2
-            class="text-xl font-semibold mt-6 mb-4"
-            data-i18n="heading_add_edit_product"
-          >
-            Dodaj / edytuj produkt
-          </h2>
+        <h2
+          class="text-xl font-semibold mt-6 mb-4"
+          data-i18n="heading_add_edit_product"
+        >
+          Add or edit product
+        </h2>
           <form id="add-form" class="space-y-4 mb-6">
             <div class="field-group">
               <div class="flex flex-col flex-1">
@@ -593,7 +608,7 @@
               data-i18n="save_button"
               title="Enter – Save\nShift+Enter – Save and add another\nEsc – Cancel"
             >
-              Zapisz
+              Save
             </button>
           </form>
           <hr class="border-t border-base-300 my-6" />
@@ -797,7 +812,7 @@
           class="text-xl md:text-2xl font-semibold mb-3 md:mb-4"
           data-i18n="heading_history"
         >
-          Historia dań
+          History
         </h1>
         <ul id="history-list" class="list-disc pl-4"></ul>
 
@@ -868,7 +883,7 @@
                 class="btn btn-ghost btn-sm"
                 data-i18n="delete_cancel_button"
               >
-                Anuluj
+                Cancel
               </button>
               <button
                 type="submit"
@@ -876,7 +891,7 @@
                 data-modal-primary
                 data-i18n="save_button"
               >
-                Zapisz
+                Save
               </button>
             </div>
           </form>
@@ -998,7 +1013,7 @@
               class="btn btn-primary"
               data-i18n="save_button"
             >
-              Zapisz
+              Save
             </button>
           </form>
         </div>
@@ -1006,7 +1021,7 @@
 
       <div id="tab-shopping" class="tab-panel" style="display: none">
         <h1 class="text-2xl font-bold mb-6" data-i18n="heading_shopping">
-          Lista zakupów
+          Shopping
         </h1>
         <input id="receipt-input" type="file" accept="image/*" class="hidden" />
         <dialog id="receipt-sheet" class="modal modal-bottom sm:modal-middle" role="dialog">
@@ -1058,7 +1073,7 @@
             class="text-xl font-semibold mb-4"
             data-i18n="heading_shopping_list"
           >
-            Lista zakupów
+            Shopping list
           </h2>
           <div
             id="shopping-summary"
@@ -1097,7 +1112,7 @@
           class="mb-8 p-4 shadow rounded bg-base-100"
         >
           <h2 class="text-xl font-bold mb-4" data-i18n="heading_add_product">
-            Dodaj produkt
+            Add product
           </h2>
           <div class="flex flex-wrap items-center gap-2">
             <input
@@ -1112,7 +1127,8 @@
                 id="manual-dec"
                 type="button"
                 class="text-xl touch-btn"
-                aria-label="-"
+                aria-label="Decrease quantity"
+                title="Decrease quantity"
               >
                 <i class="fa-solid fa-minus"></i>
               </button>
@@ -1125,7 +1141,8 @@
                 id="manual-inc"
                 type="button"
                 class="text-xl touch-btn"
-                aria-label="+"
+                aria-label="Increase quantity"
+                title="Increase quantity"
               >
                 <i class="fa-solid fa-plus"></i>
               </button>
@@ -1136,7 +1153,7 @@
               data-i18n="save_button"
               type="button"
             >
-              Zapisz
+              Save
             </button>
           </div>
           <datalist id="product-datalist"></datalist>
@@ -1153,7 +1170,7 @@
               class="font-bold text-lg"
               data-i18n="receipt_import"
             >
-              Dodaj z paragonu
+              Import receipt
             </h3>
             <div class="overflow-x-auto">
               <table id="receipt-table" class="table w-full">
@@ -1170,7 +1187,7 @@
             </div>
             <div class="modal-action justify-between">
               <button class="btn btn-ghost" data-i18n="delete_cancel_button" type="button">
-                Anuluj
+                Cancel
               </button>
               <button
                 id="receipt-confirm"
@@ -1205,10 +1222,10 @@
               <button
                 class="btn btn-ghost btn-sm"
                 data-i18n="delete_cancel_button"
-                aria-label="Anuluj"
+                aria-label="Cancel"
                 type="button"
               >
-                Anuluj
+                Cancel
               </button>
               <button
                 id="confirm-remove-item"
@@ -1217,7 +1234,7 @@
                 type="button"
               >
                 <i class="fa-solid fa-trash"></i>
-                <span data-i18n="delete_confirm_button">Usuń</span>
+                <span data-i18n="delete_confirm_button">Delete</span>
               </button>
             </div>
           </form>
@@ -1248,13 +1265,13 @@
           class="text-xl md:text-2xl font-semibold mb-3 md:mb-4"
           data-i18n="heading_settings"
         >
-          Ustawienia
+          Settings
         </h1>
         <h2
           class="text-xl font-semibold mb-4"
           data-i18n="settings_units_header"
         >
-          Jednostki
+          Units
         </h2>
         <div class="overflow-x-auto">
           <table id="units-table" class="table table-zebra w-full">
@@ -1279,7 +1296,7 @@
           data-i18n="save_button"
           type="button"
         >
-          Zapisz
+          Save
         </button>
       </div>
     </main>
@@ -1290,28 +1307,35 @@
         data-tab-target="tab-products"
       >
         <i class="fa-solid fa-box text-xl"></i>
-        <span class="text-xs" data-i18n="tab_products">Produkty</span>
+        <span class="text-xs" data-i18n="tab_products">Products</span>
       </a>
       <a
         class="tab flex flex-col items-center justify-center flex-1 py-3 px-2 border-r border-base-300 min-h-11 text-center"
         data-tab-target="tab-recipes"
       >
         <i class="fa-solid fa-utensils text-xl"></i>
-        <span class="text-xs" data-i18n="tab_recipes">Przepisy</span>
+        <span class="text-xs" data-i18n="tab_recipes">Recipes</span>
+      </a>
+      <a
+        class="tab flex flex-col items-center justify-center flex-1 py-3 px-2 border-r border-base-300 min-h-11 text-center"
+        data-tab-target="tab-shopping"
+      >
+        <i class="fa-solid fa-cart-shopping text-xl"></i>
+        <span class="text-xs" data-i18n="tab_shopping">Shopping</span>
       </a>
       <a
         class="tab flex flex-col items-center justify-center flex-1 py-3 px-2 border-r border-base-300 min-h-11 text-center"
         data-tab-target="tab-history"
       >
         <i class="fa-solid fa-clock-rotate-left text-xl"></i>
-        <span class="text-xs" data-i18n="tab_history">Historia dań</span>
+        <span class="text-xs" data-i18n="tab_history">History</span>
       </a>
       <a
         class="tab flex flex-col items-center justify-center flex-1 py-3 px-2 min-h-11 text-center"
-        data-tab-target="tab-shopping"
+        data-tab-target="tab-settings"
       >
-        <i class="fa-solid fa-cart-shopping text-xl"></i>
-        <span class="text-xs" data-i18n="tab_shopping">Lista zakupów</span>
+        <i class="fa-solid fa-gear text-xl"></i>
+        <span class="text-xs" data-i18n="tab_settings">Settings</span>
       </a>
     </nav>
     <script>

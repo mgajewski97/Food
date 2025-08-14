@@ -420,6 +420,7 @@ function buildQtyCell(p, tr) {
   dec.className = "btn-qty qty-dec";
   dec.textContent = "−";
   dec.setAttribute("aria-label", t("decrease_quantity"));
+  dec.setAttribute("title", t("decrease_quantity"));
   const input = document.createElement("input");
   input.className = "qty-input no-spinner";
   input.type = "number";
@@ -444,6 +445,7 @@ function buildQtyCell(p, tr) {
   inc.className = "btn-qty qty-inc";
   inc.textContent = "+";
   inc.setAttribute("aria-label", t("increase_quantity"));
+  inc.setAttribute("title", t("increase_quantity"));
   wrap.append(dec, input, inc);
   td.appendChild(wrap);
   return td;

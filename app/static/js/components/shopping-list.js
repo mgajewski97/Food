@@ -104,6 +104,7 @@ function renderShoppingItem(item, idx) {
   dec.innerHTML = '<i class="fa-solid fa-minus"></i>';
   dec.className = "touch-btn qty-btn";
   dec.setAttribute("aria-label", t("decrease_quantity"));
+  dec.setAttribute("title", t("decrease_quantity"));
   dec.disabled = item.inCart;
   const qtyEl = document.createElement("span");
   qtyEl.className = "qty-value w-10 text-center";
@@ -114,6 +115,7 @@ function renderShoppingItem(item, idx) {
   inc.innerHTML = '<i class="fa-solid fa-plus"></i>';
   inc.className = "touch-btn qty-btn";
   inc.setAttribute("aria-label", t("increase_quantity"));
+  inc.setAttribute("title", t("increase_quantity"));
   inc.disabled = item.inCart;
   dec.addEventListener("click", () => {
     item.quantity = Math.max(1, item.quantity - 1);
@@ -314,6 +316,7 @@ export function renderSuggestions() {
     dec.innerHTML = '<i class="fa-solid fa-minus"></i>';
     dec.className = "touch-btn";
     dec.setAttribute("aria-label", t("decrease_quantity"));
+    dec.setAttribute("title", t("decrease_quantity"));
     const qtyEl = document.createElement("span");
     qtyEl.className = "w-10 text-center";
     qtyEl.setAttribute("aria-live", "polite");
@@ -323,6 +326,7 @@ export function renderSuggestions() {
     inc.innerHTML = '<i class="fa-solid fa-plus"></i>';
     inc.className = "touch-btn";
     inc.setAttribute("aria-label", t("increase_quantity"));
+    inc.setAttribute("title", t("increase_quantity"));
     dec.addEventListener("click", () => {
       qty = Math.max(1, qty - 1);
       qtyEl.textContent = qty;
