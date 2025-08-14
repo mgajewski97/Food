@@ -171,6 +171,19 @@ export function debounce(fn, delay = 200) {
   };
 }
 
+// Debounce and batch DOM work into a single animation frame
+export function debounceFrame(fn, delay = 200) {
+  let timer;
+  let raf;
+  return (...args) => {
+    clearTimeout(timer);
+    if (raf) cancelAnimationFrame(raf);
+    timer = setTimeout(() => {
+      raf = requestAnimationFrame(() => fn.apply(null, args));
+    }, delay);
+  };
+}
+
 export function throttle(fn, delay = 200) {
   let last = 0;
   return (...args) => {
