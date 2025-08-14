@@ -68,11 +68,12 @@ async function loadProducts() {
     trace("loadProducts:ok");
   } catch (e) {
     console.error(e);
+    APP.state.products = [];
+    ProductTable.renderProducts();
     showTopBanner(t("load_products_failed"), {
       actionLabel: t("retry"),
       onAction: loadProducts,
     });
-    throw e;
   }
 }
 
@@ -748,6 +749,10 @@ async function boot() {
   document.documentElement.setAttribute("lang", state.currentLang);
   await loadFavorites();
   trace("favorites");
+  try {
+    await loadProducts();
+    trace("products");
+  } catch {}
   await loadHistory();
   trace("history");
   initNavigationAndEvents();
