@@ -96,6 +96,55 @@ export const state = {
 // In-memory cache metadata for conditional requests
 const httpCache = {};
 
+// Accessible modal helper
+const nativeShowModal = HTMLDialogElement.prototype.showModal;
+HTMLDialogElement.prototype.showModal = function (...args) {
+  if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
+  const labelled = this.getAttribute("aria-labelledby");
+  if (!labelled) {
+    const title = this.querySelector("h1,h2,h3,h4,h5,h6");
+    if (title) {
+      if (!title.id) title.id = `${this.id || "dialog"}-title`;
+      this.setAttribute("aria-labelledby", title.id);
+    }
+  }
+  nativeShowModal.apply(this, args);
+  const focusables = this.querySelectorAll(
+    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+  );
+  const first = focusables[0];
+  const last = focusables[focusables.length - 1];
+  const primary = this.querySelector("[data-modal-primary]") || first;
+  const trap = (e) => {
+    if (e.key === "Tab") {
+      if (focusables.length === 0) return;
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last?.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first?.focus();
+      }
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      this.close();
+    } else if (e.key === "Enter" && e.target.tagName !== "TEXTAREA") {
+      e.preventDefault();
+      primary?.click();
+    }
+  };
+  this.addEventListener("keydown", trap);
+  this.addEventListener("close", () => {
+    this.removeEventListener("keydown", trap);
+  }, { once: true });
+  if (primary) {
+    if (!primary.getAttribute("aria-label")) {
+      primary.setAttribute("aria-label", primary.textContent.trim());
+    }
+    primary.focus();
+  }
+};
+
 // Utility helpers for performance-sensitive handlers
 export function debounce(fn, delay = 200) {
   let timer;
