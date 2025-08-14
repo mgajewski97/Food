@@ -398,6 +398,16 @@ button:focus-visible,
   outline-offset: 2px;
 }
 
+/* Modal action layout */
+.modal-action.justify-between {
+  justify-content: space-between;
+}
+
+/* Icon spacing for destructive buttons */
+.btn-error .fa-trash {
+  margin-right: 0.25rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

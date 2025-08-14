@@ -305,7 +305,7 @@
           <button
             id="save-btn"
             style="display: none"
-            class="btn btn-success btn-sm min-h-11 justify-center"
+            class="btn btn-primary btn-sm min-h-11 justify-center"
             aria-label="Zapisz"
             data-i18n="save_button"
             type="button"
@@ -322,11 +322,12 @@
             <div class="ml-auto flex gap-2">
               <button
                 id="delete-selected"
-                class="btn btn-error btn-sm"
+                class="btn btn-error btn-sm flex items-center gap-1"
                 disabled
                 type="button"
               >
-                Usuń
+                <i class="fa-solid fa-trash"></i>
+                <span data-i18n="delete_selected_button">Usuń</span>
               </button>
               <button
                 id="move-shopping"
@@ -392,33 +393,37 @@
           <div id="products-by-category" style="display: none"></div>
         </div>
 
-        <dialog id="delete-modal" class="modal">
+        <dialog id="delete-modal" class="modal" aria-labelledby="delete-modal-title" role="dialog">
           <form method="dialog" class="modal-box">
-            <h3 class="font-bold text-lg" data-i18n="delete_modal_title">
+            <h3
+              id="delete-modal-title"
+              class="font-bold text-lg"
+              data-i18n="delete_modal_title"
+            >
               Potwierdź usunięcie
             </h3>
             <p class="py-4" data-i18n="delete_modal_question">
               Czy na pewno chcesz usunąć zaznaczone produkty?
             </p>
             <div id="delete-summary" class="space-y-1"></div>
-            <div class="modal-action">
-              <button
-                id="confirm-delete"
-                class="btn btn-error btn-sm"
-                data-i18n="delete_confirm_button"
-                aria-label="Usuń"
-                type="button"
-              >
-                Usuń
-              </button>
+            <div class="modal-action justify-between">
               <button
                 id="cancel-delete"
-                class="btn btn-outline btn-sm"
+                class="btn btn-ghost btn-sm"
                 data-i18n="delete_cancel_button"
                 aria-label="Anuluj"
                 type="button"
               >
                 Anuluj
+              </button>
+              <button
+                id="confirm-delete"
+                class="btn btn-error btn-sm flex items-center gap-1"
+                data-modal-primary
+                type="button"
+              >
+                <i class="fa-solid fa-trash"></i>
+                <span data-i18n="delete_confirm_button">Usuń</span>
               </button>
             </div>
           </form>
@@ -579,7 +584,7 @@
             </select>
             <button
               type="submit"
-              class="btn btn-success btn-sm w-full sm:col-span-2"
+              class="btn btn-primary btn-sm w-full sm:col-span-2"
               data-i18n="save_button"
             >
               Zapisz
@@ -785,7 +790,12 @@
         </h1>
         <ul id="history-list" class="list-disc pl-4"></ul>
 
-        <dialog id="rating-modal" class="modal">
+        <dialog
+          id="rating-modal"
+          class="modal"
+          aria-labelledby="rating-title"
+          role="dialog"
+        >
           <form method="dialog" id="rating-form" class="modal-box">
             <h3 id="rating-title" class="font-bold text-lg"></h3>
             <div class="py-4 space-y-4">
@@ -840,21 +850,22 @@
                 ></textarea>
               </div>
             </div>
-            <div class="modal-action">
-              <button
-                type="submit"
-                class="btn btn-success btn-sm"
-                data-i18n="save_button"
-              >
-                Zapisz
-              </button>
+            <div class="modal-action justify-between">
               <button
                 type="button"
                 id="rating-cancel"
-                class="btn btn-outline btn-sm"
+                class="btn btn-ghost btn-sm"
                 data-i18n="delete_cancel_button"
               >
                 Anuluj
+              </button>
+              <button
+                type="submit"
+                class="btn btn-primary btn-sm"
+                data-modal-primary
+                data-i18n="save_button"
+              >
+                Zapisz
               </button>
             </div>
           </form>
@@ -864,6 +875,7 @@
           id="history-detail-modal"
           class="modal"
           aria-labelledby="history-detail-title"
+          role="dialog"
         >
           <div class="modal-box max-w-lg">
             <h3 id="history-detail-title" class="font-bold text-lg mb-4"></h3>
@@ -972,7 +984,7 @@
             </div>
             <button
               type="submit"
-              class="btn btn-success"
+              class="btn btn-primary"
               data-i18n="save_button"
             >
               Zapisz
@@ -986,7 +998,7 @@
           Lista zakupów
         </h1>
         <input id="receipt-input" type="file" accept="image/*" class="hidden" />
-        <dialog id="receipt-sheet" class="modal modal-bottom sm:modal-middle">
+        <dialog id="receipt-sheet" class="modal modal-bottom sm:modal-middle" role="dialog">
           <form method="dialog" class="modal-box">
             <button
               id="receipt-camera"
@@ -1006,7 +1018,7 @@
             </button>
           </form>
         </dialog>
-        <dialog id="receipt-upload-modal" class="modal">
+        <dialog id="receipt-upload-modal" class="modal" role="dialog">
           <form method="dialog" class="modal-box">
             <div
               id="receipt-drop-area"
@@ -1092,9 +1104,18 @@
           </div>
           <datalist id="product-datalist"></datalist>
         </div>
-        <dialog id="receipt-modal" class="modal">
+        <dialog
+          id="receipt-modal"
+          class="modal"
+          aria-labelledby="receipt-modal-title"
+          role="dialog"
+        >
           <form method="dialog" class="modal-box w-11/12 max-w-3xl">
-            <h3 class="font-bold text-lg" data-i18n="receipt_import">
+            <h3
+              id="receipt-modal-title"
+              class="font-bold text-lg"
+              data-i18n="receipt_import"
+            >
               Dodaj z paragonu
             </h3>
             <div class="overflow-x-auto">
@@ -1110,46 +1131,56 @@
                 <tbody></tbody>
               </table>
             </div>
-            <div class="modal-action">
+            <div class="modal-action justify-between">
+              <button class="btn btn-ghost" data-i18n="delete_cancel_button" type="button">
+                Anuluj
+              </button>
               <button
                 id="receipt-confirm"
                 class="btn btn-primary"
+                data-modal-primary
                 data-i18n="confirm_import"
                 type="button"
               >
                 Zatwierdź import
               </button>
-              <button class="btn btn-outline" data-i18n="delete_cancel_button" type="button">
-                Anuluj
-              </button>
             </div>
           </form>
         </dialog>
-        <dialog id="shopping-delete-modal" class="modal">
+        <dialog
+          id="shopping-delete-modal"
+          class="modal"
+          aria-labelledby="shopping-delete-title"
+          role="dialog"
+        >
           <form method="dialog" class="modal-box">
-            <h3 class="font-bold text-lg" data-i18n="delete_modal_title">
+            <h3
+              id="shopping-delete-title"
+              class="font-bold text-lg"
+              data-i18n="delete_modal_title"
+            >
               Potwierdź usunięcie
             </h3>
             <p class="py-4" data-i18n="delete_item_question">
               Czy na pewno chcesz usunąć ten produkt?
             </p>
-            <div class="modal-action">
+            <div class="modal-action justify-between">
               <button
-                id="confirm-remove-item"
-                class="btn btn-error btn-sm"
-                data-i18n="confirm_button"
-                aria-label="Potwierdź"
-                type="button"
-              >
-                Potwierdź
-              </button>
-              <button
-                class="btn btn-outline btn-sm"
+                class="btn btn-ghost btn-sm"
                 data-i18n="delete_cancel_button"
                 aria-label="Anuluj"
                 type="button"
               >
                 Anuluj
+              </button>
+              <button
+                id="confirm-remove-item"
+                class="btn btn-error btn-sm flex items-center gap-1"
+                data-modal-primary
+                type="button"
+              >
+                <i class="fa-solid fa-trash"></i>
+                <span data-i18n="delete_confirm_button">Usuń</span>
               </button>
             </div>
           </form>
@@ -1197,8 +1228,16 @@
       </div>
     </main>
 
-    <dialog id="recipe-detail-modal" class="modal">
+    <dialog
+      id="recipe-detail-modal"
+      class="modal"
+      aria-labelledby="recipe-detail-title"
+      role="dialog"
+    >
       <form method="dialog" class="modal-box max-w-2xl">
+        <h3 id="recipe-detail-title" class="sr-only" data-i18n="recipe_view_recipe">
+          Szczegóły przepisu
+        </h3>
         <div id="recipe-detail-content"></div>
         <div class="modal-action">
           <button class="btn" data-i18n="close" type="button">Zamknij</button>
