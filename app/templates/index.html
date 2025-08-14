@@ -210,6 +210,7 @@
             aria-pressed="false"
             aria-label="Widok z podziałem"
             data-i18n="change_view_toggle_grouped"
+            type="button"
           >
             Widok z podziałem
           </button>
@@ -220,6 +221,7 @@
             aria-pressed="false"
             aria-label="Tryb edycji"
             data-i18n="edit_mode_button_on"
+            type="button"
           >
             Tryb edycji
           </button>
@@ -229,6 +231,7 @@
             class="btn btn-success btn-sm min-h-11 justify-center"
             aria-label="Zapisz"
             data-i18n="save_button"
+            type="button"
           >
             Zapisz
           </button>
@@ -239,6 +242,7 @@
             disabled
             aria-label="Usuń zaznaczone"
             data-i18n="delete_selected_button"
+            type="button"
           >
             Usuń zaznaczone
           </button>
@@ -295,6 +299,7 @@
                 class="btn btn-error btn-sm"
                 data-i18n="delete_confirm_button"
                 aria-label="Usuń"
+                type="button"
               >
                 Usuń
               </button>
@@ -303,6 +308,7 @@
                 class="btn btn-outline btn-sm"
                 data-i18n="delete_cancel_button"
                 aria-label="Anuluj"
+                type="button"
               >
                 Anuluj
               </button>
@@ -492,6 +498,7 @@
             id="edit-json-btn"
             class="btn btn-outline btn-primary btn-sm w-full sm:w-auto"
             data-i18n="edit_json_submit_button"
+            type="button"
           >
             Wyślij JSON
           </button>
@@ -499,6 +506,7 @@
             id="copy-btn"
             class="btn btn-outline btn-sm w-full sm:w-auto"
             data-i18n="copy_structure_button"
+            type="button"
           >
             Pobierz strukturę
           </button>
@@ -635,21 +643,23 @@
               <option value="5+">5+</option>
             </select>
           </div>
-          <button
-            id="recipe-favorites-toggle"
-            class="btn btn-outline btn-sm self-start"
-            data-i18n="recipe_filter_favorites"
-          >
-            Ulubione przepisy
-          </button>
-          <button
-            id="recipe-clear-filters"
-            class="btn btn-outline btn-sm self-start"
-            data-i18n="recipe_clear_filters"
-          >
-            Wyczyść filtry
-          </button>
-        </div>
+        <button
+          id="recipe-favorites-toggle"
+          class="btn btn-outline btn-sm self-start"
+          data-i18n="recipe_filter_favorites"
+          type="button"
+        >
+          Ulubione przepisy
+        </button>
+        <button
+          id="recipe-clear-filters"
+          class="btn btn-outline btn-sm self-start"
+          data-i18n="recipe_clear_filters"
+          type="button"
+        >
+          Wyczyść filtry
+        </button>
+      </div>
         <div
           id="recipe-list"
           role="list"
@@ -782,6 +792,7 @@
                 class="btn btn-sm"
                 data-i18n="close"
                 aria-label="Zamknij"
+                type="button"
               >
                 Zamknij
               </button>
@@ -798,6 +809,7 @@
             id="cooking-next"
             class="btn btn-primary mb-4"
             data-i18n="next_step_button"
+            type="button"
           >
             Dalej
           </button>
@@ -869,6 +881,7 @@
           id="receipt-btn"
           class="btn btn-secondary btn-sm mb-4"
           data-i18n="receipt_import"
+          type="button"
         >
           Dodaj z paragonu
         </button>
@@ -879,6 +892,7 @@
               id="receipt-camera"
               class="btn w-full mb-2"
               data-i18n="camera"
+              type="button"
             >
               Aparat
             </button>
@@ -886,6 +900,7 @@
               id="receipt-upload"
               class="btn w-full"
               data-i18n="choose_file"
+              type="button"
             >
               Wybierz plik
             </button>
@@ -897,7 +912,7 @@
               id="receipt-drop-area"
               class="border-2 border-dashed rounded p-8 text-center"
             >
-              <button id="receipt-choose" class="btn" data-i18n="choose_file">
+              <button id="receipt-choose" class="btn" data-i18n="choose_file" type="button">
                 Wybierz plik
               </button>
             </div>
@@ -970,6 +985,7 @@
               id="manual-add-btn"
               class="btn btn-primary btn-sm"
               data-i18n="save_button"
+              type="button"
             >
               Zapisz
             </button>
@@ -999,10 +1015,11 @@
                 id="receipt-confirm"
                 class="btn btn-primary"
                 data-i18n="confirm_import"
+                type="button"
               >
                 Zatwierdź import
               </button>
-              <button class="btn btn-outline" data-i18n="delete_cancel_button">
+              <button class="btn btn-outline" data-i18n="delete_cancel_button" type="button">
                 Anuluj
               </button>
             </div>
@@ -1022,6 +1039,7 @@
                 class="btn btn-error btn-sm"
                 data-i18n="confirm_button"
                 aria-label="Potwierdź"
+                type="button"
               >
                 Potwierdź
               </button>
@@ -1029,6 +1047,7 @@
                 class="btn btn-outline btn-sm"
                 data-i18n="delete_cancel_button"
                 aria-label="Anuluj"
+                type="button"
               >
                 Anuluj
               </button>
@@ -1071,6 +1090,7 @@
           id="units-save"
           class="btn btn-primary btn-sm mt-4"
           data-i18n="save_button"
+          type="button"
         >
           Zapisz
         </button>
@@ -1081,7 +1101,7 @@
       <form method="dialog" class="modal-box max-w-2xl">
         <div id="recipe-detail-content"></div>
         <div class="modal-action">
-          <button class="btn" data-i18n="close">Zamknij</button>
+          <button class="btn" data-i18n="close" type="button">Zamknij</button>
         </div>
       </form>
     </dialog>
