@@ -6,7 +6,6 @@ import {
   loadDomain,
   loadFavorites,
   state,
-  normalizeProduct,
   applyTranslations,
   isSpice,
   debounce,
@@ -51,9 +50,7 @@ APP.searches = APP.searches || {
 async function loadProducts() {
   trace("loadProducts:enter");
   try {
-    const data = await fetchJson("/api/products");
-    APP.state.products = Array.isArray(data) ? data.map(normalizeProduct) : [];
-    ProductTable.renderProducts();
+    await ProductTable.loadProducts();
     Shopping.renderSuggestions();
     checkLowStockToast(
       APP.state.products,
@@ -68,8 +65,6 @@ async function loadProducts() {
     trace("loadProducts:ok");
   } catch (e) {
     console.error(e);
-    APP.state.products = [];
-    ProductTable.renderProducts();
     showTopBanner(t("load_products_failed"), {
       actionLabel: t("retry"),
       onAction: loadProducts,
