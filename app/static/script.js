@@ -110,10 +110,8 @@ function registerServiceWorker() {
 
 function resetProductFilters() {
   APP.state.filter = "available";
-  const sel = document.getElementById("state-filter");
+  const sel = document.getElementById("status-filter");
   if (sel) sel.value = "available";
-  const selMobile = document.getElementById("state-filter-mobile");
-  if (selMobile) selMobile.value = "available";
 }
 
 function resetRecipeFilters() {
@@ -154,10 +152,8 @@ async function activateTab(targetId) {
   if (targetId === "tab-products") {
     resetProductFilters();
     const val = APP.searches["tab-products"] || "";
-    const search = document.getElementById("product-search");
+    const search = document.getElementById("product-search-input");
     if (search) search.value = val;
-    const searchMobile = document.getElementById("product-search-mobile");
-    if (searchMobile) searchMobile.value = val;
     APP.state.search = val;
     if (!APP.state.products || APP.state.products.length === 0) {
       try {
@@ -557,10 +553,8 @@ function initNavigationAndEvents() {
   const deleteBtn = document.getElementById("delete-selected");
   const selectHeader = document.getElementById("select-header");
   const addSection = document.getElementById("add-section");
-  const filterSel = document.getElementById("state-filter");
-  const filterSelMobile = document.getElementById("state-filter-mobile");
-  const searchInput = document.getElementById("product-search");
-  const searchInputMobile = document.getElementById("product-search-mobile");
+  const filterSel = document.getElementById("status-filter");
+  const searchInput = document.getElementById("product-search-input");
   function enterEditMode() {
     APP.editBackup = JSON.parse(JSON.stringify(APP.state.products));
     APP.state.editing = true;
@@ -572,9 +566,7 @@ function initNavigationAndEvents() {
     selectHeader.style.display = "";
     if (addSection) addSection.style.display = "";
     filterSel?.setAttribute("disabled", "true");
-    filterSelMobile?.setAttribute("disabled", "true");
     searchInput?.setAttribute("disabled", "true");
-    searchInputMobile?.setAttribute("disabled", "true");
     ProductTable.renderProducts();
     updateAriaLabels();
   }
@@ -593,9 +585,7 @@ function initNavigationAndEvents() {
     selectHeader.style.display = "none";
     if (addSection) addSection.style.display = "none";
     filterSel?.removeAttribute("disabled");
-    filterSelMobile?.removeAttribute("disabled");
     searchInput?.removeAttribute("disabled");
-    searchInputMobile?.removeAttribute("disabled");
     ProductTable.renderProducts();
     updateAriaLabels();
   }
@@ -661,25 +651,10 @@ function initNavigationAndEvents() {
     APP.state.filter = filterSel.value;
     ProductTable.renderProducts();
   });
-  filterSelMobile?.addEventListener("change", () => {
-    APP.state.filter = filterSelMobile.value;
-    ProductTable.renderProducts();
-  });
   searchInput?.addEventListener(
     "input",
     debounce(() => {
       const val = searchInput.value.trim().toLowerCase();
-      APP.searches["tab-products"] = val;
-      if (APP.activeTab === "tab-products") {
-        APP.state.search = val;
-        ProductTable.renderProducts();
-      }
-    }, 150),
-  );
-  searchInputMobile?.addEventListener(
-    "input",
-    debounce(() => {
-      const val = searchInputMobile.value.trim().toLowerCase();
       APP.searches["tab-products"] = val;
       if (APP.activeTab === "tab-products") {
         APP.state.search = val;
