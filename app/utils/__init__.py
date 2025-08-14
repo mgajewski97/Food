@@ -24,6 +24,102 @@ DEFAULT_UNIT = "szt"
 logger = logging.getLogger(__name__)
 
 
+# --- Domain lookup helpers ---------------------------------------------------
+
+_DOMAIN_PRODUCTS: Dict[str, Dict[str, Any]] = {}
+_ALIAS_TO_ID: Dict[str, str] = {}
+_DOMAIN_LOCK = threading.Lock()
+
+_UNIT_TEXT_MAP = {
+    "pcs": DEFAULT_UNIT,
+    "pc": DEFAULT_UNIT,
+    "piece": DEFAULT_UNIT,
+    "pieces": DEFAULT_UNIT,
+    "szt": DEFAULT_UNIT,
+    "g": "g",
+    "gram": "g",
+    "grams": "g",
+    "kg": "kg",
+    "kilogram": "kg",
+    "kilograms": "kg",
+    "ml": "ml",
+    "milliliter": "ml",
+    "millilitre": "ml",
+    "milliliters": "ml",
+    "millilitres": "ml",
+    "l": "l",
+    "liter": "l",
+    "litre": "l",
+    "liters": "l",
+    "litres": "l",
+    "lvl": "lvl",
+}
+
+_TAG_CATEGORY_MAP = {
+    "spice": "spices",
+    "spices": "spices",
+    "herb": "spices",
+}
+
+
+def _normalize_alias(alias: str) -> str:
+    """Return canonical form for product aliases."""
+    import unicodedata
+
+    normalized = unicodedata.normalize("NFKD", alias)
+    return "".join(c for c in normalized if not unicodedata.combining(c)).lower()
+
+
+def _load_domain_data() -> None:
+    """Load domain products and aliases once into memory."""
+
+    if _DOMAIN_PRODUCTS:
+        return
+    with _DOMAIN_LOCK:
+        if _DOMAIN_PRODUCTS:
+            return
+        data_dir = os.path.join(os.path.dirname(__file__), "..", "data")
+        products_path = os.path.join(data_dir, "products.json")
+        try:
+            with open(products_path, "r", encoding="utf-8") as fh:
+                payload = json.load(fh)
+        except Exception:  # pragma: no cover - defensive
+            payload = {}
+        for prod in payload.get("products", []):
+            prod_id = prod.get("id")
+            if not prod_id:
+                continue
+            _DOMAIN_PRODUCTS[prod_id] = prod
+            for alias in prod.get("aliases", []):
+                _ALIAS_TO_ID[_normalize_alias(alias)] = prod_id
+
+
+def _normalize_unit(value: Optional[str]) -> Optional[str]:
+    if not value:
+        return None
+    value = str(value).strip().lower()
+    if value.startswith("unit."):
+        value = value[5:]
+    return _UNIT_TEXT_MAP.get(value, value)
+
+
+def _normalize_category(value: Optional[str]) -> Optional[str]:
+    if not value:
+        return None
+    value = str(value).strip().lower()
+    if value.startswith("category."):
+        value = value[9:]
+    return value or None
+
+
+def _coerce_bool(value: Any, default: bool = False) -> bool:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.strip().lower() == "true"
+    return default
+
+
 def file_etag(path: str) -> str:
     """Return SHA256 hex digest for the file at ``path``.
 
@@ -152,37 +248,106 @@ def validate_payload(payload: Any, schema_name: str) -> Any:
 
 
 def normalize_product(data: Dict[str, Any]) -> Dict[str, Any]:
-    """Return product dict with defaults and sanitized numeric fields.
+    """Normalize a product dict ensuring core fields are never empty.
 
-    The function primarily handles inventory items but many callers pass
-    domain objects loaded from the ``products.json`` dataset which uses a
-    different field layout (``names``, ``unitId`` etc.).  To keep behaviour
-    predictable we derive the minimal fields from those structures when the
-    canonical keys are missing instead of emitting ``None`` values that later
-    fail validation.
+    Normalization order for missing ``name``/``unit``/``category``:
+
+    1.  Resolve ``productId`` in bundled domain data and copy canonical
+        attributes.
+    2.  Resolve ``alias`` against the same domain maps.
+    3.  Map free-text unit names and tag based category hints.
+    4.  Apply conservative defaults (``"Unknown"``, ``DEFAULT_UNIT``,
+        ``"uncategorized"``).
+
+    Numeric and boolean fields are coerced from strings and lists are wrapped
+    appropriately.  The function operates on a shallow copy of ``data`` and
+    returns a minimal structure accepted by the product schema.
     """
 
-    name = data.get("name")
+    _load_domain_data()
+    obj = dict(data)
+
+    prod_id = obj.get("productId") or obj.get("id")
+    domain_prod = _DOMAIN_PRODUCTS.get(prod_id) if prod_id else None
+
+    # --- name -----------------------------------------------------------------
+    name = obj.get("name")
     if not name:
-        names = data.get("names")
-        if isinstance(names, dict):
-            name = names.get("pl") or names.get("en")
+        if domain_prod:
+            names = domain_prod.get("names", {})
+            name = names.get("pl") or names.get("en") or prod_id
         if not name:
-            aliases = data.get("aliases")
-            if isinstance(aliases, list) and aliases:
-                name = aliases[0]
-            else:
-                name = data.get("id")
+            alias = obj.get("alias")
+            if not alias:
+                aliases = obj.get("aliases")
+                if isinstance(aliases, list) and aliases:
+                    alias = aliases[0]
+            if alias:
+                pid = _ALIAS_TO_ID.get(_normalize_alias(alias))
+                if pid:
+                    dp = _DOMAIN_PRODUCTS.get(pid, {})
+                    names = dp.get("names", {})
+                    name = names.get("pl") or names.get("en") or pid
+                    domain_prod = dp
+        if not name:
+            name = "Unknown"
 
-    unit = data.get("unit") or data.get("unitId") or DEFAULT_UNIT
-    category = data.get("category") or data.get("categoryId") or "uncategorized"
-    storage = data.get("storage", "pantry")
+    # --- unit -----------------------------------------------------------------
+    unit = _normalize_unit(obj.get("unit") or obj.get("unitId"))
+    if not unit and domain_prod:
+        unit = _normalize_unit(domain_prod.get("unitId"))
+    if not unit:
+        unit = DEFAULT_UNIT
 
-    pack = data.get("pack_size")
-    is_spice = data.get("is_spice") is True or category == "spices"
-    quantity = max(0.0, _safe_float(data.get("quantity", 0)))
-    level = data.get("level")
+    # --- category -------------------------------------------------------------
+    category = _normalize_category(obj.get("category") or obj.get("categoryId"))
+    if not category and domain_prod:
+        category = _normalize_category(domain_prod.get("categoryId"))
+    if not category:
+        raw_tags = obj.get("tags")
+        tags: List[str]
+        if isinstance(raw_tags, list):
+            tags = [str(t).lower() for t in raw_tags if isinstance(t, str)]
+        elif isinstance(raw_tags, str):
+            tags = [raw_tags.lower()]
+        else:
+            tags = []
+        for tag in tags:
+            mapped = _TAG_CATEGORY_MAP.get(tag)
+            if mapped:
+                category = mapped
+                break
+    if not category:
+        category = "uncategorized"
 
+    storage = obj.get("storage") or "pantry"
+
+    # --- numeric fields -------------------------------------------------------
+    quantity = max(0.0, _safe_float(obj.get("quantity")))
+    threshold = max(0.0, _safe_float(obj.get("threshold")))
+    package_size = obj.get("package_size")
+    package_size = (
+        max(0.0, _safe_float(package_size)) if package_size not in (None, "") else None
+    )
+    pack_size = obj.get("pack_size")
+    pack_size = (
+        max(0.0, _safe_float(pack_size)) if pack_size not in (None, "") else None
+    )
+
+    # --- booleans -------------------------------------------------------------
+    main = _coerce_bool(obj.get("main"), True)
+    is_spice = _coerce_bool(obj.get("is_spice")) or category == "spices"
+
+    # --- tags -----------------------------------------------------------------
+    tags = obj.get("tags")
+    if isinstance(tags, list):
+        tags = [str(t) for t in tags if isinstance(t, str)]
+    elif isinstance(tags, str):
+        tags = [tags]
+    else:
+        tags = []
+
+    level = obj.get("level")
     if is_spice:
         if level not in {"none", "low", "medium", "high"}:
             if quantity <= 0:
@@ -194,30 +359,31 @@ def normalize_product(data: Dict[str, Any]) -> Dict[str, Any]:
         return {
             "name": name,
             "quantity": 0,
-            "unit": unit or DEFAULT_UNIT,
+            "unit": unit,
             "category": "spices",
             "storage": storage,
             "threshold": 1,
             "main": True,
-            "package_size": max(0.0, _safe_float(data.get("package_size", 1), 1)),
-            "pack_size": max(0.0, _safe_float(pack)) if pack is not None else None,
-            "tags": [str(t) for t in data.get("tags", []) if isinstance(t, str)],
+            "package_size": package_size if package_size is not None else 1,
+            "pack_size": pack_size,
+            "tags": tags,
             "level": level,
             "is_spice": True,
         }
 
+    level = level if level in {"none", "low", "medium", "high"} else None
     return {
         "name": name,
         "quantity": quantity,
-        "unit": unit or DEFAULT_UNIT,
+        "unit": unit,
         "category": category,
         "storage": storage,
-        "threshold": max(0.0, _safe_float(data.get("threshold", 1), 1)),
-        "main": bool(data.get("main", True)),
-        "package_size": max(0.0, _safe_float(data.get("package_size", 1), 1)),
-        "pack_size": max(0.0, _safe_float(pack)) if pack is not None else None,
-        "tags": [str(t) for t in data.get("tags", []) if isinstance(t, str)],
-        "level": level if level in {"none", "low", "medium", "high"} else None,
+        "threshold": threshold,
+        "main": main,
+        "package_size": package_size if package_size is not None else 1,
+        "pack_size": pack_size,
+        "tags": tags,
+        "level": level,
         "is_spice": False,
     }
 
