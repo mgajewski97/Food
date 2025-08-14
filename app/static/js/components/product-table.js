@@ -486,28 +486,66 @@ function renderProductPager() {
   pager.append(prev, next);
 }
 
-export async function refreshProducts() {
+function showNoDataRow(message) {
+  const table = document.getElementById("product-table");
+  const tbody = table?.querySelector("tbody");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+  const tr = document.createElement("tr");
+  const colSpan = table.querySelectorAll("thead th").length || 1;
+  const td = document.createElement("td");
+  td.colSpan = colSpan;
+  td.className = "text-center";
+  td.textContent = message;
+  tr.appendChild(td);
+  tbody.appendChild(tr);
+}
+
+export async function loadProducts() {
+  console.info("Fetching products from /products.json");
+  let raw;
   try {
-    const params = new URLSearchParams({
-      page: String(productPager.page),
-      page_size: String(productPager.page_size),
-      sort_by: productPager.sort_by,
-      order: productPager.order,
-    });
-    const data = await fetchJson(`/api/products?${params.toString()}`);
-    productPager.page = data.page;
-    productPager.page_size = data.page_size;
-    productPager.total = data.total;
-    APP.state.products = Array.isArray(data.items)
-      ? data.items.map(normalizeProduct)
+    const res = await fetch("/products.json");
+    console.info("Received products response", res);
+    raw = await res.text();
+    console.info("Raw products data", raw);
+    let data;
+    try {
+      data = JSON.parse(raw);
+    } catch (e) {
+      console.warn("Products JSON parse failed", e);
+      showNoDataRow("Brak danych / No data available");
+      APP.state.products = [];
+      throw e;
+    }
+    const list = Array.isArray(data)
+      ? data
+      : Array.isArray(data?.products)
+      ? data.products
       : [];
+    if (!list.length) {
+      console.warn("Products list empty", data);
+      showNoDataRow("Brak danych / No data available");
+      APP.state.products = [];
+      return [];
+    }
+    productPager.page = 1;
+    productPager.page_size = list.length;
+    productPager.total = list.length;
+    APP.state.products = list.map(normalizeProduct);
     renderProducts();
     renderProductPager();
+    return APP.state.products;
   } catch (err) {
-    APP.state.products = null;
-    renderProducts();
-    toast.error(t("notify_error_title"), err.message);
+    console.warn("Failed to load products", err);
+    showNoDataRow("Brak danych / No data available");
+    APP.state.products = [];
+    return [];
   }
+}
+
+export async function refreshProducts() {
+  return loadProducts();
 }
 
 export async function saveProduct(payload) {
