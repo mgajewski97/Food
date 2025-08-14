@@ -118,6 +118,8 @@ export async function handleReceiptUpload(file) {
     removeBtn.type = "button";
     removeBtn.className = "text-error";
     removeBtn.innerHTML = '<i class="fa-regular fa-circle-minus"></i>';
+    removeBtn.setAttribute("aria-label", t("delete_confirm_button"));
+    removeBtn.setAttribute("title", t("delete_confirm_button"));
     removeBtn.addEventListener("click", () => tr.remove());
     removeTd.appendChild(removeBtn);
     tr.appendChild(removeTd);

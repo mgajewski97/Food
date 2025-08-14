@@ -53,6 +53,8 @@ export function renderRecipes() {
       favBtn.innerHTML = state.favoriteRecipes.has(r.id)
         ? '<i class="fa-solid fa-heart"></i>'
         : '<i class="fa-regular fa-heart"></i>';
+      favBtn.setAttribute("aria-label", t("checkbox_favorite_label"));
+      favBtn.setAttribute("title", t("checkbox_favorite_label"));
       favBtn.addEventListener("click", async (e) => {
         e.stopPropagation();
         favBtn.disabled = true;
