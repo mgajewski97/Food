@@ -72,11 +72,6 @@ input::placeholder {
   color: hsl(var(--bc) / 0.6);
 }
 
-html[data-layout="mobile"] {
-  --cell-padding-y: var(--space-xs);
-  --cell-padding-x: var(--space-sm);
-}
-
 #top-sentinel {
   height: 3rem;
 }
@@ -84,10 +79,6 @@ html[data-layout="mobile"] {
 /* layout helpers */
 .main-content {
   padding-bottom: calc(env(safe-area-inset-bottom) + 6rem);
-}
-
-.bottom-nav {
-  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* removed header and main layout in favor of Tailwind */
@@ -149,50 +140,6 @@ html[data-layout="mobile"] {
   text-align: center;
   border-radius: 0.5rem;
 }
-
-html[data-layout="mobile"] #product-table.edit-mode thead {
-  display: none;
-}
-
-html[data-layout="mobile"] #product-table.edit-mode tbody tr {
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-}
-
-html[data-layout="mobile"] #product-table.edit-mode .checkbox-cell {
-  grid-row: span 3 / span 3;
-  grid-column: span 1 / span 1;
-}
-
-html[data-layout="mobile"] #product-table.edit-mode .name-cell {
-  grid-column: span 5 / span 5;
-}
-
-html[data-layout="mobile"] #product-table.edit-mode .qty-cell {
-  grid-column: span 3 / span 3;
-}
-
-html[data-layout="mobile"] #product-table.edit-mode .unit-cell {
-  grid-column: span 2 / span 2;
-}
-
-html[data-layout="mobile"] #product-table.edit-mode .category-cell {
-  grid-column: span 3 / span 3;
-}
-
-html[data-layout="mobile"] #product-table.edit-mode .storage-cell {
-  grid-column: span 2 / span 2;
-}
-
-html[data-layout="mobile"] #product-table.edit-mode .status-cell {
-  grid-row: span 3 / span 3;
-  grid-column: span 1 / span 1;
-  align-self: center;
-}
-
-html[data-layout="mobile"] #product-table .status-label {
-  display: none;
-}
-
 /* Product view spacing adjustments */
 #products-by-category .storage-block h3 {
   font-size: 1.75rem;
@@ -370,12 +317,6 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
-html[data-layout="mobile"] .touch-btn {
-  width: 2.75rem;
-  height: 2.75rem;
-  font-size: 1.125rem;
-}
-
 .shopping-item.in-cart {
   opacity: 0.6;
 }
@@ -417,11 +358,6 @@ html[data-layout="mobile"] .touch-btn {
 /* JSON editor adjustments */
 #edit-json {
   box-sizing: border-box;
-}
-
-html[data-layout="mobile"] #edit-json {
-  width: 100%;
-  max-width: 100%;
 }
 
 #receipt-drop-area {
@@ -468,17 +404,6 @@ html[data-layout="mobile"] #edit-json {
 
   .ingredient-item .ingredient-qty {
     text-align: right;
-  }
-}
-
-@media (max-width: 768px) {
-  .ingredient-item {
-    display: flex;
-    align-items: center;
-  }
-
-  .ingredient-item .ingredient-qty {
-    margin-right: 0.5rem;
   }
 }
 
