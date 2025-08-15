@@ -502,8 +502,6 @@ function showNoDataRow(message) {
 }
 
 export async function loadProducts() {
-  console.log("loadProducts started");
-  console.log("Fetching products from /api/products");
   try {
     const params = new URLSearchParams({
       page: productPager.page,
@@ -513,30 +511,26 @@ export async function loadProducts() {
     });
     const response = await fetch(`/api/products?${params.toString()}`);
     const data = await response.json();
-    console.log("Product data received:", data);
+
     if (!Array.isArray(data)) {
-      if (data && typeof data === "object") {
-        console.warn("Expected array, received object", data);
-      } else {
-        console.warn("Invalid product data", data);
-      }
+      console.error("Invalid product data", data);
       showNoDataRow("Błąd danych / Invalid data");
       APP.state.products = [];
       productPager.total = 0;
       return [];
     }
-    const list = data;
-    if (list.length === 0) {
-      console.log("No products available");
+
+    if (data.length === 0) {
       showNoDataRow("Brak produktów / No products available");
       APP.state.products = [];
       productPager.total = 0;
       return [];
     }
+
     productPager.page = 1;
-    productPager.page_size = list.length;
-    productPager.total = list.length;
-    APP.state.products = list.map(normalizeProduct);
+    productPager.page_size = data.length;
+    productPager.total = data.length;
+    APP.state.products = data.map(normalizeProduct);
     renderProducts();
     renderProductPager();
     return APP.state.products;
