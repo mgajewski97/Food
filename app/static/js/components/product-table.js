@@ -18,6 +18,7 @@ import {
   DEBUG,
   loadProductFilters,
   saveProductFilters,
+  toggleFavorite,
 } from "../helpers.js";
 import { toast } from "./toast.js";
 
@@ -1023,6 +1024,66 @@ function renderProductsImmediate() {
     const summaryIds = data.slice(0, 3).map((p) => p.id);
     if (DEBUG) console.debug("renderProducts", data.length, summaryIds);
     updateSortIcons();
+    registerButtonEvents();
+}
+
+function registerButtonEvents() {
+  const root = document;
+  if (root._productBtnHandler)
+    root.removeEventListener("click", root._productBtnHandler);
+
+  const handler = async (e) => {
+    const editBtn = e.target.closest(".btn-edit");
+    if (editBtn) {
+      e.preventDefault();
+      const id = editBtn.dataset.id;
+      document.dispatchEvent(
+        new CustomEvent("product:edit", { detail: { id } }),
+      );
+      return;
+    }
+
+    const delBtn = e.target.closest(".btn-delete");
+    if (delBtn) {
+      e.preventDefault();
+      const id = delBtn.dataset.id;
+      const question =
+        t("delete_item_question") || `${t("delete") || "Delete"}?`;
+      if (!window.confirm(question)) return;
+      try {
+        await fetchJson(`/api/products/${id}`, { method: "DELETE" });
+        await refreshProducts();
+      } catch (err) {
+        toast.error(t("notify_error_title"), err.message);
+      }
+      return;
+    }
+
+    const detailsBtn = e.target.closest(".btn-details");
+    if (detailsBtn) {
+      e.preventDefault();
+      const id = detailsBtn.dataset.id;
+      document.dispatchEvent(
+        new CustomEvent("product:details", { detail: { id } }),
+      );
+      return;
+    }
+
+    const favBtn = e.target.closest(".btn-favorite");
+    if (favBtn) {
+      e.preventDefault();
+      const id = favBtn.dataset.id;
+      try {
+        await toggleFavorite(id);
+        favBtn.classList.toggle("is-favorite");
+      } catch (err) {
+        toast.error(t("notify_error_title"), err.message);
+      }
+    }
+  };
+
+  root.addEventListener("click", handler);
+  root._productBtnHandler = handler;
 }
 
 const scheduleRender = debounceFrame(renderProductsImmediate, 200);
