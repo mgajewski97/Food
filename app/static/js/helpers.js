@@ -409,34 +409,32 @@ export function getStatusIcon(p) {
   return null;
 }
 
-export async function loadTranslations() {
+export async function loadTranslations(lang = state.currentLang) {
   window.trace?.("loadTranslations:enter");
   try {
-    const [plRes, enRes] = await Promise.all([
-      fetch("/api/ui/pl"),
-      fetch("/api/ui/en"),
-    ]);
-    if (!plRes.ok || !enRes.ok) throw new Error("translation load failed");
-    let pl = {};
-    let en = {};
+    const res = await fetch(`/api/ui/${lang}`);
+    if (!res.ok) throw new Error("translation load failed");
+    let data = {};
     try {
-      pl = await plRes.json();
+      data = await res.json();
     } catch {
-      pl = {};
+      data = {};
     }
-    try {
-      en = await enRes.json();
-    } catch {
-      en = {};
+    state.uiTranslations[lang] = data;
+    if (lang !== "en" && Object.keys(state.uiTranslations.en || {}).length === 0) {
+      try {
+        const enRes = await fetch("/api/ui/en");
+        if (enRes.ok) {
+          state.uiTranslations.en = await enRes.json().catch(() => ({}));
+        }
+      } catch {}
     }
-    state.uiTranslations.pl = pl;
-    state.uiTranslations.en = en;
     window.trace?.("loadTranslations:ok");
   } catch (err) {
     console.error("Failed to load translations", err);
     showTopBanner("Failed to load translations", {
       actionLabel: t("retry"),
-      onAction: loadTranslations,
+      onAction: () => loadTranslations(lang),
     });
     throw err;
   }
