@@ -756,17 +756,26 @@ async function boot() {
   trace("render");
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
+function handleInitError(err) {
+  console.error(err);
+  const translate = typeof t === "function" ? t : (s) => s;
+  if (typeof showTopBanner === "function") {
+    showTopBanner(translate("init_failed"), {
+      actionLabel: translate("retry"),
+      onAction: () => location.reload(),
+    });
+  }
+}
+
+async function init() {
   try {
     trace("DOMContentLoaded");
     await boot();
     trace("boot:done");
     registerServiceWorker();
   } catch (e) {
-    console.error(e);
-    showTopBanner(t("init_failed"), {
-      actionLabel: t("retry"),
-      onAction: () => location.reload(),
-    });
+    handleInitError(e);
   }
-});
+}
+
+document.addEventListener("DOMContentLoaded", init);
