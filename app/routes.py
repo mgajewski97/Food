@@ -404,6 +404,15 @@ def products():
         trace_id = _log_error(exc, context)
         return error_response("Unable to load product data", 500, trace_id)
 
+    products = data.get("products") if isinstance(data, dict) else None
+    if not isinstance(products, list):
+        trace_id = _log_error(
+            ValueError("missing 'products' key or not a list"), context
+        )
+        return error_response(
+            "Invalid products.json format – missing 'products' key", 500, trace_id
+        )
+
     etag = file_etag(PRODUCTS_PATH)
     last_modified = file_mtime_rfc1123(PRODUCTS_PATH)
     inm = request.headers.get("If-None-Match")
