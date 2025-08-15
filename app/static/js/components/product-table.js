@@ -514,10 +514,16 @@ export async function loadProducts() {
       ? data
       : Array.isArray(data?.products)
       ? data.products
-      : [];
-    if (!Array.isArray(list) || list.length === 0) {
-      console.warn('Products data invalid or empty', data);
-      showNoDataRow('Brak danych / No data available');
+      : null;
+    if (!Array.isArray(list)) {
+      console.error('Error loading products: invalid data', data);
+      showNoDataRow('Błąd podczas ładowania produktów / Error loading products');
+      APP.state.products = [];
+      return [];
+    }
+    if (list.length === 0) {
+      console.log('No products available');
+      showNoDataRow('Brak produktów / No products available');
       APP.state.products = [];
       return [];
     }
@@ -529,8 +535,8 @@ export async function loadProducts() {
     renderProductPager();
     return APP.state.products;
   } catch (err) {
-    console.warn('Failed to load products', err);
-    showNoDataRow('Brak danych / No data available');
+    console.error('Error loading products', err);
+    showNoDataRow('Błąd podczas ładowania produktów / Error loading products');
     APP.state.products = [];
     return [];
   }
