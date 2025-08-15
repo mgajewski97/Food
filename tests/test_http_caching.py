@@ -20,7 +20,7 @@ def test_products_etag_and_conditional_headers():
     assert resp.status_code == 200
     etag = resp.headers.get("ETag")
     last_mod = resp.headers.get("Last-Modified")
-    first = resp.get_json()["products"]
+    first = resp.get_json()
 
     resp2 = client.get("/api/products", headers={"If-None-Match": etag})
     assert resp2.status_code == 304
@@ -37,7 +37,7 @@ def test_products_etag_and_conditional_headers():
         resp4 = client.get("/api/products")
         assert resp4.status_code == 200
         assert resp4.headers.get("ETag") != etag
-        data4 = resp4.get_json()["products"]
+        data4 = resp4.get_json()
         assert data4 != first
     finally:
         with open(PRODUCTS_PATH, "w", encoding="utf-8") as fh:
