@@ -1025,7 +1025,6 @@ function renderProductsImmediate() {
     const summaryIds = data.slice(0, 3).map((p) => p.id);
     if (DEBUG) console.debug("renderProducts", data.length, summaryIds);
     updateSortIcons();
-  }
 }
 
 const scheduleRender = debounceFrame(renderProductsImmediate, 200);
