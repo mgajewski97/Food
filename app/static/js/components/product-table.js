@@ -502,6 +502,7 @@ function showNoDataRow(message) {
 }
 
 export async function loadProducts() {
+  console.log("loadProducts started");
   console.log("Fetching products from /api/products");
   try {
     const params = new URLSearchParams({
@@ -516,7 +517,7 @@ export async function loadProducts() {
     const list = Array.isArray(data?.items) ? data.items : null;
     if (!Array.isArray(list)) {
       console.warn("Error loading products: invalid data", data);
-      showNoDataRow("Błąd podczas ładowania produktów");
+      showNoDataRow("Błąd podczas ładowania produktów / Error loading products");
       APP.state.products = [];
       productPager.total = 0;
       return [];
@@ -536,8 +537,8 @@ export async function loadProducts() {
     renderProductPager();
     return APP.state.products;
   } catch (err) {
-    console.warn("Error loading products", err);
-    showNoDataRow("Błąd podczas ładowania produktów");
+    console.error("Error loading products", err);
+    showNoDataRow("Błąd podczas ładowania produktów / Error loading products");
     APP.state.products = [];
     productPager.total = 0;
     return [];
