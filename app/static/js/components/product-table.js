@@ -67,12 +67,12 @@ function updateBulkActions() {
 
 function updateSortIcons() {
   document
-    .querySelectorAll('#product-table thead th[data-sort] i')
+    .querySelectorAll('#product-table thead th[data-sort-by] i')
     .forEach((icon) => {
       icon.className = 'fa-solid fa-sort opacity-50';
     });
   const active = document.querySelector(
-    `#product-table thead th[data-sort="${state.productSortField}"] i`,
+    `#product-table thead th[data-sort-by="${state.productSortField}"] i`,
   );
   if (active) {
     active.className =
@@ -254,18 +254,20 @@ export function bindProductEvents() {
     if (e.target.closest('.qty-dec')) adjustRow(e.target.closest('tr'), -1);
   });
   document
-    .querySelectorAll('#product-table thead th[data-sort]')
+    .querySelectorAll('#product-table thead th[data-sort-by]')
     .forEach((th) => {
-      th.addEventListener('click', () => {
-        const field = th.dataset.sort;
-        if (state.productSortField === field) {
-          state.productSortDir = state.productSortDir === 'asc' ? 'desc' : 'asc';
+      th.addEventListener('click', async () => {
+        const field = th.dataset.sortBy;
+        if (productPager.sort_by === field) {
+          productPager.order = productPager.order === 'asc' ? 'desc' : 'asc';
         } else {
-          state.productSortField = field;
-          state.productSortDir = 'asc';
+          productPager.sort_by = field;
+          productPager.order = 'asc';
         }
-        renderProducts();
+        state.productSortField = productPager.sort_by;
+        state.productSortDir = productPager.order;
         updateSortIcons();
+        await loadProducts();
       });
     });
   updateSortIcons();
