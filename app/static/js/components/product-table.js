@@ -502,42 +502,43 @@ function showNoDataRow(message) {
 }
 
 export async function loadProducts() {
-  console.log("Fetching products from /products.json");
+  console.log("Fetching products from /api/products");
   try {
-    const res = await fetch('/products.json');
-    if (!res.ok) {
-      throw new Error(`Request failed with status ${res.status}`);
-    }
-    const data = await res.json();
-    console.log('Product data received:', data);
-    const list = Array.isArray(data)
-      ? data
-      : Array.isArray(data?.products)
-      ? data.products
-      : null;
+    const params = new URLSearchParams({
+      page: productPager.page,
+      page_size: productPager.page_size,
+      sort_by: productPager.sort_by,
+      order: productPager.order,
+    });
+    const data = await fetchJson(`/api/products?${params.toString()}`);
+    console.log("Product data received:", data);
+    const list = Array.isArray(data?.items) ? data.items : null;
     if (!Array.isArray(list)) {
-      console.error('Error loading products: invalid data', data);
-      showNoDataRow('Błąd podczas ładowania produktów / Error loading products');
+      console.error("Error loading products: invalid data", data);
+      showNoDataRow("Błąd podczas ładowania produktów / Error loading products");
       APP.state.products = [];
+      productPager.total = 0;
       return [];
     }
     if (list.length === 0) {
-      console.log('No products available');
-      showNoDataRow('Brak produktów / No products available');
+      console.log("No products available");
+      showNoDataRow("Brak produktów / No products available");
       APP.state.products = [];
+      productPager.total = 0;
       return [];
     }
-    productPager.page = 1;
-    productPager.page_size = list.length;
-    productPager.total = list.length;
+    productPager.page = data.page ?? 1;
+    productPager.page_size = data.page_size ?? list.length;
+    productPager.total = data.total ?? list.length;
     APP.state.products = list.map(normalizeProduct);
     renderProducts();
     renderProductPager();
     return APP.state.products;
   } catch (err) {
-    console.error('Error loading products', err);
-    showNoDataRow('Błąd podczas ładowania produktów / Error loading products');
+    console.error("Error loading products", err);
+    showNoDataRow("Błąd podczas ładowania produktów / Error loading products");
     APP.state.products = [];
+    productPager.total = 0;
     return [];
   }
 }

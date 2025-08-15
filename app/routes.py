@@ -330,10 +330,6 @@ def service_worker():
     return current_app.send_static_file("service-worker.js")
 
 
-@bp.route("/products.json")
-def products_json():
-    return current_app.send_static_file("products.json")
-
 @bp.route("/api/ui/<string:lang>")
 def ui_strings(lang):
     """Return UI translation strings for a given locale."""
