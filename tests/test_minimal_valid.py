@@ -52,29 +52,15 @@ def test_minimal_product_and_recipe_validate(tmp_path):
     assert errors == []
 
 
-def test_products_pagination_and_sorting():
+def test_products_endpoint_returns_data():
     app = create_app()
     client = app.test_client()
 
-    resp = client.get("/api/products?page_size=5&sort_by=name&order=asc")
+    resp = client.get("/api/products")
     assert resp.status_code == 200
     data = resp.get_json()
-    assert data["page"] == 1
-    assert data["page_size"] == 5
-    items = data["items"]
-    names = [p["name"] for p in items]
-    assert names == sorted(names, key=str.lower)
-
-    total = data["total"]
-    last_page = math.ceil(total / 5)
-    resp_last = client.get(
-        f"/api/products?page_size=5&page={last_page}&sort_by=name&order=desc"
-    )
-    data_last = resp_last.get_json()
-    expected = total - 5 * (last_page - 1)
-    assert len(data_last["items"]) == expected
-    names_desc = [p["name"] for p in data_last["items"]]
-    assert names_desc == sorted(names_desc, key=str.lower, reverse=True)
+    assert "products" in data and isinstance(data["products"], list)
+    assert "categories" in data and isinstance(data["categories"], list)
 
 
 def test_recipes_pagination_and_sorting():

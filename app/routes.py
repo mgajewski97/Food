@@ -387,126 +387,43 @@ def search():
     return jsonify(results)
 
 
-@bp.route("/api/products", methods=["GET", "POST", "PUT"])
+@bp.route("/api/products")
 def products():
+    """Return product dataset used by the frontend."""
     context = {"endpoint": "/api/products", "args": request.args.to_dict()}
     try:
-        if request.method == "GET":
-            try:
-                products = _load_products_compat(context)
-            except ValueError as exc:  # pragma: no cover - defensive
-                trace_id = _log_error(exc, context)
-                return error_response("Internal Server Error", 500, trace_id)
+        with open(PRODUCTS_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception as exc:
+        trace_id = _log_error(exc, context)
+        return error_response("Unable to load product data", 500, trace_id)
 
-            sort_by = request.args.get("sort_by", "name")
-            order = request.args.get("order", "asc").lower()
-            page = int(max(1, _safe_float(request.args.get("page", 1), 1)))
-            page_size = int(
-                max(1, min(200, _safe_float(request.args.get("page_size", 50), 50)))
-            )
-
-            if sort_by:
-                def _key(p):
-                    val = p.get(sort_by)
-                    if isinstance(val, str):
-                        return val.lower()
-                    return val
-
-                products.sort(key=_key)
-                if order == "desc":
-                    products.reverse()
-
-            total = len(products)
-            start = (page - 1) * page_size
-            end = start + page_size
-            items = products[start:end]
-            first_id = items[0].get("id") if items else None
-            logger.info(
-                "products count=%d first=%s",
-                total,
-                first_id,
-            )
-
-            etag = file_etag(PRODUCTS_PATH)
-            last_modified = file_mtime_rfc1123(PRODUCTS_PATH)
-            inm = request.headers.get("If-None-Match")
-            ims = request.headers.get("If-Modified-Since")
-            mtime = datetime.fromtimestamp(os.path.getmtime(PRODUCTS_PATH), timezone.utc)
-            mtime = mtime.replace(microsecond=0)
-            if inm == etag:
+    etag = file_etag(PRODUCTS_PATH)
+    last_modified = file_mtime_rfc1123(PRODUCTS_PATH)
+    inm = request.headers.get("If-None-Match")
+    ims = request.headers.get("If-Modified-Since")
+    mtime = datetime.fromtimestamp(os.path.getmtime(PRODUCTS_PATH), timezone.utc)
+    mtime = mtime.replace(microsecond=0)
+    if inm == etag:
+        resp = current_app.response_class(status=304)
+        resp.headers["ETag"] = etag
+        resp.headers["Last-Modified"] = last_modified
+        return resp
+    if ims:
+        try:
+            since = parsedate_to_datetime(ims)
+            if since >= mtime:
                 resp = current_app.response_class(status=304)
                 resp.headers["ETag"] = etag
                 resp.headers["Last-Modified"] = last_modified
                 return resp
-            if ims:
-                try:
-                    since = parsedate_to_datetime(ims)
-                    if since >= mtime:
-                        resp = current_app.response_class(status=304)
-                        resp.headers["ETag"] = etag
-                        resp.headers["Last-Modified"] = last_modified
-                        return resp
-                except (TypeError, ValueError, OverflowError):
-                    pass
-            resp = jsonify(
-                {"items": items, "page": page, "page_size": page_size, "total": total}
-            )
-            resp.headers["ETag"] = etag
-            resp.headers["Last-Modified"] = last_modified
-            return resp
+        except (TypeError, ValueError, OverflowError):
+            pass
 
-        payload = request.get_json(silent=True)
-        if payload is None:
-            raise DomainError("invalid or missing JSON payload")
-        raw_items = payload if isinstance(payload, list) else [payload]
-        for obj in raw_items:
-            validate_payload(obj, "product.schema.json")
-        items = [normalize_product(p) for p in raw_items]
-        try:
-            validate_items(items, PRODUCTS_SCHEMA)
-        except ValueError as exc:
-            raise DomainError(str(exc)) from exc
-
-        with file_lock(PRODUCTS_PATH):
-            try:
-                products = load_json_validated(
-                    PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
-                )
-            except ValueError as exc:
-                trace_id = _log_error(exc, context)
-                return error_response("Internal Server Error", 500, trace_id)
-            existing = {p["name"]: p for p in products}
-            for item in items:
-                existing[item["name"]] = item
-            products = list(existing.values())
-            safe_write(PRODUCTS_PATH, products)
-        return jsonify(products)
-    except DomainError:
-        raise
-    except Exception as exc:  # pragma: no cover - defensive
-        trace_id = _log_error(exc, context)
-        return error_response("Internal Server Error", 500, trace_id)
-
-
-@bp.route("/api/products/<string:name>", methods=["DELETE"])
-def delete_product(name):
-    context = {"endpoint": "/api/products/<name>", "args": request.args.to_dict()}
-    try:
-        with file_lock(PRODUCTS_PATH):
-            try:
-                products = load_json_validated(
-                    PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
-                )
-            except ValueError as exc:
-                trace_id = _log_error(exc, context)
-                return error_response("Internal Server Error", 500, trace_id)
-            products = [p for p in products if p.get("name") != name]
-            safe_write(PRODUCTS_PATH, products)
-        return "", 204
-    except Exception as exc:  # pragma: no cover - defensive
-        trace_id = _log_error(exc, context)
-        return error_response("Internal Server Error", 500, trace_id)
-
+    resp = jsonify(data)
+    resp.headers["ETag"] = etag
+    resp.headers["Last-Modified"] = last_modified
+    return resp
 
 @bp.route("/api/units", methods=["GET", "PUT"])
 def units():

@@ -1,3 +1,4 @@
+
 import os
 import sys
 
@@ -16,18 +17,6 @@ def _setup_paths(tmp_path, monkeypatch):
     monkeypatch.setattr(routes, "PRODUCTS_PATH", str(prod))
     monkeypatch.setattr(routes, "RECIPES_PATH", str(rec))
     monkeypatch.setattr(routes, "SHOPPING_PATH", str(shop))
-
-
-def test_products_invalid_payload_returns_400(tmp_path, monkeypatch):
-    _setup_paths(tmp_path, monkeypatch)
-    app = create_app()
-    client = app.test_client()
-
-    resp = client.post("/api/products", json={"bad": "data"})
-    assert resp.status_code == 400
-    data = resp.get_json()
-    assert "error" in data
-    assert "traceId" in data and len(data["traceId"]) == 8
 
 
 def test_shopping_invalid_payload_returns_400(tmp_path, monkeypatch):
