@@ -394,6 +394,12 @@ def products():
     try:
         with open(PRODUCTS_PATH, "r", encoding="utf-8") as f:
             data = json.load(f)
+        products = data["products"] if isinstance(data, dict) else None
+        if not isinstance(products, list):
+            raise KeyError("products list missing or invalid")
+    except (KeyError, TypeError, ValueError) as exc:
+        trace_id = _log_error(exc, context)
+        return error_response("Invalid product data format", 500, trace_id)
     except Exception as exc:
         trace_id = _log_error(exc, context)
         return error_response("Unable to load product data", 500, trace_id)
@@ -420,7 +426,7 @@ def products():
         except (TypeError, ValueError, OverflowError):
             pass
 
-    resp = jsonify(data)
+    resp = jsonify(products)
     resp.headers["ETag"] = etag
     resp.headers["Last-Modified"] = last_modified
     return resp
