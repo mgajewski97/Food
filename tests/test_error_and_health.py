@@ -1,3 +1,4 @@
+import json
 import os
 
 import sys
@@ -20,6 +21,24 @@ def test_products_error_returns_traceid(monkeypatch):
     data = resp.get_json()
     assert data["error"] == "Unable to load product data"
     assert "traceId" in data and len(data["traceId"]) == 8
+
+
+def test_products_missing_key_returns_error(tmp_path, monkeypatch):
+    app = create_app()
+    client = app.test_client()
+
+    bad = {"categories": []}
+    bad_path = tmp_path / "products.json"
+    bad_path.write_text(json.dumps(bad))
+    monkeypatch.setattr(routes, "PRODUCTS_PATH", str(bad_path))
+
+    resp = client.get("/api/products")
+    assert resp.status_code == 500
+    data = resp.get_json()
+    assert (
+        data["error"]
+        == "Invalid products.json format – missing 'products' key"
+    )
 
 def test_404_returns_json_message():
     app = create_app()

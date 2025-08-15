@@ -59,8 +59,7 @@ def test_products_endpoint_returns_data():
     resp = client.get("/api/products")
     assert resp.status_code == 200
     data = resp.get_json()
-    assert "products" in data and isinstance(data["products"], list)
-    assert "categories" in data and isinstance(data["categories"], list)
+    assert isinstance(data, list)
 
 
 def test_recipes_pagination_and_sorting():
