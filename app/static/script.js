@@ -158,7 +158,10 @@ async function activateTab(targetId) {
   } else if (targetId === "tab-recipes") {
     APP.state.search = APP.searches["tab-recipes"] || "";
     resetRecipeFilters();
-    Recipes.renderRecipes();
+    await Recipes.loadRecipes();
+  } else if (targetId === "tab-history") {
+    APP.state.search = APP.searches["tab-history"] || "";
+    await loadHistory();
   } else {
     APP.state.search = APP.searches[targetId] || "";
   }
