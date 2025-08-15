@@ -223,6 +223,16 @@ window.addToShoppingList = Shopping.addToShoppingList;
 function initAddForm() {
   const form = document.getElementById("add-form");
   if (!form) return;
+
+  // Form setup relies on domain data (units, categories, etc.). If the
+  // domain isn't ready yet, wait for the "domain:ready" event before
+  // proceeding so that validation and UI logic don't run against
+  // uninitialized state.
+  if (!state.domainLoaded || Object.keys(state.units || {}).length === 0) {
+    document.addEventListener("domain:ready", initAddForm, { once: true });
+    return;
+  }
+
   const nameInput = form.querySelector('input[name="name"]');
   const qtyInput = form.querySelector('input[name="quantity"]');
   const unitSel = form.querySelector('select[name="unit"]');
@@ -291,6 +301,7 @@ function initAddForm() {
   }
   catSelect.addEventListener("change", syncSpiceUI);
   syncSpiceUI();
+
   function validate() {
     const msg = state.currentLang === "pl" ? "Wymagane" : "Required";
     const isSp = catSelect.value === "spices";
@@ -307,6 +318,7 @@ function initAddForm() {
       return Boolean(el.value.trim());
     });
   }
+
   required.forEach((el) => {
     el.addEventListener("blur", validate);
     el.addEventListener("input", validate);
