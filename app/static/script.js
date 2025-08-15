@@ -271,6 +271,12 @@ function initAddForm() {
   }
   submitBtn.classList.add("add-submit");
 
+  // Elements required for form validation must be declared before any
+  // validation logic executes. `syncSpiceUI` invokes `validate`, so the
+  // `required` array needs to exist before `syncSpiceUI` runs to avoid
+  // referencing it prior to initialization.
+  const required = [nameInput, qtyInput, unitSel, catSelect, storSelect];
+
   function syncSpiceUI() {
     const isSp = catSelect.value === "spices";
     qtyInput.classList.toggle("hidden", isSp);
@@ -285,8 +291,6 @@ function initAddForm() {
   }
   catSelect.addEventListener("change", syncSpiceUI);
   syncSpiceUI();
-
-  const required = [nameInput, qtyInput, unitSel, catSelect, storSelect];
   function validate() {
     const msg = state.currentLang === "pl" ? "Wymagane" : "Required";
     const isSp = catSelect.value === "spices";
