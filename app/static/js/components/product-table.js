@@ -502,30 +502,22 @@ function showNoDataRow(message) {
 }
 
 export async function loadProducts() {
-  console.info("Fetching products from /products.json");
-  let raw;
+  console.log("Fetching products from /products.json");
   try {
-    const res = await fetch("/products.json");
-    console.info("Received products response", res);
-    raw = await res.text();
-    console.info("Raw products data", raw);
-    let data;
-    try {
-      data = JSON.parse(raw);
-    } catch (e) {
-      console.warn("Products JSON parse failed", e);
-      showNoDataRow("Brak danych / No data available");
-      APP.state.products = [];
-      throw e;
+    const res = await fetch('/products.json');
+    if (!res.ok) {
+      throw new Error(`Request failed with status ${res.status}`);
     }
+    const data = await res.json();
+    console.log('Product data received:', data);
     const list = Array.isArray(data)
       ? data
       : Array.isArray(data?.products)
       ? data.products
       : [];
-    if (!list.length) {
-      console.warn("Products list empty", data);
-      showNoDataRow("Brak danych / No data available");
+    if (!Array.isArray(list) || list.length === 0) {
+      console.warn('Products data invalid or empty', data);
+      showNoDataRow('Brak danych / No data available');
       APP.state.products = [];
       return [];
     }
@@ -537,8 +529,8 @@ export async function loadProducts() {
     renderProductPager();
     return APP.state.products;
   } catch (err) {
-    console.warn("Failed to load products", err);
-    showNoDataRow("Brak danych / No data available");
+    console.warn('Failed to load products', err);
+    showNoDataRow('Brak danych / No data available');
     APP.state.products = [];
     return [];
   }
