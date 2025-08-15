@@ -511,34 +511,42 @@ function initNavigationAndEvents() {
   }
   langBtn?.setAttribute("aria-label", t("language"));
   langBtn?.setAttribute("title", t("language"));
-  langBtn?.addEventListener("click", () => {
+  langBtn?.addEventListener("click", async () => {
     const scroll = window.scrollY;
-    state.currentLang = state.currentLang === "pl" ? "en" : "pl";
-    localStorage.setItem("lang", state.currentLang);
-    if (localeChip) {
-      localeChip.textContent = state.currentLang.toUpperCase();
-    }
-    document.documentElement.setAttribute("lang", state.currentLang);
-    applyTranslations();
-    ProductTable.renderProducts();
-    Recipes.renderRecipes();
-    Shopping.renderShoppingList();
-    Shopping.renderSuggestions();
-    updateAriaLabels();
-    langBtn.setAttribute("aria-label", t("language"));
-    langBtn.setAttribute("title", t("language"));
-    const unitSel = document.querySelector('#add-form select[name="unit"]');
-    if (unitSel) {
-      Array.from(unitSel.options).forEach((opt) => {
-        opt.textContent = t(opt.value);
-      });
-    }
-    const addSubmit = document.querySelector('#add-form button[type="submit"]');
-    if (addSubmit) {
-      addSubmit.title =
-        state.currentLang === "pl"
-          ? "Enter – Zapisz\nShift+Enter – Zapisz i dodaj kolejny\nEsc – Anuluj"
-          : "Enter – Save\nShift+Enter – Save and add another\nEsc – Cancel";
+    const newLang = state.currentLang === "pl" ? "en" : "pl";
+    try {
+      await loadTranslations(newLang);
+      state.currentLang = newLang;
+      localStorage.setItem("lang", state.currentLang);
+      if (localeChip) {
+        localeChip.textContent = state.currentLang.toUpperCase();
+      }
+      document.documentElement.setAttribute("lang", state.currentLang);
+      applyTranslations();
+      ProductTable.renderProducts();
+      Recipes.renderRecipes();
+      Shopping.renderShoppingList();
+      Shopping.renderSuggestions();
+      updateAriaLabels();
+      langBtn.setAttribute("aria-label", t("language"));
+      langBtn.setAttribute("title", t("language"));
+      const unitSel = document.querySelector('#add-form select[name="unit"]');
+      if (unitSel) {
+        Array.from(unitSel.options).forEach((opt) => {
+          opt.textContent = t(opt.value);
+        });
+      }
+      const addSubmit = document.querySelector(
+        '#add-form button[type="submit"]',
+      );
+      if (addSubmit) {
+        addSubmit.title =
+          state.currentLang === "pl"
+            ? "Enter – Zapisz\nShift+Enter – Zapisz i dodaj kolejny\nEsc – Anuluj"
+            : "Enter – Save\nShift+Enter – Save and add another\nEsc – Cancel";
+      }
+    } catch (err) {
+      // Error already handled in loadTranslations
     }
     window.scrollTo(0, scroll);
   });
