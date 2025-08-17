@@ -594,7 +594,7 @@ function initNavigationAndEvents() {
     deleteBtn.style.display = "";
     deleteBtn.disabled = true;
     deleteBtn.textContent = t("delete_selected_button");
-    selectHeader.style.display = "";
+    selectHeader.classList.remove("hidden");
     if (addSection) addSection.style.display = "";
     filterSel?.setAttribute("disabled", "true");
     searchInput?.setAttribute("disabled", "true");
@@ -613,7 +613,7 @@ function initNavigationAndEvents() {
     deleteBtn.style.display = "none";
     deleteBtn.disabled = true;
     deleteBtn.textContent = t("delete_selected_button");
-    selectHeader.style.display = "none";
+    selectHeader.classList.add("hidden");
     if (addSection) addSection.style.display = "none";
     filterSel?.removeAttribute("disabled");
     searchInput?.removeAttribute("disabled");

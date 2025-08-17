@@ -396,13 +396,13 @@ export function getStatusIcon(p) {
   const level = getStockState(p);
   if (level === "zero") {
     return {
-      html: '<i class="fa-regular fa-circle-exclamation text-red-600"></i>',
+      html: '<i class="status-icon fa-regular fa-circle-exclamation text-red-600 fa-lg pointer-events-none"></i>',
       title: t("status_missing"),
     };
   }
   if (level === "low") {
     return {
-      html: '<i class="fa-regular fa-triangle-exclamation text-yellow-500"></i>',
+      html: '<i class="status-icon fa-regular fa-triangle-exclamation text-yellow-500 fa-lg pointer-events-none"></i>',
       title: t("status_low"),
     };
   }
