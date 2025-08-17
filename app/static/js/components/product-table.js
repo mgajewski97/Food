@@ -850,7 +850,7 @@ function renderProductsImmediate() {
         .forEach((stor) => {
           const block = document.createElement("section");
           block.className =
-            "storage-section storage-block border border-base-300 rounded-lg p-4 mb-4";
+            "storage-section storage-block border border-base-300 rounded-lg p-4 space-y-4";
           block.dataset.storage = stor;
 
           const header = document.createElement("header");
@@ -871,7 +871,7 @@ function renderProductsImmediate() {
           block.appendChild(header);
 
           const content = document.createElement("div");
-          content.className = "storage-content";
+          content.className = "storage-content space-y-4 pt-4";
           const categories = storages[stor];
           if (!Object.keys(categories).length) {
             const emptyMsg = document.createElement("div");
@@ -911,7 +911,7 @@ function renderProductsImmediate() {
                 catBlock.appendChild(catHeader);
 
                 const body = document.createElement("div");
-                body.className = "category-body";
+                body.className = "category-body pt-4";
                 const table = document.createElement("table");
                 table.className = "table table-zebra w-full grouped-table";
                 const colgroup = document.createElement("colgroup");

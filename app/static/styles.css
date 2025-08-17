@@ -140,21 +140,7 @@ input::placeholder {
   text-align: center;
   border-radius: 0.5rem;
 }
-/* Product view spacing adjustments */
-#products-by-category .storage-block h3 {
-  font-size: 1.75rem;
-  margin-bottom: 0.5rem;
-}
-
-#products-by-category .storage-block {
-  margin-bottom: 1rem;
-}
-
-#products-by-category .category-block {
-  margin-bottom: 1rem;
-  padding-left: 0;
-  padding-right: 0;
-}
+/* Removed explicit product view spacing; using Tailwind utilities instead */
 
 .filter-chip {
   cursor: pointer;
@@ -180,12 +166,6 @@ input::placeholder {
 }
 #recipe-list {
   overflow-y: auto;
-}
-
-#products-by-category .category-block table {
-  margin-top: 0;
-  margin-bottom: 0;
-  margin-left: 0;
 }
 
 #products-by-category .grouped-table {
