@@ -300,14 +300,20 @@ def domain():
         return error_response("Internal Server Error", 500, trace_id)
 
     units = load_json(UNITS_PATH, [])
+    categories = sorted(
+        {p.get("category") for p in products if p.get("category")}
+    )
     first_name = products[0].get("name") if products else None
     logger.info(
-        "domain products=%d units=%d first_product=%s",
+        "domain products=%d units=%d categories=%d first_product=%s",
         len(products),
         len(units),
+        len(categories),
         first_name,
     )
-    return jsonify({"products": products, "units": units})
+    return jsonify(
+        {"products": products, "units": units, "categories": categories}
+    )
 
 
 @bp.route("/api/search")
@@ -333,6 +339,13 @@ def products():
         trace_id = _log_error(exc, context)
         return error_response("Unable to load product data", 500, trace_id)
 
+    if not products:
+        trace_id = log_error_with_trace("empty product list", context)
+        return error_response("Unable to load product data", 500, trace_id)
+
+    units = load_json(UNITS_PATH, [])
+    categories = sorted({p.get("category") for p in products if p.get("category")})
+
     etag = file_etag(PRODUCTS_PATH)
     last_modified = file_mtime_rfc1123(PRODUCTS_PATH)
     inm = request.headers.get("If-None-Match")
@@ -355,7 +368,7 @@ def products():
         except (TypeError, ValueError, OverflowError):
             pass
 
-    resp = jsonify(products)
+    resp = jsonify({"products": products, "units": units, "categories": categories})
     resp.headers["ETag"] = etag
     resp.headers["Last-Modified"] = last_modified
     return resp

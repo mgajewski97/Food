@@ -78,20 +78,44 @@ def _load_domain_data() -> None:
     with _DOMAIN_LOCK:
         if _DOMAIN_PRODUCTS:
             return
+        from .product_io import load_products_nested
+
         data_dir = os.path.join(os.path.dirname(__file__), "..", "data")
         products_path = os.path.join(data_dir, "products.json")
         try:
-            with open(products_path, "r", encoding="utf-8") as fh:
-                payload = json.load(fh)
+            products = load_products_nested(products_path)
         except Exception:  # pragma: no cover - defensive
-            payload = {}
-        for prod in payload.get("products", []):
-            prod_id = prod.get("id")
+            products = []
+        for prod in products:
+            prod_id = prod.get("id") or prod.get("name")
             if not prod_id:
                 continue
-            _DOMAIN_PRODUCTS[prod_id] = prod
-            for alias in prod.get("aliases", []):
-                _ALIAS_TO_ID[_normalize_alias(alias)] = prod_id
+    if "names" not in prod and prod.get("name"):
+        prod["names"] = {"pl": prod["name"], "en": prod["name"]}
+    _DOMAIN_PRODUCTS[prod_id] = prod
+    for alias in prod.get("aliases", []):
+        _ALIAS_TO_ID[_normalize_alias(alias)] = prod_id
+    _ALIAS_TO_ID.setdefault(_normalize_alias(prod_id), prod_id)
+
+
+def resolve_alias(alias: str) -> Optional[str]:
+    """Return product id for ``alias`` if known."""
+    if not alias:
+        return None
+    _load_domain_data()
+    return _ALIAS_TO_ID.get(_normalize_alias(alias))
+
+
+def resolve_id_name(prod_id: str, locale: str = "pl") -> Optional[str]:
+    """Return localized name for ``prod_id`` if known."""
+    if not prod_id:
+        return None
+    _load_domain_data()
+    prod = _DOMAIN_PRODUCTS.get(prod_id)
+    if not prod:
+        return None
+    names = prod.get("names", {})
+    return names.get(locale) or names.get("pl") or names.get("en")
 
 
 def _normalize_unit(value: Optional[str]) -> Optional[str]:
@@ -542,6 +566,40 @@ def validate_file(
     coerce: Optional[Callable[[Any], Any]] = None,
 ) -> Tuple[int, List[str]]:
     """Validate file returning number of valid entries and list of errors."""
+    if schema_path and os.path.basename(schema_path) == "product.schema.json":
+        try:
+            with open(path, "r", encoding="utf-8") as fh:
+                raw = json.load(fh)
+        except (FileNotFoundError, json.JSONDecodeError):
+            raw = default
+        if isinstance(raw, list):
+            if coerce:
+                raw = [coerce(d) for d in raw]
+            from .validators import validate_products
+            errors = validate_products(raw)
+            return len(raw), errors
+        else:
+            from ..validators import validate_products
+
+            flat = []
+            if isinstance(raw, dict):
+                for storage, cats in raw.items():
+                    if not isinstance(cats, dict):
+                        continue
+                    for category, items in cats.items():
+                        if not isinstance(items, list):
+                            continue
+                        for item in items:
+                            if not isinstance(item, dict):
+                                continue
+                            obj = dict(item)
+                            obj["storage"] = storage
+                            obj["category"] = category
+                            flat.append(obj)
+            if coerce:
+                flat = [coerce(p) for p in flat]
+            errors = validate_products(flat)
+            return len(flat), errors
     data, errors = load_json(path, default, schema_path, coerce, return_errors=True)
     count = len(data) if isinstance(data, list) else (1 if data is not None else 0)
     return count, errors

@@ -8,6 +8,8 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 import app.routes as routes
 from app import create_app
+from tests.utils import convert_flat_to_nested
+from app.utils.product_io import load_products_nested
 
 
 def _setup_data(tmp_path):
@@ -18,6 +20,10 @@ def _setup_data(tmp_path):
             "unit": "g",
             "category": "uncategorized",
             "storage": "pantry",
+            "threshold": 1,
+            "main": True,
+            "is_spice": False,
+            "tags": [],
         },
         {
             "name": "prod.water",
@@ -25,6 +31,10 @@ def _setup_data(tmp_path):
             "unit": "ml",
             "category": "uncategorized",
             "storage": "pantry",
+            "threshold": 1,
+            "main": True,
+            "is_spice": False,
+            "tags": [],
         },
         {
             "name": "prod.egg",
@@ -32,6 +42,10 @@ def _setup_data(tmp_path):
             "unit": "szt",
             "category": "uncategorized",
             "storage": "pantry",
+            "threshold": 1,
+            "main": True,
+            "is_spice": False,
+            "tags": [],
         },
     ]
     recipes = [
@@ -84,7 +98,7 @@ def _setup_data(tmp_path):
     prod_path = tmp_path / "products.json"
     rec_path = tmp_path / "recipes.json"
     shop_path = tmp_path / "shopping.json"
-    prod_path.write_text(json.dumps(products))
+    prod_path.write_text(json.dumps(convert_flat_to_nested(products)))
     rec_path.write_text(json.dumps(recipes))
     routes.PRODUCTS_PATH = str(prod_path)
     routes.RECIPES_PATH = str(rec_path)
@@ -157,8 +171,7 @@ def test_mark_and_finalize_updates_pantry(tmp_path):
     remaining = resp.get_json()
     assert len(remaining) == 1 and remaining[0]["productId"] == "prod.water"
 
-    with open(routes.PRODUCTS_PATH) as f:
-        products = json.load(f)
+    products = load_products_nested(routes.PRODUCTS_PATH)
     rice = next(p for p in products if p["name"] == "prod.rice")
     egg = next(p for p in products if p["name"] == "prod.egg")
     water = next(p for p in products if p["name"] == "prod.water")

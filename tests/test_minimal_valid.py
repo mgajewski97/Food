@@ -8,6 +8,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from app.utils import validate_file, normalize_product, normalize_recipe
 from app.routes import PRODUCTS_SCHEMA, RECIPES_SCHEMA
 from app import create_app
+from tests.utils import convert_flat_to_nested
 
 
 def test_minimal_product_and_recipe_validate(tmp_path):
@@ -40,7 +41,7 @@ def test_minimal_product_and_recipe_validate(tmp_path):
     ]
     prod_path = tmp_path / "products.json"
     rec_path = tmp_path / "recipes.json"
-    prod_path.write_text(json.dumps(products))
+    prod_path.write_text(json.dumps(convert_flat_to_nested(products)))
     rec_path.write_text(json.dumps(recipes))
 
     count, errors = validate_file(str(prod_path), [], PRODUCTS_SCHEMA, normalize_product)
@@ -59,7 +60,7 @@ def test_products_endpoint_returns_data():
     resp = client.get("/api/products")
     assert resp.status_code == 200
     data = resp.get_json()
-    assert isinstance(data, list)
+    assert isinstance(data, dict) and "products" in data
 
 
 def test_recipes_pagination_and_sorting():
