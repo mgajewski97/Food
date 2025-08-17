@@ -65,7 +65,7 @@ function sortShoppingList() {
 function renderShoppingItem(item, idx) {
   const row = document.createElement("div");
   row.className =
-    "shopping-item gap-2 h-11 hover:bg-base-200 transition-colors";
+    "shopping-item gap-x-4 p-2 hover:bg-base-200 transition-colors";
   row.dataset.name = item.name;
   row.tabIndex = 0;
   if (item.inCart) row.classList.add("in-cart");
@@ -80,9 +80,9 @@ function renderShoppingItem(item, idx) {
   }
 
   const nameWrap = document.createElement("div");
-  nameWrap.className = "flex items-center gap-1 overflow-hidden";
+  nameWrap.className = "flex items-center gap-1 break-words";
   const nameEl = document.createElement("span");
-  nameEl.className = "truncate";
+  nameEl.className = "break-words";
   const lbl = t(item.name, "products");
   nameEl.textContent = lbl;
   nameEl.title = lbl;
@@ -286,16 +286,16 @@ export function renderSuggestions() {
   suggestions.forEach((p) => {
     let qty = p.threshold != null ? p.threshold : 1;
     const row = document.createElement("div");
-    row.className =
-      "suggestion-item gap-2 h-11 hover:bg-base-200 transition-colors";
+      row.className =
+        "suggestion-item gap-x-4 p-2 hover:bg-base-200 transition-colors";
     const level = getStockState(p);
     if (level === "low") row.classList.add("product-low");
     if (level === "zero") row.classList.add("product-missing");
 
     const nameWrap = document.createElement("div");
-    nameWrap.className = "flex items-center gap-1 overflow-hidden";
+      nameWrap.className = "flex items-center gap-1 break-words";
     const nameEl = document.createElement("span");
-    nameEl.className = "truncate";
+      nameEl.className = "break-words";
     const lbl = t(p.id, "products");
     nameEl.textContent = lbl;
     nameEl.title = lbl;
