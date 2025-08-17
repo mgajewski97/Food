@@ -391,11 +391,11 @@ function adjustRow(tr, delta) {
 
 function buildQtyCell(p, tr) {
   const td = document.createElement("td");
-  td.className = "qty-cell";
+  td.className = "qty-cell col-span-2 flex items-center";
   td.style.minWidth = "10rem";
   if (isSpice(p)) {
     const wrap = document.createElement("div");
-    wrap.className = "flex gap-2";
+    wrap.className = "flex items-center gap-2";
     ["none", "low", "medium", "high"].forEach((l) => {
       const label = document.createElement("label");
       label.className = "cursor-pointer flex items-center gap-1";
@@ -419,7 +419,7 @@ function buildQtyCell(p, tr) {
     return td;
   }
   const wrap = document.createElement("div");
-  wrap.className = "qty-wrap";
+  wrap.className = "flex items-center gap-2";
   wrap.style.minWidth = "10rem";
   const dec = document.createElement("button");
   dec.type = "button";
@@ -578,9 +578,10 @@ function createFlatRow(p, idx, editable) {
   tr.dataset.index = idx;
   tr.dataset.productId = p.id != null ? p.id : idx;
   if (editable) {
+    tr.className = "grid grid-cols-12 items-center gap-2";
     // checkbox
     const cbTd = document.createElement("td");
-    cbTd.className = "checkbox-cell";
+    cbTd.className = "checkbox-cell col-span-1 flex items-center justify-center";
     const cb = document.createElement("input");
     cb.type = "checkbox";
     cb.className = "checkbox checkbox-sm product-select";
@@ -590,7 +591,7 @@ function createFlatRow(p, idx, editable) {
     tr.appendChild(cbTd);
     // name
     const nameTd = document.createElement("td");
-    nameTd.className = "name-cell";
+    nameTd.className = "name-cell col-span-3 flex items-center truncate";
     nameTd.textContent = t(p.id, "products");
     if (!getProduct(p.id)) nameTd.classList.add("opacity-60");
     tr.appendChild(nameTd);
@@ -599,7 +600,7 @@ function createFlatRow(p, idx, editable) {
     tr.appendChild(qtyTd);
     // unit select
     const unitTd = document.createElement("td");
-    unitTd.className = "unit-cell";
+    unitTd.className = "unit-cell col-span-1";
     if (isSpice(p)) {
       unitTd.textContent = "";
     } else {
@@ -617,7 +618,7 @@ function createFlatRow(p, idx, editable) {
     tr.appendChild(unitTd);
     // category select
     const catTd = document.createElement("td");
-    catTd.className = "category-cell";
+    catTd.className = "category-cell col-span-2";
     const catSel = document.createElement("select");
     catSel.className = "select select-bordered w-full";
     Object.keys(state.domain.categories).forEach((c) => {
@@ -631,7 +632,7 @@ function createFlatRow(p, idx, editable) {
     tr.appendChild(catTd);
     // storage select
     const storTd = document.createElement("td");
-    storTd.className = "storage-cell";
+    storTd.className = "storage-cell col-span-2";
     const storSel = document.createElement("select");
     storSel.className = "select select-bordered w-full";
     Object.keys(STORAGE_KEYS).forEach((s) => {
@@ -645,7 +646,7 @@ function createFlatRow(p, idx, editable) {
     tr.appendChild(storTd);
     // status
     const statusTd = document.createElement("td");
-    statusTd.className = "status-cell text-center";
+    statusTd.className = "status-cell col-span-1 text-center flex items-center justify-center";
     const status = getStatusIcon(p);
     if (status) {
       statusTd.innerHTML = status.html;
