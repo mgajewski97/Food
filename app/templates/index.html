@@ -347,17 +347,17 @@
             class="table table-zebra table-fixed w-full text-sm"
           >
             <colgroup>
-              <col class="w-[6%]" />
+              <col id="select-col" class="w-[6%] hidden" />
               <col class="w-[24%]" />
               <col class="w-[12%]" />
               <col class="w-[12%]" />
               <col class="w-[17%] hidden md:table-column" />
               <col class="w-[17%] hidden md:table-column" />
-              <col class="w-[12%] hidden md:table-column" />
+              <col class="w-[12%]" />
             </colgroup>
             <thead>
               <tr>
-                <th id="select-header" style="display: none"></th>
+                <th id="select-header" class="hidden"></th>
                 <th data-sort-by="name" class="sortable">
                   <span data-i18n="table_header_name">Nazwa</span>
                   <i class="fa-solid fa-sort opacity-50"></i>
@@ -372,13 +372,13 @@
                   <span data-i18n="table_header_storage">Miejsce</span>
                   <i class="fa-solid fa-sort opacity-50"></i>
                 </th>
-                <th class="text-center hidden md:table-cell sortable" data-sort-by="status">
-                  <span class="tooltip" data-i18n-tip="stock_legend"
-                    ><i class="fa-solid fa-circle-info"></i
-                  ></span>
-                  <span class="status-label" data-i18n="table_header_status"
-                    >Status</span
-                  >
+                <th class="text-center sortable" data-sort-by="status">
+                  <span class="tooltip" data-i18n-tip="stock_legend">
+                    <i class="fa-solid fa-circle-info"></i>
+                  </span>
+                  <span class="status-label hidden md:inline" data-i18n="table_header_status">
+                    Status
+                  </span>
                   <i class="fa-solid fa-sort opacity-50"></i>
                 </th>
               </tr>

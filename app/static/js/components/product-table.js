@@ -645,7 +645,7 @@ function createFlatRow(p, idx, editable) {
     tr.appendChild(storTd);
     // status
     const statusTd = document.createElement("td");
-    statusTd.className = "status-cell text-center";
+    statusTd.className = "status-cell flex justify-center";
     const status = getStatusIcon(p);
     if (status) {
       statusTd.innerHTML = status.html;
@@ -673,7 +673,7 @@ function createFlatRow(p, idx, editable) {
     storTd.textContent = t(STORAGE_KEYS[p.storage] || p.storage);
     tr.appendChild(storTd);
     const statusTd = document.createElement("td");
-    statusTd.className = "text-center hidden md:table-cell";
+    statusTd.className = "status-cell flex justify-center";
     const status = getStatusIcon(p);
     if (status) {
       statusTd.innerHTML = status.html;
@@ -702,6 +702,11 @@ function renderProductsImmediate() {
   if (!table || !list) return;
   const tbody = table.querySelector("tbody");
   list.innerHTML = "";
+
+  const selectHeader = document.getElementById("select-header");
+  const selectCol = document.getElementById("select-col");
+  selectHeader?.classList.toggle("hidden", !editing);
+  selectCol?.classList.toggle("hidden", !editing);
 
   function renderFallback(message) {
     table.style.display = "";
@@ -985,6 +990,7 @@ function renderProductsImmediate() {
                     u.textContent = t(p.unit, "units");
                     tr.appendChild(u);
                     const s = document.createElement("td");
+                    s.className = "status-cell flex justify-center";
                     const ic = getStatusIcon(p);
                     if (ic) {
                       s.innerHTML = ic.html;
@@ -1000,6 +1006,7 @@ function renderProductsImmediate() {
                     const u = document.createElement("td");
                     u.textContent = t(p.unit, "units");
                     const s = document.createElement("td");
+                    s.className = "status-cell flex justify-center";
                     const ic = getStatusIcon(p);
                     if (ic) {
                       s.innerHTML = ic.html;
