@@ -4,6 +4,8 @@ import re
 import unicodedata
 from typing import Dict, List
 
+from .utils.product_io import load_products_nested
+
 # Path to products data
 _DATA_PATH = os.path.join(os.path.dirname(__file__), "data", "products.json")
 
@@ -53,21 +55,15 @@ def _distance_leq_one(a: str, b: str) -> bool:
 _INDEX: Dict[str, List[Dict[str, object]]] = {"pl": [], "en": []}
 
 if os.path.exists(_DATA_PATH):
-    with open(_DATA_PATH, "r", encoding="utf-8") as f:
-        data = json.load(f)
-    products = data.get("products", [])
+    products = load_products_nested(_DATA_PATH)
     for prod in products:
         aliases = []
         for alias in prod.get("aliases", []) or []:
-            # aliases are stable identifiers: "product.cashew_nuts" -> "cashew nuts"
-            if alias.startswith("product."):
-                alias = alias.split(".", 1)[1]
-            alias = alias.replace("_", " ").replace("-", " ")
-            alias = _normalize(alias)
-            if alias:
-                aliases.append(alias)
+            alias_norm = _normalize(str(alias))
+            if alias_norm:
+                aliases.append(alias_norm)
         for locale in ("pl", "en"):
-            name = prod.get("names", {}).get(locale)
+            name = prod.get("names", {}).get(locale) or prod.get("name")
             if not name:
                 continue
             name_norm = _normalize(name)
@@ -77,10 +73,12 @@ if os.path.exists(_DATA_PATH):
             strings = [name_norm] + aliases
             _INDEX[locale].append(
                 {
-                    "id": prod.get("id"),
+                    "id": prod.get("id") or prod.get("name"),
                     "tokens": tokens,
                     "strings": strings,
                     "name": name_norm,
+                    "owned": prod.get("quantity", 0),
+                    "level": prod.get("level"),
                 }
             )
 
