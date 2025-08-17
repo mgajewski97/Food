@@ -11,6 +11,32 @@
         "is_spice": false,
         "tags": []
       }
+    ],
+    "category.canned": [
+      {
+        "name": "product.canned",
+        "quantity": 1.0,
+        "unit": "szt",
+        "threshold": 1.0,
+        "main": true,
+        "level": null,
+        "is_spice": false,
+        "tags": []
+      }
+    ]
+  },
+  "storage.fridge": {
+    "category.dairy-eggs": [
+      {
+        "name": "product.dairy",
+        "quantity": 1.0,
+        "unit": "l",
+        "threshold": 1.0,
+        "main": true,
+        "level": null,
+        "is_spice": false,
+        "tags": []
+      }
     ]
   }
 }
