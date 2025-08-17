@@ -1,15 +1,25 @@
 import json
+import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from app import create_app
 from app.routes import PRODUCTS_PATH, RECIPES_PATH
+from app.utils.product_io import load_products_nested, save_products_nested
 
 def _modify_file(path, mutate):
     with open(path, "r", encoding="utf-8") as fh:
         original = fh.read()
-    data = json.loads(original)
-    mutate(data)
-    with open(path, "w", encoding="utf-8") as fh:
-        json.dump(data, fh)
+    if path == PRODUCTS_PATH:
+        data = load_products_nested(path)
+        mutate(data)
+        save_products_nested(path, data)
+    else:
+        data = json.loads(original)
+        mutate(data)
+        with open(path, "w", encoding="utf-8") as fh:
+            json.dump(data, fh)
     return original
 
 def test_products_etag_and_conditional_headers():
@@ -28,9 +38,9 @@ def test_products_etag_and_conditional_headers():
     resp3 = client.get("/api/products", headers={"If-Modified-Since": last_mod})
     assert resp3.status_code == 304
 
-    def mutate(data):
-        prod = data["products"][0]
-        prod["names"]["en"] = prod["names"].get("en", "") + " X"
+    def mutate(products):
+        prod = products[0]
+        prod["name"] = prod.get("name", "") + " X"
 
     original = _modify_file(PRODUCTS_PATH, mutate)
     try:

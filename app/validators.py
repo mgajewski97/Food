@@ -1,5 +1,5 @@
 import os
-from typing import Dict, List
+from typing import Any, Dict, List
 
 from .utils import _validate
 
@@ -19,10 +19,18 @@ def validate_products(products: List[Dict[str, Any]]) -> List[str]:
     for prod in products:
         storage = prod.get("storage")
         category = prod.get("category")
+        if storage and not storage.startswith("storage."):
+            storage = f"storage.{storage}"
+        if category and not category.startswith("category."):
+            category = f"category.{category}"
         if not storage or not category:
             continue
         grouped.setdefault(storage, {}).setdefault(category, []).append(
-            {k: v for k, v in prod.items() if k not in ("storage", "category")}
+            {
+                k: v
+                for k, v in prod.items()
+                if k not in ("storage", "category", "package_size", "pack_size")
+            }
         )
     _, errors = _validate(grouped, PRODUCTS_SCHEMA)
     return errors

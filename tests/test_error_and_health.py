@@ -27,7 +27,7 @@ def test_products_missing_key_returns_error(tmp_path, monkeypatch):
     app = create_app()
     client = app.test_client()
 
-    bad = {"categories": []}
+    bad = []
     bad_path = tmp_path / "products.json"
     bad_path.write_text(json.dumps(bad))
     monkeypatch.setattr(routes, "PRODUCTS_PATH", str(bad_path))
@@ -35,10 +35,7 @@ def test_products_missing_key_returns_error(tmp_path, monkeypatch):
     resp = client.get("/api/products")
     assert resp.status_code == 500
     data = resp.get_json()
-    assert (
-        data["error"]
-        == "Invalid products.json format – missing 'products' key"
-    )
+    assert data["error"] == "Unable to load product data"
 
 def test_404_returns_json_message():
     app = create_app()

@@ -4,9 +4,18 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from app.utils import normalize_product
+from app import utils as utils_mod
 
 
 def test_normalize_product_derive_from_id():
+    utils_mod._DOMAIN_PRODUCTS = {
+        "prod.allspice": {
+            "names": {"pl": "Ziele angielskie"},
+            "unitId": "unit.lvl",
+            "categoryId": "category.spices",
+        }
+    }
+    utils_mod._ALIAS_TO_ID = {}
     data = {"productId": "prod.allspice"}
     res = normalize_product(data)
     assert res["name"] == "Ziele angielskie"
@@ -15,6 +24,15 @@ def test_normalize_product_derive_from_id():
 
 
 def test_normalize_product_resolves_alias():
+    utils_mod._DOMAIN_PRODUCTS = {
+        "prod.basil": {
+            "names": {"pl": "Bazylia"},
+            "unitId": "unit.lvl",
+            "categoryId": "category.spices",
+            "aliases": ["product.basil"],
+        }
+    }
+    utils_mod._ALIAS_TO_ID = {utils_mod._normalize_alias("product.basil"): "prod.basil"}
     data = {"alias": "product.basil"}
     res = normalize_product(data)
     assert res["name"] == "Bazylia"

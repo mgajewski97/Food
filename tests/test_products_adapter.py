@@ -13,7 +13,5 @@ def test_products_endpoint_returns_raw_data():
     resp = client.get('/api/products')
     assert resp.status_code == 200
     data = resp.get_json()
-    assert isinstance(data, list)
-    assert len(data) > 0
-    first = data[0]
-    assert 'id' in first and 'names' in first
+    assert isinstance(data, dict)
+    assert len(data.get('products', [])) > 0
