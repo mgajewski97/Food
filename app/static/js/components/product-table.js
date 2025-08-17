@@ -367,6 +367,14 @@ function highlightRow(tr, p) {
     "opacity-60",
     "font-semibold",
   );
+  tr.classList.add(
+    "transition-colors",
+    "cursor-pointer",
+    "hover:bg-neutral-100",
+    "dark:hover:bg-neutral-800",
+    "active:bg-neutral-200",
+    "dark:active:bg-neutral-900",
+  );
   const level = getStockState(p);
   if (p.main) {
     if (level === "zero")
