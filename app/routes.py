@@ -19,13 +19,13 @@ from .utils import (
     normalize_product,
     normalize_recipe,
     _safe_float,
-    safe_write,
     save_json,
     validate_file,
     validate_items,
     _validate,
     validate_payload,
 )
+from .utils.product_io import load_products_nested, save_products_nested
 from .utils.logging import log_error_with_trace, log_warning_with_trace
 
 
@@ -95,17 +95,18 @@ def _to_base(qty: float, unit: str) -> Tuple[float, str]:
 
 
 def _validate_products_file() -> Tuple[int, List[str]]:
-    """Validate the domain products file against the product schema."""
-    try:
-        with open(PRODUCTS_PATH, "r", encoding="utf-8") as f:
-            data = json.load(f)
-    except Exception as exc:  # pragma: no cover - defensive
-        return 0, [str(exc)]
-    products = data if isinstance(data, list) else data.get("products", [])
-    validated, errors = _validate(
-        products, PRODUCTS_SCHEMA, coerce=normalize_product
+    """Validate the products file against the product schema."""
+    data, errors = load_json(
+        PRODUCTS_PATH, {}, PRODUCTS_SCHEMA, return_errors=True
     )
-    count = len(validated) if isinstance(validated, list) else 0
+    count = 0
+    if isinstance(data, dict):
+        for categories in data.values():
+            if not isinstance(categories, dict):
+                continue
+            for items in categories.values():
+                if isinstance(items, list):
+                    count += len(items)
     return count, errors
 
 
@@ -120,68 +121,11 @@ def run_initial_validation() -> None:
 
 
 def _load_products_compat(context: Dict[str, Any]):
-    """Return legacy product list built from normalized domain data."""
+    """Return flattened product list for legacy consumers."""
     try:
-        with open(PRODUCTS_PATH, "r", encoding="utf-8") as f:
-            data = json.load(f)
+        return load_products_nested(PRODUCTS_PATH)
     except Exception as exc:
         raise ValueError(str(exc))
-
-    categories = {c.get("id"): c for c in data.get("categories", [])}
-    units_list = load_json(UNITS_PATH, [])
-    units = {u.get("id"): u for u in units_list}
-    legacy: List[Dict[str, Any]] = []
-
-    for prod in data.get("products", []):
-        cat = categories.get(prod.get("categoryId"))
-        unit = units.get(prod.get("unitId"))
-        if not cat:
-            log_warning_with_trace(
-                f"product {prod.get('id')} missing category {prod.get('categoryId')}",
-                context,
-            )
-            continue
-        if not unit:
-            log_warning_with_trace(
-                f"product {prod.get('id')} missing unit {prod.get('unitId')}",
-                context,
-            )
-            continue
-
-        category_key = cat.get("id", "").replace("category.", "").replace("-", "_")
-        unit_key = unit.get("id", "").replace("unit.", "")
-        name_key = (prod.get("aliases") or [prod.get("id")])[0]
-
-        item = {
-            "id": prod.get("id"),
-            "name": name_key,
-            "name_pl": prod.get("names", {}).get("pl", ""),
-            "name_en": prod.get("names", {}).get("en", ""),
-            "category": category_key,
-            "unit": unit_key,
-            "quantity": 0,
-            "amount": 0,
-            "threshold": 0,
-            "storage": "pantry",
-            "main": True,
-            "package_size": 1,
-            "pack_size": None,
-            "level": None,
-            "is_spice": category_key == "spices",
-            "aliases": prod.get("aliases", []),
-            "tags": [],
-            "flags": False,
-        }
-
-        if item["is_spice"]:
-            item["level"] = "none"
-
-        legacy.append(item)
-
-    legacy.sort(key=lambda p: p.get("name_pl", "").lower())
-    if data.get("products") and not legacy:
-        log_warning_with_trace("no valid products emitted", context)
-    return legacy
 
 
 def _load_recipes(locale: str = "pl", context: Optional[Dict[str, Any]] = None):
@@ -193,12 +137,11 @@ def _load_recipes(locale: str = "pl", context: Optional[Dict[str, Any]] = None):
     """
 
     try:
-        with open(PRODUCTS_PATH, "r", encoding="utf-8") as f:
-            products_data = json.load(f)
+        products_list = load_products_nested(PRODUCTS_PATH)
     except Exception as exc:  # pragma: no cover - defensive
         raise ValueError(str(exc))
 
-    products = {p.get("id"): p for p in products_data.get("products", [])}
+    products = {p.get("id") or p.get("name"): p for p in products_list}
     units_list = load_json(UNITS_PATH, [])
     units = {u.get("id"): u for u in units_list}
 
@@ -276,11 +219,9 @@ def _load_recipes(locale: str = "pl", context: Optional[Dict[str, Any]] = None):
 def remove_used_products(used_ingredients):
     """Remove used ingredients from stored products."""
     with file_lock(PRODUCTS_PATH):
-        products = load_json_validated(
-            PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
-        )
+        products = load_products_nested(PRODUCTS_PATH)
         products = [p for p in products if p.get("name") not in used_ingredients]
-        safe_write(PRODUCTS_PATH, products)
+        save_products_nested(PRODUCTS_PATH, products)
 
 
 def _compute_app_version() -> str:
@@ -353,25 +294,20 @@ def domain():
 
     context = {"endpoint": "/api/domain", "args": request.args.to_dict()}
     try:
-        with open(PRODUCTS_PATH, "r", encoding="utf-8") as f:
-            data = json.load(f)
+        products = load_products_nested(PRODUCTS_PATH)
     except Exception as exc:  # pragma: no cover - defensive
         trace_id = _log_error(exc, context)
         return error_response("Internal Server Error", 500, trace_id)
 
-    products = data.get("products", [])
-    categories = data.get("categories", [])
     units = load_json(UNITS_PATH, [])
-    data["units"] = units
-    first_id = products[0].get("id") if products else None
+    first_name = products[0].get("name") if products else None
     logger.info(
-        "domain products=%d categories=%d units=%d first_product=%s",
+        "domain products=%d units=%d first_product=%s",
         len(products),
-        len(categories),
         len(units),
-        first_id,
+        first_name,
     )
-    return jsonify(data)
+    return jsonify({"products": products, "units": units})
 
 
 @bp.route("/api/search")
@@ -392,23 +328,10 @@ def products():
     """Return product dataset used by the frontend."""
     context = {"endpoint": "/api/products", "args": request.args.to_dict()}
     try:
-        with open(PRODUCTS_PATH, "r", encoding="utf-8") as f:
-            data = json.load(f)
-    except (TypeError, ValueError) as exc:
-        trace_id = _log_error(exc, context)
-        return error_response("Invalid product data format", 500, trace_id)
+        products = load_products_nested(PRODUCTS_PATH)
     except Exception as exc:
         trace_id = _log_error(exc, context)
         return error_response("Unable to load product data", 500, trace_id)
-
-    products = data.get("products") if isinstance(data, dict) else None
-    if not isinstance(products, list):
-        trace_id = _log_error(
-            ValueError("missing 'products' key or not a list"), context
-        )
-        return error_response(
-            "Invalid products.json format – missing 'products' key", 500, trace_id
-        )
 
     etag = file_etag(PRODUCTS_PATH)
     last_modified = file_mtime_rfc1123(PRODUCTS_PATH)
@@ -450,9 +373,7 @@ def units():
 def ocr_match():
     payload = request.json or {}
     items = payload.get("items", [])
-    products = load_json_validated(
-        PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
-    )
+    products = load_products_nested(PRODUCTS_PATH)
     results = []
     for raw in items:
         text = str(raw).strip().lower()
@@ -608,9 +529,7 @@ def _generate_shopping_list(selection: List[Dict[str, Any]]) -> List[Dict[str, A
             else:
                 optional_map.setdefault(key, False)
     try:
-        products = load_json_validated(
-            PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
-        )
+        products = load_products_nested(PRODUCTS_PATH)
     except ValueError:
         products = []
     stock: Dict[Tuple[str, str], float] = {}
@@ -672,9 +591,7 @@ def shopping_mark(product_id: str):
 def _update_pantry(items: List[Dict[str, Any]]) -> None:
     with file_lock(PRODUCTS_PATH):
         try:
-            products = load_json_validated(
-                PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product
-            )
+            products = load_products_nested(PRODUCTS_PATH)
         except ValueError:
             products = []
         prod_map = {p.get("name"): p for p in products}
@@ -707,12 +624,7 @@ def _update_pantry(items: List[Dict[str, Any]]) -> None:
                     "level": None,
                     "is_spice": False,
                 }
-        save_json(
-            PRODUCTS_PATH,
-            list(prod_map.values()),
-            PRODUCTS_SCHEMA,
-            normalize_product,
-        )
+        save_products_nested(PRODUCTS_PATH, list(prod_map.values()))
 
 
 @bp.route("/api/shopping/confirm", methods=["POST"])
@@ -730,7 +642,7 @@ def shopping_confirm():
 def health():
     """Basic health check ensuring data files validate."""
     try:
-        load_json_validated(PRODUCTS_PATH, PRODUCTS_SCHEMA, normalize=normalize_product)
+        load_products_nested(PRODUCTS_PATH)
         load_json_validated(RECIPES_PATH, RECIPES_SCHEMA, normalize=normalize_recipe)
     except ValueError as exc:
         trace_id = _log_error(exc, {"endpoint": "/api/health"})
