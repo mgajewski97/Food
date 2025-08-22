@@ -521,17 +521,30 @@ export async function loadProducts() {
       order: productPager.order,
     });
     const response = await fetch(`/api/products?${params.toString()}`);
-    const data = await response.json();
-
-    if (!Array.isArray(data)) {
-      console.error("Invalid product data", data);
+    const apiData = await response.json();
+    const nested = apiData.products || apiData;
+    if (!nested || typeof nested !== "object") {
+      console.error("Invalid product data", apiData);
       showNoDataRow("Błąd danych / Invalid data");
       APP.state.products = [];
       productPager.total = 0;
       return [];
     }
 
-    if (data.length === 0) {
+    const flat = [];
+    Object.entries(nested).forEach(([storageKey, categories]) => {
+      Object.entries(categories || {}).forEach(([catKey, items]) => {
+        (items || []).forEach((item) => {
+          flat.push({
+            ...item,
+            storage: String(storageKey),
+            category: String(catKey),
+          });
+        });
+      });
+    });
+
+    if (flat.length === 0) {
       showNoDataRow("Brak produktów / No products available");
       APP.state.products = [];
       productPager.total = 0;
@@ -539,9 +552,17 @@ export async function loadProducts() {
     }
 
     productPager.page = 1;
-    productPager.page_size = data.length;
-    productPager.total = data.length;
-    APP.state.products = data.map(normalizeProduct);
+    productPager.page_size = flat.length;
+    productPager.total = flat.length;
+    APP.state.products = flat.map((p) =>
+      normalizeProduct({
+        ...p,
+        storage: String(p.storage).replace(/^storage\./, ""),
+        category: String(p.category)
+          .replace(/^category\./, "")
+          .replace(/-/g, "_"),
+      }),
+    );
     renderProducts();
     renderProductPager();
     return APP.state.products;
@@ -745,12 +766,17 @@ function renderProductsImmediate() {
       id: dp.id,
       name: t(dp.id, "products"),
     });
+    const category = String(merged.category)
+      .replace(/^category\./, "")
+      .replace(/-/g, "_");
+    const storage = String(merged.storage).replace(/^storage\./, "");
+    const norm = { ...merged, category, storage };
     return {
-      ...merged,
-      unitLabel: t(merged.unit, "units"),
-      categoryLabel: t(merged.category, "categories"),
-      storageLabel: t(STORAGE_KEYS[merged.storage] || merged.storage),
-      status: getStockState(merged),
+      ...norm,
+      unitLabel: t(norm.unit, "units"),
+      categoryLabel: t(category, "categories"),
+      storageLabel: t(STORAGE_KEYS[storage] || storage),
+      status: getStockState(norm),
     };
   });
   APP.state.products = data;
