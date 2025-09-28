@@ -13,7 +13,7 @@ import threading
 import hashlib
 from datetime import datetime, timezone
 from email.utils import format_datetime
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple
 
 import jsonschema
 
@@ -162,6 +162,42 @@ def file_mtime_rfc1123(path: str) -> str:
     ts = os.path.getmtime(path)
     dt = datetime.fromtimestamp(ts, tz=timezone.utc)
     return format_datetime(dt, usegmt=True)
+
+
+def files_cache_metadata(
+    paths: Iterable[str],
+) -> Tuple[Optional[str], Optional[str], Optional[datetime]]:
+    """Return combined cache metadata (ETag, Last-Modified, datetime) for paths.
+
+    Missing files are ignored. If no files exist the tuple of ``(None, None,
+    None)`` is returned. The ``datetime`` entry represents the most recent
+    modification timestamp with microseconds removed to match HTTP semantics.
+    """
+
+    digest = hashlib.sha256()
+    seen_any = False
+    latest_ts: Optional[float] = None
+
+    for path in sorted(set(paths)):
+        try:
+            with open(path, "rb") as fh:
+                digest.update(fh.read())
+            ts = os.path.getmtime(path)
+        except OSError:
+            continue
+
+        seen_any = True
+        if latest_ts is None or ts > latest_ts:
+            latest_ts = ts
+
+    if not seen_any:
+        return None, None, None
+
+    mtime = datetime.fromtimestamp(latest_ts, tz=timezone.utc).replace(
+        microsecond=0
+    )
+    last_modified = format_datetime(mtime, usegmt=True)
+    return digest.hexdigest(), last_modified, mtime
 
 
 def _safe_float(value: Any, default: float = 0.0) -> float:

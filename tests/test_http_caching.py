@@ -88,3 +88,37 @@ def test_recipes_etag_and_conditional_headers():
     finally:
         with open(RECIPES_PATH, "w", encoding="utf-8") as fh:
             fh.write(original)
+
+
+def test_domain_etag_and_conditional_headers():
+    app = create_app()
+    client = app.test_client()
+
+    resp = client.get("/api/domain")
+    assert resp.status_code == 200
+    etag = resp.headers.get("ETag")
+    last_mod = resp.headers.get("Last-Modified")
+    first = resp.get_json()
+
+    assert etag
+    assert last_mod
+
+    resp2 = client.get("/api/domain", headers={"If-None-Match": etag})
+    assert resp2.status_code == 304
+
+    resp3 = client.get("/api/domain", headers={"If-Modified-Since": last_mod})
+    assert resp3.status_code == 304
+
+    def mutate(products):
+        prod = products[0]
+        prod["name"] = prod.get("name", "") + " X"
+
+    original = _modify_file(PRODUCTS_PATH, mutate)
+    try:
+        resp4 = client.get("/api/domain")
+        assert resp4.status_code == 200
+        assert resp4.headers.get("ETag") != etag
+        assert resp4.get_json() != first
+    finally:
+        with open(PRODUCTS_PATH, "w", encoding="utf-8") as fh:
+            fh.write(original)
