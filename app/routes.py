@@ -14,6 +14,7 @@ from .utils import (
     file_lock,
     file_etag,
     file_mtime_rfc1123,
+    files_cache_metadata,
     load_json,
     load_json_validated,
     normalize_product,
@@ -303,17 +304,49 @@ def domain():
     categories = sorted(
         {p.get("category") for p in products if p.get("category")}
     )
+
+    etag, last_modified, mtime = files_cache_metadata(
+        [PRODUCTS_PATH, UNITS_PATH]
+    )
+    inm = request.headers.get("If-None-Match")
+    ims = request.headers.get("If-Modified-Since")
+    if etag and inm == etag:
+        resp = current_app.response_class(status=304)
+        resp.headers["ETag"] = etag
+        if last_modified:
+            resp.headers["Last-Modified"] = last_modified
+        return resp
+    if ims and mtime:
+        try:
+            since = parsedate_to_datetime(ims)
+            if since >= mtime:
+                resp = current_app.response_class(status=304)
+                if etag:
+                    resp.headers["ETag"] = etag
+                if last_modified:
+                    resp.headers["Last-Modified"] = last_modified
+                return resp
+        except (TypeError, ValueError, OverflowError):
+            pass
+
     first_name = products[0].get("name") if products else None
     logger.info(
-        "domain products=%d units=%d categories=%d first_product=%s",
-        len(products),
-        len(units),
-        len(categories),
-        first_name,
+        {
+            "event": "domain.summary",
+            "products": len(products),
+            "units": len(units),
+            "categories": len(categories),
+            "firstProduct": first_name,
+        }
     )
-    return jsonify(
+    resp = jsonify(
         {"products": products, "units": units, "categories": categories}
     )
+    if etag:
+        resp.headers["ETag"] = etag
+    if last_modified:
+        resp.headers["Last-Modified"] = last_modified
+    return resp
 
 
 @bp.route("/api/search")
